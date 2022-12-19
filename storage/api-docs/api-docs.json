@@ -19,14 +19,14 @@
         }
     ],
     "paths": {
-        "/restaurant": {
+        "/v1.0/register": {
             "post": {
                 "tags": [
-                    "restaurant"
+                    "auth"
                 ],
-                "summary": "This method is to store restaurant",
-                "description": "This method is to store restaurant",
-                "operationId": "storeRestaurent",
+                "summary": "This method is to store user",
+                "description": "This method is to store user",
+                "operationId": "register",
                 "requestBody": {
                     "required": true,
                     "content": {

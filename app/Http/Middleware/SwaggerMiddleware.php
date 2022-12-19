@@ -19,7 +19,7 @@ class SwaggerMiddleware
         if(!env("SWAGGER_ENABLED")) {
             return redirect("/");
         }
-        if($request->session()->get("token") !== '12345678') {
+        if($request->session()->get("token") !== '12345678' && !env("SwaggerAutoLogin")) {
             return redirect()->route("login.view");
 
         }
