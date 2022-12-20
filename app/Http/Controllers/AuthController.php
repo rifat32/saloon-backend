@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Models\Garage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -25,13 +27,19 @@ class AuthController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"Name","Address","PostCode","enable_question"},
-     *             @OA\Property(property="Name", type="string", format="string",example="How was this?"),
-     *            @OA\Property(property="Address", type="string", format="string",example="How was this?"),
-     *            @OA\Property(property="PostCode", type="string", format="string",example="How was this?"),
+     *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode"},
+     *             @OA\Property(property="first_Name", type="string", format="string",example="How was this?"),
+     *            @OA\Property(property="last_Name", type="string", format="string",example="How was this?"),
+     *            @OA\Property(property="email", type="string", format="string",example="How was this?"),
 
-     * *  @OA\Property(property="enable_question", type="boolean", format="boolean",example="1"),
-     *
+     * *  @OA\Property(property="password", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="phone", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="address_line_1", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="address_line_2", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="country", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="city", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="postcode", type="boolean", format="boolean",example="1"),
      *
      *         ),
      *      ),
@@ -82,10 +90,131 @@ class AuthController extends Controller
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
+        $user->permissions  = $user->getAllPermissions()->pluck('name');
         // $data["user"] = $user;
         // $data["permissions"]  = $user->getAllPermissions()->pluck('name');
         // $data["roles"] = $user->roles->pluck('name');
         // $data["token"] = $token;
-        return response($user, 200);
+        return response($user, 201);
     }
+
+         /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/auth/register-with-garage",
+     *      operationId="registerUserWithGarage",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store user with garage",
+     *      description="This method is to store user with garage",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"user","garage"},
+     *             @OA\Property(property="user", type="string", format="array",example={
+     * "first_Name":"Rifat",
+     * "last_Name":"Al-Ashwad",
+     * "email":"rifatalashwad@gmail.com",
+     *  "password":"12345678",
+     *  "password_confirmation":"12345678",
+     *  "phone":"01771034383",
+     *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *
+     *  "address_line_1":"Dhaka",
+     *  "address_line_2":"Dinajpur",
+     *  "country":"Bangladesh",
+     *  "city":"Dhaka",
+     *  "postcode":"Dinajpur",
+     *
+     * }),
+     *
+     *  @OA\Property(property="garage", type="string", format="array",example={
+     * "name":"ABCD Garage",
+     * "about":"Best Garage in Dhaka",
+     * "web_page":"https://www.facebook.com/",
+     *  "phone":"01771034383",
+     *  "email":"rifatalashwad@gmail.com",
+     *  "phone":"01771034383",
+     *  "additional_information":"No Additional Information",
+     *  "address_line_1":"Dhaka",
+     *  "address_line_2":"Dinajpur",
+     *  "country":"Bangladesh",
+     *  "city":"Dhaka",
+     *  "postcode":"Dinajpur",
+     *
+     *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "is_mobile_garage":true,
+     *  "wifi_available":true,
+     *  "labour_rate":500,
+     *  "average_time_slot":90
+     *
+     * }),
+
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+    public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
+        $insertableData = $request->validated();
+
+
+        $insertableData['user']['password'] = Hash::make($request['password']);
+        $insertableData['user']['remember_token'] = Str::random(10);
+        $insertableData['user']['is_acrive'] = true;
+       
+        $user =  User::create($insertableData['user']);
+        // $user->assignRole("system user");
+
+        $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+        $user->permissions = $user->getAllPermissions()->pluck('name');
+        $user->roles = $user->roles->pluck('name');
+        $user->permissions  = $user->getAllPermissions()->pluck('name');
+
+        $insertableData['garage']['status'] = "status1";
+        $insertableData['garage']['owner_id'] = $user->id;
+        $garage =  Garage::create($insertableData['garage']);
+        return response([
+            "user" => $user,
+            "garage" => $garage
+        ], 201);
+
+
+    }
+
+
 }
