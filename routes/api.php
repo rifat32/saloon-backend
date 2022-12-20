@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RolesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,10 @@ Route::post('/v1.0/auth/register-with-garage', [AuthController::class, "register
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/v1.0/roles', [RolesController::class, "createRole"]);
+Route::post('/v1.0/roles', [RolesController::class, "updateRole"]);
+
+Route::get('/v1.0/roles', [RolesController::class, "getRoles"]);
+Route::get('/v1.0/roles/all', [RolesController::class, "getRolesAll"]);
