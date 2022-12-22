@@ -191,12 +191,10 @@ class AuthController extends Controller
      */
     public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
         $insertableData = $request->validated();
-
-
         $insertableData['user']['password'] = Hash::make($request['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
         $insertableData['user']['is_acrive'] = true;
-       
+
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
 
@@ -215,6 +213,77 @@ class AuthController extends Controller
 
 
     }
+    /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/login",
+     *      operationId="login",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to login user",
+     *      description="This method is to login user",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"email","password"},
+     *            @OA\Property(property="email", type="string", format="string",example="admin@gmail.com"),
 
+     * *  @OA\Property(property="password", type="boolean", format="boolean",example="12345678"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+public function login(Request $request) {
+    $loginData = $request->validate([
+        'email' => 'email|required',
+        'password' => 'required'
+    ]);
+
+    if (!auth()->attempt($loginData)) {
+        return response(['message' => 'Invalid Credentials'], 401);
+    }
+    
+    $user = auth()->user();
+    $user->token = auth()->user()->createToken('authToken')->accessToken;
+    $user->permissions = $user->getAllPermissions()->pluck('name');
+    $user->roles = $user->roles->pluck('name');
+
+    return response()->json(['data' => $user,   "ok" => true], 200);
+}
 
 }

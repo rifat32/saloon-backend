@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -10,10 +13,30 @@ class SetUpController extends Controller
 {
     public function setUp(Request $request)
     {
+        // clear database
+        // Artisan::call('migrate:fresh', [
+        //     // 'user' => 1, '--queue' => 'default'
+        // ]);
+        // passport install
+        shell_exec('php ../artisan migrate:fresh');
+        shell_exec('php ../artisan passport:install');
 
-
-
-
+        // ##########################################
+        // user
+        // #########################################
+      $admin =  User::create([
+        'first_Name' => "super",
+        'last_Name'=> "admin",
+        'phone'=> "01771034383",
+        'address_line_1',
+        'address_line_2',
+        'country'=> "Bangladesh",
+        'city'=> "Dhaka",
+        'postcode'=> "1207",
+        'email'=> "admin@gmail.com",
+        'password'=>Hash::make("12345678"),
+        'is_active' => 1
+        ]);
 
         // ###############################
         // permissions
@@ -55,6 +78,7 @@ class SetUpController extends Controller
 
             }
         }
+        $admin->assignRole("superadmin");
 
         return "You are done with setup";
     }

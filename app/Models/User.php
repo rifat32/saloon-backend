@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    protected $guard_name = "api";
     protected $fillable = [
         'first_Name',
         'last_Name',
@@ -29,7 +30,7 @@ class User extends Authenticatable
         'postcode',
         'email',
         'password',
-        'is_active'
+         'is_active'
     ];
 
     /**

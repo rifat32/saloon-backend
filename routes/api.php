@@ -16,15 +16,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::post('/v1.0/register', [AuthController::class, "register"]);
+Route::post('/v1.0/login', [AuthController::class, "login"]);
 Route::post('/v1.0/auth/register-with-garage', [AuthController::class, "registerUserWithGarage"]);
+
+
+
+
+
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// role management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/roles', [RolesController::class, "createRole"]);
 Route::post('/v1.0/roles', [RolesController::class, "updateRole"]);
-
 Route::get('/v1.0/roles', [RolesController::class, "getRoles"]);
 Route::get('/v1.0/roles/all', [RolesController::class, "getRolesAll"]);
