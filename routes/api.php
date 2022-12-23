@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,13 +22,28 @@ Route::post('/v1.0/auth/register-with-garage', [AuthController::class, "register
 
 
 
+Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
+    $user = $request->user();
 
+    $user->permissions  = $user->getAllPermissions()->pluck('name');
+    $user->roles = $user->roles->pluck('name');
 
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    return response()->json(
+        $user,
+        200
+    );
 });
+
+
+// ############################################
+// Protected Routes
+// ############################################
+Route::middleware(['auth:api'])->group(function () {
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// user management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // role management section
@@ -36,3 +52,6 @@ Route::post('/v1.0/roles', [RolesController::class, "createRole"]);
 Route::post('/v1.0/roles', [RolesController::class, "updateRole"]);
 Route::get('/v1.0/roles', [RolesController::class, "getRoles"]);
 Route::get('/v1.0/roles/all', [RolesController::class, "getRolesAll"]);
+
+});
+

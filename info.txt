@@ -1,2 +1,2 @@
 today
-utils to set up super admin for the first time.
+utils to set up super admin for the first time. clear the database.

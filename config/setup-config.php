@@ -24,7 +24,7 @@ return [
         "data_collector",
         "garage_owner",
         "shop_owner",
-        "customers",
+        "customer",
 
     ],
     "permissions" => [
