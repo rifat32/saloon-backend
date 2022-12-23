@@ -5,8 +5,12 @@ return [
         [
             "role" => "superadmin",
             "permissions" => [
-                "create_garages",
-                "view_garages"
+       "user_create",
+       "user_update",
+       "user_view",
+       "user_delete",
+       "create_garages",
+       "view_garages"
             ],
         ],
         [
@@ -28,6 +32,11 @@ return [
 
     ],
     "permissions" => [
+       "user_create",
+       "user_update",
+       "user_view",
+       "user_delete",
+
       "create_garages",
       "view_garages",
     ],

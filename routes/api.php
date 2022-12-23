@@ -33,7 +33,7 @@ Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
         200
     );
 });
-
+Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
 
 // ############################################
 // Protected Routes
@@ -43,7 +43,8 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+
+Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // role management section
