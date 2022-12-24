@@ -91,7 +91,7 @@ class UserManagementController extends Controller
             $insertableData['remember_token'] = Str::random(10);
             $user =  User::create($insertableData);
 
-            $user->assignRole("superadmin");
+            $user->assignRole($insertableData['role']);
 
             // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
@@ -117,11 +117,23 @@ class UserManagementController extends Controller
 
 
     public function getUsers($perPage,Request $request) {
-        $users = User::with("roles")
+        $usersQuery = User::with("roles")
         ->whereHas('roles', function ($query) {
             return $query->where('name','!=', 'customer');
-        })
-        ->orderByDesc("id")->paginate($perPage);
+        });
+
+        if(!empty($request->search_key)) {
+            $usersQuery = $usersQuery->where(function($query) use ($request){
+                $term = $request->search_key;
+                $query->where("first_Name", "like", "%" . $term . "%");
+                $query->orWhere("last_Name", "like", "%" . $term . "%");
+                $query->orWhere("email", "like", "%" . $term . "%");
+                $query->orWhere("phone", "like", "%" . $term . "%");
+            });
+error_log("search......");
+        }
+
+        $users = $usersQuery->orderByDesc("id")->paginate($perPage);
         return response()->json($users, 200);
     }
 }
