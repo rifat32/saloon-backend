@@ -301,8 +301,8 @@ class UserManagementController extends Controller
         }
 
         if(!empty($request->start_date) && !empty($request->end_date)) {
-            $startData = new  DateTime($request->start_date);
-            $endData = new  DateTime($request->start_date);
+            // $startData = new  DateTime($request->start_date);
+            // $endData = new  DateTime($request->start_date);
             $usersQuery = $usersQuery->whereBetween('created_at', [
                 // $startData->format('Y-m-d H:i:s'),
                 // $endData->format('Y-m-d H:i:s')
