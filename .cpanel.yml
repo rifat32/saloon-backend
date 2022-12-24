@@ -1,8 +1,5 @@
 ---
 deployment:
-  tasks:
-    - export DEPLOYPATH=/home/mughalsign/
-    - /bin/cp -r * $DEPLOYPATH #copy all from root
-   - /bin/cp -r ./public/* $DEPLOYPATH/public_html/
-    - /bin/cp ./public/js/*.js $DEPLOYPATH/public_html/js
-    - /bin/cp ./public/css/*.css $DEPLOYPATH/public_html/css
+      tasks:
+        - export DEPLOYPATH=/home/mughalsign/public_html
+        - /bin/cp -r /home/mughalsign/repositories/garage/* $DEPLOYPATH
