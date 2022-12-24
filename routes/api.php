@@ -33,7 +33,7 @@ Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
         200
     );
 });
-Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+
 
 // ############################################
 // Protected Routes
@@ -45,6 +45,10 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
+Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
+Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);
+
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // role management section
