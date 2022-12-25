@@ -86,6 +86,11 @@ class UserManagementController extends Controller
     {
 
         try{
+            if(!$request->user()->hasPermissionTo('user_create')){
+                 return response()->json([
+                    "message" => "You can not perform this action"
+                 ],401);
+            }
 
             $insertableData = $request->validated();
 
@@ -182,7 +187,11 @@ class UserManagementController extends Controller
 
     public function updateUser(UserUpdateRequest $request)
     {
-
+        if(!$request->user()->hasPermissionTo('user_update')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
         try{
 
             $updatableData = $request->validated();
@@ -285,9 +294,16 @@ class UserManagementController extends Controller
      */
 
     public function getUsers($perPage,Request $request) {
+
+        if(!$request->user()->hasPermissionTo('user_view')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
+
         $usersQuery = User::with("roles")
         ->whereHas('roles', function ($query) {
-            return $query->where('name','!=', 'customer');
+            // return $query->where('name','!=', 'customer');
         });
 
         if(!empty($request->search_key)) {
@@ -371,7 +387,11 @@ class UserManagementController extends Controller
      */
 
     public function deleteUserById($id,Request $request) {
-
+        if($request->user()->hasPermissionTo('user_delete')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
        User::where([
         "id" => $id
        ])
