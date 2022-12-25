@@ -13,14 +13,17 @@ class SetUpController extends Controller
 {
     public function setUp(Request $request)
     {
-        // clear database
+        // @@@@@@@@@@@@@@@@@@@
+        // clear everything
+        // @@@@@@@@@@@@@@@@@@@
         // Artisan::call('migrate:fresh', [
         //     // 'user' => 1, '--queue' => 'default'
         // ]);
-        // passport install
+
+        shell_exec('php ../artisan optimize:clear');
         shell_exec('php ../artisan migrate:fresh');
         shell_exec('php ../artisan passport:install');
-
+        shell_exec('php ../artisan l5-swagger:generate');
         // ##########################################
         // user
         // #########################################
