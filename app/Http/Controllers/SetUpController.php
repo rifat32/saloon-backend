@@ -18,6 +18,7 @@ class SetUpController extends Controller
         // @@@@@@@@@@@@@@@@@@@
         Artisan::call('optimize:clear');
         Artisan::call('migrate:fresh');
+        Artisan::call('migrate', ['--path' => 'vendor/laravel/passport/database/migrations']);
         Artisan::call('passport:install');
         Artisan::call('l5-swagger:generate');
 
