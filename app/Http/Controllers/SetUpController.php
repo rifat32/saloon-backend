@@ -16,14 +16,16 @@ class SetUpController extends Controller
         // @@@@@@@@@@@@@@@@@@@
         // clear everything
         // @@@@@@@@@@@@@@@@@@@
-        // Artisan::call('migrate:fresh', [
-        //     // 'user' => 1, '--queue' => 'default'
-        // ]);
+        Artisan::call('optimize:clear');
+        Artisan::call('migrate:fresh');
+        Artisan::call('passport:install');
+        Artisan::call('l5-swagger:generate');
 
-        shell_exec('php ../artisan optimize:clear');
-        shell_exec('php ../artisan migrate:fresh');
-        shell_exec('php ../artisan passport:install');
-        shell_exec('php ../artisan l5-swagger:generate');
+
+        // shell_exec('php ../artisan optimize:clear');
+        // shell_exec('php ../artisan migrate:fresh');
+        // shell_exec('php ../artisan passport:install');
+        // shell_exec('php ../artisan l5-swagger:generate');
         // ##########################################
         // user
         // #########################################
