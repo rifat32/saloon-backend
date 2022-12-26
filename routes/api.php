@@ -54,9 +54,13 @@ Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserB
 // role management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/roles', [RolesController::class, "createRole"]);
-Route::post('/v1.0/roles', [RolesController::class, "updateRole"]);
-Route::get('/v1.0/roles', [RolesController::class, "getRoles"]);
-Route::get('/v1.0/roles/all', [RolesController::class, "getRolesAll"]);
+Route::put('/v1.0/roles', [RolesController::class, "updateRole"]);
+Route::get('/v1.0/roles/{perPage}', [RolesController::class, "getRoles"]);
 
+Route::get('/v1.0/initial-role-permissions', [RolesController::class, "getInitialRolePermissions"]);
+
+Route::get('/v1.0/roles/get/all', [RolesController::class, "getRolesAll"]);
+Route::get('/v1.0/roles/get-by-id/{id}', [RolesController::class, "getRoleById"]);
+Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 });
 

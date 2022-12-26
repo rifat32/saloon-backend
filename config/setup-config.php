@@ -5,10 +5,18 @@ return [
         [
             "role" => "superadmin",
             "permissions" => [
+
        "user_create",
        "user_update",
        "user_view",
        "user_delete",
+
+       "role_create",
+       "role_update",
+       "role_view",
+       "role_delete",
+
+
        "create_garages",
        "view_garages"
             ],
@@ -36,6 +44,12 @@ return [
        "user_update",
        "user_view",
        "user_delete",
+
+
+       "role_create",
+       "role_update",
+       "role_view",
+       "role_delete",
 
       "create_garages",
       "view_garages",

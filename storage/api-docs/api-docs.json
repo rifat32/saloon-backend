@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://mughalsignandprint.co.uk/garage-management/api",
+            "url": "http://127.0.0.1:8000/api",
             "description": "Garage Management API Server"
         }
     ],
