@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleRequest;
 use App\Http\Requests\RoleUpdateRequest;
+use App\Http\Utils\ErrorUtil;
+use Exception;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
 {
+    use ErrorUtil;
      /**
         *
      * @OA\Post(
@@ -66,21 +69,31 @@ class RolesController extends Controller
      */
     public function createRole(RoleRequest $request)
     {
-        if( !$request->user()->hasPermissionTo('role_create'))
-         {
+        try{
+            if( !$request->user()->hasPermissionTo('role_create'))
+            {
 
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
-        $insertableData = $request->validated();
-        $role = Role::create(["name"=>$insertableData["name"]]);
+               return response()->json([
+                  "message" => "You can not perform this action"
+               ],401);
+          }
+           $insertableData = $request->validated();
+           $role = Role::create(["name"=>$insertableData["name"]]);
 
-        $role->syncPermissions($insertableData["permissions"]);
+           $role->syncPermissions($insertableData["permissions"]);
 
-        return response()->json([
-            "role" =>  $role,
-        ], 201);
+           return response()->json([
+               "role" =>  $role,
+           ], 201);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+
+
+
+
     }
   /**
         *
@@ -138,6 +151,8 @@ class RolesController extends Controller
      *     )
      */
     public function updateRole(RoleUpdateRequest $request) {
+        try{
+
         if( !$request->user()->hasPermissionTo('role_update') )
         {
 
@@ -161,6 +176,12 @@ class RolesController extends Controller
         return response()->json([
             "role" =>  $role,
         ], 201);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+
     }
     /**
         *
@@ -216,26 +237,33 @@ class RolesController extends Controller
      */
     public function getRoles($perPage,Request $request)
     {
-        if(!$request->user()->hasPermissionTo('role_view')){
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
 
-        $rolesQuery =   Role::with('permissions:name,id');
+        try{
+            if(!$request->user()->hasPermissionTo('role_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
 
-        if(!empty($request->search_key)) {
-            $rolesQuery = $rolesQuery->where(function($query) use ($request){
-                $term = $request->search_key;
-                $query->where("name", "like", "%" . $term . "%");
-            });
+            $rolesQuery =   Role::with('permissions:name,id');
 
+            if(!empty($request->search_key)) {
+                $rolesQuery = $rolesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+
+
+            $roles = $rolesQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($roles, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
         }
 
-
-
-        $roles = $rolesQuery->orderByDesc("id")->paginate($perPage);
-        return response()->json($roles, 200);
 
     }
 
@@ -286,10 +314,25 @@ class RolesController extends Controller
      */
     public function getRolesAll(Request $request)
     {
-        $roles = Role::with('permissions:name,id')->select("name", "id")->get();
-        return response()->json([
-            "roles" => $roles,
-        ], 200);
+
+        try{
+
+            if(!$request->user()->hasPermissionTo('role_view') || $request->user()->hasPermissionTo('user_view') ){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+
+            $roles = Role::with('permissions:name,id')->select("name", "id")->get();
+            return response()->json([
+                "roles" => $roles,
+            ], 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
     }
         /**
         *
@@ -345,10 +388,17 @@ class RolesController extends Controller
      */
     public function getRoleById($id,Request $request) {
 
-        $role = Role::with('permissions:name,id')
-        ->where(["id" => $id])
-        ->select("name", "id")->get();
-        return response()->json($role, 200);
+        try{
+
+            $role = Role::with('permissions:name,id')
+            ->where(["id" => $id])
+            ->select("name", "id")->get();
+            return response()->json($role, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
     }
 
     /**
@@ -405,30 +455,39 @@ class RolesController extends Controller
      */
     public function deleteRoleById($id,Request $request) {
 
-        $initial_roles = config("setup-config.roles");
+        try{
+            $initial_roles = config("setup-config.roles");
 
-       $role = Role::where([
-            "id" => $id
-           ])->first();
+            $role = Role::where([
+                 "id" => $id
+                ])->first();
 
-        if(
-            !$request->user()->hasPermissionTo('role_delete')
-            ||
-            in_array($role->name, $initial_roles)
-            )
-            {
+             if(
+                 !$request->user()->hasPermissionTo('role_delete')
+                 ||
+                 in_array($role->name, $initial_roles)
+                 )
+                 {
 
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
+                 return response()->json([
+                    "message" => "You can not perform this action"
+                 ],401);
+            }
 
-       Role::where([
-        "id" => $id
-       ])
-       ->delete();
+            Role::where([
+             "id" => $id
+            ])
+            ->delete();
 
-        return response()->json(["ok" => true], 200);
+             return response()->json(["ok" => true], 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+
+
+
     }
 
 
@@ -444,7 +503,7 @@ class RolesController extends Controller
      *      summary="This method is to get initioal role permissions",
      *      description="This method is to get initioal role permissions",
      *
-   
+
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -480,15 +539,24 @@ class RolesController extends Controller
      */
 
     public function getInitialRolePermissions (Request $request) {
-        if(!$request->user()->hasPermissionTo('role_view')){
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
 
-       $role_permissions = config("setup-config.roles_permission");
+        try{
+            if(!$request->user()->hasPermissionTo('role_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
 
-       return response()->json($role_permissions,200);
+           $role_permissions = config("setup-config.roles_permission");
+
+           return response()->json($role_permissions,200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+
+
     }
 
 }

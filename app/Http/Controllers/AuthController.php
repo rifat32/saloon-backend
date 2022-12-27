@@ -4,14 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Http\Utils\ErrorUtil;
 use App\Models\Garage;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    use ErrorUtil;
      /**
         *
      * @OA\Post(
@@ -79,23 +82,29 @@ class AuthController extends Controller
 
     public function register(AuthRegisterRequest $request)
     {
+        try{
+            $insertableData = $request->validated();
 
-        $insertableData = $request->validated();
+            $insertableData['password'] = Hash::make($request['password']);
+            $insertableData['remember_token'] = Str::random(10);
+            $user =  User::create($insertableData);
+            // $user->assignRole("system user");
 
-        $insertableData['password'] = Hash::make($request['password']);
-        $insertableData['remember_token'] = Str::random(10);
-        $user =  User::create($insertableData);
-        // $user->assignRole("system user");
+            $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+            $user->permissions = $user->getAllPermissions()->pluck('name');
+            $user->roles = $user->roles->pluck('name');
+            $user->permissions  = $user->getAllPermissions()->pluck('name');
+            // $data["user"] = $user;
+            // $data["permissions"]  = $user->getAllPermissions()->pluck('name');
+            // $data["roles"] = $user->roles->pluck('name');
+            // $data["token"] = $token;
+            return response($user, 201);
+        } catch(Exception $e){
 
-        $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
-        $user->permissions = $user->getAllPermissions()->pluck('name');
-        $user->roles = $user->roles->pluck('name');
-        $user->permissions  = $user->getAllPermissions()->pluck('name');
-        // $data["user"] = $user;
-        // $data["permissions"]  = $user->getAllPermissions()->pluck('name');
-        // $data["roles"] = $user->roles->pluck('name');
-        // $data["token"] = $token;
-        return response($user, 201);
+        return $this->sendError($e,500);
+        }
+
+
     }
 
          /**
@@ -190,7 +199,9 @@ class AuthController extends Controller
      *     )
      */
     public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
-        $insertableData = $request->validated();
+
+        try{
+            $insertableData = $request->validated();
 
 
         $userFound = User::where(["email" => $insertableData["user"]["email"]])
@@ -231,6 +242,16 @@ class AuthController extends Controller
             "user" => $user,
             "garage" => $garage
         ], 201);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+
+
+
+
+
 
 
     }
@@ -290,21 +311,32 @@ class AuthController extends Controller
      *     )
      */
 public function login(Request $request) {
-    $loginData = $request->validate([
-        'email' => 'email|required',
-        'password' => 'required'
-    ]);
 
-    if (!auth()->attempt($loginData)) {
-        return response(['message' => 'Invalid Credentials'], 401);
+
+    try{
+        $loginData = $request->validate([
+            'email' => 'email|required',
+            'password' => 'required'
+        ]);
+
+        if (!auth()->attempt($loginData)) {
+            return response(['message' => 'Invalid Credentials'], 401);
+        }
+
+        $user = auth()->user();
+        $user->token = auth()->user()->createToken('authToken')->accessToken;
+        $user->permissions = $user->getAllPermissions()->pluck('name');
+        $user->roles = $user->roles->pluck('name');
+
+        return response()->json(['data' => $user,   "ok" => true], 200);
+    } catch(Exception $e){
+
+    return $this->sendError($e,500);
     }
 
-    $user = auth()->user();
-    $user->token = auth()->user()->createToken('authToken')->accessToken;
-    $user->permissions = $user->getAllPermissions()->pluck('name');
-    $user->roles = $user->roles->pluck('name');
 
-    return response()->json(['data' => $user,   "ok" => true], 200);
+
+
 }
 
 }
