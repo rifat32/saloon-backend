@@ -187,13 +187,13 @@ class UserManagementController extends Controller
 
     public function updateUser(UserUpdateRequest $request)
     {
-        if(!$request->user()->hasPermissionTo('user_update')){
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
-        try{
 
+        try{
+            if(!$request->user()->hasPermissionTo('user_update')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
             $updatableData = $request->validated();
 
 
@@ -294,43 +294,48 @@ class UserManagementController extends Controller
      */
 
     public function getUsers($perPage,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('user_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
 
-        if(!$request->user()->hasPermissionTo('user_view')){
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
-
-        $usersQuery = User::with("roles")
-        ->whereHas('roles', function ($query) {
-            // return $query->where('name','!=', 'customer');
-        });
-
-        if(!empty($request->search_key)) {
-            $usersQuery = $usersQuery->where(function($query) use ($request){
-                $term = $request->search_key;
-                $query->where("first_Name", "like", "%" . $term . "%");
-                $query->orWhere("last_Name", "like", "%" . $term . "%");
-                $query->orWhere("email", "like", "%" . $term . "%");
-                $query->orWhere("phone", "like", "%" . $term . "%");
+            $usersQuery = User::with("roles")
+            ->whereHas('roles', function ($query) {
+                // return $query->where('name','!=', 'customer');
             });
 
+            if(!empty($request->search_key)) {
+                $usersQuery = $usersQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("first_Name", "like", "%" . $term . "%");
+                    $query->orWhere("last_Name", "like", "%" . $term . "%");
+                    $query->orWhere("email", "like", "%" . $term . "%");
+                    $query->orWhere("phone", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if(!empty($request->start_date) && !empty($request->end_date)) {
+                // $startData = new  DateTime($request->start_date);
+                // $endData = new  DateTime($request->start_date);
+                $usersQuery = $usersQuery->whereBetween('created_at', [
+                    // $startData->format('Y-m-d H:i:s'),
+                    // $endData->format('Y-m-d H:i:s')
+                    $request->start_date,
+                    $request->end_date
+                ]);
+
+            }
+
+            $users = $usersQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($users, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
         }
 
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-            // $startData = new  DateTime($request->start_date);
-            // $endData = new  DateTime($request->start_date);
-            $usersQuery = $usersQuery->whereBetween('created_at', [
-                // $startData->format('Y-m-d H:i:s'),
-                // $endData->format('Y-m-d H:i:s')
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-
-        $users = $usersQuery->orderByDesc("id")->paginate($perPage);
-        return response()->json($users, 200);
     }
 /**
         *
@@ -387,16 +392,23 @@ class UserManagementController extends Controller
      */
 
     public function deleteUserById($id,Request $request) {
-        if($request->user()->hasPermissionTo('user_delete')){
-            return response()->json([
-               "message" => "You can not perform this action"
-            ],401);
-       }
-       User::where([
-        "id" => $id
-       ])
-       ->delete();
 
-        return response()->json(["ok" => true], 200);
+        try{
+            if(!$request->user()->hasPermissionTo('user_delete')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+           User::where([
+            "id" => $id
+           ])
+           ->delete();
+
+            return response()->json(["ok" => true], 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
     }
 }

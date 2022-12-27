@@ -16,16 +16,21 @@ return [
        "role_view",
        "role_delete",
 
+       "garage_create",
+       "garage_update",
+       "garage_view",
+       "garage_delete",
 
-       "create_garages",
-       "view_garages"
+
             ],
         ],
         [
             "role" => "data_collector",
             "permissions" => [
-                "create_garages",
-                "view_garages"
+                "garage_create",
+                "garage_update",
+                "garage_view",
+                "garage_delete",
             ],
         ],
 
@@ -51,8 +56,11 @@ return [
        "role_view",
        "role_delete",
 
-      "create_garages",
-      "view_garages",
+       "garage_create",
+       "garage_update",
+       "garage_view",
+       "garage_delete",
+
     ],
 
 ];

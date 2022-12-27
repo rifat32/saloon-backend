@@ -191,6 +191,27 @@ class AuthController extends Controller
      */
     public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
         $insertableData = $request->validated();
+
+
+        $userFound = User::where(["email" => $insertableData["user"]["email"]])
+        ->first()
+        ;
+        if($userFound){
+              return response()->json([
+              "message" => "The given data was invalid.",
+              "errors" => ["user.email" => ["User Email Already Taken"]]
+              ],422);
+        }
+        $garageFound = Garage::where(["email" => $insertableData["garage"]["email"]])
+        ->first();
+        if($garageFound){
+              return response()->json([
+              "message" => "The given data was invalid.",
+              "errors" => ["garage.email" => ["Garage Email Already Taken"]]
+              ],422);
+        }
+
+
         $insertableData['user']['password'] = Hash::make($request['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
         $insertableData['user']['is_acrive'] = true;
@@ -277,7 +298,7 @@ public function login(Request $request) {
     if (!auth()->attempt($loginData)) {
         return response(['message' => 'Invalid Credentials'], 401);
     }
-    
+
     $user = auth()->user();
     $user->token = auth()->user()->createToken('authToken')->accessToken;
     $user->permissions = $user->getAllPermissions()->pluck('name');
