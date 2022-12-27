@@ -9,6 +9,61 @@ use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
 {
+     /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/roles",
+     *      operationId="createRole",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store role",
+     *      description="This method is to store role",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"name","permissions"},
+     *             @OA\Property(property="name", type="string", format="string",example="Rifat"),
+     *            @OA\Property(property="permissions", type="string", format="array",example={"user_create","user_update"}),
+
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function createRole(RoleRequest $request)
     {
         if( !$request->user()->hasPermissionTo('role_create'))
@@ -27,7 +82,61 @@ class RolesController extends Controller
             "role" =>  $role,
         ], 201);
     }
+  /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/roles",
+     *      operationId="updateRole",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update role",
+     *      description="This method is to update role",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","permissions"},
+     *             @OA\Property(property="id", type="number", format="number",example="1"),
+     *            @OA\Property(property="permissions", type="string", format="array",example={"user_create","user_update"}),
 
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function updateRole(RoleUpdateRequest $request) {
         if( !$request->user()->hasPermissionTo('role_update') )
         {
@@ -53,6 +162,58 @@ class RolesController extends Controller
             "role" =>  $role,
         ], 201);
     }
+    /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/roles/{perPage}",
+     *      operationId="getRoles",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to get roles",
+     *      description="This method is to get roles",
+     *
+    *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function getRoles($perPage,Request $request)
     {
         if(!$request->user()->hasPermissionTo('role_view')){
@@ -77,6 +238,52 @@ class RolesController extends Controller
         return response()->json($roles, 200);
 
     }
+
+      /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/roles/get/all",
+     *      operationId="getRolesAll",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to get all roles",
+     *      description="This method is to get all roles",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function getRolesAll(Request $request)
     {
         $roles = Role::with('permissions:name,id')->select("name", "id")->get();
@@ -84,6 +291,58 @@ class RolesController extends Controller
             "roles" => $roles,
         ], 200);
     }
+        /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/roles/get-by-id/{id}",
+     *      operationId="getRoleById",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to get role by id",
+     *      description="This method is to get role by id",
+     *
+    *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function getRoleById($id,Request $request) {
 
         $role = Role::with('permissions:name,id')
@@ -91,6 +350,59 @@ class RolesController extends Controller
         ->select("name", "id")->get();
         return response()->json($role, 200);
     }
+
+    /**
+    *
+     * @OA\Delete(
+     *      path="/v1.0/roles/{id}",
+     *      operationId="deleteRoleById",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to delete role by id",
+     *      description="This method is to delete role by id",
+     *
+    *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
     public function deleteRoleById($id,Request $request) {
 
         $initial_roles = config("setup-config.roles");
@@ -120,6 +432,52 @@ class RolesController extends Controller
     }
 
 
+   /**
+    *
+     * @OA\Get(
+     *      path="/v1.0/initial-role-permissions",
+     *      operationId="getInitialRolePermissions",
+     *      tags={"user_management.role"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to get initioal role permissions",
+     *      description="This method is to get initioal role permissions",
+     *
+   
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
 
     public function getInitialRolePermissions (Request $request) {
         if(!$request->user()->hasPermissionTo('role_view')){
