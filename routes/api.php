@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\UserManagementController;
@@ -65,5 +66,23 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
+
+
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// automobile management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/automobile-categories', [AutomobilesController::class, "createAutomobileCategory"]);
+Route::put('/v1.0/automobile-categories', [AutomobilesController::class, "updateAutomobileCategory"]);
+Route::get('/v1.0/automobile-categories/{perPage}', [AutomobilesController::class, "getAutomobileCategories"]);
+Route::delete('/v1.0/automobile-categories/{id}', [GaragesController::class, "deleteAutomobileCategoryById"]);
+
+
+
+
+
+
 });
 

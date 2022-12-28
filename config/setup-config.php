@@ -21,6 +21,11 @@ return [
        "garage_view",
        "garage_delete",
 
+       "automobile_create",
+       "automobile_update",
+       "automobile_view",
+       "automobile_delete",
+
 
             ],
         ],
@@ -60,6 +65,11 @@ return [
        "garage_update",
        "garage_view",
        "garage_delete",
+
+       "automobile_create",
+       "automobile_update",
+       "automobile_view",
+       "automobile_delete",
 
     ],
 

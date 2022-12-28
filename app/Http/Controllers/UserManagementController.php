@@ -341,7 +341,7 @@ class UserManagementController extends Controller
         *
      * @OA\Delete(
      *      path="/v1.0/users/{id}",
-     *      operationId="id",
+     *      operationId="deleteUserById",
      *      tags={"user_management"},
     *       security={
      *           {"bearerAuth": {}}
@@ -351,7 +351,7 @@ class UserManagementController extends Controller
      *         in="path",
      *         description="id",
      *         required=true,
-     *  example="6"
+     *  example="1"
      *      ),
      *      summary="This method is to delete user by id",
      *      description="This method is to delete user by id",
