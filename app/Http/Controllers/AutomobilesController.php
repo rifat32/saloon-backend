@@ -229,15 +229,12 @@ class AutomobilesController extends Controller
                 ],401);
            }
 
-            $automobilesQuery = AutomobileCategory::with("");
+            $automobilesQuery = AutomobileCategory::with("makes");
 
             if(!empty($request->search_key)) {
                 $automobilesQuery = $automobilesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
-                    $query->where("first_Name", "like", "%" . $term . "%");
-                    $query->orWhere("last_Name", "like", "%" . $term . "%");
-                    $query->orWhere("email", "like", "%" . $term . "%");
-                    $query->orWhere("phone", "like", "%" . $term . "%");
+                    $query->where("name", "like", "%" . $term . "%");
                 });
 
             }

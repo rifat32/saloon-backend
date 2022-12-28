@@ -77,7 +77,7 @@ Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById
 Route::post('/v1.0/automobile-categories', [AutomobilesController::class, "createAutomobileCategory"]);
 Route::put('/v1.0/automobile-categories', [AutomobilesController::class, "updateAutomobileCategory"]);
 Route::get('/v1.0/automobile-categories/{perPage}', [AutomobilesController::class, "getAutomobileCategories"]);
-Route::delete('/v1.0/automobile-categories/{id}', [GaragesController::class, "deleteAutomobileCategoryById"]);
+Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class, "deleteAutomobileCategoryById"]);
 
 
 
