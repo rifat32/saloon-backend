@@ -85,8 +85,36 @@ Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class,
 Route::post('/v1.0/automobile-makes', [AutomobilesController::class, "createAutomobileMake"]);
 Route::put('/v1.0/automobile-makes', [AutomobilesController::class, "updateAutomobileMake"]);
 Route::get('/v1.0/automobile-makes/{categoryId}/{perPage}', [AutomobilesController::class, "getAutomobileMakes"]);
-Route::get('/v1.0/automobile-makes/single/{id}', [AutomobilesController::class, "getAutomobileCategoryById"]);
+Route::get('/v1.0/automobile-makes/single/{id}', [AutomobilesController::class, "getAutomobileMakeById"]);
 Route::delete('/v1.0/automobile-makes/{id}', [AutomobilesController::class, "deleteAutomobileMakeById"]);
+
+
+
+
+
+Route::post('/v1.0/automobile-models', [AutomobilesController::class, "createAutomobileModel"]);
+Route::put('/v1.0/automobile-models', [AutomobilesController::class, "updateAutomobileModel"]);
+Route::get('/v1.0/automobile-models/{makeId}/{perPage}', [AutomobilesController::class, "getAutomobileModel"]);
+Route::get('/v1.0/automobile-models/single/{id}', [AutomobilesController::class, "getAutomobileModelById"]);
+Route::delete('/v1.0/automobile-models/{id}', [AutomobilesController::class, "deleteAutomobileModelById"]);
+
+
+
+
+
+Route::post('/v1.0/automobile-model-variants', [AutomobilesController::class, "createAutomobileModelVariant"]);
+Route::put('/v1.0/automobile-model-variants', [AutomobilesController::class, "updateAutomobileModelVariant"]);
+Route::get('/v1.0/automobile-model-variants/{modelId}/{perPage}', [AutomobilesController::class, "getAutomobileModelVariant"]);
+Route::get('/v1.0/automobile-model-variants/single/{id}', [AutomobilesController::class, "getAutomobileModelVariantById"]);
+Route::delete('/v1.0/automobile-model-variants/{id}', [AutomobilesController::class, "deleteAutomobileModelVariantById"]);
+
+
+
+Route::post('/v1.0/automobile-fuel-types', [AutomobilesController::class, "createAutomobileFuelType"]);
+Route::put('/v1.0/automobile-fuel-types', [AutomobilesController::class, "updateAutomobileFuelType"]);
+Route::get('/v1.0/automobile-fuel-types/{modelVariantId}/{perPage}', [AutomobilesController::class, "getAutomobileFuelType"]);
+Route::get('/v1.0/automobile-fuel-types/single/{id}', [AutomobilesController::class, "getAutomobileFuelTypeById"]);
+Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class, "deleteAutomobileFuelTypeById"]);
 
 
 
