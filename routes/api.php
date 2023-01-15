@@ -77,11 +77,22 @@ Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById
 Route::post('/v1.0/automobile-categories', [AutomobilesController::class, "createAutomobileCategory"]);
 Route::put('/v1.0/automobile-categories', [AutomobilesController::class, "updateAutomobileCategory"]);
 Route::get('/v1.0/automobile-categories/{perPage}', [AutomobilesController::class, "getAutomobileCategories"]);
+Route::get('/v1.0/automobile-categories/single/{id}', [AutomobilesController::class, "getAutomobileCategoryById"]);
 Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class, "deleteAutomobileCategoryById"]);
 
 
 
+Route::post('/v1.0/automobile-makes', [AutomobilesController::class, "createAutomobileMake"]);
+Route::put('/v1.0/automobile-makes', [AutomobilesController::class, "updateAutomobileMake"]);
+Route::get('/v1.0/automobile-makes/{categoryId}/{perPage}', [AutomobilesController::class, "getAutomobileMakes"]);
+Route::get('/v1.0/automobile-makes/single/{id}', [AutomobilesController::class, "getAutomobileCategoryById"]);
+Route::delete('/v1.0/automobile-makes/{id}', [AutomobilesController::class, "deleteAutomobileMakeById"]);
 
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end automobile management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 });

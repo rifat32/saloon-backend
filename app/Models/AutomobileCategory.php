@@ -16,7 +16,7 @@ class AutomobileCategory extends Model
 
     ];
     public function makes(){
-        return $this->hasMany(AutomobileCategory::class,'id', 'automobile_category_id');
+        return $this->hasMany(AutomobileMake::class,'automobile_category_id', 'id');
     }
 
 }

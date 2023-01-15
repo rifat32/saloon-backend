@@ -317,7 +317,7 @@ class RolesController extends Controller
 
         try{
 
-            if(!$request->user()->hasPermissionTo('role_view') || $request->user()->hasPermissionTo('user_view') ){
+            if(!$request->user()->hasPermissionTo('role_view') && !$request->user()->hasPermissionTo('user_view') ){
                 return response()->json([
                    "message" => "You can not perform this action"
                 ],401);

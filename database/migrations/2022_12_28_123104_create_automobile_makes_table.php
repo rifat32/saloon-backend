@@ -16,7 +16,7 @@ class CreateAutomobileMakesTable extends Migration
         Schema::create('automobile_makes', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->string("description")->nullable();
+            $table->text("description")->nullable();
             $table->unsignedBigInteger("automobile_category_id");
             $table->foreign('automobile_category_id')->references('id')->on('automobile_categories')->onDelete('cascade');
             $table->softDeletes();
