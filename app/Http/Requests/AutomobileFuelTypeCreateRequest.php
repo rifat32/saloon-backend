@@ -26,7 +26,7 @@ class AutomobileFuelTypeCreateRequest extends FormRequest
         return [
             "name" => "required|string",
             "description" => "required|string",
-            "automobile_model_variation_id" => "required|numeric"
+            "automobile_model_variant_id" => "required|numeric"
         ];
     }
 }

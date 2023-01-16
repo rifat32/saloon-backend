@@ -276,7 +276,7 @@ class AutomobilesController extends Controller
   /**
         *
      * @OA\Get(
-     *      path="/v1.0/automobile-categories/single/{id}",
+     *      path="/v1.0/automobile-categories/single/get/{id}",
      *      operationId="getAutomobileCategoryById",
      *      tags={"automobile_management.category"},
     *       security={
@@ -691,7 +691,7 @@ class AutomobilesController extends Controller
 /**
         *
      * @OA\Get(
-     *      path="/v1.0/automobile-makes/single/{id}",
+     *      path="/v1.0/automobile-makes/single/get/{id}",
      *      operationId="getAutomobileMakeById",
      *      tags={"automobile_management.make"},
     *       security={
@@ -750,7 +750,8 @@ class AutomobilesController extends Controller
                 ],401);
            }
 
-            $automobileCategory = AutomobileMake::where([
+
+            $automobileCategory = AutomobileMake::with("category")->where([
                 "id" => $id
             ])
             ->first()
@@ -1104,7 +1105,7 @@ class AutomobilesController extends Controller
 /**
         *
      * @OA\Get(
-     *      path="/v1.0/automobile-models/single/{id}",
+     *      path="/v1.0/automobile-models/single/get/{id}",
      *      operationId="getAutomobileModelById",
      *      tags={"automobile_management.model"},
     *       security={
@@ -1163,7 +1164,7 @@ class AutomobilesController extends Controller
                 ],401);
            }
 
-            $automobileModel = AutomobileModel::where([
+            $automobileModel = AutomobileModel::with("make.category")->where([
                 "id" => $id
             ])
             ->first()
@@ -1518,7 +1519,7 @@ class AutomobilesController extends Controller
 /**
         *
      * @OA\Get(
-     *      path="/v1.0/automobile-model-variants/single/{id}",
+     *      path="/v1.0/automobile-model-variants/single/get/{id}",
      *      operationId="getAutomobileModelVariantById",
      *      tags={"automobile_management.model_variant"},
     *       security={
@@ -1577,7 +1578,7 @@ class AutomobilesController extends Controller
                 ],401);
            }
 
-            $automobileModelVariant = AutomobileModelVariant::where([
+            $automobileModelVariant = AutomobileModelVariant::with("model.make.category")->where([
                 "id" => $id
             ])
             ->first()
@@ -2015,7 +2016,6 @@ class AutomobilesController extends Controller
 
             $insertableData = $request->validated();
 
-
             $automobile =  AutomobileFuelType::create($insertableData);
 
 
@@ -2182,7 +2182,7 @@ class AutomobilesController extends Controller
 
             $automobilesQuery = AutomobileFuelType::with("model_variant.model.make.category")
             ->where([
-                "automobile_model_id" => $modelId
+                "automobile_model_variant_id" => $modelId
             ]);
 
             if(!empty($request->search_key)) {
@@ -2213,7 +2213,7 @@ class AutomobilesController extends Controller
 /**
         *
      * @OA\Get(
-     *      path="/v1.0/automobile-fuel-types/single/{id}",
+     *      path="/v1.0/automobile-fuel-types/single/get/{id}",
      *      operationId="getAutomobileFuelTypeById",
      *      tags={"automobile_management.fuel_type"},
     *       security={

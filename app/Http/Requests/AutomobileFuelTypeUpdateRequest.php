@@ -27,7 +27,7 @@ class AutomobileFuelTypeUpdateRequest extends FormRequest
             "id" => "required|numeric",
             "name" => "required|string",
             "description" => "required|string",
-            "automobile_model_variation_id" => "required|numeric"
+            "automobile_model_variant_id" => "required|numeric"
         ];
     }
 }
