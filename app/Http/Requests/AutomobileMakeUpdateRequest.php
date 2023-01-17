@@ -26,7 +26,7 @@ class AutomobileMakeUpdateRequest extends FormRequest
          return [
             "id" => "required|numeric",
                 "name" => "required|string",
-                "description" => "required|string",
+                "description" => "nullable|string",
                 "automobile_category_id" => "required|numeric"
             ];
 

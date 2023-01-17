@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AutomobileModelVariantCreateRequest extends FormRequest
+class ServiceFuelTypeUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +24,11 @@ class AutomobileModelVariantCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "id" => "required|numeric",
             "name" => "required|string",
             "description" => "nullable|string",
-            "automobile_model_id" => "required|numeric"
+            "image" => "nullable|string",
+            // "automobile_category_id" => "required|numeric"
         ];
     }
 }

@@ -26,6 +26,11 @@ return [
        "automobile_view",
        "automobile_delete",
 
+       "service_create",
+       "service_update",
+       "service_view",
+       "service_delete",
+
 
             ],
         ],
@@ -70,6 +75,12 @@ return [
        "automobile_update",
        "automobile_view",
        "automobile_delete",
+
+
+       "service_create",
+       "service_update",
+       "service_view",
+       "service_delete",
 
     ],
 

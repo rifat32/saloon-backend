@@ -25,7 +25,7 @@ class AutomobileModelCreateRequest extends FormRequest
     {
         return [
                 "name" => "required|string",
-                "description" => "required|string",
+                "description" => "nullable|string",
                 "automobile_make_id" => "required|numeric"
             ];
     }

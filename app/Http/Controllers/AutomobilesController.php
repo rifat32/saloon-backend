@@ -273,6 +273,90 @@ class AutomobilesController extends Controller
         }
 
     }
+      /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/automobile-categories/get/all",
+     *      operationId="getAllAutomobileCategories",
+     *      tags={"automobile_management.category"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+   
+     *      summary="This method is to get all automobile categories",
+     *      description="This method is to get all automobile categories",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAllAutomobileCategories(Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('automobile_view') && !$request->user()->hasPermissionTo('service_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+            $automobilesQuery = AutomobileCategory::with("makes");
+
+            if(!empty($request->search_key)) {
+                $automobilesQuery = $automobilesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if(!empty($request->start_date) && !empty($request->end_date)) {
+
+                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
+
+                    $request->start_date,
+                    $request->end_date
+                ]);
+
+            }
+
+            $users = $automobilesQuery->orderByDesc("id")->get();
+            return response()->json($users, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
   /**
         *
      * @OA\Get(

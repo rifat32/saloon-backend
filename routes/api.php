@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -77,6 +78,7 @@ Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById
 Route::post('/v1.0/automobile-categories', [AutomobilesController::class, "createAutomobileCategory"]);
 Route::put('/v1.0/automobile-categories', [AutomobilesController::class, "updateAutomobileCategory"]);
 Route::get('/v1.0/automobile-categories/{perPage}', [AutomobilesController::class, "getAutomobileCategories"]);
+Route::get('/v1.0/automobile-categories/get/all', [AutomobilesController::class, "getAllAutomobileCategories"]);
 Route::get('/v1.0/automobile-categories/single/get/{id}', [AutomobilesController::class, "getAutomobileCategoryById"]);
 Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class, "deleteAutomobileCategoryById"]);
 
@@ -120,6 +122,18 @@ Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class,
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // end automobile management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// service management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/services', [ServiceController::class, "createService"]);
+Route::put('/v1.0/services', [ServiceController::class, "updateService"]);
+Route::get('/v1.0/services/{perPage}', [ServiceController::class, "getServices"]);
+Route::delete('/v1.0/services/{id}', [ServiceController::class, "deleteServiceById"]);
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// service management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 

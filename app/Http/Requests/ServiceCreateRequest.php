@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AutomobileModelVariantCreateRequest extends FormRequest
+class ServiceCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,8 @@ class AutomobileModelVariantCreateRequest extends FormRequest
         return [
             "name" => "required|string",
             "description" => "nullable|string",
-            "automobile_model_id" => "required|numeric"
+            "image" => "nullable|string",
+            "automobile_category_id" => "required|numeric"
         ];
     }
 }

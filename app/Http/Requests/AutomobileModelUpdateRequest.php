@@ -26,7 +26,7 @@ class AutomobileModelUpdateRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "name" => "required|string",
-                "description" => "required|string",
+                "description" => "nullable|string",
                 "automobile_make_id" => "required|numeric"
         ];
     }

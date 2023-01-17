@@ -194,6 +194,19 @@ class UserManagementController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
+
+           $userQuery = User::where([
+            "id" => $request["id"]
+       ]);
+
+            if($userQuery->first()->hasRole("superadmin") && $request["role"] != "superadmin"){
+                return response()->json([
+                   "message" => "You can not change the role of super admin"
+                ],401);
+           }
+
+
+
             $updatableData = $request->validated();
 
 
@@ -392,6 +405,9 @@ class UserManagementController extends Controller
      */
 
     public function deleteUserById($id,Request $request) {
+       $userQuery = User::where([
+            "id" => $id
+       ]);
 
         try{
             if(!$request->user()->hasPermissionTo('user_delete')){
@@ -399,9 +415,13 @@ class UserManagementController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
-           User::where([
-            "id" => $id
-           ])
+           if($userQuery->first()->hasRole("superadmin")){
+            return response()->json([
+               "message" => "superadmin can not be deleted"
+            ],401);
+       }
+
+           $userQuery
            ->delete();
 
             return response()->json(["ok" => true], 200);

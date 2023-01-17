@@ -26,7 +26,7 @@ class AutomobileFuelTypeUpdateRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "name" => "required|string",
-            "description" => "required|string",
+            "description" => "nullable|string",
             "automobile_model_variant_id" => "required|numeric"
         ];
     }
