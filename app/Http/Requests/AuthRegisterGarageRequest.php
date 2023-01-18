@@ -26,7 +26,7 @@ class AuthRegisterGarageRequest extends FormRequest
         return [
             'user.first_Name' => 'required|string|max:255',
             'user.last_Name' => 'required|string|max:255',
-            'user.email' => 'required|string|email|indisposable|max:255',
+            'user.email' => 'required|string|email|indisposable|max:255|unique:users,email',
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable',
@@ -41,7 +41,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.about' => 'nullable|string',
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'required|string',
-            'garage.email' => 'required|string|email|indisposable|max:255',
+            'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
             'garage.address_line_1' => 'nullable|string',
             'garage.address_line_2' => 'nullable|string',

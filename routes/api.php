@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
-Route::post('/v1.0/auth/register-with-garage', [AuthController::class, "registerUserWithGarage"]);
+
 
 
 
@@ -65,6 +65,7 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // garage management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
