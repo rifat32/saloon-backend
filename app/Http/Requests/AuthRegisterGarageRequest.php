@@ -43,16 +43,27 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.phone' => 'required|string',
             'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
-            'garage.address_line_1' => 'nullable|string',
-            'garage.address_line_2' => 'nullable|string',
+
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
             'garage.postcode' => 'required|string',
+            'garage.address_line_1' => 'nullable|string',
+            'garage.address_line_2' => 'nullable|string',
+
+
             'garage.logo' => 'nullable|string',
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
             'garage.average_time_slot' => 'nullable|numeric',
+
+
+            'service.automobile_categories' => "array|required",
+            'service.automobile_categories.id' => "required",
+            
+
+            // 'service.automobile_categories' => "array|required",
+
 
         ];
     }

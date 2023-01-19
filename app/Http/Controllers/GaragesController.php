@@ -112,10 +112,6 @@ class GaragesController extends Controller
         try{
             $insertableData = $request->validated();
 
-
-     
-
-
         $insertableData['user']['password'] = Hash::make($request['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
         $insertableData['user']['is_acrive'] = true;
@@ -128,7 +124,7 @@ class GaragesController extends Controller
         $user->roles = $user->roles->pluck('name');
         $user->permissions  = $user->getAllPermissions()->pluck('name');
 
-        $insertableData['garage']['status'] = "status1";
+        $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
         $garage =  Garage::create($insertableData['garage']);
         return response([
