@@ -18,6 +18,8 @@ class AutomobileMake extends Model
     public function category(){
         return $this->belongsTo(AutomobileCategory::class,'automobile_category_id', 'id');
     }
-
+    public function models(){
+        return $this->hasMany(AutomobileModel::class,'automobile_make_id', 'id');
+    }
 
 }

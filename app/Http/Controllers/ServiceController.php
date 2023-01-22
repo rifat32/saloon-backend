@@ -266,6 +266,100 @@ class ServiceController extends Controller
 
     }
 
+    /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/services-all/{categoryId}",
+     *      operationId="getAllServicesByCategoryId",
+     *      tags={"service_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         description="categoryId",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get all automobile Services by category id ",
+     *      description="This method is to get all automobile Services by category id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAllServicesByCategoryId($categoryId,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('automobile_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+            // $automobilesQuery = AutomobileMake::with("makes");
+
+            $servicesQuery = Service::with("category")->where([
+                "automobile_category_id" => $categoryId
+            ]);
+
+            if(!empty($request->search_key)) {
+                $servicesQuery = $servicesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if(!empty($request->start_date) && !empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->whereBetween('created_at', [
+                    $request->start_date,
+                    $request->end_date
+                ]);
+
+            }
+
+            $services = $servicesQuery->orderByDesc("name")->get();
+            return response()->json($services, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
 
 
 /**

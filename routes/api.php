@@ -88,6 +88,10 @@ Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class,
 Route::post('/v1.0/automobile-makes', [AutomobilesController::class, "createAutomobileMake"]);
 Route::put('/v1.0/automobile-makes', [AutomobilesController::class, "updateAutomobileMake"]);
 Route::get('/v1.0/automobile-makes/{categoryId}/{perPage}', [AutomobilesController::class, "getAutomobileMakes"]);
+
+Route::get('/v1.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAll"]);
+
+
 Route::get('/v1.0/automobile-makes/single/get/{id}', [AutomobilesController::class, "getAutomobileMakeById"]);
 Route::delete('/v1.0/automobile-makes/{id}', [AutomobilesController::class, "deleteAutomobileMakeById"]);
 
@@ -132,6 +136,7 @@ Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class,
 Route::post('/v1.0/services', [ServiceController::class, "createService"]);
 Route::put('/v1.0/services', [ServiceController::class, "updateService"]);
 Route::get('/v1.0/services/{perPage}', [ServiceController::class, "getServices"]);
+Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
 Route::delete('/v1.0/services/{id}', [ServiceController::class, "deleteServiceById"]);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // service management section

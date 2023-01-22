@@ -164,127 +164,6 @@
                 ]
             }
         },
-        "/v1.0/auth/register-with-garage": {
-            "post": {
-                "tags": [
-                    "auth"
-                ],
-                "summary": "This method is to store user with garage",
-                "description": "This method is to store user with garage",
-                "operationId": "registerUserWithGarage",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "user",
-                                    "garage"
-                                ],
-                                "properties": {
-                                    "user": {
-                                        "type": "string",
-                                        "format": "array",
-                                        "example": {
-                                            "first_Name": "Rifat",
-                                            "last_Name": "Al-Ashwad",
-                                            "email": "rifatalashwad@gmail.com",
-                                            "password": "12345678",
-                                            "password_confirmation": "12345678",
-                                            "phone": "01771034383",
-                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                            "address_line_1": "Dhaka",
-                                            "address_line_2": "Dinajpur",
-                                            "country": "Bangladesh",
-                                            "city": "Dhaka",
-                                            "postcode": "Dinajpur"
-                                        }
-                                    },
-                                    "garage": {
-                                        "type": "string",
-                                        "format": "array",
-                                        "example": {
-                                            "name": "ABCD Garage",
-                                            "about": "Best Garage in Dhaka",
-                                            "web_page": "https://www.facebook.com/",
-                                            "phone": "01771034383",
-                                            "email": "rifatalashwad@gmail.com",
-                                            "additional_information": "No Additional Information",
-                                            "address_line_1": "Dhaka",
-                                            "address_line_2": "Dinajpur",
-                                            "country": "Bangladesh",
-                                            "city": "Dhaka",
-                                            "postcode": "Dinajpur",
-                                            "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                            "is_mobile_garage": true,
-                                            "wifi_available": true,
-                                            "labour_rate": 500,
-                                            "average_time_slot": 90
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/v1.0/login": {
             "post": {
                 "tags": [
@@ -1037,6 +916,87 @@
                 "summary": "This method is to get automobile makes by category id",
                 "description": "This method is to get automobile makes by category id",
                 "operationId": "getAutomobileMakes",
+                "parameters": [
+                    {
+                        "name": "categoryId",
+                        "in": "path",
+                        "description": "categoryId",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/automobile-makes/all/{categoryId}/{perPage}": {
+            "get": {
+                "tags": [
+                    "automobile_management.make"
+                ],
+                "summary": "This method is to get all automobile makes by category id",
+                "description": "This method is to get all automobile makes by category id",
+                "operationId": "getAutomobileMakesAll",
                 "parameters": [
                     {
                         "name": "categoryId",
@@ -2464,6 +2424,127 @@
                         "example": "6"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/auth/register-with-garage": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to store user with garage",
+                "description": "This method is to store user with garage",
+                "operationId": "garage_management",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "garage"
+                                ],
+                                "properties": {
+                                    "user": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": {
+                                            "first_Name": "Rifat",
+                                            "last_Name": "Al-Ashwad",
+                                            "email": "rifatalashwad@gmail.com",
+                                            "password": "12345678",
+                                            "password_confirmation": "12345678",
+                                            "phone": "01771034383",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "address_line_1": "Dhaka",
+                                            "address_line_2": "Dinajpur",
+                                            "country": "Bangladesh",
+                                            "city": "Dhaka",
+                                            "postcode": "Dinajpur"
+                                        }
+                                    },
+                                    "garage": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": {
+                                            "name": "ABCD Garage",
+                                            "about": "Best Garage in Dhaka",
+                                            "web_page": "https://www.facebook.com/",
+                                            "phone": "01771034383",
+                                            "email": "rifatalashwad@gmail.com",
+                                            "additional_information": "No Additional Information",
+                                            "address_line_1": "Dhaka",
+                                            "address_line_2": "Dinajpur",
+                                            "country": "Bangladesh",
+                                            "city": "Dhaka",
+                                            "postcode": "Dinajpur",
+                                            "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "is_mobile_garage": true,
+                                            "wifi_available": true,
+                                            "labour_rate": 500,
+                                            "average_time_slot": 90
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Successful operation",
