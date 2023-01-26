@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('/setup', [SetUpController::class, "setUp"]);
 Route::get("/swagger-login",[SwaggerLoginController::class,"login"])->name("login.view");
 Route::post("/swagger-login",[SwaggerLoginController::class,"passUser"]);
