@@ -138,6 +138,15 @@ Route::put('/v1.0/services', [ServiceController::class, "updateService"]);
 Route::get('/v1.0/services/{perPage}', [ServiceController::class, "getServices"]);
 Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
 Route::delete('/v1.0/services/{id}', [ServiceController::class, "deleteServiceById"]);
+Route::get('/v1.0/services/single/get/{id}', [ServiceController::class, "getServiceById"]);
+
+
+Route::post('/v1.0/sub-services', [ServiceController::class, "createSubService"]);
+Route::put('/v1.0/sub-services', [ServiceController::class, "updateSubService"]);
+Route::get('/v1.0/sub-services/{perPage}', [ServiceController::class, "getSubServices"]);
+Route::get('/v1.0/sub-services-all/{serviceId}', [ServiceController::class, "getAllSubServicesByServiceId"]);
+Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubServiceById"]);
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // service management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

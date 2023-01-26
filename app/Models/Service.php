@@ -19,4 +19,7 @@ class Service extends Model
     public function category(){
         return $this->belongsTo(AutomobileCategory::class,'automobile_category_id', 'id');
     }
+    public function subServices(){
+        return $this->hasMany(SubService::class,'service_id', 'id');
+    }
 }

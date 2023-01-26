@@ -8,29 +8,37 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
 
- /**
+/**
      * @OA\Info(
      *      version="1.0.0",
-     *      title="Garage Management Api Documentation",
-     *      description="Garage Management Api Documentation",
+     *      title="Laravel Restaurant Documentation",
+     *      description="L5 Swagger OpenApi description for restaurant project",
      *      @OA\Contact(
-     *          email="admin@admin.com"
+     *          email="drrifatalashwad0@gmail.com"
      *      ),
      *      @OA\License(
      *          name="Apache 2.0",
      *          url="http://www.apache.org/licenses/LICENSE-2.0.html"
      *      )
      * )
+   * @OA\SecurityScheme(
+     *    securityScheme="bearerAuth",
+     *    in="header",
+     *    name="bearerAuth",
+     *    type="http",
+     *    scheme="bearer",
+     *    bearerFormat="JWT",
+     * ),
      *
      * @OA\Server(
      *      url=L5_SWAGGER_CONST_HOST,
-     *      description="Garage Management API Server"
+     *      description="Demo API Server"
      * )
 
      *
      * @OA\Tag(
-     *     name="Garage Management",
-     *     description="API Endpoints of Projects"
+     *     name="Restaurants",
+     *     description="API Endpoints of Restaurants"
      * )
      */
 class Controller extends BaseController
