@@ -58,9 +58,9 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.average_time_slot' => 'nullable|numeric',
 
 
-            'service.automobile_categories' => "array|required",
-            'service.automobile_categories.id' => "required",
-            
+            'service.services' => "array|required",
+            'service.automobile_makes' => "array|required",
+
 
             // 'service.automobile_categories' => "array|required",
 

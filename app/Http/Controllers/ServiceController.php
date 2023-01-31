@@ -331,7 +331,7 @@ class ServiceController extends Controller
                 ],401);
            }
 
-            $service = Service::with("subServices")
+            $service = Service::with("subServices","category")
             ->where([
                 "id" => $id
             ])
@@ -411,7 +411,7 @@ class ServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = Service::with("category")->where([
+            $servicesQuery = Service::with("category","subServices")->where([
                 "automobile_category_id" => $categoryId
             ]);
 
@@ -428,7 +428,6 @@ class ServiceController extends Controller
                     $request->start_date,
                     $request->end_date
                 ]);
-
             }
 
             $services = $servicesQuery->orderByDesc("name")->get();
@@ -689,13 +688,19 @@ class ServiceController extends Controller
      /**
         *
      * @OA\Get(
-     *      path="/v1.0/sub-services/{perPage}",
-     *      operationId="getSubServices",
+     *      path="/v1.0/sub-services/{serviceId}/{perPage}",
+     *      operationId="getSubServicesByServiceId",
      *      tags={"service_management.sub"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
-
+ *              @OA\Parameter(
+     *         name="serviceId",
+     *         in="path",
+     *         description="serviceId",
+     *         required=true,
+     *  example="6"
+     *      ),
      *              @OA\Parameter(
      *         name="perPage",
      *         in="path",
@@ -703,8 +708,8 @@ class ServiceController extends Controller
      *         required=true,
      *  example="6"
      *      ),
-     *      summary="This method is to get automobile sub Services ",
-     *      description="This method is to get automobile sub Services",
+     *      summary="This method is to get automobile sub Services by service id",
+     *      description="This method is to get automobile sub Services by service id",
      *
 
      *      @OA\Response(
@@ -741,7 +746,7 @@ class ServiceController extends Controller
      *     )
      */
 
-    public function getSubServices($perPage,Request $request) {
+    public function getSubServicesByServiceId($serviceId,$perPage,Request $request) {
         try{
             if(!$request->user()->hasPermissionTo('service_view')){
                 return response()->json([
@@ -749,7 +754,8 @@ class ServiceController extends Controller
                 ],401);
            }
             // $automobilesQuery = AutomobileMake::with("makes");
-            $servicesQuery = SubService::with("service");
+            $servicesQuery = SubService::with("service.category")
+            ->where("service_id" , $serviceId);
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
