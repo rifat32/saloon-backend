@@ -60,6 +60,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
             'service.services' => "array|required",
             'service.automobile_makes' => "array|required",
+            
 
 
             // 'service.automobile_categories' => "array|required",
