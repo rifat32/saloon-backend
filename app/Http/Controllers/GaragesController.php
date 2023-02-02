@@ -129,9 +129,9 @@ class GaragesController extends Controller
             $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
 
+    $user->assignRole('garage_owner');
+    $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
-
-         $user->assignRole('garage_owner');
         // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
 
