@@ -9,6 +9,7 @@ use App\Models\Garage;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -285,14 +286,16 @@ public function login(Request $request) {
     public function registerUserWithGarageClient(AuthRegisterGarageRequest $request) {
 
         try{
-        $insertableData = $request->validated();
+
+return DB::transaction(function () use(&$request) {
+    $insertableData = $request->validated();
         $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
         $insertableData['user']['is_acrive'] = true;
 
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
-$user->syncRoles(["garage_owner"]);
+        $user->assignRole("garage_owner");
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
@@ -307,6 +310,9 @@ $user->syncRoles(["garage_owner"]);
             "user" => $user,
             "garage" => $garage
         ], 201);
+});
+
+
         } catch(Exception $e){
 
         return $this->sendError($e,500);

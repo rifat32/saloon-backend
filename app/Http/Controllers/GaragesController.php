@@ -8,6 +8,7 @@ use App\Models\Garage;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -112,20 +113,21 @@ class GaragesController extends Controller
     public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
 
         try{
-            if(!$request->user()->hasPermissionTo('garage_create')){
-                return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
-            $insertableData = $request->validated();
 
-        $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
-        $insertableData['user']['remember_token'] = Str::random(10);
-        $insertableData['user']['is_acrive'] = true;
+     return  DB::transaction(function ()use (&$request) {
+        if(!$request->user()->hasPermissionTo('garage_create')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
+        $insertableData = $request->validated();
 
-        $user =  User::create($insertableData['user']);
+    $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
+    $insertableData['user']['remember_token'] = Str::random(10);
+    $insertableData['user']['is_acrive'] = true;
+            $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
-        $user->syncRoles(["garage_owner"]);
+        $user->assignRole("garage_owner");
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
@@ -140,6 +142,7 @@ class GaragesController extends Controller
             "user" => $user,
             "garage" => $garage
         ], 201);
+        });
         } catch(Exception $e){
 
         return $this->sendError($e,500);
