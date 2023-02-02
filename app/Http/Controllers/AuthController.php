@@ -286,7 +286,7 @@ public function login(Request $request) {
 
         try{
         $insertableData = $request->validated();
-        $insertableData['user']['password'] = Hash::make($request['password']);
+        $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
         $insertableData['user']['is_acrive'] = true;
 
