@@ -323,11 +323,11 @@ class AutomobilesController extends Controller
 
     public function getAllAutomobileCategories(Request $request) {
         try{
-            if(!$request->user()->hasPermissionTo('automobile_view') && !$request->user()->hasPermissionTo('service_view')){
-                return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+        //     if(!$request->user()->hasPermissionTo('automobile_view') && !$request->user()->hasPermissionTo('service_view')){
+        //         return response()->json([
+        //            "message" => "You can not perform this action"
+        //         ],401);
+        //    }
 
             $automobilesQuery = AutomobileCategory::with("makes");
 
@@ -836,11 +836,11 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakesAll($categoryId,Request $request) {
         try{
-            if(!$request->user()->hasPermissionTo('automobile_view')||!$request->user()->hasPermissionTo('garage_create')){
-                return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+        //     if(!$request->user()->hasPermissionTo('automobile_view')||!$request->user()->hasPermissionTo('garage_create')){
+        //         return response()->json([
+        //            "message" => "You can not perform this action"
+        //         ],401);
+        //    }
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
