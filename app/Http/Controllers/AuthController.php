@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
@@ -295,7 +296,9 @@ return DB::transaction(function () use(&$request) {
 
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
-        $user->assignRole("garage_owner");
+        $user->assignRole(Role::where([
+            'name' => "garage_owner"
+            ])->first());
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
