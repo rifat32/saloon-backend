@@ -130,12 +130,12 @@ class GaragesController extends Controller
         // $user->assignRole("system user");
 
 
-        $user->assignRole(Role::where([
-            'name' => "garage_owner"
-            ])->first());
+
 
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+        $user->assignRole('garage_owner');
         $user->permissions = $user->getAllPermissions()->pluck('name');
+
         $user->roles = $user->roles->pluck('name');
         $user->permissions  = $user->getAllPermissions()->pluck('name');
 
