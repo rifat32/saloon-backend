@@ -314,10 +314,10 @@ class UserManagementController extends Controller
                 ],401);
            }
 
-            $usersQuery = User::with("roles")
-            ->whereHas('roles', function ($query) {
-                // return $query->where('name','!=', 'customer');
-            });
+            $usersQuery = User::with("roles");
+            // ->whereHas('roles', function ($query) {
+            //     // return $query->where('name','!=', 'customer');
+            // });
 
             if(!empty($request->search_key)) {
                 $usersQuery = $usersQuery->where(function($query) use ($request){
