@@ -234,7 +234,6 @@ class UserManagementController extends Controller
 
                 ->first();
 
-
             $user->syncRoles([$updatableData['role']]);
 
 

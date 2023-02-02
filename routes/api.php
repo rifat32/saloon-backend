@@ -35,7 +35,10 @@ Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAll
 Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
     $user = $request->user();
 
-    $user->permissions  = $user->getAllPermissions()->pluck('name');
+
+
+    $user->token = auth()->user()->createToken('authToken')->accessToken;
+    $user->permissions = $user->getAllPermissions()->pluck('name');
     $user->roles = $user->roles->pluck('name');
 
     return response()->json(
