@@ -292,11 +292,13 @@ public function login(Request $request) {
 
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
-
+        $user->syncRoles("garage_owner");
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
         $user->permissions  = $user->getAllPermissions()->pluck('name');
+
+
 
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
