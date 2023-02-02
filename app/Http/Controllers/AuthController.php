@@ -296,12 +296,12 @@ return DB::transaction(function () use(&$request) {
 
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
-
-        $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
         $user->assignRole('garage_owner');
-        $user->permissions = $user->getAllPermissions()->pluck('name');
-        $user->roles = $user->roles->pluck('name');
-        $user->permissions  = $user->getAllPermissions()->pluck('name');
+        // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+
+        // $user->permissions = $user->getAllPermissions()->pluck('name');
+        // $user->roles = $user->roles->pluck('name');
+        // $user->permissions  = $user->getAllPermissions()->pluck('name');
 
 
 
