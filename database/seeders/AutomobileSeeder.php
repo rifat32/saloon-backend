@@ -48,13 +48,13 @@ DB::statement('SET FOREIGN_KEY_CHECKS=1;');
                         error_log(json_encode(("*****" .$model_keys)));
 
                         $model = AutomobileModel::create([
-                            "name" => $make_key,
+                            "name" => $model_keys,
                             "automobile_make_id" =>  $make->id
                         ]);
 
                         foreach($model_values as $dummy_model_variant_keys=>$dummy_model_variant_values) {
                             $model_variant = AutomobileModelVariant::create([
-                                "name" => $make_key,
+                                "name" => $dummy_model_variant_values,
                                 "automobile_model_id" =>  $model->id
                             ]);
                             error_log(json_encode(($dummy_model_variant_values. "#######")));
