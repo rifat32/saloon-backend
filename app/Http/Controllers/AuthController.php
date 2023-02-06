@@ -208,7 +208,7 @@ public function login(Request $request) {
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"user","garage"},
+     *            required={"user","garage","service"},
      *             @OA\Property(property="user", type="string", format="array",example={
      * "first_Name":"Rifat",
      * "last_Name":"Al-Ashwad",
@@ -226,7 +226,9 @@ public function login(Request $request) {
      *
      * }),
      *
-     *  @OA\Property(property="garage", type="string", format="array",example={
+     *
+     *
+     *   *  @OA\Property(property="garage", type="string", format="array",example={
      * "name":"ABCD Garage",
      * "about":"Best Garage in Dhaka",
      * "web_page":"https://www.facebook.com/",
@@ -247,7 +249,34 @@ public function login(Request $request) {
      *  "average_time_slot":90
      *
      * }),
+     *
+     *   *  @OA\Property(property="service", type="string", format="array",example={
+     *{
 
+     *"automobile_category_id":1,
+     *"services":{
+     *{
+         *"id":1,
+        *"checked":true,
+      *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
+      * }
+     *},
+       *"automobile_makes":{
+     *{
+         *"id":1,
+        *"checked":true,
+      *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
+      * }
+     *}
+     *
+
+    *}
+
+     * }),
+     *
+     *
+     *
+     *
      *
      *         ),
      *      ),
@@ -299,9 +328,11 @@ return DB::transaction(function () use(&$request) {
         $user->assignRole('garage_owner');
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
-        // $user->permissions = $user->getAllPermissions()->pluck('name');
-        // $user->roles = $user->roles->pluck('name');
-        // $user->permissions  = $user->getAllPermissions()->pluck('name');
+        
+        $user->permissions = $user->getAllPermissions()->pluck('name');
+        $user->roles = $user->roles->pluck('name');
+
+
 
 
 

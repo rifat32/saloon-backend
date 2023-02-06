@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
+Route::get('/setup2', [SetUpController::class, "setUp2"])->name("setup2");
 Route::get('/swagger-refresh', [SetUpController::class, "swaggerRefresh"]);
 Route::get('/automobile-refresh', [SetUpController::class, "automobileRefresh"]);
 

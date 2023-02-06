@@ -58,14 +58,36 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.average_time_slot' => 'nullable|numeric',
 
 
-            'service.services' => "array|required",
-            'service.automobile_makes' => "array|required",
+            // 'service.services' => "array|required",
+            // 'service.automobile_makes' => "array|required",
+
+            'service' => "array|required",
+
+            'service.*.automobile_category_id' => "required|numeric",
+
+            'service.*.services' => "required|array",
+            'service.*.automobile_makes' => "required|array",
 
 
 
             // 'service.automobile_categories' => "array|required",
 
 
+        ];
+
+
+    }
+
+    public function messages()
+    {
+        return [
+            'user.first_Name.required' => 'The first name is required',
+            "service.*.automobile_category_id" => "Please select at least one automobile category",
+            "service.*.services" => "Please select services",
+            "service.*.automobile_makes" => "Please select makes"
+            // 'model.required' => 'The car model is required',
+            // 'year.required' => 'The car year is required',
+            // 'year.numeric' => 'The car year must be a number',
         ];
     }
 }
