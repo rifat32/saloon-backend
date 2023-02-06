@@ -30,8 +30,8 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable',
-            'user.address_line_1' => 'nullable',
-            'user.address_line_2' => 'nullable',
+            'user.address_line_1' => 'required|string',
+            'user.address_line_2' => 'required|string',
             'user.country' => 'required|string',
             'user.city' => 'required|string',
             'user.postcode' => 'required|string',
@@ -47,8 +47,8 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
             'garage.postcode' => 'required|string',
-            'garage.address_line_1' => 'nullable|string',
-            'garage.address_line_2' => 'nullable|string',
+            'garage.address_line_1' => 'required|string',
+            'garage.address_line_2' => 'required|string',
 
 
             'garage.logo' => 'nullable|string',
@@ -60,7 +60,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
             'service.services' => "array|required",
             'service.automobile_makes' => "array|required",
-            
+
 
 
             // 'service.automobile_categories' => "array|required",

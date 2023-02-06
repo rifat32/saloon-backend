@@ -20,5 +20,8 @@ Route::get('/', function () {
 });
 
 Route::get('/setup', [SetUpController::class, "setUp"]);
+Route::get('/swagger-refresh', [SetUpController::class, "swaggerRefresh"]);
+Route::get('/automobile-refresh', [SetUpController::class, "automobileRefresh"]);
+
 Route::get("/swagger-login",[SwaggerLoginController::class,"login"])->name("login.view");
 Route::post("/swagger-login",[SwaggerLoginController::class,"passUser"]);

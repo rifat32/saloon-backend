@@ -2,15 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AutomobileCategory;
+use App\Models\AutomobileFuelType;
+use App\Models\AutomobileMake;
+use App\Models\AutomobileModel;
+use App\Models\AutomobileModelVariant;
+use App\Models\Service;
+use App\Models\SubService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class SetUpController extends Controller
 {
+
+    public function automobileRefresh() {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        AutomobileCategory::truncate();
+        AutomobileMake::truncate();
+        AutomobileModel::truncate();
+        AutomobileModelVariant::truncate();
+        AutomobileFuelType::truncate();
+        Service::truncate();
+        SubService::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Artisan::call('db:seed --class AutomobileCarSeeder');
+
+        return "automobile refreshed";
+
+    }
+    public function swaggerRefresh() {
+Artisan::call('l5-swagger:generate');
+return "swagger generated";
+    }
     public function setUp(Request $request)
     {
         // @@@@@@@@@@@@@@@@@@@
@@ -20,14 +48,11 @@ class SetUpController extends Controller
         Artisan::call('migrate:fresh');
         Artisan::call('migrate', ['--path' => 'vendor/laravel/passport/database/migrations']);
         Artisan::call('passport:install');
-        Artisan::call('db:seed --class AutomobileSeeder');
+        Artisan::call('db:seed --class AutomobileCarSeeder');
         Artisan::call('l5-swagger:generate');
 
 
-        // shell_exec('php ../artisan optimize:clear');
-        // shell_exec('php ../artisan migrate:fresh');
-        // shell_exec('php ../artisan passport:install');
-        // shell_exec('php ../artisan l5-swagger:generate');
+
         // ##########################################
         // user
         // #########################################
