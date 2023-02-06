@@ -19,7 +19,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/setup', [SetUpController::class, "setUp"]);
+Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
 Route::get('/swagger-refresh', [SetUpController::class, "swaggerRefresh"]);
 Route::get('/automobile-refresh', [SetUpController::class, "automobileRefresh"]);
 

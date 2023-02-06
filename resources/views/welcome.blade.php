@@ -14,16 +14,16 @@
   <div class="container">
     <div class="row mt-5">
         <div class="col-md-3">
-            <a href="/api/documentation#/" class="btn btn-primary" target="_blank">Api Doc</a>
+            <a href="{{env('APP_URL')}}/api/documentation#/" class="btn btn-primary" target="_blank">Api Doc</a>
         </div>
         <div class="col-md-3">
-            <a href="/setup" class="btn btn-primary" target="_blank">Clear Every Thing</a>
+            <a href="{{env('APP_URL')}}/setup" class="btn btn-primary" target="_blank">Clear Every Thing</a>
         </div>
         <div class="col-md-3">
-            <a href="/swagger-refresh" class="btn btn-primary" target="_blank">Swagger Refresh</a>
+            <a href="{{env('APP_URL')}}/swagger-refresh" class="btn btn-primary" target="_blank">Swagger Refresh</a>
         </div>
         <div class="col-md-3">
-            <a href="/automobile-refresh" class="btn btn-primary" target="_blank">Automobile Refresh</a>
+            <a href="{{env('APP_URL')}}/automobile-refresh" class="btn btn-primary" target="_blank">Automobile Refresh</a>
         </div>
 
 
