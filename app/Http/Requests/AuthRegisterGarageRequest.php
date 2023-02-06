@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SomeTimes;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class AuthRegisterGarageRequest extends FormRequest
 {
@@ -23,6 +25,7 @@ class AuthRegisterGarageRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'user.first_Name' => 'required|string|max:255',
             'user.last_Name' => 'required|string|max:255',
@@ -68,8 +71,10 @@ class AuthRegisterGarageRequest extends FormRequest
             'service.*.services' => "required|array",
             'service.*.automobile_makes' => "required|array",
 
-
-
+            'service.*.services.*.id' => "required|numeric",
+            'service.*.services.*.checked' => "required|boolean",
+            'service.*.automobile_makes.*.id' => "required|numeric",
+            'service.*.automobile_makes.*.checked' => ["required","boolean", new SomeTimes],
             // 'service.automobile_categories' => "array|required",
 
 
@@ -80,14 +85,34 @@ class AuthRegisterGarageRequest extends FormRequest
 
     public function messages()
     {
+
         return [
             'user.first_Name.required' => 'The first name is required',
-            "service.*.automobile_category_id" => "Please select at least one automobile category",
-            "service.*.services" => "Please select services",
-            "service.*.automobile_makes" => "Please select makes"
-            // 'model.required' => 'The car model is required',
-            // 'year.required' => 'The car year is required',
-            // 'year.numeric' => 'The car year must be a number',
+            "service.*.automobile_category_id.required" => "Please select at least one automobile category",
+            "service.*.services.required" => "Please select services",
+            "service.*.automobile_makes.required" => "Please select makes",
+
+            "service.*.services.*.id.required" => "Please select at least one service ",
+            "service.*.automobile_makes.*.id.required" => "Please select at least one automobile make",
+
+            "service.*.services.*.checked.required" => "Please select at least one service ",
+            'service.*.automobile_makes.*.checked.required' => 'At least one automobile make must be checked.',
+            'service.*.automobile_makes.*.checked.boolean' => 'The :attribute must be a boolean value.',
+
         ];
     }
+    public function validate()
+{
+
+    $validator = Validator::make($this->all(), $this->rules(), $this->messages());
+
+    $validator->sometimes('service.*.automobile_makes.*.checked', 'required|in:1', function ($input) {
+        return collect($input->service)->pluck('automobile_makes.*.checked')->contains(1);
+    });
+
+    $validator->validate();
+
+}
+
+
 }

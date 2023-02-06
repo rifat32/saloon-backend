@@ -2654,7 +2654,8 @@
                             "schema": {
                                 "required": [
                                     "user",
-                                    "garage"
+                                    "garage",
+                                    "service"
                                 ],
                                 "properties": {
                                     "user": {
@@ -2696,6 +2697,47 @@
                                             "labour_rate": 500,
                                             "average_time_slot": 90
                                         }
+                                    },
+                                    "service": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "automobile_category_id": 1,
+                                                "services": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "sub_services": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "automobile_makes": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "models": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
                                     }
                                 },
                                 "type": "object"
