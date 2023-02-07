@@ -150,7 +150,8 @@ class GaragesController extends Controller
 
     $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
     $insertableData['user']['remember_token'] = Str::random(10);
-    $insertableData['user']['is_acrive'] = true;
+    $insertableData['user']['is_active'] = true;
+    $insertableData['user']['created_by'] = $request->user()->id;
             $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
 

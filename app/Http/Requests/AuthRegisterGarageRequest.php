@@ -33,17 +33,17 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable',
-            'user.address_line_1' => 'required|string',
-            'user.address_line_2' => 'required|string',
-            'user.country' => 'required|string',
-            'user.city' => 'required|string',
-            'user.postcode' => 'required|string',
+            'user.address_line_1' => 'nullable|string',
+            'user.address_line_2' => 'nullable|string',
+            'user.country' => 'nullable|string',
+            'user.city' => 'nullable|string',
+            'user.postcode' => 'nullable|string',
 
 
             'garage.name' => 'required|string|max:255',
             'garage.about' => 'nullable|string',
             'garage.web_page' => 'nullable|string',
-            'garage.phone' => 'required|string',
+            'garage.phone' => 'nullable|string',
             'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
 
@@ -51,7 +51,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.city' => 'required|string',
             'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
-            'garage.address_line_2' => 'required|string',
+            'garage.address_line_2' => 'nullable|string',
 
 
             'garage.logo' => 'nullable|string',
@@ -61,20 +61,18 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.average_time_slot' => 'nullable|numeric',
 
 
-            // 'service.services' => "array|required",
-            // 'service.automobile_makes' => "array|required",
+
 
             'service' => "array|required",
-
             'service.*.automobile_category_id' => "required|numeric",
 
-            'service.*.services' => "required|array",
-            'service.*.automobile_makes' => "required|array",
-
+            'service.*.services' => ["required","array",new SomeTimes],
             'service.*.services.*.id' => "required|numeric",
             'service.*.services.*.checked' => "required|boolean",
+
+            'service.*.automobile_makes' => ["required","array",new SomeTimes],
             'service.*.automobile_makes.*.id' => "required|numeric",
-            'service.*.automobile_makes.*.checked' => ["required","boolean", new SomeTimes],
+            'service.*.automobile_makes.*.checked' => ["required","boolean"],
             // 'service.automobile_categories' => "array|required",
 
 
@@ -83,21 +81,40 @@ class AuthRegisterGarageRequest extends FormRequest
 
     }
 
+    public function customRequiredMessage($property) {
+
+        return "The ".$property."field is required";
+    }
+
     public function messages()
     {
 
         return [
-            'user.first_Name.required' => 'The first name is required',
-            "service.*.automobile_category_id.required" => "Please select at least one automobile category",
-            "service.*.services.required" => "Please select services",
-            "service.*.automobile_makes.required" => "Please select makes",
+            'user.first_Name.required' => $this->customRequiredMessage("first name"),
+            'user.last_Name.required' => $this->customRequiredMessage("last name"),
+            'user.email.required' => $this->customRequiredMessage("email"),
+            'user.password.required' => $this->customRequiredMessage("password"),
 
-            "service.*.services.*.id.required" => "Please select at least one service ",
-            "service.*.automobile_makes.*.id.required" => "Please select at least one automobile make",
 
-            "service.*.services.*.checked.required" => "Please select at least one service ",
-            'service.*.automobile_makes.*.checked.required' => 'At least one automobile make must be checked.',
-            'service.*.automobile_makes.*.checked.boolean' => 'The :attribute must be a boolean value.',
+
+
+            'garage.name.required' => $this->customRequiredMessage("garage name"),
+            'garage.email.required' => $this->customRequiredMessage("garage email"),
+            'garage.country.required' => $this->customRequiredMessage("garage country"),
+            'garage.city.required' => $this->customRequiredMessage("garage city"),
+            'garage.postcode.required' => $this->customRequiredMessage("garage postcode"),
+            'garage.address_line_1.required' => $this->customRequiredMessage("garage address line 1"),
+
+
+
+
+
+
+
+
+
+
+
 
         ];
     }

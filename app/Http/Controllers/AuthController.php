@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Mail\VerifyMail;
 use App\Models\Garage;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -321,14 +324,14 @@ return DB::transaction(function () use(&$request) {
     $insertableData = $request->validated();
         $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
         $insertableData['user']['remember_token'] = Str::random(10);
-        $insertableData['user']['is_acrive'] = true;
+        $insertableData['user']['is_active'] = true;
 
         $user =  User::create($insertableData['user']);
         // $user->assignRole("system user");
         $user->assignRole('garage_owner');
         $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 
-        
+
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
 
@@ -339,9 +342,16 @@ return DB::transaction(function () use(&$request) {
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
         $garage =  Garage::create($insertableData['garage']);
+
+
+        $email_token = Str::random(30);
+        $user->email_verify_token =$email_token;
+        $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+        Mail::to($insertableData["email"])->send(new VerifyMail($user));
         return response([
             "user" => $user,
-            "garage" => $garage
+            "garage" => $garage,
+            "success" => true
         ], 201);
 });
 

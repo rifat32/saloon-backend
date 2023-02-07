@@ -23,9 +23,23 @@ class SomeTimes implements Rule
      * @param  mixed  $value
      * @return bool
      */
+
     public function passes($attribute, $value)
     {
-       return false;
+        error_log(json_encode($attribute));
+        error_log(json_encode($value));
+      return  collect($value)->contains(function ($data, $key) {
+            return ($data["checked"] == true || $data["checked"] == 1);
+              error_log(($data["checked"] == true || $data["checked"] == 1));
+              error_log(($data["checked"] == true || $data["checked"] == 1));
+              error_log(($data["checked"] == true || $data["checked"] == 1));
+              if(($data["checked"] == true || $data["checked"] == 1)){
+                error_log("trueeeeeee");
+                  return false;
+              }
+              error_log("falseeeeee");
+            return false;
+        });
     }
 
     /**
@@ -35,6 +49,6 @@ class SomeTimes implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Please select at least one';
     }
 }
