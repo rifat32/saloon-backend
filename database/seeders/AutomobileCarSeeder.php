@@ -99,7 +99,7 @@ class AutomobileCarSeeder extends Seeder
 
             foreach ($car_service->sub_services as $sub_service) {
                 SubService::create([
-                    "name" => $car_service->service_name,
+                    "name" => $sub_service,
                     "service_id" =>  $service->id
                 ]);
                 error_log(("....." . $sub_service));
