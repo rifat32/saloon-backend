@@ -26,18 +26,15 @@ class SomeTimes implements Rule
 
     public function passes($attribute, $value)
     {
-        error_log(json_encode($attribute));
-        error_log(json_encode($value));
+
       return  collect($value)->contains(function ($data, $key) {
             return ($data["checked"] == true || $data["checked"] == 1);
-              error_log(($data["checked"] == true || $data["checked"] == 1));
-              error_log(($data["checked"] == true || $data["checked"] == 1));
-              error_log(($data["checked"] == true || $data["checked"] == 1));
+
               if(($data["checked"] == true || $data["checked"] == 1)){
-                error_log("trueeeeeee");
+
                   return false;
               }
-              error_log("falseeeeee");
+          
             return false;
         });
     }

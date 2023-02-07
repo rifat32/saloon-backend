@@ -5,8 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\GarageUtil;
 use App\Mail\VerifyMail;
+use App\Models\AutomobileCategory;
+use App\Models\AutomobileMake;
+use App\Models\AutomobileModel;
 use App\Models\Garage;
+use App\Models\GarageAutomobileMake;
+use App\Models\GarageAutomobileModel;
+use App\Models\GarageService;
+use App\Models\GarageSubService;
+use App\Models\Service;
+use App\Models\SubService;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,14 +29,14 @@ use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    use ErrorUtil;
-     /**
-        *
+    use ErrorUtil, GarageUtil;
+    /**
+     *
      * @OA\Post(
      *      path="/v1.0/register",
      *      operationId="register",
      *      tags={"auth"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to store user",
@@ -87,7 +97,7 @@ class AuthController extends Controller
 
     public function register(AuthRegisterRequest $request)
     {
-        try{
+        try {
             $insertableData = $request->validated();
 
             $insertableData['password'] = Hash::make($request['password']);
@@ -104,24 +114,22 @@ class AuthController extends Controller
             // $data["roles"] = $user->roles->pluck('name');
             // $data["token"] = $token;
             return response($user, 201);
-        } catch(Exception $e){
+        } catch (Exception $e) {
 
-        return $this->sendError($e,500);
+            return $this->sendError($e, 500);
         }
-
-
     }
 
 
 
 
     /**
-        *
+     *
      * @OA\Post(
      *      path="/v1.0/login",
      *      operationId="login",
      *      tags={"auth"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to login user",
@@ -170,37 +178,34 @@ class AuthController extends Controller
      *      )
      *     )
      */
-public function login(Request $request) {
+    public function login(Request $request)
+    {
 
 
-    try{
-        $loginData = $request->validate([
-            'email' => 'email|required',
-            'password' => 'required'
-        ]);
+        try {
+            $loginData = $request->validate([
+                'email' => 'email|required',
+                'password' => 'required'
+            ]);
 
-        if (!auth()->attempt($loginData)) {
-            return response(['message' => 'Invalid Credentials'], 401);
+            if (!auth()->attempt($loginData)) {
+                return response(['message' => 'Invalid Credentials'], 401);
+            }
+
+            $user = auth()->user();
+            $user->token = auth()->user()->createToken('authToken')->accessToken;
+            $user->permissions = $user->getAllPermissions()->pluck('name');
+            $user->roles = $user->roles->pluck('name');
+
+            return response()->json(['data' => $user,   "ok" => true], 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
         }
-
-        $user = auth()->user();
-        $user->token = auth()->user()->createToken('authToken')->accessToken;
-        $user->permissions = $user->getAllPermissions()->pluck('name');
-        $user->roles = $user->roles->pluck('name');
-
-        return response()->json(['data' => $user,   "ok" => true], 200);
-    } catch(Exception $e){
-
-    return $this->sendError($e,500);
     }
 
-
-
-
-}
-
-/**
-        *
+    /**
+     *
      * @OA\Post(
      *      path="/v1.0/auth/user-register-with-garage",
      *      operationId="registerUserWithGarageClient",
@@ -259,21 +264,21 @@ public function login(Request $request) {
      *"automobile_category_id":1,
      *"services":{
      *{
-         *"id":1,
-        *"checked":true,
-      *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
-      * }
+     *"id":1,
+     *"checked":true,
+     *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
      *},
-       *"automobile_makes":{
+     *"automobile_makes":{
      *{
-         *"id":1,
-        *"checked":true,
-      *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
-      * }
+     *"id":1,
+     *"checked":true,
+     *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
      *}
      *
 
-    *}
+     *}
 
      * }),
      *
@@ -316,52 +321,49 @@ public function login(Request $request) {
      *      )
      *     )
      */
-    public function registerUserWithGarageClient(AuthRegisterGarageRequest $request) {
+    public function registerUserWithGarageClient(AuthRegisterGarageRequest $request)
+    {
 
-        try{
+        try {
 
-return DB::transaction(function () use(&$request) {
-    $insertableData = $request->validated();
-        $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
-        $insertableData['user']['remember_token'] = Str::random(10);
-        $insertableData['user']['is_active'] = true;
+            return DB::transaction(function () use (&$request) {
+                $insertableData = $request->validated();
+                // user info starts ##############
+                $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
+                $insertableData['user']['remember_token'] = Str::random(10);
+                $insertableData['user']['is_active'] = true;
+                $user =  User::create($insertableData['user']);
+                $user->assignRole('garage_owner');
+                // end user info ##############
 
-        $user =  User::create($insertableData['user']);
-        // $user->assignRole("system user");
-        $user->assignRole('garage_owner');
-        $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+                // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+                // $user->permissions = $user->getAllPermissions()->pluck('name');
+                // $user->roles = $user->roles->pluck('name');
 
+                //  garage info ##############
+                $insertableData['garage']['status'] = "pending";
+                $insertableData['garage']['owner_id'] = $user->id;
+                $garage =  Garage::create($insertableData['garage']);
+                // end garage info ##############
 
-        $user->permissions = $user->getAllPermissions()->pluck('name');
-        $user->roles = $user->roles->pluck('name');
+           // create services
+                $this->createGarageServices($insertableData['service'],$garage->id);
 
+// verify email starts
+                $email_token = Str::random(30);
+                $user->email_verify_token = $email_token;
+                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+                Mail::to($user->email)->send(new VerifyMail($user));
+// verify email ends
+                return response([
+                    // "user" => $user,
+                    // "garage" => $garage,
+                    "success" => true
+                ], 201);
+            });
+        } catch (Exception $e) {
 
-
-
-
-        $insertableData['garage']['status'] = "pending";
-        $insertableData['garage']['owner_id'] = $user->id;
-        $garage =  Garage::create($insertableData['garage']);
-
-
-        $email_token = Str::random(30);
-        $user->email_verify_token =$email_token;
-        $user->email_verify_token_expires = Carbon::now()->subDays(-1);
-        Mail::to($user->email)->send(new VerifyMail($user));
-        return response([
-            "user" => $user,
-            "garage" => $garage,
-            "success" => true
-        ], 201);
-});
-
-
-        } catch(Exception $e){
-
-        return $this->sendError($e,500);
+            return $this->sendError($e, 500);
         }
-
-
     }
-
 }

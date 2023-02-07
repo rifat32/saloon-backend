@@ -35,4 +35,8 @@ class Garage extends Model
         return $this->belongsTo(User::class,'owner_id', 'id');
     }
 
+    public function garageServices(){
+        return $this->hasMany(GarageSubService::class,'garage_id', 'id');
+    }
+
 }

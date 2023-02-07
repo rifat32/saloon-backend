@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\GarageUtil;
 use App\Models\Garage;
 use App\Models\User;
 use Exception;
@@ -15,7 +16,7 @@ use Spatie\Permission\Models\Role;
 
 class GaragesController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,GarageUtil;
 
 
 
@@ -75,29 +76,30 @@ class GaragesController extends Controller
      *
      * }),
      *
-     *    *   *  @OA\Property(property="service", type="string", format="array",example={
+     *   *  @OA\Property(property="service", type="string", format="array",example={
      *{
 
      *"automobile_category_id":1,
      *"services":{
      *{
-         *"id":1,
-        *"checked":true,
-      *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
-      * }
+     *"id":1,
+     *"checked":true,
+     *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
      *},
-       *"automobile_makes":{
+     *"automobile_makes":{
      *{
-         *"id":1,
-        *"checked":true,
-      *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
-      * }
+     *"id":1,
+     *"checked":true,
+     *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
      *}
      *
 
-    *}
+     *}
 
      * }),
+     *
      *
 
      *
@@ -148,27 +150,29 @@ class GaragesController extends Controller
        }
         $insertableData = $request->validated();
 
+   // user info starts ##############
     $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
     $insertableData['user']['remember_token'] = Str::random(10);
     $insertableData['user']['is_active'] = true;
     $insertableData['user']['created_by'] = $request->user()->id;
-            $user =  User::create($insertableData['user']);
-        // $user->assignRole("system user");
-
+    $user =  User::create($insertableData['user']);
     $user->assignRole('garage_owner');
-    $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
-
-        // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+   // end user info ##############
 
 
-        // $user->roles = $user->roles->pluck('name');
-        // $user->permissions  = $user->getAllPermissions()->pluck('name');
-
-
-
+  //  garage info ##############
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
         $garage =  Garage::create($insertableData['garage']);
+  // end garage info ##############
+
+  // create services
+  $this->createGarageServices($insertableData['service'],$garage->id);
+
+
+
+
+
         return response([
             "user" => $user,
             "garage" => $garage

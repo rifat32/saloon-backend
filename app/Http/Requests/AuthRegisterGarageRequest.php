@@ -83,7 +83,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
     public function customRequiredMessage($property) {
 
-        return "The ".$property."field is required";
+        return "The ".$property." must be required";
     }
 
     public function messages()
@@ -118,18 +118,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
         ];
     }
-    public function validate()
-{
 
-    $validator = Validator::make($this->all(), $this->rules(), $this->messages());
-
-    $validator->sometimes('service.*.automobile_makes.*.checked', 'required|in:1', function ($input) {
-        return collect($input->service)->pluck('automobile_makes.*.checked')->contains(1);
-    });
-
-    $validator->validate();
-
-}
 
 
 }
