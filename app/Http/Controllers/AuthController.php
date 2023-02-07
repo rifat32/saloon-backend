@@ -347,7 +347,7 @@ return DB::transaction(function () use(&$request) {
         $email_token = Str::random(30);
         $user->email_verify_token =$email_token;
         $user->email_verify_token_expires = Carbon::now()->subDays(-1);
-        Mail::to($insertableData["email"])->send(new VerifyMail($user));
+        Mail::to($user->email)->send(new VerifyMail($user));
         return response([
             "user" => $user,
             "garage" => $garage,
