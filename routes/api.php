@@ -77,6 +77,7 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 // garage management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
+Route::put('/v1.0/garages', [GaragesController::class, "registerUserWithGarage"]);
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 

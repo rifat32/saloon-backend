@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterGarageRequest;
+use App\Http\Requests\GarageUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Models\Garage;
+use App\Models\GarageAutomobileMake;
+use App\Models\GarageService;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -163,14 +166,12 @@ class GaragesController extends Controller
   //  garage info ##############
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
+        $insertableData['garage']['created_by'] = $request->user()->id;
         $garage =  Garage::create($insertableData['garage']);
   // end garage info ##############
 
   // create services
   $this->createGarageServices($insertableData['service'],$garage->id);
-
-
-
 
 
         return response([
@@ -183,8 +184,235 @@ class GaragesController extends Controller
         return $this->sendError($e,500);
         }
 
+    }
+
+
+
+     /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/garages",
+     *      operationId="updateGarage",
+     *      tags={"garage_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update user with garage",
+     *      description="This method is to update user with garage",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"user","garage","service"},
+     *             @OA\Property(property="user", type="string", format="array",example={
+     *  * "id":1,
+     * "first_Name":"Rifat",
+     * "last_Name":"Al-Ashwad",
+     * "email":"rifatalashwad@gmail.com",
+     *  "password":"12345678",
+     *  "password_confirmation":"12345678",
+     *  "phone":"01771034383",
+     *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *
+     *  "address_line_1":"Dhaka",
+     *  "address_line_2":"Dinajpur",
+     *  "country":"Bangladesh",
+     *  "city":"Dhaka",
+     *  "postcode":"Dinajpur",
+     *
+     * }),
+     *
+     *  @OA\Property(property="garage", type="string", format="array",example={
+     *   *  * "id":1,
+     * "name":"ABCD Garage",
+     * "about":"Best Garage in Dhaka",
+     * "web_page":"https://www.facebook.com/",
+     *  "phone":"01771034383",
+     *  "email":"rifatalashwad@gmail.com",
+     *  "phone":"01771034383",
+     *  "additional_information":"No Additional Information",
+     *  "address_line_1":"Dhaka",
+     *  "address_line_2":"Dinajpur",
+     *  "country":"Bangladesh",
+     *  "city":"Dhaka",
+     *  "postcode":"Dinajpur",
+     *
+     *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "is_mobile_garage":true,
+     *  "wifi_available":true,
+     *  "labour_rate":500,
+     *  "average_time_slot":90
+     *
+     * }),
+     *
+     *   *  @OA\Property(property="service", type="string", format="array",example={
+     *{
+
+     *"automobile_category_id":1,
+     *"services":{
+     *{
+     *"id":1,
+     *"checked":true,
+     *  "sub_services":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
+     *},
+     *"automobile_makes":{
+     *{
+     *"id":1,
+     *"checked":true,
+     *  "models":{{"id":1,"checked":true},{"id":2,"checked":false}}
+     * }
+     *}
+     *
+
+     *}
+
+     * }),
+     *
+     *
+
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+    public function updateGarage(GarageUpdateRequest $request) {
+
+        try{
+
+     return  DB::transaction(function ()use (&$request) {
+        if(!$request->user()->hasPermissionTo('garage_update')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
+       $userQuery = User::where([
+        "id" => $request["id"]
+   ]);
+
+
+        $updatableData = $request->validated();
+
+
+        if(!empty($updatableData['user']['password'])) {
+            $updatableData['user']['password'] = Hash::make($updatableData['password']);
+        } else {
+            unset($updatableData['user']['password']);
+        }
+        $updatableData['user']['is_active'] = true;
+        $updatableData['user']['remember_token'] = Str::random(10);
+        $user  =  tap(User::where(["id" => $updatableData['user']["id"]]))->update(collect($updatableData['user'])->only([
+            'first_Name',
+            'last_Name',
+            'phone',
+            'image',
+            'address_line_1',
+            'address_line_2',
+            'country',
+            'city',
+            'postcode',
+            'email',
+            'password',
+
+        ])->toArray()
+        )
+            // ->with("somthing")
+
+            ->first();
+
+        $user->syncRoles(["garage_owner"]);
+
+
+
+  //  garage info ##############
+        // $updatableData['garage']['status'] = "pending";
+        $garage  =  tap(Garage::where([
+            "id" => $updatableData['garage']["id"],
+            "owner_id" => $user->id
+            ]))->update(collect($updatableData['garage'])->only([
+                "name",
+                "about",
+                "web_page",
+                "phone",
+                "email",
+                "additional_information",
+                "address_line_1",
+                "address_line_2",
+                "country",
+                "city",
+                "postcode",
+                "logo",
+                "status",
+                // "is_active",
+                "is_mobile_garage",
+                "wifi_available",
+                "labour_rate",
+                "average_time_slot",
+        ])->toArray()
+        )
+            // ->with("somthing")
+
+            ->first();
+
+  // end garage info ##############
+
+  GarageService::where([
+    "garage_id" => $garage->id
+  ])
+  ->delete();
+  GarageAutomobileMake::where([
+    "garage_id" => $garage->id
+    ])
+    ->delete();
+
+  // create services
+  $this->createGarageServices($updatableData['service'],$garage->id);
+
+
+        return response([
+            "user" => $user,
+            "garage" => $garage
+        ], 201);
+        });
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
 
     }
+
+
 
     /**
         *
@@ -249,11 +477,17 @@ class GaragesController extends Controller
                 ],401);
            }
 
-            $usersQuery = Garage::with("owner");
+            $garagesQuery = Garage::with("owner");
 
+
+            if(!$request->user()->hasRole('superadmin')) {
+                $garagesQuery =    $garagesQuery->where([
+                    "created_by" =>$request->user()->id
+                ]);
+            }
 
             if(!empty($request->search_key)) {
-                $usersQuery = $usersQuery->where(function($query) use ($request){
+                $garagesQuery = $garagesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
                     $query->where("name", "like", "%" . $term . "%");
                     $query->orWhere("phone", "like", "%" . $term . "%");
@@ -265,7 +499,7 @@ class GaragesController extends Controller
             }
 
             if(!empty($request->start_date) && !empty($request->end_date)) {
-                $usersQuery = $usersQuery->whereBetween('created_at', [
+                $garagesQuery = $garagesQuery->whereBetween('created_at', [
 
                     $request->start_date,
                     $request->end_date
@@ -273,8 +507,8 @@ class GaragesController extends Controller
 
             }
 
-            $users = $usersQuery->orderByDesc("id")->paginate($perPage);
-            return response()->json($users, 200);
+            $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($garages, 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500);

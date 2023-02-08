@@ -29,6 +29,7 @@ class Garage extends Model
         "labour_rate",
         "average_time_slot",
         "owner_id",
+        "created_by"
     ];
 
     public function owner(){

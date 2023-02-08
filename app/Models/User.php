@@ -30,6 +30,7 @@ class User extends Authenticatable
         'postcode',
         'email',
         'password',
+        "created_by",
          'is_active'
     ];
 

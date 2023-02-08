@@ -36,9 +36,9 @@ class CreateGaragesTable extends Migration
             $table->unsignedBigInteger("average_time_slot")->nullable();
             $table->unsignedBigInteger("owner_id");
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger("created_by")->nullable(true);
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->softDeletes();
-
-
             $table->timestamps();
         });
     }
