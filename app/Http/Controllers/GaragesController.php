@@ -318,6 +318,7 @@ class GaragesController extends Controller
             ],401);
        }
        $updatableData = $request->validated();
+    //    user email check
        $userPrev = User::where([
         "id" => $updatableData["user"]["id"]
    ])->first();
@@ -330,7 +331,21 @@ class GaragesController extends Controller
               ],422);
         }
     }
+    // user email check
+     // garage email check
+    $garagePrev = Garage::where([
+        "id" => $updatableData["garage"]["id"]
+   ])->first();
 
+   if($garagePrev->email !== $updatableData['garage']['email']) {
+        if(Garage::where(["email" => $updatableData['garage']['email']])->exists()) {
+              return response()->json([
+                 "message" => "The given data was invalid.",
+                 "errors" => ["garage.password"=>["email already taken"]]
+              ],422);
+        }
+    }
+    // garage email check
 
 
 

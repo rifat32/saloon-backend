@@ -43,7 +43,7 @@ class GarageUpdateRequest extends FormRequest
             'garage.about' => 'nullable|string',
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
-            'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
+            'garage.email' => 'required|string|email|indisposable|max:255',
             'garage.additional_information' => 'nullable|string',
 
             'garage.country' => 'required|string',
