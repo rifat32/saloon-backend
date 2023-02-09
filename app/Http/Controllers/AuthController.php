@@ -347,7 +347,7 @@ class AuthController extends Controller
                 // end garage info ##############
 
            // create services
-                $this->createGarageServices($insertableData['service'],$garage->id);
+                $this->createGarageServices($insertableData['service'],$garage->id,true);
 
 // verify email starts
                 $email_token = Str::random(30);

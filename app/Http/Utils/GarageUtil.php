@@ -16,7 +16,7 @@ use Exception;
 trait GarageUtil
 {
     // this function do all the task and returns transaction id or -1
-    public function createGarageServices($service_data, $garage_id)
+    public function createGarageServices($service_data, $garage_id,$auto_model=false)
     {
         foreach ($service_data as $services) {
             $automobile_category_db = AutomobileCategory::where([
@@ -84,22 +84,39 @@ trait GarageUtil
                         "automobile_make_id" => $automobile_make_db->id,
                     ]);
 
-                    foreach ($automobile_make["models"] as $model) {
-                        if ($model["checked"]) {
-                            $automobile_model_db = AutomobileModel::where([
-                                "id" => $model["id"],
-                                "automobile_make_id" => $automobile_make_db->id
-                            ])
-                                ->first();
-                            if (!$automobile_model_db) {
-                                throw new Exception("please provile valid automobile model id");
+                    if($auto_model){
+                        foreach (AutomobileModel::where([
+                          "automobile_make_id" => $automobile_make_db->id
+                        ])->get()
+                         as
+                        $model) {
+
+
+                                $garage_model =  GarageAutomobileModel::create([
+                                    "garage_automobile_make_id" => $garage_automobile_make->id,
+                                    "automobile_model_id" => $model->id,
+                                ]);
+
+                        }
+                    }     else {
+                        foreach ($automobile_make["models"] as $model) {
+                            if ($model["checked"]) {
+                                $automobile_model_db = AutomobileModel::where([
+                                    "id" => $model["id"],
+                                    "automobile_make_id" => $automobile_make_db->id
+                                ])
+                                    ->first();
+                                if (!$automobile_model_db) {
+                                    throw new Exception("please provile valid automobile model id");
+                                }
+                                $garage_model =  GarageAutomobileModel::create([
+                                    "garage_automobile_make_id" => $garage_automobile_make->id,
+                                    "automobile_model_id" => $automobile_model_db->id,
+                                ]);
                             }
-                            $garage_model =  GarageAutomobileModel::create([
-                                "garage_automobile_make_id" => $garage_automobile_make->id,
-                                "automobile_model_id" => $automobile_model_db->id,
-                            ]);
                         }
                     }
+
                 }
             }
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@@ makes ends @@@@@@@@@@@@@@@@@@@@@@@@@@@@
