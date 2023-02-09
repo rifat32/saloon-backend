@@ -3055,7 +3055,7 @@
                         "in": "path",
                         "description": "id",
                         "required": true,
-                        "example": "6"
+                        "example": "1"
                     }
                 ],
                 "responses": {

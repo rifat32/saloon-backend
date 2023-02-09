@@ -28,7 +28,7 @@ class GarageUpdateRequest extends FormRequest
             'user.id' => 'required|numeric',
             'user.first_Name' => 'required|string|max:255',
             'user.last_Name' => 'required|string|max:255',
-            'user.email' => 'required|string|email|indisposable|max:255|unique:users,email',
+            'user.email' => 'required|string|email|indisposable|max:255',
             'user.password' => 'nullable|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable',

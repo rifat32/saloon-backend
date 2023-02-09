@@ -317,12 +317,22 @@ class GaragesController extends Controller
                "message" => "You can not perform this action"
             ],401);
        }
-       $userQuery = User::where([
-        "id" => $request["id"]
-   ]);
+       $updatableData = $request->validated();
+       $userPrev = User::where([
+        "id" => $updatableData["user"]["id"]
+   ])->first();
+
+   if($userPrev->email !== $updatableData['user']['email']) {
+        if(User::where(["email" => $updatableData['user']['email']])->exists()) {
+              return response()->json([
+                 "message" => "The given data was invalid.",
+                 "errors" => ["user.password"=>["email already taken"]]
+              ],422);
+        }
+    }
 
 
-        $updatableData = $request->validated();
+
 
 
         if(!empty($updatableData['user']['password'])) {
