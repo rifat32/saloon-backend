@@ -317,12 +317,24 @@ class GaragesController extends Controller
                "message" => "You can not perform this action"
             ],401);
        }
+
+
        $updatableData = $request->validated();
     //    user email check
        $userPrev = User::where([
         "id" => $updatableData["user"]["id"]
-   ])->first();
-
+       ]);
+       if(!$request->user()->hasRole('superadmin')) {
+        $userPrev =    $userPrev->where([
+            "created_by" =>$request->user()->id
+        ]);
+    }
+    $userPrev = $userPrev->first();
+     if(!$userPrev) {
+            return response()->json([
+               "message" => "no user found with this id"
+            ],404);
+     }
    if($userPrev->email !== $updatableData['user']['email']) {
         if(User::where(["email" => $updatableData['user']['email']])->exists()) {
               return response()->json([
@@ -332,10 +344,21 @@ class GaragesController extends Controller
         }
     }
     // user email check
-     // garage email check
-    $garagePrev = Garage::where([
+     // garage email check + authorization check
+     $garagePrev = Garage::where([
         "id" => $updatableData["garage"]["id"]
-   ])->first();
+     ]);
+     if(!$request->user()->hasRole('superadmin')) {
+        $garagePrev =    $garagePrev->where([
+            "created_by" =>$request->user()->id
+        ]);
+    }
+    $garagePrev = $garagePrev->first();
+    if(!$garagePrev) {
+        return response()->json([
+           "message" => "no garage found with this id"
+        ],404);
+      }
 
    if($garagePrev->email !== $updatableData['garage']['email']) {
         if(Garage::where(["email" => $updatableData['garage']['email']])->exists()) {
@@ -345,7 +368,7 @@ class GaragesController extends Controller
               ],422);
         }
     }
-    // garage email check
+    // garage email check + authorization check
 
 
 
@@ -357,7 +380,9 @@ class GaragesController extends Controller
         }
         $updatableData['user']['is_active'] = true;
         $updatableData['user']['remember_token'] = Str::random(10);
-        $user  =  tap(User::where(["id" => $updatableData['user']["id"]]))->update(collect($updatableData['user'])->only([
+        $user  =  tap(User::where([
+            "id" => $updatableData['user']["id"]
+            ]))->update(collect($updatableData['user'])->only([
             'first_Name',
             'last_Name',
             'phone',
@@ -382,9 +407,9 @@ class GaragesController extends Controller
 
   //  garage info ##############
         // $updatableData['garage']['status'] = "pending";
+
         $garage  =  tap(Garage::where([
-            "id" => $updatableData['garage']["id"],
-            "owner_id" => $user->id
+            "id" => $updatableData['garage']["id"]
             ]))->update(collect($updatableData['garage'])->only([
                 "name",
                 "about",
