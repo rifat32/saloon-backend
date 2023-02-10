@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SubService extends Model
+class FuelStation extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
+
+
     protected $fillable = [
         "name",
+        "address",
+        "opening_time",
+        "closing_time",
         "description",
-
-        "service_id"
-        // "is_active",
-
+        "is_active"
     ];
-    public function service(){
-        return $this->belongsTo(Service::class,'service_id', 'id');
-    }
+
 }

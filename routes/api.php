@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
+use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
@@ -58,12 +59,18 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+// ********************************************
+// user management section --user
+// ********************************************
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
 Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);
 
-
+// ********************************************
+// user management section --role
+// ********************************************
 Route::get('/v1.0/initial-role-permissions', [RolesController::class, "getInitialRolePermissions"]);
 Route::post('/v1.0/roles', [RolesController::class, "createRole"]);
 Route::put('/v1.0/roles', [RolesController::class, "updateRole"]);
@@ -71,7 +78,9 @@ Route::get('/v1.0/roles/{perPage}', [RolesController::class, "getRoles"]);
 Route::get('/v1.0/roles/get/all', [RolesController::class, "getRolesAll"]);
 Route::get('/v1.0/roles/get-by-id/{id}', [RolesController::class, "getRoleById"]);
 Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
-
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end user management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // garage management section
@@ -83,12 +92,20 @@ Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageByI
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end garage management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // automobile management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+// ********************************************
+// automobile management section --category
+// ********************************************
 Route::post('/v1.0/automobile-categories', [AutomobilesController::class, "createAutomobileCategory"]);
 Route::put('/v1.0/automobile-categories', [AutomobilesController::class, "updateAutomobileCategory"]);
 Route::get('/v1.0/automobile-categories/{perPage}', [AutomobilesController::class, "getAutomobileCategories"]);
@@ -97,20 +114,21 @@ Route::get('/v1.0/automobile-categories/single/get/{id}', [AutomobilesController
 Route::delete('/v1.0/automobile-categories/{id}', [AutomobilesController::class, "deleteAutomobileCategoryById"]);
 
 
-
+// ********************************************
+// automobile management section --make
+// ********************************************
 Route::post('/v1.0/automobile-makes', [AutomobilesController::class, "createAutomobileMake"]);
 Route::put('/v1.0/automobile-makes', [AutomobilesController::class, "updateAutomobileMake"]);
 Route::get('/v1.0/automobile-makes/{categoryId}/{perPage}', [AutomobilesController::class, "getAutomobileMakes"]);
-
-
-
 Route::get('/v1.0/automobile-makes/single/get/{id}', [AutomobilesController::class, "getAutomobileMakeById"]);
 Route::delete('/v1.0/automobile-makes/{id}', [AutomobilesController::class, "deleteAutomobileMakeById"]);
 
 
 
 
-
+// ********************************************
+// automobile management section --model
+// ********************************************
 Route::post('/v1.0/automobile-models', [AutomobilesController::class, "createAutomobileModel"]);
 Route::put('/v1.0/automobile-models', [AutomobilesController::class, "updateAutomobileModel"]);
 Route::get('/v1.0/automobile-models/{makeId}/{perPage}', [AutomobilesController::class, "getAutomobileModel"]);
@@ -120,7 +138,9 @@ Route::delete('/v1.0/automobile-models/{id}', [AutomobilesController::class, "de
 
 
 
-
+// ********************************************
+// automobile management section --model variant
+// ********************************************
 Route::post('/v1.0/automobile-model-variants', [AutomobilesController::class, "createAutomobileModelVariant"]);
 Route::put('/v1.0/automobile-model-variants', [AutomobilesController::class, "updateAutomobileModelVariant"]);
 Route::get('/v1.0/automobile-model-variants/{modelId}/{perPage}', [AutomobilesController::class, "getAutomobileModelVariant"]);
@@ -128,7 +148,9 @@ Route::get('/v1.0/automobile-model-variants/single/get/{id}', [AutomobilesContro
 Route::delete('/v1.0/automobile-model-variants/{id}', [AutomobilesController::class, "deleteAutomobileModelVariantById"]);
 
 
-
+// ********************************************
+// automobile management section --fuel types
+// ********************************************
 Route::post('/v1.0/automobile-fuel-types', [AutomobilesController::class, "createAutomobileFuelType"]);
 Route::put('/v1.0/automobile-fuel-types', [AutomobilesController::class, "updateAutomobileFuelType"]);
 Route::get('/v1.0/automobile-fuel-types/{modelVariantId}/{perPage}', [AutomobilesController::class, "getAutomobileFuelType"]);
@@ -145,14 +167,19 @@ Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class,
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // service management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+// ********************************************
+// service management section --service
+// ********************************************
 Route::post('/v1.0/services', [ServiceController::class, "createService"]);
 Route::put('/v1.0/services', [ServiceController::class, "updateService"]);
 Route::get('/v1.0/services/{perPage}', [ServiceController::class, "getServices"]);
-
 Route::delete('/v1.0/services/{id}', [ServiceController::class, "deleteServiceById"]);
 Route::get('/v1.0/services/single/get/{id}', [ServiceController::class, "getServiceById"]);
 
-
+// ********************************************
+// service management section --sub service
+// ********************************************
 Route::post('/v1.0/sub-services', [ServiceController::class, "createSubService"]);
 Route::put('/v1.0/sub-services', [ServiceController::class, "updateSubService"]);
 Route::get('/v1.0/sub-services/{serviceId}/{perPage}', [ServiceController::class, "getSubServicesByServiceId"]);
@@ -160,8 +187,18 @@ Route::get('/v1.0/sub-services-all/{serviceId}', [ServiceController::class, "get
 Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubServiceById"]);
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// service management section
+// end service management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// fuel station management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStation"]);
+Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
+Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
+Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
 
 
 });

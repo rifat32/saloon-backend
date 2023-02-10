@@ -31,6 +31,11 @@ return [
        "service_view",
        "service_delete",
 
+       "fuel_station_create",
+       "fuel_station_update",
+       "fuel_station_view",
+       "fuel_station_delete",
+
 
             ],
         ],
@@ -41,6 +46,12 @@ return [
                 "garage_update",
                 "garage_view",
                 "garage_delete",
+
+
+                "fuel_station_create",
+                "fuel_station_update",
+                "fuel_station_view",
+                "fuel_station_delete",
             ],
         ],
 
@@ -81,6 +92,11 @@ return [
        "service_update",
        "service_view",
        "service_delete",
+
+       "fuel_station_create",
+       "fuel_station_update",
+       "fuel_station_view",
+       "fuel_station_delete",
 
     ],
 
