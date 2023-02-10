@@ -31,8 +31,8 @@ class FuelStationController extends Controller
      *            required={"name","address","opening_time","closing_time","description"},
      *    @OA\Property(property="name", type="string", format="string",example="car"),
      *    @OA\Property(property="address", type="string", format="string",example="car"),
-     *    @OA\Property(property="opening_time", type="string", format="string",example="2019-06-29"),
-     * *    @OA\Property(property="closing_time", type="string", format="string",example="2019-06-29"),
+     *    @OA\Property(property="opening_time", type="string", format="string",example="10am"),
+     * *    @OA\Property(property="closing_time", type="string", format="string",example="10pm"),
      * *    @OA\Property(property="description", type="string", format="number",example="description"),
      *
      *         ),
@@ -111,8 +111,8 @@ class FuelStationController extends Controller
      *    @OA\Property(property="id", type="number", format="number", example="1"),
      *    @OA\Property(property="name", type="string", format="string",example="car"),
      *    @OA\Property(property="address", type="string", format="string",example="car"),
-     *    @OA\Property(property="opening_time", type="string", format="string",example="2019-06-29"),
-     * *    @OA\Property(property="closing_time", type="string", format="string",example="2019-06-29"),
+     *    @OA\Property(property="opening_time", type="string", format="string",example="10am"),
+     * *    @OA\Property(property="closing_time", type="string", format="string",example="10pm"),
      * *    @OA\Property(property="description", type="string", format="number",example="description"),
      *
      *         ),
