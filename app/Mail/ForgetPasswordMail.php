@@ -33,6 +33,6 @@ class ForgetPasswordMail extends Mailable
     public function build()
     {
 
-        return $this->view('email.forget_password',["token" => $this->token,"contactEmail"=>"rest@gmail.com"]);
+        return $this->view('email.forget_password',["token" => $this->token,"contactEmail"=>"rest@gmail.com","user"=>$this->user]);
     }
 }
