@@ -372,9 +372,8 @@ class GaragesController extends Controller
 
 
 
-
         if(!empty($updatableData['user']['password'])) {
-            $updatableData['user']['password'] = Hash::make($updatableData['password']);
+            $updatableData['user']['password'] = Hash::make($updatableData['user']['password']);
         } else {
             unset($updatableData['user']['password']);
         }

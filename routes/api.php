@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
+Route::post('/forgetpassword', [AuthController::class, "storeToken"]);
+Route::patch('/forgetpassword/reset/{token}', [AuthController::class, "changePasswordByToken"]);
 
 
 Route::post('/v1.0/auth/user-register-with-garage', [AuthController::class, "registerUserWithGarageClient"]);

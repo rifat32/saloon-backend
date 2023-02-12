@@ -29,9 +29,9 @@ class AuthRegisterRequest extends FormRequest
             'email' => 'required|string|email|indisposable|max:255|unique:users',
             'password' => 'required|confirmed|string|min:6',
             'phone' => 'required|string',
-            'image' => 'nullable',
-            'address_line_1' => 'nullable',
-            'address_line_2' => 'nullable',
+            'image' => 'nullable|string',
+            'address_line_1' => 'require|string',
+            'address_line_2' => 'nullable|string',
             'country' => 'required|string',
             'city' => 'required|string',
             'postcode' => 'required|string'

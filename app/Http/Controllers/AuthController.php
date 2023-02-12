@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
+use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Mail\ForgetPasswordMail;
 use App\Mail\VerifyMail;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileMake;
@@ -46,18 +49,18 @@ class AuthController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode"},
-     *             @OA\Property(property="first_Name", type="string", format="string",example="How was this?"),
-     *            @OA\Property(property="last_Name", type="string", format="string",example="How was this?"),
-     *            @OA\Property(property="email", type="string", format="string",example="How was this?"),
+     *             @OA\Property(property="first_Name", type="string", format="string",example="Rifat"),
+     *            @OA\Property(property="last_Name", type="string", format="string",example="Al"),
+     *            @OA\Property(property="email", type="string", format="string",example="rifat@g.c"),
 
-     * *  @OA\Property(property="password", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="phone", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="address_line_1", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="address_line_2", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="country", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="city", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="postcode", type="boolean", format="boolean",example="1"),
+     * *  @OA\Property(property="password", type="boolean", format="boolean",example="12345678"),
+     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="12345678"),
+     *  * *  @OA\Property(property="phone", type="string", format="string",example="01771034383"),
+     *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="dhaka"),
+     *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="dinajpur"),
+     *  * *  @OA\Property(property="country", type="string", format="string",example="bangladesh"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="dhaka"),
+     *  * *  @OA\Property(property="postcode", type="string", format="string",example="1207"),
      *
      *         ),
      *      ),
@@ -103,16 +106,12 @@ class AuthController extends Controller
             $insertableData['password'] = Hash::make($request['password']);
             $insertableData['remember_token'] = Str::random(10);
             $user =  User::create($insertableData);
-            // $user->assignRole("system user");
+             $user->assignRole("customer");
 
             $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
             $user->roles = $user->roles->pluck('name');
-            $user->permissions  = $user->getAllPermissions()->pluck('name');
-            // $data["user"] = $user;
-            // $data["permissions"]  = $user->getAllPermissions()->pluck('name');
-            // $data["roles"] = $user->roles->pluck('name');
-            // $data["token"] = $token;
+            Mail::to($user->email)->send(new VerifyMail($user));
             return response($user, 201);
         } catch (Exception $e) {
 
@@ -203,6 +202,186 @@ class AuthController extends Controller
             return $this->sendError($e, 500);
         }
     }
+
+   /**
+        *
+     * @OA\Post(
+     *      path="/forgetpassword",
+     *      operationId="storeToken",
+     *      tags={"auth"},
+
+     *      summary="This method is to store token",
+     *      description="This method is to store token",
+
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"email"},
+     *
+     *             @OA\Property(property="email", type="string", format="string",* example="test@g.c"),
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+    public function storeToken(ForgetPasswordRequest $request) {
+
+        try {
+            return DB::transaction(function () use (&$request) {
+                $insertableData = $request->validated();
+            $query = User::where(["email" => $insertableData["email"]]);
+
+            if (!$query->exists()) {
+                return response()->json(["message" => "no user found"], 404);
+            }
+
+            $token = Str::random(30);
+
+            $query->update([
+                "resetPasswordToken" => $token,
+                "resetPasswordExpires" => Carbon::now()->subDays(-1)
+            ]);
+            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($token));
+            return response()->json([
+                "message" => "please check email"
+            ]);
+            });
+
+
+
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+
+    }
+
+
+/**
+        *
+     * @OA\Patch(
+     *      path="/forgetpassword/reset/{token}",
+     *      operationId="changePasswordByToken",
+     *      tags={"auth"},
+     *  @OA\Parameter(
+* name="token",
+* in="path",
+* description="token",
+* required=true,
+* example="1"
+* ),
+     *      summary="This method is to change password",
+     *      description="This method is to change password",
+
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"password"},
+     *
+     *     @OA\Property(property="password", type="string", format="string",* example="aaaaaaaa"),
+
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+
+
+
+
+    public function changePasswordByToken($token, ChangePasswordRequest $request)
+    {
+        try {
+            return DB::transaction(function () use (&$request,&$token) {
+                $insertableData = $request->validated();
+                $user = User::where([
+                    "resetPasswordToken" => $token,
+                ])
+                    ->where("resetPasswordExpires", ">", now())
+                    ->first();
+                if (!$user) {
+                    return response()->json([
+                        "message" => "Invalid Token Or Token Expired"
+                    ], 400);
+                }
+
+                $password = Hash::make($insertableData["password"]);
+                $user->update([
+                    "password" => $password
+                ]);
+                return response()->json([
+                    "message" => "password changed"
+                ], 200);
+            });
+
+
+
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+
+    }
+
+
 
     /**
      *

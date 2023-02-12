@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class VerifyMail extends Mailable
+class ForgetPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -16,10 +16,11 @@ class VerifyMail extends Mailable
      *
      * @return void
      */
-    public $user;
-    public function __construct($user)
+    private $token;
+
+    public function __construct($token = null)
     {
-        $this->user = $user;
+        $this->token = $token;
     }
 
     /**
@@ -29,6 +30,7 @@ class VerifyMail extends Mailable
      */
     public function build()
     {
-        return $this->view('email.verify_mail',["contactEmail"=>"rest@gmail.com"]);
+
+        return $this->view('email.forget_password',["token" => $this->token,"contactEmail"=>"rest@gmail.com"]);
     }
 }
