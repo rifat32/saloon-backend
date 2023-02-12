@@ -25,12 +25,13 @@ class CreateUsersTable extends Migration
             $table->string("country")->nullable();
             $table->string("city")->nullable();
             $table->string("postcode")->nullable();
-
             $table->string('email')->unique();
             $table->string('email_verify_token')->nullable();
             $table->string('email_verify_token_expires')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('resetPasswordToken')->nullable();
+            $table->string('resetPasswordExpires')->nullable();
             $table->string('is_active')->default(false);
             $table->unsignedBigInteger("created_by")->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
