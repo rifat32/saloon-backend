@@ -117,7 +117,7 @@ class AuthController extends Controller
             $user->email_verify_token_expires = Carbon::now()->subDays(-1);
             Mail::to($user->email)->send(new VerifyMail($user));
 // verify email ends
-          
+
             return response($user, 201);
         } catch (Exception $e) {
 
@@ -264,8 +264,8 @@ class AuthController extends Controller
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
             $query = User::where(["email" => $insertableData["email"]]);
-
-            if (!$query->exists()) {
+            $user = $query->first();
+            if (!$user) {
                 return response()->json(["message" => "no user found"], 404);
             }
 
@@ -275,7 +275,7 @@ class AuthController extends Controller
                 "resetPasswordToken" => $token,
                 "resetPasswordExpires" => Carbon::now()->subDays(-1)
             ]);
-            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($token));
+            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($token,$user));
             return response()->json([
                 "message" => "please check email"
             ]);

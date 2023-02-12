@@ -30,7 +30,7 @@
         </style>
     </head>
     <body>
-        <h1>Dear {{ $name }},</h1>
+        <h1>Dear {{ $user->name }},</h1>
         <p>We received a request to reset the password for your account. If you made this request, please follow the instructions below to reset your password.</p>
         <p>Please click the link below to reset your password:</p>
         <p><a href="http://localhost:3000/fotget-password/{{$token}}">http://localhost:3000/fotget-password/{{$token}}</a></p>
