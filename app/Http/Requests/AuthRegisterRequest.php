@@ -30,7 +30,7 @@ class AuthRegisterRequest extends FormRequest
             'password' => 'required|confirmed|string|min:6',
             'phone' => 'required|string',
             'image' => 'nullable|string',
-            'address_line_1' => 'require|string',
+            'address_line_1' => 'required|string',
             'address_line_2' => 'nullable|string',
             'country' => 'required|string',
             'city' => 'required|string',
