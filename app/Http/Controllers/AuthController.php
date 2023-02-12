@@ -53,7 +53,7 @@ class AuthController extends Controller
      *            @OA\Property(property="last_Name", type="string", format="string",example="Al"),
      *            @OA\Property(property="email", type="string", format="string",example="rifat@g.c"),
 
-     * *  @OA\Property(property="password", type="boolean", format="boolean",example="12345678"),
+     * *  @OA\Property(property="password", type="string", format="string",example="12345678"),
      *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="12345678"),
      *  * *  @OA\Property(property="phone", type="string", format="string",example="01771034383"),
      *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="dhaka"),
@@ -111,7 +111,13 @@ class AuthController extends Controller
             $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
             $user->roles = $user->roles->pluck('name');
+            // verify email starts
+            $email_token = Str::random(30);
+            $user->email_verify_token = $email_token;
+            $user->email_verify_token_expires = Carbon::now()->subDays(-1);
             Mail::to($user->email)->send(new VerifyMail($user));
+// verify email ends
+          
             return response($user, 201);
         } catch (Exception $e) {
 
