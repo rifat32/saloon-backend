@@ -49,57 +49,57 @@
                                     "first_Name": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "How was this?"
+                                        "example": "Rifat"
                                     },
                                     "last_Name": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "How was this?"
+                                        "example": "Al"
                                     },
                                     "email": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "How was this?"
+                                        "example": "rifat@g.c"
                                     },
                                     "password": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "12345678"
                                     },
                                     "password_confirmation": {
                                         "type": "boolean",
                                         "format": "boolean",
-                                        "example": "1"
+                                        "example": "12345678"
                                     },
                                     "phone": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "01771034383"
                                     },
                                     "address_line_1": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dhaka"
                                     },
                                     "address_line_2": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dinajpur"
                                     },
                                     "country": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "bangladesh"
                                     },
                                     "city": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dhaka"
                                     },
                                     "postcode": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
                                     }
                                 },
                                 "type": "object"
@@ -253,6 +253,143 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/forgetpassword": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to store token",
+                "description": "This method is to store token",
+                "operationId": "storeToken",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "test@g.c"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/forgetpassword/reset/{token}": {
+            "patch": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to change password",
+                "description": "This method is to change password",
+                "operationId": "changePasswordByToken",
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "description": "token",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "aaaaaaaa"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
             }
         },
         "/v1.0/auth/user-register-with-garage": {
@@ -2639,6 +2776,411 @@
                 ]
             }
         },
+        "/v1.0/email-templates": {
+            "put": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to update email template",
+                "description": "This method is to update email template",
+                "operationId": "updateEmailTemplate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "template",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "template": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "html template goes here"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to store email template",
+                "description": "This method is to store email template",
+                "operationId": "createEmailTemplate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type",
+                                    "template",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "email_verification_mail"
+                                    },
+                                    "template": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "html template goes here"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/email-templates/{perPage}": {
+            "get": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to get email templates ",
+                "description": "This method is to get email templates",
+                "operationId": "getEmailTemplates",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/email-template-types": {
+            "get": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to get email template types ",
+                "description": "This method is to get email template types",
+                "operationId": "getEmailTemplateTypes",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/email-templates/{id}": {
+            "delete": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to delete email template by id",
+                "description": "This method is to delete email template by id",
+                "operationId": "deleteEmailTemplateById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/fuel-station": {
             "put": {
                 "tags": [
@@ -2679,12 +3221,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "2019-06-29"
+                                        "example": "10am"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "2019-06-29"
+                                        "example": "10pm"
                                     },
                                     "description": {
                                         "type": "string",
@@ -2786,12 +3328,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "2019-06-29"
+                                        "example": "10am"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "2019-06-29"
+                                        "example": "10pm"
                                     },
                                     "description": {
                                         "type": "string",

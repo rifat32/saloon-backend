@@ -36,6 +36,11 @@ return [
        "fuel_station_view",
        "fuel_station_delete",
 
+       "template_create",
+       "template_update",
+       "template_view",
+       "template_delete",
+
 
             ],
         ],
@@ -97,6 +102,12 @@ return [
        "fuel_station_update",
        "fuel_station_view",
        "fuel_station_delete",
+
+
+       "template_create",
+       "template_update",
+       "template_view",
+       "template_delete",
 
     ],
 

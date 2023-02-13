@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SetUpController;
 use App\Http\Controllers\SwaggerLoginController;
+use App\Models\EmailTemplate;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,3 +50,14 @@ Route::get("/activate/{token}",function(Request $request,$token) {
     $user->save();
     return view("welcome-message");
 });
+
+Route::get("/test",function() {
+    $html_content = EmailTemplate::where([
+        "type" => "email_verification_mail",
+        "is_active" => 1
+
+    ])->first()->template;
+    return view('email.dynamic_mail',["contactEmail"=>"rest@gmail.com","user"=>[],"html_content"=>$html_content]);
+});
+
+

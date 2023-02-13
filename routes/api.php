@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
+use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\RolesController;
@@ -80,9 +81,9 @@ Route::get('/v1.0/roles/{perPage}', [RolesController::class, "getRoles"]);
 Route::get('/v1.0/roles/get/all', [RolesController::class, "getRolesAll"]);
 Route::get('/v1.0/roles/get-by-id/{id}', [RolesController::class, "getRoleById"]);
 Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end user management section
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // garage management section
@@ -94,9 +95,9 @@ Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageByI
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage management section
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -161,9 +162,9 @@ Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class,
 
 
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end automobile management section
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -188,9 +189,9 @@ Route::get('/v1.0/sub-services/{serviceId}/{perPage}', [ServiceController::class
 Route::get('/v1.0/sub-services-all/{serviceId}', [ServiceController::class, "getAllSubServicesByServiceId"]);
 Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubServiceById"]);
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end service management section
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -201,7 +202,23 @@ Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStat
 Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
 Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// fuel station management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// template management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/email-templates', [EmailTemplateController::class, "createEmailTemplate"]);
+Route::put('/v1.0/email-templates', [EmailTemplateController::class, "updateEmailTemplate"]);
+Route::get('/v1.0/email-templates/{perPage}', [EmailTemplateController::class, "getEmailTemplates"]);
+Route::get('/v1.0/email-template-types', [EmailTemplateController::class, "getEmailTemplateTypes"]);
+ Route::delete('/v1.0/email-templates/{id}', [EmailTemplateController::class, "deleteEmailTemplateById"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// template management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 });
 
