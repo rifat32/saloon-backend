@@ -35,7 +35,7 @@ class VerifyMail extends Mailable
             "type" => "email_verification_mail",
             "is_active" => 1
 
-        ])->first()->template();
+        ])->first()->template;
 
 
         $html_content =  str_replace("{{dynamic-username}}", $this->user->first_Name, $html_content );
