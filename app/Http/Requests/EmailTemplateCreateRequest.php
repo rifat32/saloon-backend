@@ -24,6 +24,7 @@ class EmailTemplateCreateRequest extends FormRequest
     public function rules()
     {
         return [
+            "name"=>"nullable|string",
             "type" => "required|string",
             "template" => "required|string",
             "is_active" => "required|boolean",

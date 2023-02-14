@@ -33,6 +33,7 @@ class EmailTemplateController extends Controller
      *         description="use {{dynamic-username}} {{dynamic-verify-link}} in the template.",
      *         @OA\JsonContent(
      *            required={"type","template","is_active"},
+     * *    @OA\Property(property="name", type="string", format="string",example="emal v1"),
      *    @OA\Property(property="type", type="string", format="string",example="email_verification_mail"),
      *    @OA\Property(property="template", type="string", format="string",example="html template goes here"),
      *    @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
@@ -124,6 +125,7 @@ class EmailTemplateController extends Controller
      *         @OA\JsonContent(
      *            required={"id","template","is_active"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
+     *   * *    @OA\Property(property="name", type="string", format="string",example="emal v1"),
      *    @OA\Property(property="template", type="string", format="string",example="html template goes here"),
      *    @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
      *
@@ -177,6 +179,7 @@ class EmailTemplateController extends Controller
 
                 $template  =  tap(EmailTemplate::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
+                        "name",
                         "template",
                         "is_active",
                         "opening_time",

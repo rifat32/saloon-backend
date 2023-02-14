@@ -25,6 +25,7 @@ class EmailTemplateUpdateRequest extends FormRequest
     {
         return [
             "id" => "required|numeric",
+            "name"=>"nullable|string",
             "template" => "required|string",
             "is_active" => "required|boolean",
         ];
