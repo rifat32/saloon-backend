@@ -27,7 +27,7 @@ class FuelStationCreateRequest extends FormRequest
         return [
             "name" => "required|string",
             "address" => "required|string",
-            "opening_time"=> ['required','date_format:H:i:s?', // Ensure that the input is in the H:i:s format
+            "opening_time"=> ['required','date_format:H:i:s', // Ensure that the input is in the H:i:s format
             function ($attribute, $value, $fail) {
                 $timeParts = explode(':', $value);
                 $hour = $timeParts[0];
