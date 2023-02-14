@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "http://127.0.0.1:8000/api",
+            "url": "https://mughalsignandprint.co.uk/garage-management/api",
             "description": "Demo API Server"
         }
     ],
@@ -447,8 +447,7 @@
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500,
-                                            "average_time_slot": 90
+                                            "labour_rate": 500
                                         }
                                     },
                                     "service": {
@@ -2800,6 +2799,11 @@
                                         "format": "number",
                                         "example": "1"
                                     },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "emal v1"
+                                    },
                                     "template": {
                                         "type": "string",
                                         "format": "string",
@@ -2880,6 +2884,7 @@
                 "description": "This method is to store email template",
                 "operationId": "createEmailTemplate",
                 "requestBody": {
+                    "description": "use {{dynamic-username}} {{dynamic-verify-link}} in the template.",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -2890,6 +2895,11 @@
                                     "is_active"
                                 ],
                                 "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "emal v1"
+                                    },
                                     "type": {
                                         "type": "string",
                                         "format": "string",
@@ -2981,6 +2991,80 @@
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/email-templates/single/{id}": {
+            "get": {
+                "tags": [
+                    "template_management.email"
+                ],
+                "summary": "This method is to get email template by id",
+                "description": "This method is to get email template by id",
+                "operationId": "getEmailTemplateById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
                         "required": true,
                         "example": "6"
                     }
@@ -3221,12 +3305,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10am"
+                                        "example": "10:10:10"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10pm"
+                                        "example": "10:10:10"
                                     },
                                     "description": {
                                         "type": "string",
@@ -3328,12 +3412,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10am"
+                                        "example": "10:10:10"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10pm"
+                                        "example": "10:10:10"
                                     },
                                     "description": {
                                         "type": "string",
@@ -3551,6 +3635,133 @@
                 ]
             }
         },
+        "/v1.0/garage-times": {
+            "patch": {
+                "tags": [
+                    "garage_times_management"
+                ],
+                "summary": "This method is to update garage times",
+                "description": "This method is to update garage times",
+                "operationId": "updateGarageTimes",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "garage_id",
+                                    "times"
+                                ],
+                                "properties": {
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "times": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            },
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:10",
+                                                "closing_time": "10:10:10"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/auth/register-with-garage": {
             "post": {
                 "tags": [
@@ -3606,8 +3817,7 @@
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500,
-                                            "average_time_slot": 90
+                                            "labour_rate": 500
                                         }
                                     },
                                     "service": {
@@ -3771,8 +3981,7 @@
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500,
-                                            "average_time_slot": 90
+                                            "labour_rate": 500
                                         }
                                     },
                                     "service": {
@@ -5943,6 +6152,80 @@
                         "description": "id",
                         "required": true,
                         "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/garages/{perPage}": {
+            "get": {
+                "tags": [
+                    "client.basics"
+                ],
+                "summary": "This method is to get garages by client",
+                "description": "This method is to get garages by client",
+                "operationId": "getGaragesClient",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
                     }
                 ],
                 "responses": {

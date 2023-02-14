@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class FuelStationUpdateRequest extends FormRequest
@@ -27,8 +28,10 @@ class FuelStationUpdateRequest extends FormRequest
             'id' => 'required|numeric',
             "name" => "required|string",
             "address" => "required|string",
-            "opening_time"=>"required|string",
-            "closing_time" => "required|string",
+            "opening_time"=>['required','date_format:H:i:s?', new TimeValidation
+        ],
+            "closing_time" => ['required','date_format:H:i:s?', new TimeValidation
+        ],
             "description" => "nullable|string",
         ];
     }

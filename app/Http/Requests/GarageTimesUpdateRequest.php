@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FuelStationCreateRequest extends FormRequest
+class GarageTimesUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +25,14 @@ class FuelStationCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => "required|string",
-            "address" => "required|string",
-            "opening_time"=> ['required','date_format:H:i:s?', new TimeValidation
-        ],
-            "closing_time" => ['required','date_format:H:i:s?', new TimeValidation
+            'garage_id' => 'required|numeric',
+             "times" => "array",
+             "times.*.day" => ["numeric",],
+             "times.*.opening_time" => ['required','date_format:H:i:s?', new TimeValidation
             ],
-            "description" => "nullable|string",
+             "times.*.closing_time" => ['required','date_format:H:i:s?', new TimeValidation
+            ],
+
         ];
     }
 }

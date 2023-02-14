@@ -20,7 +20,6 @@ class CreateGarageTimesTable extends Migration
             $table->time("closing_time");
             $table->unsignedBigInteger("garage_id");
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
-            $table->boolean("is_active")->default(1);
             $table->timestamps();
         });
     }

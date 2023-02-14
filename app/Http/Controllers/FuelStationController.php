@@ -8,6 +8,7 @@ use App\Http\Utils\ErrorUtil;
 use App\Models\FuelStation;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FuelStationController extends Controller
 {
@@ -153,30 +154,33 @@ class FuelStationController extends Controller
 
     public function updateFuelStation(FuelStationUpdateRequest $request)
     {
-
         try{
-            if(!$request->user()->hasPermissionTo('fuel_station_update')){
-                return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
-            $updatableData = $request->validated();
+   return  DB::transaction(function () use($request) {
+    if(!$request->user()->hasPermissionTo('fuel_station_update')){
+        return response()->json([
+           "message" => "You can not perform this action"
+        ],401);
+   }
+    $updatableData = $request->validated();
 
 
 
-                $fuel_station  =  tap(FuelStation::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
-        "name",
-        "address",
-        "opening_time",
-        "closing_time",
-        "description",
-                ])->toArray()
-                )
-                    // ->with("somthing")
+        $fuel_station  =  tap(FuelStation::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
+"name",
+"address",
+"opening_time",
+"closing_time",
+"description",
+        ])->toArray()
+        )
+            // ->with("somthing")
 
-                    ->first();
+            ->first();
 
-            return response($fuel_station, 201);
+    return response($fuel_station, 201);
+});
+
+
         } catch(Exception $e){
             error_log($e->getMessage());
         return $this->sendError($e,500);

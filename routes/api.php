@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
+use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GaragesController;
+use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
@@ -53,9 +55,9 @@ Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
 
 
 
-// ############################################
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes
-// ############################################
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 Route::middleware(['auth:api'])->group(function () {
 
 
@@ -223,5 +225,23 @@ Route::get('/v1.0/email-template-types', [EmailTemplateController::class, "getEm
 // template management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// Garage Time Management
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::patch('/v1.0/garage-times', [GarageTimesController::class, "updateGarageTimes"]);
+Route::get('/v1.0/garage-times', [GarageTimesController::class, "getGarageTimes"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end Garage Time Management
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 });
 
+
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+// client routes
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+
+
+Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);

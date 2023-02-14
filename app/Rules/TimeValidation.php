@@ -4,7 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class SomeTimes implements Rule
+class TimeValidation implements Rule
 {
     /**
      * Create a new rule instance.
@@ -23,15 +23,18 @@ class SomeTimes implements Rule
      * @param  mixed  $value
      * @return bool
      */
-
     public function passes($attribute, $value)
     {
 
-      return  collect($value)->contains(function ($data, $key) {
-            return ($data["checked"] == true || $data["checked"] == 1);
+            $timeParts = explode(':', $value);
+            $hour = $timeParts[0];
+            $minute = $timeParts[1];
+            $second = !empty($timeParts[2])?$timeParts[2]:0;
+            if (!checkdate(1, 1, 1) || !checkdate(1, 1, 1970) || $hour < 0 || $hour > 23 || $minute < 0 || $minute > 59 || $second < 0 || $second > 59) {
+                 return false;
+            }
+            return true;
 
-        
-        });
     }
 
     /**
@@ -41,6 +44,6 @@ class SomeTimes implements Rule
      */
     public function message()
     {
-        return 'Please select at least one';
+        return 'The :attribute field must be a valid time value.';
     }
 }
