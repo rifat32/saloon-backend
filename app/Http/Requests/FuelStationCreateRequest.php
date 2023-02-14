@@ -27,9 +27,9 @@ class FuelStationCreateRequest extends FormRequest
         return [
             "name" => "required|string",
             "address" => "required|string",
-            "opening_time"=> ['required','date_format:H:i:s?', new TimeValidation
+            "opening_time"=> ['required','date_format:H:i', new TimeValidation
         ],
-            "closing_time" => ['required','date_format:H:i:s?', new TimeValidation
+            "closing_time" => ['required','date_format:H:i', new TimeValidation
             ],
             "description" => "nullable|string",
         ];
