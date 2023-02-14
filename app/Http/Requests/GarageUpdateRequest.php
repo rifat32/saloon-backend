@@ -57,7 +57,6 @@ class GarageUpdateRequest extends FormRequest
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
-            'garage.average_time_slot' => 'nullable|numeric',
 
 
 

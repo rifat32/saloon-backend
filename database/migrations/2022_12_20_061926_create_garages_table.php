@@ -33,7 +33,6 @@ class CreateGaragesTable extends Migration
             $table->boolean("is_mobile_garage")->default(false);
             $table->boolean("wifi_available")->default(false);
             $table->unsignedBigInteger("labour_rate")->nullable();
-            $table->unsignedBigInteger("average_time_slot")->nullable();
             $table->unsignedBigInteger("owner_id");
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger("created_by")->nullable(true);

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFuelStationsTable extends Migration
+class CreateGarageTimesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateFuelStationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('fuel_stations', function (Blueprint $table) {
+        Schema::create('garage_times', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->text("address")->nullable();
-            $table->text("description")->nullable();
+            $table->integer("day");
             $table->time("opening_time");
             $table->time("closing_time");
+            $table->unsignedBigInteger("garage_id");
+            $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->boolean("is_active")->default(1);
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -33,6 +32,6 @@ class CreateFuelStationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fuel_stations');
+        Schema::dropIfExists('garage_times');
     }
 }

@@ -438,8 +438,7 @@ class AuthController extends Controller
      *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500,
-     *  "average_time_slot":90
+     *  "labour_rate":500
      *
      * }),
      *
