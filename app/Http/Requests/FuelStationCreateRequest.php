@@ -31,7 +31,7 @@ class FuelStationCreateRequest extends FormRequest
                 $timeParts = explode(':', $value);
                 $hour = $timeParts[0];
                 $minute = $timeParts[1];
-                $second = $timeParts[2];
+                $second = !empty($timeParts[2])?$timeParts[2]:0;
                 if (!checkdate(1, 1, 1) || !checkdate(1, 1, 1970) || $hour < 0 || $hour > 23 || $minute < 0 || $minute > 59 || $second < 0 || $second > 59) {
                     $fail('The '.$attribute.' field must be a valid time value.');
                 }
