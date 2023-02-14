@@ -28,6 +28,12 @@ class CreateEmailTemplatesTable extends Migration
                     "template"=>'email verification template goes here....',
                     "is_active" => 1
                 ],
+                [
+                    'type' => 'forget_password_mail',
+                    "template"=>'forget password email template goes here',
+                    "is_active" => 1
+                ],
+
 
             )
         );

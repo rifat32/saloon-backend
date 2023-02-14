@@ -295,6 +295,88 @@ class EmailTemplateController extends Controller
         }
     }
 
+
+     /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/email-templates/single/{id}",
+     *      operationId="getEmailTemplateById",
+     *      tags={"template_management.email"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get email template by id",
+     *      description="This method is to get email template by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getEmailTemplateById($id, Request $request)
+    {
+        try {
+            if (!$request->user()->hasPermissionTo('template_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+
+            $template = EmailTemplate::where([
+                "id" => $id
+            ])
+            ->first();
+            if(!$template){
+                return response()->json([
+                     "message" => "no data found"
+                ], 404);
+            }
+            return response()->json($template, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
      /**
      *
      * @OA\Get(
@@ -352,7 +434,7 @@ class EmailTemplateController extends Controller
                 ], 401);
             }
 
-$types = ["email_verification_mail"];
+$types = ["email_verification_mail","forget_password_mail"];
 
 
             return response()->json($types, 200);

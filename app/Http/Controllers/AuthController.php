@@ -263,19 +263,19 @@ class AuthController extends Controller
         try {
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
-            $query = User::where(["email" => $insertableData["email"]]);
-            $user = $query->first();
+
+            $user = User::where(["email" => $insertableData["email"]]);
             if (!$user) {
                 return response()->json(["message" => "no user found"], 404);
             }
 
             $token = Str::random(30);
 
-            $query->update([
-                "resetPasswordToken" => $token,
-                "resetPasswordExpires" => Carbon::now()->subDays(-1)
-            ]);
-            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($token,$user));
+            $user->resetPasswordToken = $token;
+            $user->resetPasswordExpires = Carbon::now()->subDays(-1);
+            $user->save();
+
+            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($user));
             return response()->json([
                 "message" => "please check email"
             ]);

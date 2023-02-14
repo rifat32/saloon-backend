@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\EmailTemplate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,12 +17,12 @@ class ForgetPasswordMail extends Mailable
      *
      * @return void
      */
-    private $token;
+
     private $user;
 
-    public function __construct($token = null,$user=null)
+    public function __construct($user=null)
     {
-        $this->token = $token;
+
         $this->user = $user;
     }
 
@@ -32,7 +33,24 @@ class ForgetPasswordMail extends Mailable
      */
     public function build()
     {
+        $html_content = EmailTemplate::where([
+            "type" => "forget_password_mail",
+            "is_active" => 1
 
-        return $this->view('email.forget_password',["token" => $this->token,"contactEmail"=>"rest@gmail.com","user"=>$this->user]);
+        ])->first()->template;
+
+
+        $html_content =  str_replace("[FirstName]", $this->user->first_Name, $html_content );
+        $html_content =  str_replace("[LastName]", $this->user->last_Name, $html_content );
+        $html_content =  str_replace("[FullName]", ($this->user->first_Name. " " .$this->user->last_Name), $html_content );
+        $html_content =  str_replace("[AccountVerificationLink]", (env('APP_URL').'/activate/'.$this->user->email_verify_token), $html_content);
+        $html_content =  str_replace("[ForgotPasswordLink]", (env('FRONT_END_URL').'/fotget-password/'.$this->user->resetPasswordToken), $html_content );
+
+
+
+
+
+        return $this->view('email.dynamic_mail',["html_content"=>$html_content]);
+
     }
 }
