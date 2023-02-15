@@ -384,7 +384,7 @@ class EmailTemplateController extends Controller
      * @OA\Get(
      *      path="/v1.0/email-template-types",
      *      operationId="getEmailTemplateTypes",
-     *      tags={"z.unused"},
+     *      tags={"template_management.email"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -436,7 +436,7 @@ class EmailTemplateController extends Controller
                 ], 401);
             }
 
-$types = ["email_verification_mail","forget_password_mail"];
+$types = ["email_verification_mail","forget_password_mail","welcome_message"];
 
 
             return response()->json($types, 200);

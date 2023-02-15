@@ -35,6 +35,12 @@ class CreateEmailTemplatesTable extends Migration
                     "is_active" => 1
                 ],
 
+                [
+                    'type' => 'welcome_message',
+                    "template"=>"<html lang=\"en\">\n<head>\n\t<meta charset=\"utf-8\" />\n\t<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge,chrome=1\" />\n\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\t<title></title>\n\t<link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>\n\t<style>\n\t\t@import url(//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css);\n\t\t@import url(//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css);\n\t</style>\n\t<link rel=\"stylesheet\" href=\"https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/default_thank_you.css\">\n\t<script src=\"https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/jquery-1.9.1.min.js\"></script>\n\t<script src=\"https://2-22-4-dot-lead-pages.appspot.com/static/lp918/min/html5shiv.js\"></script>\n</head>\n<body>\n\t<header class=\"site-header\" id=\"header\">\n\t\t<h1 class=\"site-header__title\" data-lead-id=\"site-header-title\">THANK YOU!</h1>\n\t</header>\n\n\t<div class=\"main-content\">\n\t\t<i class=\"fa fa-check main-content__checkmark\" id=\"checkmark\"></i>\n\t\t<p class=\"main-content__body\" data-lead-id=\"main-content-body\">Thanks a bunch for filling that out. It means a lot to us, just like you do! We really appreciate you giving us a moment of your time today. Thanks for being you.</p>\n\t</div>\n\n\t<footer class=\"site-footer\" id=\"footer\">\n\t\t<p class=\"site-footer__fineprint\" id=\"fineprint\">Copyright ©2014 | All Rights Reserved</p>\n\t</footer>\n</body>\n</html>",
+                    "is_active" => 1
+                ],
+
 
             )
         );

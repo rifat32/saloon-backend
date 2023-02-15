@@ -40,6 +40,7 @@ class ForgetPasswordMail extends Mailable
         ])->first()->template;
 
 
+        $html_content = json_decode($html_content);
         $html_content =  str_replace("[FirstName]", $this->user->first_Name, $html_content );
         $html_content =  str_replace("[LastName]", $this->user->last_Name, $html_content );
         $html_content =  str_replace("[FullName]", ($this->user->first_Name. " " .$this->user->last_Name), $html_content );

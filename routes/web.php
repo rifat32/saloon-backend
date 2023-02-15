@@ -48,7 +48,22 @@ Route::get("/activate/{token}",function(Request $request,$token) {
     }
     $user->email_verified_at = now();
     $user->save();
-    return view("welcome-message");
+
+
+    $html_content = EmailTemplate::where([
+        "type" => "welcome_message",
+        "is_active" => 1
+
+    ])->first()->template;
+
+
+    $html_content = json_decode($html_content);
+    $html_content =  str_replace("[FirstName]", $this->user->first_Name, $html_content );
+    $html_content =  str_replace("[LastName]", $this->user->last_Name, $html_content );
+    $html_content =  str_replace("[FullName]", ($this->user->first_Name. " " .$this->user->last_Name), $html_content );
+    $html_content =  str_replace("[AccountVerificationLink]", (env('APP_URL').'/activate/'.$this->user->email_verify_token), $html_content);
+    $html_content =  str_replace("[ForgotPasswordLink]", (env('FRONT_END_URL').'/fotget-password/'.$this->user->resetPasswordToken), $html_content );
+    return view("dynamic-welcome-message",compact("html_content"));
 });
 
 Route::get("/test",function() {
