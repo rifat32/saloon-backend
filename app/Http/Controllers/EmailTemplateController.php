@@ -124,8 +124,9 @@ class EmailTemplateController extends Controller
      *      description="This method is to update email template",
      *
      *  @OA\RequestBody(
-     *         description:"use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink] in the template",
+     *
      *         required=true,
+     *  description:"use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink] in the template",
      *         @OA\JsonContent(
      *            required={"id","template","is_active"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
