@@ -230,7 +230,7 @@ Route::get('/v1.0/email-template-types', [EmailTemplateController::class, "getEm
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::patch('/v1.0/garage-times', [GarageTimesController::class, "updateGarageTimes"]);
-Route::get('/v1.0/garage-times', [GarageTimesController::class, "getGarageTimes"]);
+Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "getGarageTimes"]);
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end Garage Time Management

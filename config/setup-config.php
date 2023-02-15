@@ -59,6 +59,14 @@ return [
                 "fuel_station_delete",
             ],
         ],
+        [
+            "role" => "garage_owner",
+            "permissions" => [
+       "garage_times_update",
+       "garage_times_view",
+            ],
+        ],
+
 
 
     ],
@@ -108,6 +116,12 @@ return [
        "template_update",
        "template_view",
        "template_delete",
+
+
+
+       "garage_times_update",
+       "garage_times_view",
+
 
     ],
 
