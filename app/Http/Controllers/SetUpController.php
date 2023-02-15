@@ -67,6 +67,7 @@ return "swagger generated";
         'postcode'=> "1207",
         'email'=> "admin@gmail.com",
         'password'=>Hash::make("12345678"),
+        "email_verified_at"=>now(),
         'is_active' => 1
         ]);
 
@@ -123,7 +124,7 @@ return "swagger generated";
         Artisan::call('migrate:fresh');
         Artisan::call('migrate', ['--path' => 'vendor/laravel/passport/database/migrations']);
         Artisan::call('passport:install');
-  
+
         Artisan::call('l5-swagger:generate');
 
 
