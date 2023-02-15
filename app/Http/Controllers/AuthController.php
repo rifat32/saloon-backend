@@ -196,8 +196,16 @@ class AuthController extends Controller
             if (!auth()->attempt($loginData)) {
                 return response(['message' => 'Invalid Credentials'], 401);
             }
-
             $user = auth()->user();
+            $now = time(); // or your date as well
+$user_created_date = strtotime($user->created_at);
+$datediff = $now - $user_created_date;
+
+            if(!$user->email_verified_at && (($datediff / (60 * 60 * 24))>1)){
+                return response(['message' => 'please activate your email first'], 409);
+            }
+            
+
             $user->token = auth()->user()->createToken('authToken')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
             $user->roles = $user->roles->pluck('name');
