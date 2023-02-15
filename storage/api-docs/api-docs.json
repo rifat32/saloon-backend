@@ -14,7 +14,7 @@
     },
     "servers": [
         {
-            "url": "https://mughalsignandprint.co.uk/garage-management/api",
+            "url": "http://127.0.0.1:8000/api",
             "description": "Demo API Server"
         }
     ],
@@ -2808,11 +2808,6 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "html template goes here"
-                                    },
-                                    "is_active": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -2878,7 +2873,7 @@
             },
             "post": {
                 "tags": [
-                    "template_management.email"
+                    "z.unused"
                 ],
                 "summary": "This method is to store email template",
                 "description": "This method is to store email template",
@@ -2909,11 +2904,6 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "html template goes here"
-                                    },
-                                    "is_active": {
-                                        "type": "boolean",
-                                        "format": "boolean",
-                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -3129,7 +3119,7 @@
         "/v1.0/email-template-types": {
             "get": {
                 "tags": [
-                    "template_management.email"
+                    "z.unused"
                 ],
                 "summary": "This method is to get email template types ",
                 "description": "This method is to get email template types",
@@ -3194,7 +3184,7 @@
         "/v1.0/email-templates/{id}": {
             "delete": {
                 "tags": [
-                    "template_management.email"
+                    "z.unused"
                 ],
                 "summary": "This method is to delete email template by id",
                 "description": "This method is to delete email template by id",
@@ -3305,12 +3295,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10:10:10"
+                                        "example": "10:10"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10:10:10"
+                                        "example": "10:10"
                                     },
                                     "description": {
                                         "type": "string",
@@ -3412,12 +3402,12 @@
                                     "opening_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10:10:10"
+                                        "example": "10:10"
                                     },
                                     "closing_time": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "10:10:10"
+                                        "example": "10:10"
                                     },
                                     "description": {
                                         "type": "string",
@@ -3664,38 +3654,38 @@
                                         "example": [
                                             {
                                                 "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 1,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 2,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 3,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 4,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 5,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             },
                                             {
-                                                "day": 0,
-                                                "opening_time": "10:10:10",
-                                                "closing_time": "10:10:10"
+                                                "day": 6,
+                                                "opening_time": "10:10",
+                                                "closing_time": "10:15:10"
                                             }
                                         ]
                                     }

@@ -21,7 +21,7 @@ class EmailTemplateController extends Controller
      * @OA\Post(
      *      path="/v1.0/email-templates",
      *      operationId="createEmailTemplate",
-     *      tags={"template_management.email"},
+     *      tags={"z.unused"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -36,7 +36,6 @@ class EmailTemplateController extends Controller
      * *    @OA\Property(property="name", type="string", format="string",example="emal v1"),
      *    @OA\Property(property="type", type="string", format="string",example="email_verification_mail"),
      *    @OA\Property(property="template", type="string", format="string",example="html template goes here"),
-     *    @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
      *
      *         ),
      *      ),
@@ -72,11 +71,15 @@ class EmailTemplateController extends Controller
      *   )
      *      )
      *     )
+     * @OA\Hidden,
+     * @OA\Hidden
+
      */
 
     public function createEmailTemplate(EmailTemplateCreateRequest $request)
     {
         try {
+
             return    DB::transaction(function () use (&$request) {
                 if (!$request->user()->hasPermissionTo('template_create')) {
                     return response()->json([
@@ -121,13 +124,13 @@ class EmailTemplateController extends Controller
      *      description="This method is to update email template",
      *
      *  @OA\RequestBody(
+     *         description:"use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink] in the template",
      *         required=true,
      *         @OA\JsonContent(
      *            required={"id","template","is_active"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
      *   * *    @OA\Property(property="name", type="string", format="string",example="emal v1"),
      *    @OA\Property(property="template", type="string", format="string",example="html template goes here"),
-     *    @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
      *
      *         ),
      *      ),
@@ -180,11 +183,7 @@ class EmailTemplateController extends Controller
                 $template  =  tap(EmailTemplate::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
                         "name",
-                        "template",
-                        "is_active",
-                        "opening_time",
-                        "closing_time",
-                        "description",
+                        "template"
                     ])->toArray()
                 )
 
@@ -385,7 +384,7 @@ class EmailTemplateController extends Controller
      * @OA\Get(
      *      path="/v1.0/email-template-types",
      *      operationId="getEmailTemplateTypes",
-     *      tags={"template_management.email"},
+     *      tags={"z.unused"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -452,7 +451,7 @@ $types = ["email_verification_mail","forget_password_mail"];
      *     @OA\Delete(
      *      path="/v1.0/email-templates/{id}",
      *      operationId="deleteEmailTemplateById",
-     *      tags={"template_management.email"},
+     *      tags={"z.unused"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
