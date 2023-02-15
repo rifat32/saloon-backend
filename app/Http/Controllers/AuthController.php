@@ -264,7 +264,7 @@ class AuthController extends Controller
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
 
-            $user = User::where(["email" => $insertableData["email"]]);
+            $user = User::where(["email" => $insertableData["email"]])->first();
             if (!$user) {
                 return response()->json(["message" => "no user found"], 404);
             }
