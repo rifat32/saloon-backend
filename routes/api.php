@@ -5,6 +5,7 @@ use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FuelStationController;
+use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\RolesController;
@@ -215,9 +216,7 @@ Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteF
 Route::post('/v1.0/email-templates', [EmailTemplateController::class, "createEmailTemplate"]);
 Route::put('/v1.0/email-templates', [EmailTemplateController::class, "updateEmailTemplate"]);
 Route::get('/v1.0/email-templates/{perPage}', [EmailTemplateController::class, "getEmailTemplates"]);
-
 Route::get('/v1.0/email-templates/single/{id}', [EmailTemplateController::class, "getEmailTemplateById"]);
-
 Route::get('/v1.0/email-template-types', [EmailTemplateController::class, "getEmailTemplateTypes"]);
  Route::delete('/v1.0/email-templates/{id}', [EmailTemplateController::class, "deleteEmailTemplateById"]);
 
@@ -235,6 +234,24 @@ Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "get
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end Garage Time Management
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// garage gallery management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "createGarage"]);
+Route::get('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "getGarageGalleries"]);
+Route::delete('/v1.0/garage-galleries/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end garage gallery management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
 
 });
 

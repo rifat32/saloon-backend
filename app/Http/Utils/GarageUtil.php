@@ -5,6 +5,7 @@ namespace App\Http\Utils;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
@@ -24,7 +25,11 @@ trait GarageUtil
             ])
                 ->first();
             if (!$automobile_category_db) {
-                throw new Exception("please provile valid automobile category id");
+                return [
+                    "success" => false,
+                    "message" => "please provile valid automobile category id"
+                ];
+
             }
             // @@@@@@@@@@@@@@@@@@@@@@@@@@@ services starts @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             foreach ($services["services"] as $service) {
@@ -37,8 +42,13 @@ trait GarageUtil
 
                     ])
                         ->first();
+
                     if (!$service_db) {
-                        throw new Exception("please provile valid service id");
+
+                        return [
+                            "success" => false,
+                            "message" => "please provile valid service id"
+                        ];
                     }
                     $garage_service =  GarageService::create([
                         "garage_id" => $garage_id,
@@ -52,7 +62,11 @@ trait GarageUtil
                             ])
                                 ->first();
                             if (!$sub_service_db) {
-                                throw new Exception("please provile valid sub service id");
+
+                                return [
+                                    "success" => false,
+                                    "message" => "please provile valid sub service id"
+                                ];
                             }
                             $garage_sub_service =  GarageSubService::create([
                                 "garage_service_id" => $garage_service->id,
@@ -77,7 +91,11 @@ trait GarageUtil
                     ])
                         ->first();
                     if (!$automobile_make_db) {
-                        throw new Exception("please provile valid automobile make id");
+
+                        return [
+                            "success" => false,
+                            "message" => "please provile valid automobile make id"
+                        ];
                     }
                     $garage_automobile_make =  GarageAutomobileMake::create([
                         "garage_id" => $garage_id,
@@ -107,7 +125,11 @@ trait GarageUtil
                                 ])
                                     ->first();
                                 if (!$automobile_model_db) {
-                                    throw new Exception("please provile valid automobile model id");
+
+                                    return [
+                                        "success" => false,
+                                        "message" => "please provile valid automobile model id"
+                                    ];
                                 }
                                 $garage_model =  GarageAutomobileModel::create([
                                     "garage_automobile_make_id" => $garage_automobile_make->id,
@@ -124,6 +146,23 @@ trait GarageUtil
 
         }
 
-        return true;
+        return [
+            "success" => true
+        ];
     }
+
+
+    public function garageOwnerCheck($garage_id) {
+        $garage_id = $garage_id;
+        $garage = Garage::where([
+            "owner_id" => auth()->user()->id,
+            "id" => $garage_id
+        ])
+        ->first();
+        if (!$garage) {
+            return false;
+        }
+        return $garage;
+    }
+
 }

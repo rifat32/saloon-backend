@@ -64,6 +64,11 @@ return [
             "permissions" => [
        "garage_times_update",
        "garage_times_view",
+
+
+       "garage_gallery_create",
+       "garage_gallery_view",
+       "garage_gallery_delete",
             ],
         ],
 
@@ -123,6 +128,15 @@ return [
        "garage_times_view",
 
 
+       "garage_gallery_create",
+       "garage_gallery_view",
+       "garage_gallery_delete",
+
+
+
+
     ],
+
+    "garage_gallery_location" => "garage_gallery"
 
 ];

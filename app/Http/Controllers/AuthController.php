@@ -54,7 +54,7 @@ class AuthController extends Controller
      *            @OA\Property(property="email", type="string", format="string",example="rifat@g.c"),
 
      * *  @OA\Property(property="password", type="string", format="string",example="12345678"),
-     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="12345678"),
+     *  * *  @OA\Property(property="password_confirmation", type="string", format="string",example="12345678"),
      *  * *  @OA\Property(property="phone", type="string", format="string",example="01771034383"),
      *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="dhaka"),
      *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="dinajpur"),
@@ -146,7 +146,7 @@ class AuthController extends Controller
      *            required={"email","password"},
      *            @OA\Property(property="email", type="string", format="string",example="admin@gmail.com"),
 
-     * *  @OA\Property(property="password", type="boolean", format="boolean",example="12345678"),
+     * *  @OA\Property(property="password", type="string", format="string",example="12345678"),
      *
      *         ),
      *      ),
@@ -204,7 +204,7 @@ $datediff = $now - $user_created_date;
             if(!$user->email_verified_at && (($datediff / (60 * 60 * 24))>1)){
                 return response(['message' => 'please activate your email first'], 409);
             }
-            
+
 
             $user->token = auth()->user()->createToken('authToken')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
@@ -539,8 +539,10 @@ $datediff = $now - $user_created_date;
                 // end garage info ##############
 
            // create services
-                $this->createGarageServices($insertableData['service'],$garage->id,true);
-
+             $serviceUpdate =  $this->createGarageServices($insertableData['service'],$garage->id,true);
+                if(!$serviceUpdate["success"]){
+                    throw new Exception($serviceUpdate["message"]);
+                 }
 // verify email starts
                 $email_token = Str::random(30);
                 $user->email_verify_token = $email_token;

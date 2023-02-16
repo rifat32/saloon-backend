@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GarageTimesUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\GarageUtil;
 use App\Models\Garage;
 use App\Models\GarageTime;
 use Exception;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class GarageTimesController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,GarageUtil;
     /**
      *
      * @OA\Patch(
@@ -91,18 +92,11 @@ class GarageTimesController extends Controller
                 $updatableData = $request->validated();
 
                 $garage_id = $updatableData["garage_id"];
-
-                $garage = Garage::where([
-                    "owner_id" => $request->user()->id,
-                    "id" => $garage_id
-                ])
-                ->first();
-
-                if (!$garage) {
-                    return response()->json([
-                        "message" => "you are not the owner of the garage or the requested garage does not exist."
-                    ], 401);
-                }
+           if (!$this->garageOwnerCheck($garage_id)) {
+            return response()->json([
+                "message" => "you are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
 
 
                GarageTime::where([
@@ -191,7 +185,11 @@ class GarageTimesController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
-
+           if (!$this->garageOwnerCheck($garage_id)) {
+            return response()->json([
+                "message" => "you are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
 
             $garageTimes = GarageTime::where([
                 "id" => $garage_id

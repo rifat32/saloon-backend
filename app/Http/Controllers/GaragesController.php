@@ -170,7 +170,11 @@ class GaragesController extends Controller
   // end garage info ##############
 
   // create services
-  $this->createGarageServices($insertableData['service'],$garage->id);
+     $serviceUpdate = $this->createGarageServices($insertableData['service'],$garage->id);
+
+     if(!$serviceUpdate["success"]){
+        throw new Exception($serviceUpdate["message"]);
+     }
 
 
         return response([
