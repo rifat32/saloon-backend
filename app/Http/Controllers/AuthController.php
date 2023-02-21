@@ -550,9 +550,9 @@ $datediff = $now - $user_created_date;
                 Mail::to($user->email)->send(new VerifyMail($user));
 // verify email ends
                 return response([
-                    // "user" => $user,
-                    // "garage" => $garage,
-                    "success" => true
+                     "user" => $user,
+                     "garage" => $garage,
+                     "success" => true
                 ], 201);
             });
         } catch (Exception $e) {
