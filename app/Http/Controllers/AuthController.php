@@ -530,7 +530,7 @@ $datediff = $now - $user_created_date;
 
                 // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
                 // $user->permissions = $user->getAllPermissions()->pluck('name');
-                // $user->roles = $user->roles->pluck('name');
+                //$user->roles = $user->roles->pluck('name');
 
                 //  garage info ##############
                 $insertableData['garage']['status'] = "pending";
