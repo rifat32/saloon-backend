@@ -17,7 +17,7 @@ class CreatePaymentTypesTable extends Migration
             $table->id();
             $table->string("name");
             $table->text("description");
-            $table->boolean("is_active");
+            $table->boolean("is_active")->default(false);
             $table->timestamps();
         });
     }

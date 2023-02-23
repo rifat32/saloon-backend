@@ -560,4 +560,31 @@ $datediff = $now - $user_created_date;
             return $this->sendError($e, 500);
         }
     }
+
+
+
+
+
+public function getUser (Request $request) {
+    $user = $request->user();
+
+
+
+    $user->token = auth()->user()->createToken('authToken')->accessToken;
+    $user->permissions = $user->getAllPermissions()->pluck('name');
+    $user->roles = $user->roles->pluck('name');
+
+    return response()->json(
+        $user,
+        200
+    );
+}
+
+
+
+
+
+
+
+
 }

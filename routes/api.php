@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\client\ClientBasicController;
+use App\Http\Controllers\client\ClientBookingController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageTimesController;
+use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
@@ -39,20 +42,7 @@ Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAll
 
 
 
-Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
-    $user = $request->user();
 
-
-
-    $user->token = auth()->user()->createToken('authToken')->accessToken;
-    $user->permissions = $user->getAllPermissions()->pluck('name');
-    $user->roles = $user->roles->pluck('name');
-
-    return response()->json(
-        $user,
-        200
-    );
-});
 
 
 
@@ -60,7 +50,7 @@ Route::middleware('auth:api')->get('/v1.0/user', function (Request $request) {
 // Protected Routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 Route::middleware(['auth:api'])->group(function () {
-
+    Route::get('/v1.0/user', [AuthController::class, "getUser"]);
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
@@ -72,6 +62,7 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+
 Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);
 
 // ********************************************
@@ -250,10 +241,97 @@ Route::delete('/v1.0/garage-galleries/{id}', [GarageGalleryController::class, "d
 
 
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// payment type management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/payment-types', [PaymentTypeController::class, "createPaymentType"]);
+Route::put('/v1.0/payment-types', [PaymentTypeController::class, "updatePaymentType"]);
+Route::get('/v1.0/payment-types/{perPage}', [PaymentTypeController::class, "getPaymentTypes"]);
+Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "deletePaymentTypeById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// payment type management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 });
+
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+// end admin routes
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
@@ -262,3 +340,53 @@ Route::delete('/v1.0/garage-galleries/{id}', [GarageGalleryController::class, "d
 
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
+
+
+
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+// client protected routes
+// !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+
+Route::middleware(['auth:api'])->group(function () {
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// booking management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/bookings', [ClientBookingController::class, "createBookingClient"]);
+Route::put('/v1.0/bookings', [ClientBookingController::class, "updateBookingClient"]);
+Route::get('/v1.0/bookings/{perPage}', [ClientBookingController::class, "getBookingsClient"]);
+Route::get('/v1.0/bookings/single/{id}', [ClientBookingController::class, "getBookingByIdClient"]);
+Route::delete('/v1.0/bookings/{id}', [ClientBookingController::class, "deleteBookingByIdClient"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+});
+
+

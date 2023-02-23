@@ -2,39 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\FuelStationCreateRequest;
-use App\Http\Requests\FuelStationUpdateRequest;
+use App\Http\Requests\PaymentTypeCreateRequest;
+use App\Http\Requests\PaymentTypeUpdateRequest;
 use App\Http\Utils\ErrorUtil;
-use App\Models\FuelStation;
+use App\Models\PaymentType;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class FuelStationController extends Controller
+class PaymentTypeController extends Controller
 {
     use ErrorUtil;
 
     /**
      *
      * @OA\Post(
-     *      path="/v1.0/fuel-station",
-     *      operationId="createFuelStation",
-     *      tags={"fuel_station_management"},
+     *      path="/v1.0/payment-types",
+     *      operationId="createPaymentType",
+     *      tags={"payment_type_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
-     *      summary="This method is to store fuel station",
-     *      description="This method is to store fuel station",
+     *      summary="This method is to store payment type",
+     *      description="This method is to store payment type",
      *
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"name","address","opening_time","closing_time","description"},
+     *            required={"name","description","is_active"},
      *    @OA\Property(property="name", type="string", format="string",example="car"),
-     *    @OA\Property(property="address", type="string", format="string",example="car"),
-     *    @OA\Property(property="opening_time", type="string", format="string",example="10:10"),
-     * *    @OA\Property(property="closing_time", type="string", format="string",example="10:10"),
-     * *    @OA\Property(property="description", type="string", format="number",example="description"),
+     *    @OA\Property(property="description", type="string", format="string",example="car"),
+     *    @OA\Property(property="is_active", type="boolean", format="boolean",example="true"),
      *
      *         ),
      *      ),
@@ -72,12 +70,12 @@ class FuelStationController extends Controller
      *     )
      */
 
-    public function createFuelStation(FuelStationCreateRequest $request)
+    public function createPaymentType(PaymentTypeCreateRequest $request)
     {
         try {
 
             return DB::transaction(function () use ($request) {
-                if (!$request->user()->hasPermissionTo('fuel_station_create')) {
+                if (!$request->user()->hasPermissionTo('payment_type_create')) {
                     return response()->json([
                         "message" => "You can not perform this action"
                     ], 401);
@@ -85,10 +83,10 @@ class FuelStationController extends Controller
 
                 $insertableData = $request->validated();
 
-                $fuel_station =  FuelStation::create($insertableData);
+                $payment_type =  PaymentType::create($insertableData);
 
 
-                return response($fuel_station, 201);
+                return response($payment_type, 201);
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -99,25 +97,23 @@ class FuelStationController extends Controller
     /**
      *
      * @OA\Put(
-     *      path="/v1.0/fuel-station",
-     *      operationId="updateFuelStation",
-     *      tags={"fuel_station_management"},
+     *      path="/v1.0/payment-types",
+     *      operationId="updatePaymentType",
+     *      tags={"payment_type_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
-     *      summary="This method is to update fuel station",
-     *      description="This method is to update fuel station",
+     *      summary="This method is to update payment type",
+     *      description="This method is to update payment type",
      *
-     *  @OA\RequestBody(
+       *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","name","address","opening_time","closing_time","description"},
-     *    @OA\Property(property="id", type="number", format="number", example="1"),
+     *            required={"id","name","description","is_active"},
+     * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *    @OA\Property(property="name", type="string", format="string",example="car"),
-     *    @OA\Property(property="address", type="string", format="string",example="car"),
-     *    @OA\Property(property="opening_time", type="string", format="string",example="10:10"),
-     * *    @OA\Property(property="closing_time", type="string", format="string",example="10:10"),
-     * *    @OA\Property(property="description", type="string", format="number",example="description"),
+     *    @OA\Property(property="description", type="string", format="string",example="car"),
+     *    @OA\Property(property="is_active", type="boolean", format="boolean",example="true"),
      *
      *         ),
      *      ),
@@ -155,11 +151,11 @@ class FuelStationController extends Controller
      *     )
      */
 
-    public function updateFuelStation(FuelStationUpdateRequest $request)
+    public function updatePaymentType(PaymentTypeUpdateRequest $request)
     {
         try {
             return  DB::transaction(function () use ($request) {
-                if (!$request->user()->hasPermissionTo('fuel_station_update')) {
+                if (!$request->user()->hasPermissionTo('payment_type_update')) {
                     return response()->json([
                         "message" => "You can not perform this action"
                     ], 401);
@@ -168,13 +164,11 @@ class FuelStationController extends Controller
 
 
 
-                $fuel_station  =  tap(FuelStation::where(["id" => $updatableData["id"]]))->update(
+                $fuel_station  =  tap(PaymentType::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
-                        "name",
-                        "address",
-                        "opening_time",
-                        "closing_time",
-                        "description",
+        "name",
+        "description",
+        "is_active",
                     ])->toArray()
                 )
                     // ->with("somthing")
@@ -191,9 +185,9 @@ class FuelStationController extends Controller
     /**
      *
      * @OA\Get(
-     *      path="/v1.0/fuel-station/{perPage}",
-     *      operationId="getFuelStations",
-     *      tags={"fuel_station_management"},
+     *      path="/v1.0/payment-types/{perPage}",
+     *      operationId="getPaymentTypes",
+     *      tags={"payment_type_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -205,8 +199,8 @@ class FuelStationController extends Controller
      *         required=true,
      *  example="6"
      *      ),
-     *      summary="This method is to get fuel stations ",
-     *      description="This method is to get fuel stations",
+     *      summary="This method is to get payment types ",
+     *      description="This method is to get payment types",
      *
 
      *      @OA\Response(
@@ -243,35 +237,36 @@ class FuelStationController extends Controller
      *     )
      */
 
-    public function getFuelStations($perPage, Request $request)
+    public function getPaymentTypes($perPage, Request $request)
     {
         try {
-            if (!$request->user()->hasPermissionTo('fuel_station_view')) {
+
+            if (!$request->user()->hasPermissionTo('payment_type_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
                 ], 401);
             }
 
-            // $automobilesQuery = AutomobileMake::with("makes");
 
-            $fuelStationQuery = new FuelStation();
+
+            $paymentTypeQuery = new PaymentType();
 
             if (!empty($request->search_key)) {
-                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                $paymentTypeQuery = $paymentTypeQuery->where(function ($query) use ($request) {
                     $term = $request->search_key;
                     $query->where("name", "like", "%" . $term . "%");
                 });
             }
 
             if (!empty($request->start_date) && !empty($request->end_date)) {
-                $fuelStationQuery = $fuelStationQuery->whereBetween('created_at', [
+                $paymentTypeQuery = $paymentTypeQuery->whereBetween('created_at', [
                     $request->start_date,
                     $request->end_date
                 ]);
             }
 
-            $fuelStations = $fuelStationQuery->orderByDesc("id")->paginate($perPage);
-            return response()->json($fuelStations, 200);
+            $payment_types = $paymentTypeQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($payment_types, 200);
         } catch (Exception $e) {
 
             return $this->sendError($e, 500);
@@ -281,9 +276,9 @@ class FuelStationController extends Controller
     /**
      *
      *     @OA\Delete(
-     *      path="/v1.0/fuel-station/{id}",
-     *      operationId="deleteFuelStationById",
-     *      tags={"fuel_station_management"},
+     *      path="/v1.0/payment-types/{id}",
+     *      operationId="deletePaymentTypeById",
+     *      tags={"payment_type_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -332,19 +327,21 @@ class FuelStationController extends Controller
      *     )
      */
 
-    public function deleteFuelStationById($id, Request $request)
+    public function deletePaymentTypeById($id, Request $request)
     {
 
         try {
-            if (!$request->user()->hasPermissionTo('fuel_station_delete')) {
+
+            if (!$request->user()->hasPermissionTo('payment_type_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            FuelStation::where([
+
+            PaymentType::where([
                 "id" => $id
             ])
-                ->delete();
+            ->delete();
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

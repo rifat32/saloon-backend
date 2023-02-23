@@ -17,8 +17,20 @@ class CreateBookingSubServicesTable extends Migration
             $table->id();
             $table->unsignedBigInteger("booking_id");
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+
             $table->unsignedBigInteger("sub_service_id");
-            $table->foreign('sub_service_id')->references('id')->on('sub_services')->onDelete('cascade');
+            $table->foreign('sub_service_id')->references('id')->on('sub_services')->onDelete('restrict');
+
+
+
+
+            // $table->string("coupon_discount_type")->nullable();
+            // $table->double("coupon_discount")->nullable();
+
+
+
+
+
             $table->timestamps();
         });
     }

@@ -42,6 +42,15 @@ return [
        "template_delete",
 
 
+       "payment_type_create",
+       "payment_type_update",
+       "payment_type_view",
+       "payment_type_delete",
+
+
+
+
+
             ],
         ],
         [
@@ -62,6 +71,7 @@ return [
         [
             "role" => "garage_owner",
             "permissions" => [
+
        "garage_times_update",
        "garage_times_view",
 
@@ -69,6 +79,17 @@ return [
        "garage_gallery_create",
        "garage_gallery_view",
        "garage_gallery_delete",
+
+
+    //    "booking_create",
+       "booking_update",
+       "booking_view",
+       "booking_delete",
+
+
+
+
+
             ],
         ],
 
@@ -131,6 +152,25 @@ return [
        "garage_gallery_create",
        "garage_gallery_view",
        "garage_gallery_delete",
+
+
+
+
+
+
+
+       "payment_type_create",
+       "payment_type_update",
+       "payment_type_view",
+       "payment_type_delete",
+
+
+
+    //    "booking_create",
+       "booking_update",
+       "booking_view",
+       "booking_delete",
+
 
 
 
