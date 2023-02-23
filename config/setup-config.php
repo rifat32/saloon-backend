@@ -86,6 +86,10 @@ return [
        "booking_view",
        "booking_delete",
 
+       "job_create",
+       "job_update",
+       "job_view",
+       "job_delete",
 
 
 
@@ -170,6 +174,16 @@ return [
        "booking_update",
        "booking_view",
        "booking_delete",
+
+
+
+       "job_create",
+       "job_update",
+       "job_view",
+       "job_delete",
+
+
+
 
 
 

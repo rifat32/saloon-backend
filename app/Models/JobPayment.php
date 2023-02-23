@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JobSubService extends Model
+class JobPayment extends Model
 {
     use HasFactory;
     protected $fillable = [
         "job_id",
-        "sub_service_id",
+        "payment_type_id",
+        "amount",
     ];
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreatePaymentTypesTable extends Migration
@@ -20,6 +21,17 @@ class CreatePaymentTypesTable extends Migration
             $table->boolean("is_active")->default(false);
             $table->timestamps();
         });
+
+
+
+        DB::table("payment_types")->insert([
+            "name" => "cash",
+            "description" => "cash",
+            "is_active" => true
+        ]);
+
+
+
     }
 
     /**

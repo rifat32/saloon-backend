@@ -10,6 +10,7 @@ use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageTimesController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
@@ -231,9 +232,9 @@ Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "get
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // garage gallery management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Route::post('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "createGarage"]);
+Route::post('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "createGarageGallery"]);
 Route::get('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "getGarageGalleries"]);
-Route::delete('/v1.0/garage-galleries/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
+Route::delete('/v1.0/garage-galleries/{garage_id}/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage gallery management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,8 +256,46 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 
 
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// booking management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
+
+Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
+Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
+
+
+Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
+
+Route::get('/v1.0/bookings/single/{garage_id}/{id}', [BookingController::class, "getBookingById"]);
+Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// job management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+// Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
+
+
+Route::patch('/v1.0/jobs/booking-to-job', [JobController::class, "bookingToJob"]);
+Route::post('/v1.0/jobs/payments', [JobController::class, "bookingToJob"]);
+
+// Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
+
+// Route::get('/v1.0/bookings/single/{garage_id}/{id}', [BookingController::class, "getBookingById"]);
+// Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// job management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -352,11 +391,11 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Route::post('/v1.0/bookings', [ClientBookingController::class, "createBookingClient"]);
-Route::put('/v1.0/bookings', [ClientBookingController::class, "updateBookingClient"]);
-Route::get('/v1.0/bookings/{perPage}', [ClientBookingController::class, "getBookingsClient"]);
-Route::get('/v1.0/bookings/single/{id}', [ClientBookingController::class, "getBookingByIdClient"]);
-Route::delete('/v1.0/bookings/{id}', [ClientBookingController::class, "deleteBookingByIdClient"]);
+Route::post('/v1.0/client/bookings', [ClientBookingController::class, "createBookingClient"]);
+Route::put('/v1.0/client/bookings', [ClientBookingController::class, "updateBookingClient"]);
+Route::get('/v1.0/client/bookings/{perPage}', [ClientBookingController::class, "getBookingsClient"]);
+Route::get('/v1.0/client/bookings/single/{id}', [ClientBookingController::class, "getBookingByIdClient"]);
+Route::delete('/v1.0/client/bookings/{id}', [ClientBookingController::class, "deleteBookingByIdClient"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // booking management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

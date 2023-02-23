@@ -26,8 +26,7 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger("automobile_model_id");
             $table->foreign('automobile_model_id')->references('id')->on('automobile_models')->onDelete('restrict');
 
-            $table->unsignedBigInteger("payment_type_id");
-            $table->foreign('payment_type_id')->references('id')->on('payment_types')->onDelete('restrict');
+           
 
             $table->string("car_registration_no");
             $table->string("additional_information")->nullable();

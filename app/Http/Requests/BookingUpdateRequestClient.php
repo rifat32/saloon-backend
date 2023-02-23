@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BookingUpdateRequest extends FormRequest
+class BookingUpdateRequestClient extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,16 +25,13 @@ class BookingUpdateRequest extends FormRequest
     {
         return [
             "id" => "required|numeric",
-            // "customer_id",
             "garage_id" => "required|numeric",
+            // "customer_id",
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
-            "status"=>"nullable|string",
-            "additional_information" => "nullable|string",
-
-            "job_start_time" => "nullable|date",
-            "job_end_time" => "nullable|date",
+             "additional_information" => "nullable|string",
+            // "status",
 
     'booking_sub_service_ids' => 'required|array',
     'booking_sub_service_ids.*' => 'required|numeric',

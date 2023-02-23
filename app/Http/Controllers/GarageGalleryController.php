@@ -16,7 +16,7 @@ use ErrorUtil,GarageUtil;
         *
      * @OA\Post(
      *      path="/v1.0/garage-galleries/{garage_id}",
-     *      operationId="createGarage",
+     *      operationId="createGarageGallery",
      *      tags={"garage_gallery_management"},
      *       security={
      *           {"bearerAuth": {}}
@@ -85,7 +85,7 @@ use ErrorUtil,GarageUtil;
      *     )
      */
 
-    public function createGarage($garage_id,GarageGalleryCreateRequest $request)
+    public function createGarageGallery($garage_id,GarageGalleryCreateRequest $request)
     {
         try{
             if(!$request->user()->hasPermissionTo('garage_gallery_create')){
@@ -208,12 +208,19 @@ use ErrorUtil,GarageUtil;
        /**
         *
      *     @OA\Delete(
-     *      path="/v1.0/garage-galleries/{id}",
+     *      path="/v1.0/garage-galleries/{garage_id}/{id}",
      *      operationId="deleteGarageGalleryById",
      *      tags={"garage_gallery_management"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
+     * *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
      *              @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -259,7 +266,7 @@ use ErrorUtil,GarageUtil;
      *     )
      */
 
-    public function deleteGarageGalleryById($id,Request $request) {
+    public function deleteGarageGalleryById($garage_id,$id,Request $request) {
 
         try{
             if(!$request->user()->hasPermissionTo('garage_gallery_delete')){
@@ -267,15 +274,23 @@ use ErrorUtil,GarageUtil;
                    "message" => "You can not perform this action"
                 ],401);
            }
-        $garage_gallery  = GarageGallery::where([
-            "id" => $id
-           ])
-           ->first();
-           if (!$this->garageOwnerCheck($garage_gallery->garage_id)) {
+           if (!$this->garageOwnerCheck($garage_id)) {
             return response()->json([
                 "message" => "you are not the owner of the garage or the requested garage does not exist."
             ], 401);
         }
+
+        $garage_gallery  = GarageGallery::where([
+            "id" => $id,
+            "garage_id" => $garage_id
+           ])
+           ->first();
+           if(!$garage_gallery) {
+            return response()->json([
+                "message" => "gallery not found"
+                    ], 404);
+           }
+
         // Define the path of the file you want to delete
 $location =  config("setup-config.garage_gallery_location");
 $file_path = public_path($location) . '/' . $garage_gallery->image;

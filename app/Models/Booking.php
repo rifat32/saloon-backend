@@ -14,8 +14,8 @@ class Booking extends Model
         "customer_id",
         "automobile_make_id",
         "automobile_model_id",
-        "payment_type_id",
         "car_registration_no",
+        "additional_information",
         "status",
     ];
 
