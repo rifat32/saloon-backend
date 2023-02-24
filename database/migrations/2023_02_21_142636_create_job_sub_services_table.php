@@ -25,7 +25,7 @@ class CreateJobSubServicesTable extends Migration
 
 
             // $table->string("coupon_discount_type")->nullable();
-            // $table->double("coupon_discount")->nullable();
+            // $table->double("coupon_discount_amount")->nullable();
 
 
             $table->timestamps();

@@ -17,6 +17,8 @@ class Booking extends Model
         "car_registration_no",
         "additional_information",
         "status",
+        "job_start_date",
+        "job_end_date"
     ];
 
 

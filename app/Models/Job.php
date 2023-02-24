@@ -20,7 +20,7 @@ class Job extends Model
         "payment_status",
         "additional_information",
         "discount_type",
-        "discount",
+        "discount_amount",
         "price",
         "job_start_time",
         "job_end_time"

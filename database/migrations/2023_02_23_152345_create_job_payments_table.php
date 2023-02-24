@@ -23,7 +23,7 @@ class CreateJobPaymentsTable extends Migration
             $table->foreign('payment_type_id')->references('id')->on('payment_types')->onDelete('restrict');
 
 
-            $table->douple("amount");
+            $table->double("amount");
 
 
 

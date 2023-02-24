@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\BookingCreateRequest;
-use App\Http\Requests\BookingUpdateRequest;
+use App\Http\Requests\BookingCreateRequestClient;
+use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequestClient;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Booking;
@@ -36,8 +36,11 @@ class ClientBookingController extends Controller
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
+     * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
+     * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *  * *    @OA\Property(property="job_end_date", type="string", format="string",example="2019-06-29"),
 
-     * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *         ),
      *      ),
@@ -75,7 +78,7 @@ class ClientBookingController extends Controller
      *     )
      */
 
-    public function createBookingClient(BookingCreateRequest $request)
+    public function createBookingClient(BookingCreateRequestClient $request)
     {
         try{
 
@@ -124,13 +127,102 @@ return DB::transaction(function () use($request) {
         }
     }
 
+   /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/bookings/change-status",
+     *      operationId="changeBookingStatus",
+     *      tags={"booking_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to change booking status",
+     *      description="This method is to change booking status",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","garage_id","status"},
+     * *    @OA\Property(property="id", type="number", format="number",example="1"),
+ * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+       * @OA\Property(property="status", type="string", format="string",example="pending"),
+
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function changeBookingStatus(BookingStatusChangeRequestClient $request)
+    {
+        try{
+   return  DB::transaction(function () use($request) {
+
+   $updatableData = $request->validated();
+
+
+
+        $booking  =  tap(Booking::where([
+            "id" => $updatableData["id"],
+            "customer_id" =>  auth()->user()->id
+        ]))->update(collect($updatableData)->only([
+            "status",
+        ])->toArray()
+        )
+            // ->with("somthing")
+
+            ->first();
+            if(!$booking){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
+    return response($booking, 201);
+});
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
+
 
  /**
         *
      * @OA\Put(
      *      path="/v1.0/client/bookings",
      *      operationId="updateBookingClient",
-     *      tags={"client.booking"},
+     *      tags={"z.unused"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -201,6 +293,11 @@ return DB::transaction(function () use($request) {
             // ->with("somthing")
 
             ->first();
+            if(!$booking){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
             BookingSubService::where([
                "booking_id" => $booking->id
             ])->delete();
@@ -247,7 +344,7 @@ return DB::transaction(function () use($request) {
 
 
    /**
-        *
+    *
      * @OA\Get(
      *      path="/v1.0/client/bookings/{perPage}",
      *      operationId="getBookingsClient",
@@ -486,7 +583,6 @@ return DB::transaction(function () use($request) {
 
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
-
         return $this->sendError($e,500);
         }
 

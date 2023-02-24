@@ -264,7 +264,7 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
-
+Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);
 
 Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
 
@@ -280,18 +280,15 @@ Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "del
 // job management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-
-
-// Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
-
-
 Route::patch('/v1.0/jobs/booking-to-job', [JobController::class, "bookingToJob"]);
-Route::post('/v1.0/jobs/payments', [JobController::class, "bookingToJob"]);
+Route::put('/v1.0/jobs', [JobController::class, "updateJob"]);
+Route::get('/v1.0/jobs/{garage_id}/{perPage}', [JobController::class, "getJobs"]);
+Route::get('/v1.0/jobs/single/{garage_id}/{id}', [JobController::class, "getJobById"]);
+Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobById"]);
 
-// Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
 
-// Route::get('/v1.0/bookings/single/{garage_id}/{id}', [BookingController::class, "getBookingById"]);
-// Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
+Route::post('/v1.0/jobs/payment', [JobController::class, "addPayment"]);
+Route::delete('/v1.0/jobs/payment/{id}', [JobController::class, "deletePaymentById"]);
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // job management section

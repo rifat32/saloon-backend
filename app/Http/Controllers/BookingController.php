@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BookingConfirmRequest;
-
+use App\Http\Requests\BookingStatusChangeRequest;
+use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
@@ -120,6 +121,11 @@ class BookingController extends Controller
             // ->with("somthing")
 
             ->first();
+            if(!$booking){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
             BookingSubService::where([
                "booking_id" => $booking->id
             ])->delete();
@@ -162,6 +168,110 @@ class BookingController extends Controller
         return $this->sendError($e,500);
         }
     }
+
+     /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/bookings/change-status",
+     *      operationId="changeBookingStatus",
+     *      tags={"booking_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to change booking status",
+     *      description="This method is to change booking status",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","garage_id","status"},
+     * *    @OA\Property(property="id", type="number", format="number",example="1"),
+ * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+       * @OA\Property(property="status", type="string", format="string",example="pending"),
+
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function changeBookingStatus(BookingStatusChangeRequest $request)
+    {
+        try{
+   return  DB::transaction(function () use($request) {
+    if(!$request->user()->hasPermissionTo('booking_update')){
+        return response()->json([
+           "message" => "You can not perform this action"
+        ],401);
+   }
+   $updatableData = $request->validated();
+   if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+    return response()->json([
+        "message" => "you are not the owner of the garage or the requested garage does not exist."
+    ], 401);
+}
+
+
+        $booking  =  tap(Booking::where([
+            "id" => $updatableData["id"],
+            "garage_id" =>  $updatableData["garage_id"]
+        ]))->update(collect($updatableData)->only([
+            "status",
+        ])->toArray()
+        )
+            // ->with("somthing")
+
+            ->first();
+            if(!$booking){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
+    return response($booking, 201);
+});
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
+
+
+
+
+
+
+
 
 
     /**
@@ -252,6 +362,11 @@ class BookingController extends Controller
             // ->with("somthing")
 
             ->first();
+            if(!$booking){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
 
     return response($booking, 201);
 });
@@ -552,7 +667,7 @@ class BookingController extends Controller
             $booking->delete();
 
 
-            return response()->json($booking, 200);
+            return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500);
