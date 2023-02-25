@@ -42,11 +42,15 @@ class CreateJobsTable extends Migration
             $table->double("price")->default(0);
             $table->double("final_price")->default(0);
 
-            $table->dateTime("job_start_time")->nullable();
-            $table->dateTime("job_end_time")->nullable();
+
+            $table->date("job_start_date")->nullable();
+            // $table->date("job_end_date")->nullable();
+
+            $table->time("job_start_time")->nullable();
+            $table->time("job_end_time")->nullable();
 
 
-            $table->string("status");
+            $table->enum("status",['pending','active','completed','cancelled'])->default("pending");
             $table->string("payment_status")->default("due");
             $table->timestamps();
         });

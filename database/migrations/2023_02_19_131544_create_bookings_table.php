@@ -37,12 +37,12 @@ class CreateBookingsTable extends Migration
 
 
             $table->date("job_start_date")->nullable();
-            $table->date("job_end_date")->nullable();
+            // $table->date("job_end_date")->nullable();
 
             $table->time("job_start_time")->nullable();
             $table->time("job_end_time")->nullable();
 
-            $table->string("status");
+            $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner"]);
             $table->timestamps();
         });
     }

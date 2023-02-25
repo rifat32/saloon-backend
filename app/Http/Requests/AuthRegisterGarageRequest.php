@@ -104,17 +104,6 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.postcode.required' => $this->customRequiredMessage("garage postcode"),
             'garage.address_line_1.required' => $this->customRequiredMessage("garage address line 1"),
 
-
-
-
-
-
-
-
-
-
-
-
         ];
     }
 

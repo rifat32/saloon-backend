@@ -115,7 +115,10 @@ class AuthController extends Controller
             $email_token = Str::random(30);
             $user->email_verify_token = $email_token;
             $user->email_verify_token_expires = Carbon::now()->subDays(-1);
-            Mail::to($user->email)->send(new VerifyMail($user));
+            if(env("APP_ENV") == "server") {
+                Mail::to($user->email)->send(new VerifyMail($user));
+            }
+
 // verify email ends
 
             return response($user, 201);
@@ -528,9 +531,9 @@ $datediff = $now - $user_created_date;
                 $user->assignRole('garage_owner');
                 // end user info ##############
 
-                // $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
-                // $user->permissions = $user->getAllPermissions()->pluck('name');
-                //$user->roles = $user->roles->pluck('name');
+                 $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+                 $user->permissions = $user->getAllPermissions()->pluck('name');
+                $user->roles = $user->roles->pluck('name');
 
                 //  garage info ##############
                 $insertableData['garage']['status'] = "pending";
@@ -547,7 +550,10 @@ $datediff = $now - $user_created_date;
                 $email_token = Str::random(30);
                 $user->email_verify_token = $email_token;
                 $user->email_verify_token_expires = Carbon::now()->subDays(-1);
-                Mail::to($user->email)->send(new VerifyMail($user));
+                if(env("APP_ENV") == "server") {
+                    Mail::to($user->email)->send(new VerifyMail($user));
+                }
+
 // verify email ends
                 return response([
                      "user" => $user,

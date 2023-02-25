@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingConfirmRequest extends FormRequest
@@ -27,8 +28,11 @@ class BookingConfirmRequest extends FormRequest
             "id" => "required|numeric",
             "garage_id" => "required|numeric",
 
-            "job_start_time" => "nullable|date",
-            "job_end_time" => "nullable|date",
+            "job_start_date" => "required|date",
+            "job_start_time" => ['required','date_format:H:i', new TimeValidation
+        ],
+            "job_end_time" => ['required','date_format:H:i', new TimeValidation
+        ],
 
 
         ];

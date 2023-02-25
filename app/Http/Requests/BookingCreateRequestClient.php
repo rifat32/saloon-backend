@@ -32,7 +32,7 @@ class BookingCreateRequestClient extends FormRequest
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date",
-            "job_end_date" => "required|date",
+            // "job_end_date" => "required|date",
 
     'booking_sub_service_ids' => 'required|array',
     'booking_sub_service_ids.*' => 'required|numeric',

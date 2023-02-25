@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BookingToJobRequest;
 use App\Http\Requests\JobPaymentCreateRequest;
+use App\Http\Requests\JobStatusChangeRequest;
 use App\Http\Requests\JobUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
@@ -36,13 +37,18 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-   * *   required={"booking_id","garage_id","discount_type","discount_amount","price"},
+   * *   required={"booking_id","garage_id","discount_type","discount_amount","price","job_start_date","job_start_time","job_end_time","status"},
    * *    @OA\Property(property="booking_id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
- * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="percentage"),
- *  * *  * *    @OA\Property(property="price", type="number", format="number",example="percentage"),
+ * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+ *  * *  * *    @OA\Property(property="price", type="number", format="number",example="30"),
+ *     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
+     *  *  * *    @OA\Property(property="status", type="string", format="string",example="pending"),
      *
      *         ),
      *  * *
@@ -121,16 +127,16 @@ class JobController extends Controller
                     "automobile_model_id"=> $booking->automobile_model_id,
                     "car_registration_no"=> $booking->car_registration_no,
                     "additional_information" => $booking->additional_information,
-                    "job_start_time"=> $booking->job_start_time,
-                    "job_end_time"=> $booking->job_end_time,
+
 
 
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount"=> $updatableData["discount_amount"],
                     "price"=>$updatableData["price"],
-
-
-                    "status" => "complete",
+                    "job_start_date"=> $updatableData["job_start_date"],
+                    "job_start_time"=> $updatableData["job_start_time"],
+                    "job_end_time"=> $updatableData["job_end_time"],
+                    "status" => $updatableData["status"],
                     "payment_status" => "due",
                 ]);
 
@@ -153,7 +159,9 @@ class JobController extends Controller
                 $booking->delete();
 
 
-    return response($booking, 201);
+    return response([
+        "ok" => true
+    ], 201);
 });
 
 
@@ -178,7 +186,7 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
 
@@ -186,14 +194,25 @@ class JobController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
-     *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *  * *    @OA\Property(property="job_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *  *  * *
-     * @OA\Property(property="job_start_time", type="string", format="string",example="2019-06-29"),
-     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="2019-06-29"),
+
      *
      *  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
- * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="percentage"),
- *  * *  * *    @OA\Property(property="price", type="number", format="number",example="percentage"),
+ * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+ *  * *  * *    @OA\Property(property="price", type="number", format="number",example="60"),
+ *
+ *  *     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
+     *  *  * *    @OA\Property(property="status", type="string", format="string",example="pending"),
+     *
+     *
+     *
+     *
+     *
      *
      *
      *         ),
@@ -260,6 +279,7 @@ class JobController extends Controller
 
             "car_registration_no",
             "status",
+            "job_start_date",
              "job_start_time",
             "job_end_time",
             "discount_type",
@@ -276,12 +296,12 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
-            BookingSubService::where([
+            JobSubService::where([
                "job_id" => $job->id
             ])->delete();
 
 
-            foreach($updatableData["booking_sub_service_ids"] as $sub_service_id) {
+            foreach($updatableData["job_sub_service_ids"] as $sub_service_id) {
                 $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                     ->where([
                         "garage_services.garage_id" => $job->garage_id,
@@ -298,7 +318,7 @@ class JobController extends Controller
                  throw new Exception("invalid service");
                     }
                     JobSubService::create([
-                        "sub_service_id" => $garage_sub_service->id,
+                        "sub_service_id" => $garage_sub_service->sub_service_id,
                         "job_id" => $job->id
                     ]);
 
@@ -318,6 +338,103 @@ class JobController extends Controller
         return $this->sendError($e,500);
         }
     }
+
+    /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/jobs/change-status",
+     *      operationId="changeJobStatus",
+     *      tags={"job_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to change job status",
+     *      description="This method is to change job status",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","garage_id","status"},
+     * *    @OA\Property(property="id", type="number", format="number",example="1"),
+ * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+       * @OA\Property(property="status", type="string", format="string",example="pending"),
+
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function changeJobStatus(JobStatusChangeRequest $request)
+    {
+        try{
+   return  DB::transaction(function () use($request) {
+    if(!$request->user()->hasPermissionTo('job_update')){
+        return response()->json([
+           "message" => "You can not perform this action"
+        ],401);
+   }
+   $updatableData = $request->validated();
+   if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+    return response()->json([
+        "message" => "you are not the owner of the garage or the requested garage does not exist."
+    ], 401);
+}
+
+
+        $job  =  tap(Job::where([
+            "id" => $updatableData["id"],
+            "garage_id" =>  $updatableData["garage_id"]
+        ]))->update(collect($updatableData)->only([
+            "status",
+        ])->toArray()
+        )
+            // ->with("somthing")
+            ->first();
+            if(!$job){
+                return response()->json([
+            "message" => "job not found"
+                ], 404);
+            }
+    return response($job, 201);
+});
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
+
 
 
 
@@ -397,7 +514,7 @@ class JobController extends Controller
             }
 
 
-            $jobQuery = Job::with("job_sub_services")
+            $jobQuery = Job::with("job_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -500,7 +617,7 @@ class JobController extends Controller
             }
 
 
-            $job = Job::with("job_sub_services")
+            $job = Job::with("job_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id
@@ -789,14 +906,20 @@ class JobController extends Controller
   /**
         *
      * @OA\Delete(
-     *      path="/v1.0/jobs/payment/{id}",
+     *      path="/v1.0/jobs/payment/{garage_id}{id}",
      *
      *      operationId="deletePaymentById",
      *      tags={"job_management.payment"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
-     *
+     *  *  *      @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
      *  *      @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -841,23 +964,29 @@ class JobController extends Controller
      *     )
      */
 
-    public function deletePaymentById($id,Request $request)
+    public function deletePaymentById($garage_id,$id,Request $request)
     {
         try{
 
-   return  DB::transaction(function () use(&$id,&$request) {
+   return  DB::transaction(function () use(&$id,&$garage_id,&$request) {
 
     if(!$request->user()->hasPermissionTo('job_update')){
         return response()->json([
            "message" => "You can not perform this action"
         ],401);
    }
+   if (!$this->garageOwnerCheck($garage_id)) {
+    return response()->json([
+        "message" => "you are not the owner of the garage or the requested garage does not exist."
+    ], 401);
+}
 
 
 
-
-    $payment = JobPayment::where([
-        "id" => $id
+    $payment = JobPayment::leftJoin('jobs', 'job_payments.job_id', '=', 'jobs.id')
+    ->where([
+         "jobs.garage_id" => $garage_id,
+        "job_payments.id" => $id
     ])
     ->first();
      if(!$payment){

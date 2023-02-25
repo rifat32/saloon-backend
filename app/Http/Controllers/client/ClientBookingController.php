@@ -9,7 +9,9 @@ use App\Http\Requests\BookingUpdateRequestClient;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Booking;
 use App\Models\BookingSubService;
+use App\Models\Garage;
 use App\Models\GarageSubService;
+use App\Models\Job;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,8 +40,12 @@ class ClientBookingController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
+     *
+
+     *
+     *
      * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
-     *  * *    @OA\Property(property="job_end_date", type="string", format="string",example="2019-06-29"),
+
 
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *         ),
@@ -88,6 +94,22 @@ return DB::transaction(function () use($request) {
     $insertableData["customer_id"] = auth()->user()->id;
     $insertableData["status"] = "pending";
 
+$garage = Garage::where([
+"id" => $insertableData["garage_id"]
+])
+->first();
+
+if(!$garage){
+    return response()
+    ->json([
+       "message" => "garage not found."
+    ],
+404);
+}
+
+
+
+
 
 
     $booking =  Booking::create($insertableData);
@@ -109,9 +131,8 @@ return DB::transaction(function () use($request) {
         if(!$garage_sub_service ){
      throw new Exception("invalid service");
         }
-        BookingSubService::create([
-            "sub_service_id" => $garage_sub_service->id,
-            "booking_id" => $booking->id
+        $booking->booking_sub_services()->create([
+            "sub_service_id" => $garage_sub_service->sub_service_id,
         ]);
 
     }
@@ -129,22 +150,22 @@ return DB::transaction(function () use($request) {
 
    /**
         *
-     * @OA\Put(
-     *      path="/v1.0/bookings/change-status",
-     *      operationId="changeBookingStatus",
-     *      tags={"booking_management"},
+     * @OA\Patch(
+     *      path="/v1.0/client/bookings/change-status",
+     *      operationId="changeBookingStatusClient",
+     *      tags={"client.booking"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to change booking status",
-     *      description="This method is to change booking status",
+     *      description="This method is to change booking status.
+     * if status is accepted. the booking will be converted to a job.  and the status of the job will be pending ",
      *
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","status"},
+     *            required={"id","status"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
- * @OA\Property(property="garage_id", type="number", format="number",example="1"),
        * @OA\Property(property="status", type="string", format="string",example="pending"),
 
      *         ),
@@ -183,31 +204,77 @@ return DB::transaction(function () use($request) {
      *     )
      */
 
-    public function changeBookingStatus(BookingStatusChangeRequestClient $request)
+    public function changeBookingStatusClient(BookingStatusChangeRequestClient $request)
     {
         try{
    return  DB::transaction(function () use($request) {
 
    $updatableData = $request->validated();
 
+   $booking = Booking::where([
+    "id" => $updatableData["id"],
+    "customer_id" =>  auth()->user()->id
+])
+      ->first();
+if(!$booking){
+    return response()->json([
+"message" => "booking not found"
+    ], 404);
+}
+if($booking->status != "confirmed"){
+    return response()->json([
+"message" => "you can only accecpt or reject only a confirmed booking"
+    ], 409);
+}
 
 
-        $booking  =  tap(Booking::where([
-            "id" => $updatableData["id"],
-            "customer_id" =>  auth()->user()->id
-        ]))->update(collect($updatableData)->only([
-            "status",
-        ])->toArray()
-        )
-            // ->with("somthing")
+   if($updatableData["status"] == "rejected_by_client") {
+    $booking->status = $updatableData["status"];
+    $booking->save();
+   }
+   else if($updatableData["status"] == "accepted") {
 
-            ->first();
-            if(!$booking){
-                return response()->json([
-            "message" => "booking not found"
-                ], 404);
-            }
-    return response($booking, 201);
+    $job = Job::create([
+        "garage_id" => $booking->garage_id,
+        "customer_id" => $booking->customer_id,
+        "automobile_make_id"=> $booking->automobile_make_id,
+        "automobile_model_id"=> $booking->automobile_model_id,
+        "car_registration_no"=> $booking->car_registration_no,
+        "additional_information" => $booking->additional_information,
+        "job_start_date"=> $booking->job_start_date,
+        "job_start_time"=> $booking->job_start_time,
+        "job_end_time"=> $booking->job_end_time,
+
+
+        "discount_type" => "fixed",
+        "discount_amount"=> 0,
+        "price"=>0,
+        "status" => "pending",
+        "payment_status" => "due",
+    ]);
+
+    foreach(
+
+    BookingSubService::where([
+        "booking_id" => $booking->id
+    ])->get()
+    as
+    $booking_sub_service
+    ) {
+        $job->job_sub_services()->create([
+        "sub_service_id" => $booking_sub_service->sub_service_id
+     ]);
+
+    }
+    $booking->delete();
+   }
+
+
+
+
+    return response([
+        "ok" => true
+    ], 201);
 });
 
         } catch(Exception $e){
@@ -320,7 +387,7 @@ return DB::transaction(function () use($request) {
                  throw new Exception("invalid service");
                     }
                     BookingSubService::create([
-                        "sub_service_id" => $garage_sub_service->id,
+                        "sub_service_id" => $garage_sub_service->sub_service_id,
                         "booking_id" => $booking->id
                     ]);
 
@@ -401,7 +468,7 @@ return DB::transaction(function () use($request) {
     public function getBookingsClient($perPage,Request $request) {
         try{
 
-            $bookingQuery = Booking::with("booking_sub_services")
+            $bookingQuery = Booking::with("booking_sub_services.sub_service")
             ->where([
                 "customer_id" => $request->user()->id
             ]);
@@ -491,7 +558,7 @@ return DB::transaction(function () use($request) {
     public function getBookingByIdClient($id,Request $request) {
         try{
 
-            $booking = Booking::with("booking_sub_services")
+            $booking = Booking::with("booking_sub_services.sub_service")
             ->where([
                 "id" => $id,
                 "customer_id" => $request->user()->id

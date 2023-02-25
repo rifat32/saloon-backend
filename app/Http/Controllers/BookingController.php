@@ -45,9 +45,14 @@ class BookingController extends Controller
 
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
-     *  *  * *
-     * @OA\Property(property="job_start_time", type="string", format="string",example="2019-06-29"),
-     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="2019-06-29"),
+     *
+     *  *  * * *   *    @OA\Property(property="status", type="string", format="string",example="pending"),
+     *
+     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
      *
      *
      *         ),
@@ -111,9 +116,9 @@ class BookingController extends Controller
             ]))->update(collect($updatableData)->only([
             "automobile_make_id",
             "automobile_model_id",
-
             "car_registration_no",
             "status",
+            "job_start_date",
              "job_start_time",
             "job_end_time",
         ])->toArray()
@@ -292,8 +297,11 @@ class BookingController extends Controller
      *            required={"id","garage_id","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
  * @OA\Property(property="garage_id", type="number", format="number",example="1"),
-       * @OA\Property(property="job_start_time", type="string", format="string",example="2019-06-29"),
-     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="2019-06-29"),
+     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
 
 
 
@@ -354,6 +362,7 @@ class BookingController extends Controller
             "id" => $updatableData["id"],
             "garage_id" =>  $updatableData["garage_id"]
         ]))->update(collect($updatableData)->only([
+            "job_start_date",
             "job_start_time",
             "job_end_time",
             "status",
@@ -456,7 +465,7 @@ class BookingController extends Controller
             }
 
 
-            $bookingQuery = Booking::with("booking_sub_services")
+            $bookingQuery = Booking::with("booking_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -559,7 +568,7 @@ class BookingController extends Controller
             }
 
 
-            $booking = Booking::with("booking_sub_services")
+            $booking = Booking::with("booking_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id

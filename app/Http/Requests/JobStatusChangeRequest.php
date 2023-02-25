@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BookingStatusChangeRequestClient extends FormRequest
+class JobStatusChangeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,17 +25,18 @@ class BookingStatusChangeRequestClient extends FormRequest
     {
         return [
             "id" => "required|numeric",
-            "status" => "required|string|in:accepted,rejected_by_client", [
-                'status.in' => 'The :attribute field must be either "accepted" or "rejected by client".'
-            ]
+            "garage_id" => "required|numeric",
+            "status" => "required|string|in:pending,active,completed,cancelled",
         ];
     }
+
     public function messages()
     {
 
         return [
-       "status.in" => 'The :attribute field must be either accepted or rejected_by_client.',
+       "status.in" => 'The :attribute field must be of pending,active,completed,cancelled',
 
         ];
     }
+
 }

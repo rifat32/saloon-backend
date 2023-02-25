@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class JobUpdateRequest extends FormRequest
@@ -30,20 +31,36 @@ class JobUpdateRequest extends FormRequest
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
-            "status"=>"required|string",
             "additional_information" => "nullable|string",
 
             "job_start_time" => "required|date",
             "job_end_time" => "required|date",
 
-            'booking_sub_service_ids' => 'required|array',
-            'booking_sub_service_ids.*' => 'required|numeric',
+            'job_sub_service_ids' => 'required|array',
+            'job_sub_service_ids.*' => 'required|numeric',
 
 
              "discount_type" => "nullable|string|in:fixed,percentage",
              "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
-             "price" => "required|numeric"
+             "price" => "required|numeric",
 
+             "job_start_date" => "required|date",
+             "job_start_time" => ['required','date_format:H:i', new TimeValidation
+         ],
+             "job_end_time" => ['required','date_format:H:i', new TimeValidation
+         ],
+         "status" => "required|string|in:pending,active,completed,cancelled",
+
+
+        ];
+    }
+
+
+    public function messages()
+    {
+
+        return [
+       "status.in" => 'The :attribute field must be of pending,active,completed,cancelled',
 
         ];
     }

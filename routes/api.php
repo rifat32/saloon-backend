@@ -5,6 +5,7 @@ use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\client\ClientBookingController;
+use App\Http\Controllers\client\ClientJobController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageGalleryController;
@@ -282,13 +283,17 @@ Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "del
 
 Route::patch('/v1.0/jobs/booking-to-job', [JobController::class, "bookingToJob"]);
 Route::put('/v1.0/jobs', [JobController::class, "updateJob"]);
+Route::put('/v1.0/jobs/change-status', [JobController::class, "changeJobStatus"]);
+
+
+
 Route::get('/v1.0/jobs/{garage_id}/{perPage}', [JobController::class, "getJobs"]);
 Route::get('/v1.0/jobs/single/{garage_id}/{id}', [JobController::class, "getJobById"]);
 Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobById"]);
 
 
 Route::post('/v1.0/jobs/payment', [JobController::class, "addPayment"]);
-Route::delete('/v1.0/jobs/payment/{id}', [JobController::class, "deletePaymentById"]);
+Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "deletePaymentById"]);
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // job management section
@@ -390,6 +395,7 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/client/bookings', [ClientBookingController::class, "createBookingClient"]);
 Route::put('/v1.0/client/bookings', [ClientBookingController::class, "updateBookingClient"]);
+Route::patch('/v1.0/client/bookings/change-status', [ClientBookingController::class, "changeBookingStatusClient"]);
 Route::get('/v1.0/client/bookings/{perPage}', [ClientBookingController::class, "getBookingsClient"]);
 Route::get('/v1.0/client/bookings/single/{id}', [ClientBookingController::class, "getBookingByIdClient"]);
 Route::delete('/v1.0/client/bookings/{id}', [ClientBookingController::class, "deleteBookingByIdClient"]);
@@ -397,7 +403,16 @@ Route::delete('/v1.0/client/bookings/{id}', [ClientBookingController::class, "de
 // booking management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// booking management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+Route::get('/v1.0/client/jobs/{perPage}', [ClientJobController::class, "getJobsClient"]);
+Route::get('/v1.0/client/jobs/single/{id}', [ClientJobController::class, "getJobByIdClient"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

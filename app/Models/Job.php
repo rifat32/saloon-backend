@@ -22,6 +22,7 @@ class Job extends Model
         "discount_type",
         "discount_amount",
         "price",
+        "job_start_date",
         "job_start_time",
         "job_end_time"
     ];
