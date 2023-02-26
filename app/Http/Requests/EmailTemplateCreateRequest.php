@@ -28,6 +28,7 @@ class EmailTemplateCreateRequest extends FormRequest
             "type" => "required|string",
             "template" => "required|string",
             "is_active" => "required|boolean",
+            "wrapper_id" => "nullable|numeric",
         ];
     }
 }

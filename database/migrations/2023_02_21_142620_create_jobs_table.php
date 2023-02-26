@@ -34,9 +34,8 @@ class CreateJobsTable extends Migration
 
             $table->enum("coupon_discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
             $table->double("coupon_discount_amount")->default(0);
+
             $table->enum("discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
-
-
             $table->double("discount_amount")->default(0);
 
             $table->double("price")->default(0);

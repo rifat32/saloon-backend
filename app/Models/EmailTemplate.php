@@ -12,6 +12,7 @@ class EmailTemplate extends Model
         "name",
         "type",
         "template",
-        "is_active"
+        "is_active",
+        'wrapper_id'
     ];
 }

@@ -184,7 +184,10 @@ return [
 
 
 
-
+       "coupon_create",
+       "coupon_update",
+       "coupon_view",
+       "coupon_delete",
 
 
 

@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\EmailTemplate;
+use App\Models\EmailTemplateWrapper;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -33,14 +34,14 @@ class ForgetPasswordMail extends Mailable
      */
     public function build()
     {
-        $html_content = EmailTemplate::where([
+        $email_content = EmailTemplate::where([
             "type" => "forget_password_mail",
             "is_active" => 1
 
-        ])->first()->template;
+        ])->first();
 
 
-        $html_content = json_decode($html_content);
+        $html_content = json_decode($email_content->template);
         $html_content =  str_replace("[FirstName]", $this->user->first_Name, $html_content );
         $html_content =  str_replace("[LastName]", $this->user->last_Name, $html_content );
         $html_content =  str_replace("[FullName]", ($this->user->first_Name. " " .$this->user->last_Name), $html_content );
@@ -51,7 +52,19 @@ class ForgetPasswordMail extends Mailable
 
 
 
-        return $this->view('email.dynamic_mail',["html_content"=>$html_content]);
+        $email_template_wrapper = EmailTemplateWrapper::where([
+            "id" => $email_content->wrapper_id
+        ])
+        ->first();
+
+
+        $html_final = json_decode($email_template_wrapper->template);
+        $html_final =  str_replace("[content]", $html_content, $html_final);
+
+
+
+
+        return $this->view('email.dynamic_mail',["html_content"=>$html_final]);
 
     }
 }

@@ -6,7 +6,9 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\client\ClientBookingController;
 use App\Http\Controllers\client\ClientJobController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
@@ -206,6 +208,19 @@ Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteF
 // template management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+// ********************************************
+// template management section --wrapper
+// ********************************************
+Route::put('/v1.0/email-template-wrappers', [EmailTemplateWrapperController::class, "updateEmailTemplateWrapper"]);
+Route::get('/v1.0/email-template-wrappers/{perPage}', [EmailTemplateWrapperController::class, "getEmailTemplateWrappers"]);
+Route::get('/v1.0/email-template-wrappers/single/{id}', [EmailTemplateWrapperController::class, "getEmailTemplateWrapperById"]);
+
+
+
+
+// ********************************************
+// template management section
+// ********************************************
 Route::post('/v1.0/email-templates', [EmailTemplateController::class, "createEmailTemplate"]);
 Route::put('/v1.0/email-templates', [EmailTemplateController::class, "updateEmailTemplate"]);
 Route::get('/v1.0/email-templates/{perPage}', [EmailTemplateController::class, "getEmailTemplates"]);
@@ -286,7 +301,6 @@ Route::put('/v1.0/jobs', [JobController::class, "updateJob"]);
 Route::put('/v1.0/jobs/change-status', [JobController::class, "changeJobStatus"]);
 
 
-
 Route::get('/v1.0/jobs/{garage_id}/{perPage}', [JobController::class, "getJobs"]);
 Route::get('/v1.0/jobs/single/{garage_id}/{id}', [JobController::class, "getJobById"]);
 Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobById"]);
@@ -303,7 +317,16 @@ Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "del
 
 
 
-
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// fuel station management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/coupons', [CouponController::class, "createCoupon"]);
+Route::put('/v1.0/coupons', [CouponController::class, "updateCoupon"]);
+Route::get('/v1.0/coupons/{garage_id}/{perPage}', [CouponController::class, "getCoupons"]);
+Route::delete('/v1.0/coupons/{garage_id}/{id}', [CouponController::class, "deleteCouponById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// fuel station management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
