@@ -323,6 +323,7 @@ Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "del
 Route::post('/v1.0/coupons', [CouponController::class, "createCoupon"]);
 Route::put('/v1.0/coupons', [CouponController::class, "updateCoupon"]);
 Route::get('/v1.0/coupons/{garage_id}/{perPage}', [CouponController::class, "getCoupons"]);
+Route::get('/v1.0/coupons/single/{garage_id}/{id}', [CouponController::class, "getCouponById"]);
 Route::delete('/v1.0/coupons/{garage_id}/{id}', [CouponController::class, "deleteCouponById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section

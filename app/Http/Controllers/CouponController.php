@@ -251,8 +251,8 @@ class CouponController extends Controller
      *         required=true,
      *  example="6"
      *      ),
-     *      summary="This method is to get fuel stations ",
-     *      description="This method is to get fuel stations",
+     *      summary="This method is to get coupons ",
+     *      description="This method is to get coupons",
      *
 
      *      @OA\Response(
@@ -329,6 +329,102 @@ class CouponController extends Controller
             return $this->sendError($e, 500);
         }
     }
+
+     /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/coupons/single/{garage_id}/{id}",
+     *      operationId="getCouponById",
+     *      tags={"coupon_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+    *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get coupon by id ",
+     *      description="This method is to get coupon by id ",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getCouponById($garage_id,$id, Request $request)
+    {
+        try {
+            if (!$request->user()->hasPermissionTo('coupon_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            if (!$this->garageOwnerCheck($garage_id)) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
+
+            $coupon = Coupon::where([
+                "garage_id" => $garage_id,
+                "id" => $id
+            ])
+            ->first();
+
+            if(!$coupon) {
+                 return response()->json([
+                    "message" => "coupon not found"
+                 ],404);
+            }
+
+
+            return response()->json($coupon, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
 
 
     /**
