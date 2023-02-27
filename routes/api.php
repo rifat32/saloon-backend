@@ -5,6 +5,7 @@ use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\client\ClientBookingController;
+use App\Http\Controllers\client\ClientCouponController;
 use App\Http\Controllers\client\ClientJobController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
@@ -318,7 +319,7 @@ Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "del
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// fuel station management section
+// coupon management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/coupons', [CouponController::class, "createCoupon"]);
 Route::put('/v1.0/coupons', [CouponController::class, "updateCoupon"]);
@@ -326,7 +327,7 @@ Route::get('/v1.0/coupons/{garage_id}/{perPage}', [CouponController::class, "get
 Route::get('/v1.0/coupons/single/{garage_id}/{id}', [CouponController::class, "getCouponById"]);
 Route::delete('/v1.0/coupons/{garage_id}/{id}', [CouponController::class, "deleteCouponById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// fuel station management section
+// coupon management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -436,6 +437,22 @@ Route::get('/v1.0/client/jobs/single/{id}', [ClientJobController::class, "getJob
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// coupon management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::get('/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}', [ClientCouponController::class, "getCouponsByGarageId"]);
+Route::get('/v1.0/client/coupons/all/{perPage}', [ClientCouponController::class, "getCoupons"]);
+Route::get('/v1.0/client/coupons/single/{id}', [ClientCouponController::class, "getCouponById"]);
+
+
+Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [ClientCouponController::class, "getCouponDiscount"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// coupon management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

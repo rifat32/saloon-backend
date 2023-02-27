@@ -26,8 +26,8 @@ class CreateCouponsTable extends Migration
 
 
 
-            $table->double("min_total");
-            $table->double("max_total");
+            $table->double("min_total")->nullable();
+            $table->double("max_total")->nullable();
 
 
 

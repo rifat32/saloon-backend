@@ -131,7 +131,7 @@ class EmailTemplateController extends Controller
      *            required={"id","template","is_active"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
      *   * *    @OA\Property(property="name", type="string", format="string",example="emal v1"),
-     * *   * *    @OA\Property(property="is_active", type="number", format="number",example="emal v1"),
+     * *   * *    @OA\Property(property="is_active", type="number", format="number",example="1"),
      *    @OA\Property(property="template", type="string", format="string",example="html template goes here"),
      *  * *    @OA\Property(property="wrapper_id", type="number", format="number",example="1"),
      *

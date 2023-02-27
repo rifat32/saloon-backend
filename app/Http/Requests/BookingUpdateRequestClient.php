@@ -32,7 +32,7 @@ class BookingUpdateRequestClient extends FormRequest
             "car_registration_no" => "required|string",
              "additional_information" => "nullable|string",
             // "status",
-
+            "coupon_code" => "nullable|string",
     'booking_sub_service_ids' => 'required|array',
     'booking_sub_service_ids.*' => 'required|numeric',
 

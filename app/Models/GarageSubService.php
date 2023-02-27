@@ -11,6 +11,7 @@ class GarageSubService extends Model
     protected $fillable = [
         "garage_service_id",
         "sub_service_id",
+        "price"
     ];
 
     public function garageService(){

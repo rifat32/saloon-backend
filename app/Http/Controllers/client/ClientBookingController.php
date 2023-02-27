@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingCreateRequestClient;
 use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequestClient;
+use App\Http\Utils\CouponUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Booking;
 use App\Models\BookingSubService;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientBookingController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,CouponUtil;
     /**
         *
      * @OA\Post(
@@ -36,6 +37,8 @@ class ClientBookingController extends Controller
      *         @OA\JsonContent(
      *            required={"garage_id","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids"},
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
+     *
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
@@ -115,6 +118,8 @@ if(!$garage){
     $booking =  Booking::create($insertableData);
 
 
+
+
     foreach($insertableData["booking_sub_service_ids"] as $sub_service_id) {
     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
         ->where([
@@ -133,9 +138,29 @@ if(!$garage){
         }
         $booking->booking_sub_services()->create([
             "sub_service_id" => $garage_sub_service->sub_service_id,
+            "price" => $garage_sub_service->price
         ]);
 
     }
+
+    if(!empty($insertableData["coupon_code"])){
+        $coupon_discount = $this->getDiscount(
+            $insertableData["garage_id"],
+            $insertableData["coupon_code"],
+            $booking->booking_sub_services()->sum("price")
+        );
+
+        if($coupon_discount) {
+
+
+            $booking->coupon_discount_type = $coupon_discount["discount_type"];
+            $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+            $booking->save();
+
+        }
+    }
+
+
 
 
     return response($booking, 201);
@@ -245,6 +270,8 @@ if($booking->status != "confirmed"){
         "job_start_time"=> $booking->job_start_time,
         "job_end_time"=> $booking->job_end_time,
 
+        "coupon_discount_type" => $booking->coupon_discount_type,
+        "coupon_discount_amount" => $booking->coupon_discount_amount,
 
         "discount_type" => "fixed",
         "discount_amount"=> 0,
@@ -289,7 +316,7 @@ if($booking->status != "confirmed"){
      * @OA\Put(
      *      path="/v1.0/client/bookings",
      *      operationId="updateBookingClient",
-     *      tags={"z.unused"},
+     *      tags={"client.booking"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -299,9 +326,10 @@ if($booking->status != "confirmed"){
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
@@ -393,7 +421,22 @@ if($booking->status != "confirmed"){
 
                 }
 
+                if(!empty($insertableData["coupon_code"])){
+                    $coupon_discount = $this->getDiscount(
+                        $insertableData["garage_id"],
+                        $insertableData["coupon_code"],
+                        $booking->booking_sub_services()->sum("price")
+                    );
 
+                    if($coupon_discount) {
+
+
+                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+                        $booking->save();
+
+                    }
+                }
 
 
 

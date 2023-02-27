@@ -29,8 +29,8 @@ class CouponCreateRequest extends FormRequest
             "code"=>"required|string|unique:coupons,code",
             "discount_type"=>"required|string",
             "discount_amount"=>"required|numeric",
-            "min_total"=>"required|numeric",
-            "max_total"=>"required|numeric",
+            "min_total"=>"nullable|numeric",
+            "max_total"=>"nullable|numeric",
             "redemptions"=>"required|numeric",
 
             "coupon_start_date"=>"required|date",

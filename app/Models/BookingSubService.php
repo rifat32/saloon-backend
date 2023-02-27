@@ -12,6 +12,7 @@ class BookingSubService extends Model
     protected $fillable = [
         "booking_id",
         "sub_service_id",
+        "price"
     ];
     public function sub_service(){
         return $this->belongsTo(SubService::class,'sub_service_id', 'id');
