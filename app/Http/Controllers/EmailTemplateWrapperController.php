@@ -20,7 +20,7 @@ class EmailTemplateWrapperController extends Controller
      * @OA\Put(
      *      path="/v1.0/email-template-wrappers",
      *      operationId="updateEmailTemplateWrapper",
-     *      tags={"template_management.email.wrapper"},
+     *      tags={"template_management.wrapper.email"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -118,7 +118,7 @@ class EmailTemplateWrapperController extends Controller
      * @OA\Get(
      *      path="/v1.0/email-template-wrappers/{perPage}",
      *      operationId="getEmailTemplateWrappers",
-     *      tags={"template_management.email.wrapper"},
+     *      tags={"template_management.wrapper.email"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -209,7 +209,7 @@ class EmailTemplateWrapperController extends Controller
      * @OA\Get(
      *      path="/v1.0/email-template-wrappers/single/{id}",
      *      operationId="getEmailTemplateWrapperById",
-     *      tags={"template_management.email.wrapper"},
+     *      tags={"template_management.wrapper.email"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
