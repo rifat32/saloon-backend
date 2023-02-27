@@ -3380,11 +3380,18 @@
                             "schema": {
                                 "required": [
                                     "id",
+                                    "garage_id",
                                     "name",
-                                    "address",
-                                    "opening_time",
-                                    "closing_time",
-                                    "description"
+                                    "code",
+                                    "discount_type",
+                                    "discount_amount",
+                                    "min_total",
+                                    "max_total",
+                                    "redemptions",
+                                    "coupon_start_date",
+                                    "coupon_end_date",
+                                    "is_auto_apply",
+                                    "is_active"
                                 ],
                                 "properties": {
                                     "id": {
@@ -3392,30 +3399,65 @@
                                         "format": "number",
                                         "example": "1"
                                     },
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
                                     "name": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "car"
+                                        "example": "name"
                                     },
-                                    "address": {
+                                    "code": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "car"
+                                        "example": "tttdddsss"
                                     },
-                                    "opening_time": {
+                                    "discount_type": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "2019-06-29"
+                                        "example": "percentage"
                                     },
-                                    "closing_time": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "2019-06-29"
-                                    },
-                                    "description": {
-                                        "type": "string",
+                                    "discount_amount": {
+                                        "type": "number",
                                         "format": "number",
-                                        "example": "description"
+                                        "example": "10"
+                                    },
+                                    "min_total": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
+                                    },
+                                    "max_total": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "30"
+                                    },
+                                    "redemptions": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
+                                    },
+                                    "coupon_start_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "coupon_end_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "is_auto_apply": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -3634,8 +3676,8 @@
                 "tags": [
                     "coupon_management"
                 ],
-                "summary": "This method is to get fuel stations ",
-                "description": "This method is to get fuel stations",
+                "summary": "This method is to get coupons ",
+                "description": "This method is to get coupons",
                 "operationId": "getCoupons",
                 "parameters": [
                     {
@@ -3649,6 +3691,87 @@
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/coupons/single/{garage_id}/{id}": {
+            "get": {
+                "tags": [
+                    "coupon_management"
+                ],
+                "summary": "This method is to get coupon by id ",
+                "description": "This method is to get coupon by id ",
+                "operationId": "getCouponById",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
                         "required": true,
                         "example": "6"
                     }
@@ -4290,7 +4413,7 @@
         "/v1.0/email-template-wrappers": {
             "put": {
                 "tags": [
-                    "template_management.email.wrapper"
+                    "template_management.wrapper.email"
                 ],
                 "summary": "This method is to update email template wrapper",
                 "description": "This method is to update email template wrapper",
@@ -4393,7 +4516,7 @@
         "/v1.0/email-template-wrappers/{perPage}": {
             "get": {
                 "tags": [
-                    "template_management.email.wrapper"
+                    "template_management.wrapper.email"
                 ],
                 "summary": "This method is to get email template  wrappers ",
                 "description": "This method is to get email template wrappers",
@@ -4467,7 +4590,7 @@
         "/v1.0/email-template-wrappers/single/{id}": {
             "get": {
                 "tags": [
-                    "template_management.email.wrapper"
+                    "template_management.wrapper.email"
                 ],
                 "summary": "This method is to get email template wrapper by id",
                 "description": "This method is to get email template wrapper by id",
