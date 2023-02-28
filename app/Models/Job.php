@@ -24,7 +24,8 @@ class Job extends Model
         "price",
         "job_start_date",
         "job_start_time",
-        "job_end_time"
+        "job_end_time",
+         "coupon_code"
     ];
     public function job_sub_services(){
         return $this->hasMany(JobSubService::class,'job_id', 'id');

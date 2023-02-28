@@ -29,8 +29,13 @@ class BookingToJobRequest extends FormRequest
             "garage_id" => "required|numeric",
 
             "discount_type" => "nullable|string|in:fixed,percentage",
+
             "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
+
             "price" => "required|numeric",
+
+            "coupon_code" => "nullable|string",
+
             "job_start_date" => "required|date",
             "job_start_time" => ['required','date_format:H:i', new TimeValidation
         ],

@@ -13,7 +13,7 @@ class CouponUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,11 +23,12 @@ class CouponUpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $id = $this->route('coupon') ? $this->route('coupon')->id : null;
         return [
             "id"=>"required|numeric",
             "garage_id"=>"required|numeric",
             "name"=>"required|string",
-            "code"=>"required|string|unique:coupons,code",
+            'code' => 'required|string|unique:coupons,code,' . $this->id . ',id',
             "discount_type"=>"required|string",
             "discount_amount"=>"required|numeric",
             "min_total"=>"nullable|numeric",

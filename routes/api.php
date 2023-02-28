@@ -444,12 +444,15 @@ Route::get('/v1.0/client/jobs/single/{id}', [ClientJobController::class, "getJob
 // coupon management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Route::get('/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}', [ClientCouponController::class, "getCouponsByGarageId"]);
-Route::get('/v1.0/client/coupons/all/{perPage}', [ClientCouponController::class, "getCoupons"]);
-Route::get('/v1.0/client/coupons/single/{id}', [ClientCouponController::class, "getCouponById"]);
+Route::get('/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}', [ClientCouponController::class, "getCouponsByGarageIdClient"]);
+Route::get('/v1.0/client/coupons/all/{perPage}', [ClientCouponController::class, "getCouponsClient"]);
+Route::get('/v1.0/client/coupons/single/{id}', [ClientCouponController::class, "getCouponByIdClient"]);
 
 
-Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [ClientCouponController::class, "getCouponDiscount"]);
+Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [ClientCouponController::class, "getCouponDiscountClient"]);
+
+
+
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // coupon management section

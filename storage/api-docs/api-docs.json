@@ -2791,6 +2791,7 @@
                                 "required": [
                                     "id",
                                     "garage_id",
+                                    "coupon_code",
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
@@ -2808,6 +2809,11 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
                                     },
                                     "automobile_make_id": {
                                         "type": "number",
@@ -3947,7 +3953,7 @@
                                     "is_active": {
                                         "type": "number",
                                         "format": "number",
-                                        "example": "emal v1"
+                                        "example": "1"
                                     },
                                     "template": {
                                         "type": "string",
@@ -4443,7 +4449,7 @@
                                     "is_active": {
                                         "type": "number",
                                         "format": "number",
-                                        "example": "emal v1"
+                                        "example": "1"
                                     },
                                     "template": {
                                         "type": "string",
@@ -6044,6 +6050,7 @@
                             "schema": {
                                 "required": [
                                     "booking_id",
+                                    "coupon_code",
                                     "garage_id",
                                     "discount_type",
                                     "discount_amount",
@@ -6058,6 +6065,11 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
                                     },
                                     "garage_id": {
                                         "type": "number",
@@ -6178,6 +6190,7 @@
                                 "required": [
                                     "id",
                                     "garage_id",
+                                    "coupon_code",
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
@@ -6195,6 +6208,11 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
                                     },
                                     "automobile_make_id": {
                                         "type": "number",
@@ -9170,7 +9188,7 @@
         "/v1.0/client/bookings": {
             "put": {
                 "tags": [
-                    "z.unused"
+                    "client.booking"
                 ],
                 "summary": "This method is to update booking",
                 "description": "This method is to update booking",
@@ -9183,6 +9201,7 @@
                                 "required": [
                                     "id",
                                     "garage_id",
+                                    "coupon_code",
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
@@ -9198,6 +9217,11 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
                                     },
                                     "automobile_make_id": {
                                         "type": "number",
@@ -9300,6 +9324,7 @@
                             "schema": {
                                 "required": [
                                     "garage_id",
+                                    "coupon_code",
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
@@ -9310,6 +9335,11 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
                                     },
                                     "automobile_make_id": {
                                         "type": "number",
@@ -9663,6 +9693,323 @@
                         "description": "id",
                         "required": true,
                         "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}": {
+            "get": {
+                "tags": [
+                    "client.coupon"
+                ],
+                "summary": "This method is to get coupons by garage id ",
+                "description": "This method is to get coupons by garage id",
+                "operationId": "getCouponsByGarageIdClient",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/coupons/all/{perPage}": {
+            "get": {
+                "tags": [
+                    "client.coupon"
+                ],
+                "summary": "This method is to get coupons",
+                "description": "This method is to get coupons",
+                "operationId": "getCouponsClient",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/coupons/single/{id}": {
+            "get": {
+                "tags": [
+                    "client.coupon"
+                ],
+                "summary": "This method is to get coupon by id ",
+                "description": "This method is to get coupon by id ",
+                "operationId": "getCouponByIdClient",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}": {
+            "get": {
+                "tags": [
+                    "client.coupon"
+                ],
+                "summary": "This method is to check coupon",
+                "description": "This method is to check coupon",
+                "operationId": "getCouponDiscountClient",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "code",
+                        "in": "path",
+                        "description": "code",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "amount",
+                        "in": "path",
+                        "description": "amount",
+                        "required": true,
+                        "example": "6"
                     }
                 ],
                 "responses": {

@@ -32,6 +32,8 @@ class BookingUpdateRequest extends FormRequest
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
 
+            "coupon_code" => "nullable|string",
+
             "additional_information" => "nullable|string",
 
             "status"=>"required|string|in:pending,confirmed,rejected_by_garage_owner",

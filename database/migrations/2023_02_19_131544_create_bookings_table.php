@@ -32,9 +32,12 @@ class CreateBookingsTable extends Migration
             $table->string("additional_information")->nullable();
 
             $table->enum("coupon_discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
-            $table->double("coupon_discount_amount")->default(0);
+            $table->double("coupon_discount_amount")->nullable()->default(0);
 
             $table->double("price")->default(0);
+
+            $table->string("coupon_code")->nullable();
+
 
 
             $table->date("job_start_date")->nullable();

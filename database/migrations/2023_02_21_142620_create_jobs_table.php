@@ -36,7 +36,7 @@ class CreateJobsTable extends Migration
             $table->double("coupon_discount_amount")->default(0);
 
             $table->enum("discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
-            $table->double("discount_amount")->default(0);
+            $table->double("discount_amount")->nullable()->default(0);
 
             $table->double("price")->default(0);
             $table->double("final_price")->default(0);
@@ -47,7 +47,8 @@ class CreateJobsTable extends Migration
 
             $table->time("job_start_time")->nullable();
             $table->time("job_end_time")->nullable();
-
+            
+            $table->string("coupon_code")->nullable();
 
             $table->enum("status",['pending','active','completed','cancelled'])->default("pending");
             $table->string("payment_status")->default("due");

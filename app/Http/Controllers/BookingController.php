@@ -36,10 +36,10 @@ class BookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
-
+     * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
@@ -159,6 +159,21 @@ class BookingController extends Controller
 
                 }
 
+                if(!empty($insertableData["coupon_code"])){
+                    $coupon_discount = $this->getDiscount(
+                        $insertableData["garage_id"],
+                        $insertableData["coupon_code"],
+                        $booking->booking_sub_services()->sum("price")
+                    );
+
+                    if($coupon_discount) {
+
+                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+                        $booking->save();
+
+                    }
+                }
 
 
 

@@ -18,6 +18,7 @@ class Booking extends Model
         "additional_information",
         "status",
         "job_start_date",
+        "coupon_code"
         // "job_end_date"
     ];
 

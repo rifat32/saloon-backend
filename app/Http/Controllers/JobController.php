@@ -37,8 +37,9 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-   * *   required={"booking_id","garage_id","discount_type","discount_amount","price","job_start_date","job_start_time","job_end_time","status"},
+   * *   required={"booking_id","coupon_code","garage_id","discount_type","discount_amount","price","job_start_date","job_start_time","job_end_time","status"},
    * *    @OA\Property(property="booking_id", type="number", format="number",example="1"),
+   *   *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
  * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
@@ -112,6 +113,17 @@ class JobController extends Controller
             ])
             ->first();
 
+            $coupon_discount = false;
+            if(!empty($insertableData["coupon_code"])){
+                $coupon_discount = $this->getDiscount(
+                    $insertableData["garage_id"],
+                    $insertableData["coupon_code"],
+                    $insertableData["price"]
+                );
+
+
+            }
+
 
                 if(!$booking){
                     return response()->json([
@@ -120,7 +132,10 @@ class JobController extends Controller
                 }
 
 
+
+
                 $job = Job::create([
+
                     "garage_id" => $booking->garage_id,
                     "customer_id" => $booking->customer_id,
                     "automobile_make_id"=> $booking->automobile_make_id,
@@ -129,13 +144,22 @@ class JobController extends Controller
                     "additional_information" => $booking->additional_information,
 
 
+                    "coupon_discount_type" => ($coupon_discount?$coupon_discount["discount_type"]:0),
+                    "coupon_discount_amount" => ($coupon_discount?$coupon_discount["discount_amount"]:0),
+
+
+
+                    "coupon_code" => $updatableData["coupon_code"],
+
+
+
+                    "job_start_date"=> $updatableData["job_start_date"],
+                    "job_start_time"=> $updatableData["job_start_time"],
+                    "job_end_time"=> $updatableData["job_end_time"],
 
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount"=> $updatableData["discount_amount"],
                     "price"=>$updatableData["price"],
-                    "job_start_date"=> $updatableData["job_start_date"],
-                    "job_start_time"=> $updatableData["job_start_time"],
-                    "job_end_time"=> $updatableData["job_end_time"],
                     "status" => $updatableData["status"],
                     "payment_status" => "due",
                 ]);
@@ -151,10 +175,12 @@ class JobController extends Controller
 
                  JobSubService::create([
                     "job_id" => $job->id,
-                    "sub_service_id" => $booking_sub_service->sub_service_id
+                    "sub_service_id" => $booking_sub_service->sub_service_id,
+                    "price" => $booking_sub_service->price,
                  ]);
 
                 }
+
 
                 $booking->delete();
 
@@ -186,10 +212,10 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
-
+    * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
@@ -269,6 +295,22 @@ class JobController extends Controller
         ], 401);
     }
 
+    $coupon_discount = false;
+    if(!empty($updatableData["coupon_code"])){
+        $coupon_discount = $this->getDiscount(
+            $updatableData["garage_id"],
+            $updatableData["coupon_code"],
+            $updatableData["price"]
+        );
+
+    }
+
+    if($coupon_discount) {
+        $updatableData["coupon_discount_type"] = $coupon_discount["discount_type"];
+        $updatableData["coupon_discount_amount"] = $coupon_discount["discount_amount"];
+
+    }
+
 
         $job  =  tap(Job::where([
             "id" => $updatableData["id"],
@@ -277,10 +319,17 @@ class JobController extends Controller
             "automobile_make_id",
             "automobile_model_id",
 
+
+
+            "coupon_discount_type",
+            "coupon_discount_amount",
+
+            "coupon_code",
+
             "car_registration_no",
             "status",
             "job_start_date",
-             "job_start_time",
+            "job_start_time",
             "job_end_time",
             "discount_type",
             "discount_amount",

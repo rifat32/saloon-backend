@@ -49,6 +49,10 @@ return [
 
 
 
+       "affiliation_create",
+       "affiliation_update",
+       "affiliation_view",
+       "affiliation_delete",
 
 
             ],
@@ -90,6 +94,18 @@ return [
        "job_update",
        "job_view",
        "job_delete",
+
+
+       "coupon_create",
+       "coupon_update",
+       "coupon_view",
+       "coupon_delete",
+
+
+       "garage_affiliation_create",
+       "garage_affiliation_update",
+       "garage_affiliation_view",
+       "garage_affiliation_delete",
 
 
 
@@ -189,6 +205,16 @@ return [
        "coupon_view",
        "coupon_delete",
 
+
+       "affiliation_create",
+       "affiliation_update",
+       "affiliation_view",
+       "affiliation_delete",
+
+       "garage_affiliation_create",
+       "garage_affiliation_update",
+       "garage_affiliation_view",
+       "garage_affiliation_delete",
 
 
 

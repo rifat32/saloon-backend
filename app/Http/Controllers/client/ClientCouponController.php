@@ -18,7 +18,7 @@ class ClientCouponController extends Controller
      *
      * @OA\Get(
      *      path="/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}",
-     *      operationId="getCouponsByGarageId",
+     *      operationId="getCouponsByGarageIdClient",
      *      tags={"client.coupon"},
      *       security={
      *           {"bearerAuth": {}}
@@ -75,7 +75,7 @@ class ClientCouponController extends Controller
      *     )
      */
 
-    public function getCouponsByGarageId($garage_id,$perPage, Request $request)
+    public function getCouponsByGarageIdClient($garage_id,$perPage, Request $request)
     {
         try {
 
@@ -117,7 +117,7 @@ class ClientCouponController extends Controller
      *
      * @OA\Get(
      *      path="/v1.0/client/coupons/all/{perPage}",
-     *      operationId="getCoupons",
+     *      operationId="getCouponsClient",
      *      tags={"client.coupon"},
      *       security={
      *           {"bearerAuth": {}}
@@ -167,7 +167,7 @@ class ClientCouponController extends Controller
      *     )
      */
 
-    public function getCoupons($perPage, Request $request)
+    public function getCouponsClient($perPage, Request $request)
     {
         try {
 
@@ -209,7 +209,7 @@ class ClientCouponController extends Controller
      *
      * @OA\Get(
      *      path="/v1.0/client/coupons/single/{id}",
-     *      operationId="getCouponById",
+     *      operationId="getCouponByIdClient",
      *      tags={"client.coupon"},
      *       security={
      *           {"bearerAuth": {}}
@@ -259,7 +259,7 @@ class ClientCouponController extends Controller
      *     )
      */
 
-    public function getCouponById($id, Request $request)
+    public function getCouponByIdClient($id, Request $request)
     {
         try {
 
@@ -294,7 +294,7 @@ class ClientCouponController extends Controller
      *
      * @OA\Get(
      *      path="/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}",
-     *      operationId="getCouponDiscount",
+     *      operationId="getCouponDiscountClient",
      *      tags={"client.coupon"},
      *       security={
      *           {"bearerAuth": {}}
@@ -359,7 +359,7 @@ class ClientCouponController extends Controller
      *     )
      */
 
-    public function getCouponDiscount($garage_id,$code,$amount, Request $request)
+    public function getCouponDiscountClient($garage_id,$code,$amount, Request $request)
     {
         try {
 

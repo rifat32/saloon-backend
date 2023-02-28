@@ -38,7 +38,8 @@ class JobUpdateRequest extends FormRequest
 
             'job_sub_service_ids' => 'required|array',
             'job_sub_service_ids.*' => 'required|numeric',
-
+            
+            "coupon_code" => "nullable|string",
 
              "discount_type" => "nullable|string|in:fixed,percentage",
              "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
