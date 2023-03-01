@@ -11,6 +11,8 @@ class GarageAffiliation extends Model
     protected $fillable = [
         "garage_id",
         "affiliation_id",
+        "start_date",
+        "end_date",
     ];
 
 

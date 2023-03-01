@@ -337,6 +337,8 @@ class GaragesController extends Controller
                "message" => "no user found with this id"
             ],404);
      }
+
+
    if($userPrev->email !== $updatableData['user']['email']) {
         if(User::where(["email" => $updatableData['user']['email']])->exists()) {
               return response()->json([

@@ -11,7 +11,9 @@ class Affiliation extends Model
 
     protected $fillable = [
         "name",
-        "description"
+        "description",
+        "logo",
+        "created_by"
 
     ];
 

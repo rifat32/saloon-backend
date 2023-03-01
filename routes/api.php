@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AffiliationController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AutomobilesController;
 use App\Http\Controllers\BookingController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
+use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageTimesController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -332,6 +335,34 @@ Route::delete('/v1.0/coupons/{garage_id}/{id}', [CouponController::class, "delet
 
 
 
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// affiliation management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/affiliations-logo', [AffiliationController::class, "createAffiliationLogo"]);
+
+
+Route::post('/v1.0/affiliations', [AffiliationController::class, "createAffiliation"]);
+Route::put('/v1.0/affiliations', [AffiliationController::class, "updateAffiliation"]);
+Route::get('/v1.0/affiliations/{perPage}', [AffiliationController::class, "getAffiliations"]);
+Route::delete('/v1.0/affiliations/{id}', [AffiliationController::class, "deleteAffiliationById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// affiliation management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// affiliation management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/garage-affiliations', [GarageAffiliationController::class, "createGarageAffiliation"]);
+Route::put('/v1.0/garage-affiliations', [GarageAffiliationController::class, "updateGarageAffiliation"]);
+Route::get('/v1.0/garage-affiliations/{perPage}', [GarageAffiliationController::class, "getGarageAffiliations"]);
+Route::get('/v1.0/garage-affiliations/{garage_id}/{perPage}', [GarageAffiliationController::class, "getGarageAffiliationsByGarageId"]);
+Route::delete('/v1.0/garage-affiliations/{id}', [GarageAffiliationController::class, "deleteGarageAffiliationById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// affiliation management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 

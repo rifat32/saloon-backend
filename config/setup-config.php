@@ -55,6 +55,16 @@ return [
        "affiliation_delete",
 
 
+
+
+// this permission may remove later
+       "garage_affiliation_create",
+       "garage_affiliation_update",
+       "garage_affiliation_view",
+       "garage_affiliation_delete",
+// end this permission may remove later
+
+
             ],
         ],
         [
@@ -70,6 +80,19 @@ return [
                 "fuel_station_update",
                 "fuel_station_view",
                 "fuel_station_delete",
+
+
+                "affiliation_create",
+                "affiliation_update",
+                "affiliation_view",
+                "affiliation_delete",
+
+
+                "garage_affiliation_create",
+                "garage_affiliation_update",
+                "garage_affiliation_view",
+                "garage_affiliation_delete",
+
             ],
         ],
         [
@@ -100,6 +123,12 @@ return [
        "coupon_update",
        "coupon_view",
        "coupon_delete",
+
+
+       "affiliation_create",
+       "affiliation_update",
+       "affiliation_view",
+       "affiliation_delete",
 
 
        "garage_affiliation_create",
@@ -220,6 +249,7 @@ return [
 
     ],
 
-    "garage_gallery_location" => "garage_gallery"
+    "garage_gallery_location" => "garage_gallery",
+    "affiliation_logo_location" => "affiliation_logo"
 
 ];

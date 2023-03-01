@@ -23,6 +23,11 @@ class CreateGarageAffiliationsTable extends Migration
             $table->foreign('affiliation_id')->references('id')->on('affiliations')->onDelete('cascade');
 
 
+            $table->date("start_date");
+            $table->date("end_date");
+
+
+
             $table->timestamps();
         });
     }
