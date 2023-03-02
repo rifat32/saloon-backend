@@ -138,6 +138,16 @@ return [
 
 
 
+       "garage_service_price_create",
+       "garage_service_price_update",
+       "garage_service_price_view",
+       "garage_service_price_delete",
+
+
+
+
+
+
 
             ],
         ],
@@ -245,6 +255,12 @@ return [
        "garage_affiliation_view",
        "garage_affiliation_delete",
 
+
+
+       "garage_service_price_create",
+       "garage_service_price_update",
+       "garage_service_price_view",
+       "garage_service_price_delete",
 
 
     ],

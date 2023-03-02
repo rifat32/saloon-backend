@@ -11,7 +11,6 @@ class GarageSubService extends Model
     protected $fillable = [
         "garage_service_id",
         "sub_service_id",
-        "price"
     ];
 
     public function garageService(){
@@ -19,5 +18,9 @@ class GarageSubService extends Model
     }
     public function subService(){
         return $this->belongsTo(SubService::class,'sub_service_id', 'id');
+    }
+
+    public function garage_sub_service_prices(){
+        return $this->hasMany(GarageSubServicePrice::class,'garage_sub_service_id', 'id');
     }
 }

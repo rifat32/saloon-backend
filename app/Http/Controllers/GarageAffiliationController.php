@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GarageAffiliationCreateRequest;
 use App\Http\Requests\GarageAffiliationUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\GarageUtil;
 use App\Models\GarageAffiliation;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class GarageAffiliationController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,GarageUtil;
 
 
 

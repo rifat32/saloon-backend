@@ -529,7 +529,11 @@ class GaragesController extends Controller
                 ],401);
            }
 
-            $garagesQuery = Garage::with("owner");
+            $garagesQuery = Garage::with(
+                "owner",
+                "garageAutomobileMakes.garageAutomobileModels",
+                "garageServices.garageSubServices.garage_sub_service_prices"
+            );
 
 
             if(!$request->user()->hasRole('superadmin')) {
@@ -634,7 +638,7 @@ class GaragesController extends Controller
             $garagesQuery = Garage::with(
                 "owner",
                 "garageAutomobileMakes.garageAutomobileModels",
-                "garageServices.garageSubServices"
+                "garageServices.garageSubServices.garage_sub_service_prices"
             );
 
 

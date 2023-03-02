@@ -15,6 +15,7 @@ use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
+use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentTypeController;
@@ -362,6 +363,30 @@ Route::get('/v1.0/garage-affiliations/{garage_id}/{perPage}', [GarageAffiliation
 Route::delete('/v1.0/garage-affiliations/{id}', [GarageAffiliationController::class, "deleteGarageAffiliationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // affiliation management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// price management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/garage-sub-service-prices', [GarageServicePriceController::class, "createGarageSubServicePrice"]);
+
+Route::put('/v1.0/garage-service-prices', [GarageServicePriceController::class, "updateGarageSubServicePrice"]);
+
+
+
+Route::delete('/v1.0/garage-service-prices/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceById"]);
+
+Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceByGarageSubServiceId"]);
+
+
+Route::delete('/v1.0/garage-service-pricesaaaaaaaaaaa/{id}', [GarageAffiliationController::class, "deleteGarageAffiliationById"]);
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// price management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
