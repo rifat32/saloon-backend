@@ -381,7 +381,6 @@ Route::delete('/v1.0/garage-service-prices/{id}', [GarageServicePriceController:
 Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceByGarageSubServiceId"]);
 
 
-Route::delete('/v1.0/garage-service-pricesaaaaaaaaaaa/{id}', [GarageAffiliationController::class, "deleteGarageAffiliationById"]);
 
 
 

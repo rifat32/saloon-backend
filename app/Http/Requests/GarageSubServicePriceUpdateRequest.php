@@ -24,10 +24,11 @@ class GarageSubServicePriceUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+
             "garage_id" => "required|numeric",
             "garage_sub_service_id" => "required|numeric",
             "garage_sub_service_prices" => "required|array",
-            "garage_sub_service_prices.*.id" => "required|numeric",
+            "garage_sub_service_prices.*.id" => "nullable|numeric",
             "garage_sub_service_prices.*.automobile_make_id" => "nullable|numeric",
             "garage_sub_service_prices.*.price" => "required|numeric",
 

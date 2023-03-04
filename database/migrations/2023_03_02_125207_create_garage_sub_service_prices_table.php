@@ -18,7 +18,7 @@ class CreateGarageSubServicePricesTable extends Migration
             $table->unsignedBigInteger("garage_sub_service_id");
             $table->foreign('garage_sub_service_id')->references('id')->on('garage_sub_services')->onDelete('cascade');
 
-            $table->unsignedBigInteger("automobile_make_id");
+            $table->unsignedBigInteger("automobile_make_id")->nullable();
             $table->foreign('automobile_make_id')->references('id')->on('automobile_makes')->onDelete('cascade');
 
             $table->double("price")->default(0);
