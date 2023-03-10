@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\EmailVerifyTokenRequest;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
@@ -287,6 +288,93 @@ $datediff = $now - $user_created_date;
             $user->save();
 
             Mail::to($insertableData["email"])->send(new ForgetPasswordMail($user));
+            return response()->json([
+                "message" => "please check email"
+            ]);
+            });
+
+
+
+
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+
+    }
+
+      /**
+        *
+     * @OA\Post(
+     *      path="/resend-email-verify-mail",
+     *      operationId="resendEmailVerifyToken",
+     *      tags={"auth"},
+
+     *      summary="This method is to resend email verify mail",
+     *      description="This method is to resend email verify mail",
+
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"email"},
+     *
+     *             @OA\Property(property="email", type="string", format="string",* example="test@g.c"),
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+    public function resendEmailVerifyToken(EmailVerifyTokenRequest $request) {
+
+        try {
+            return DB::transaction(function () use (&$request) {
+                $insertableData = $request->validated();
+
+            $user = User::where(["email" => $insertableData["email"]])->first();
+            if (!$user) {
+                return response()->json(["message" => "no user found"], 404);
+            }
+
+
+
+            $email_token = Str::random(30);
+            $user->email_verify_token = $email_token;
+            $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($user->email)->send(new VerifyMail($user));
+            }
+
+            $user->save();
+
+
             return response()->json([
                 "message" => "please check email"
             ]);
