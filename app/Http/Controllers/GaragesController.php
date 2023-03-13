@@ -493,6 +493,13 @@ class GaragesController extends Controller
 * required=true,
 * example="search_key"
 * ),
+     * *  @OA\Parameter(
+* name="country_code",
+* in="query",
+* description="country_code",
+* required=true,
+* example="country_code"
+* ),
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -575,12 +582,19 @@ class GaragesController extends Controller
 
             }
 
+
             if (!empty($request->start_date)) {
                 $garagesQuery = $garagesQuery->where('created_at', ">=", $request->start_date);
             }
             if (!empty($request->end_date)) {
                 $garagesQuery = $garagesQuery->where('created_at', "<=", $request->end_date);
             }
+
+            if (!empty($request->country_code)) {
+                $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
+
+            }
+
 
             $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($garages, 200);

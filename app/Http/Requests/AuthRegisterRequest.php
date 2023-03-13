@@ -26,7 +26,8 @@ class AuthRegisterRequest extends FormRequest
         return [
             'first_Name' => 'required|string|max:255',
             'last_Name' => 'required|string|max:255',
-            'email' => 'required|string|email|indisposable|max:255|unique:users',
+            // 'email' => 'required|string|email|indisposable|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|confirmed|string|min:6',
             'phone' => 'required|string',
             'image' => 'nullable|string',

@@ -35,6 +35,13 @@ class ClientBasicController extends Controller
 * required=true,
 * example="search_key"
 * ),
+     * *  @OA\Parameter(
+* name="country_code",
+* in="query",
+* description="country_code",
+* required=true,
+* example="country_code"
+* ),
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -89,7 +96,10 @@ class ClientBasicController extends Controller
 
             }
 
+            if (!empty($request->country_code)) {
+                $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
 
+            }
 
             $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($garages, 200);
