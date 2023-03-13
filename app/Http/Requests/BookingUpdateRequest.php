@@ -33,7 +33,7 @@ class BookingUpdateRequest extends FormRequest
             "car_registration_no" => "required|string",
 
             "coupon_code" => "nullable|string",
-
+            "total_price" => "nullable|numeric",
             "additional_information" => "nullable|string",
 
             "status"=>"required|string|in:pending,confirmed,rejected_by_garage_owner",

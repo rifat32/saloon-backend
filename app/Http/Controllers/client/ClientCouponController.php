@@ -37,6 +37,27 @@ class ClientCouponController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get coupons by garage id ",
      *      description="This method is to get coupons by garage id",
      *
@@ -97,11 +118,11 @@ class ClientCouponController extends Controller
                 });
             }
 
-            if (!empty($request->start_date) && !empty($request->end_date)) {
-                $couponQuery = $couponQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
+            if (!empty($request->start_date)) {
+                $couponQuery = $couponQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $couponQuery = $couponQuery->where('created_at', "<=", $request->end_date);
             }
 
             $coupons = $couponQuery->orderByDesc("id")->paginate($perPage);
@@ -129,6 +150,27 @@ class ClientCouponController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get coupons",
      *      description="This method is to get coupons",
      *
@@ -188,12 +230,13 @@ class ClientCouponController extends Controller
                 });
             }
 
-            if (!empty($request->start_date) && !empty($request->end_date)) {
-                $couponQuery = $couponQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
+            if (!empty($request->start_date)) {
+                $couponQuery = $couponQuery->where('created_at', ">=", $request->start_date);
             }
+            if (!empty($request->end_date)) {
+                $couponQuery = $couponQuery->where('created_at', "<=", $request->end_date);
+            }
+
 
             $coupons = $couponQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($coupons, 200);

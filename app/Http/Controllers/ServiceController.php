@@ -197,6 +197,27 @@ class ServiceController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile Services ",
      *      description="This method is to get automobile Services",
      *
@@ -255,12 +276,11 @@ class ServiceController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $servicesQuery = $servicesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
@@ -365,6 +385,27 @@ class ServiceController extends Controller
      *         required=true,
      *  example="1"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get all automobile Services by category id ",
      *      description="This method is to get all automobile Services by category id",
      *
@@ -425,11 +466,11 @@ class ServiceController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $servicesQuery = $servicesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
+            if (!empty($request->start_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $services = $servicesQuery->orderByDesc("name")->get();
@@ -710,6 +751,27 @@ class ServiceController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile sub Services by service id",
      *      description="This method is to get automobile sub Services by service id",
      *
@@ -765,12 +827,11 @@ class ServiceController extends Controller
                 });
 
             }
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $servicesQuery = $servicesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
             $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($services, 200);
@@ -797,6 +858,27 @@ class ServiceController extends Controller
      *         required=true,
      *  example="1"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get all automobile sub Services by service id ",
      *      description="This method is to get all automobile sub Services by service id",
      *
@@ -857,12 +939,11 @@ class ServiceController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $servicesQuery = $servicesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $services = $servicesQuery->orderByDesc("name")->get();

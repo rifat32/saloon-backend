@@ -8,8 +8,11 @@ use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\PriceUtil;
 use App\Models\Booking;
 use App\Models\BookingSubService;
+use App\Models\GarageAutomobileMake;
+use App\Models\GarageAutomobileModel;
 use App\Models\GarageSubService;
 
 use Exception;
@@ -18,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,PriceUtil;
 
 
        /**
@@ -36,10 +39,11 @@ class BookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","total_price","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
+     *     * *   *    @OA\Property(property="total_price", type="number", format="number",example="30"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
@@ -131,11 +135,31 @@ class BookingController extends Controller
             "message" => "booking not found"
                 ], 404);
             }
+
+            $garage_make = GarageAutomobileMake::where([
+                "automobile_make_id" => $updatableData["automobile_make_id"],
+                "garage_id"=>$updatableData["garage_id"]
+            ])
+                ->first();
+            if (!$garage_make) {
+                throw new Exception("This garage does not support this make");
+            }
+            $garage_model = GarageAutomobileModel::where([
+                "automobile_model_id" => $updatableData["automobile_model_id"],
+                "garage_automobile_make_id" => $garage_make->id
+            ])
+                ->first();
+            if (!$garage_model) {
+                throw new Exception("This garage does not support this model");
+            }
+
+
+
             BookingSubService::where([
                "booking_id" => $booking->id
             ])->delete();
 
-
+            $total_price = 0;
             foreach($updatableData["booking_sub_service_ids"] as $sub_service_id) {
                 $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                     ->where([
@@ -152,18 +176,25 @@ class BookingController extends Controller
                     if(!$garage_sub_service ){
                  throw new Exception("invalid service");
                     }
-                    BookingSubService::create([
-                        "sub_service_id" => $garage_sub_service->id,
-                        "booking_id" => $booking->id
+
+                    $price = $this->getPrice($garage_sub_service->id, $updatableData["automobile_make_id"]);
+
+
+                    $total_price += $price;
+                    $booking->booking_sub_services()->create([
+                        "sub_service_id" => $garage_sub_service->sub_service_id,
+                        "price" => $price
                     ]);
 
                 }
+                $booking->price = (!empty($updatableData["total_price"]?$updatableData["total_price"]:$total_price));
+                $booking->save();
 
-                if(!empty($insertableData["coupon_code"])){
+                if(!empty($updatableData["coupon_code"])){
                     $coupon_discount = $this->getDiscount(
-                        $insertableData["garage_id"],
-                        $insertableData["coupon_code"],
-                        $booking->booking_sub_services()->sum("price")
+                        $updatableData["garage_id"],
+                        $updatableData["coupon_code"],
+                        $total_price
                     );
 
                     if($coupon_discount) {
@@ -428,6 +459,27 @@ class BookingController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get  bookings ",
      *      description="This method is to get bookings",
      *
@@ -493,12 +545,11 @@ class BookingController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $bookingQuery = $bookingQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $bookingQuery = $bookingQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $bookingQuery = $bookingQuery->where('created_at', "<=", $request->end_date);
             }
             $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($bookings, 200);

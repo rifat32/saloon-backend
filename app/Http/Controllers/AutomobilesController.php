@@ -199,6 +199,28 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+
      *      summary="This method is to get automobile categories",
      *      description="This method is to get automobile categories",
      *
@@ -255,14 +277,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $users = $automobilesQuery->orderByDesc("id")->paginate($perPage);
@@ -282,6 +301,27 @@ class AutomobilesController extends Controller
     *       security={
      *           {"bearerAuth": {}}
      *       },
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
 
      *      summary="This method is to get all automobile categories",
      *      description="This method is to get all automobile categories",
@@ -339,14 +379,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $users = $automobilesQuery->orderByDesc("id")->get();
@@ -695,6 +732,27 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile makes by category id",
      *      description="This method is to get automobile makes by category id",
      *
@@ -756,12 +814,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $makes = $automobilesQuery->orderByDesc("id")->paginate($perPage);
@@ -796,6 +853,27 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get all automobile makes by category id",
      *      description="This method is to get all automobile makes by category id",
      *
@@ -857,12 +935,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $makes = $automobilesQuery->orderBy("name")->get();
@@ -1222,6 +1299,27 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile models by make id",
      *      description="This method is to get automobile models by make id",
      *
@@ -1283,12 +1381,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);
@@ -1635,6 +1732,27 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile model variants by model id",
      *      description="This method is to get automobile model variants by model id",
      *
@@ -1696,12 +1814,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);
@@ -2329,6 +2446,27 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get automobile Fuel Types by model variant id",
      *      description="This method is to get automobile Fuel Types by model variant id",
      *
@@ -2390,12 +2528,11 @@ class AutomobilesController extends Controller
 
             }
 
-            if(!empty($request->start_date) && !empty($request->end_date)) {
-                $automobilesQuery = $automobilesQuery->whereBetween('created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
-
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
             $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);

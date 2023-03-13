@@ -27,6 +27,14 @@ class ClientBasicController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
