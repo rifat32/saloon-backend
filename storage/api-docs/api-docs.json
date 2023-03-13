@@ -316,6 +316,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -1315,7 +1336,7 @@
         "/v1.0/automobile-categories/get/all": {
             "get": {
                 "tags": [
-                    "automobile_management.category"
+                    "basics"
                 ],
                 "summary": "This method is to get all automobile categories",
                 "description": "This method is to get all automobile categories",
@@ -1845,7 +1866,7 @@
         "/v1.0/automobile-makes-all/{categoryId}": {
             "get": {
                 "tags": [
-                    "automobile_management.make"
+                    "basics"
                 ],
                 "summary": "This method is to get all automobile makes by category id",
                 "description": "This method is to get all automobile makes by category id",
@@ -7441,6 +7462,20 @@
                         "example": "search_key"
                     },
                     {
+                        "name": "country_code",
+                        "in": "query",
+                        "description": "country_code",
+                        "required": true,
+                        "example": "country_code"
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "city",
+                        "required": true,
+                        "example": "city"
+                    },
+                    {
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
@@ -7594,6 +7629,161 @@
                         "description": "id",
                         "required": true,
                         "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/available-countries": {
+            "get": {
+                "tags": [
+                    "basics"
+                ],
+                "summary": "This method is to get available country list",
+                "description": "This method is to get available country list",
+                "operationId": "getAvailableCountries",
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/available-cities/{country_code}": {
+            "get": {
+                "tags": [
+                    "basics"
+                ],
+                "summary": "This method is to get available city list",
+                "description": "This method is to get available city list",
+                "operationId": "getAvailableCities",
+                "parameters": [
+                    {
+                        "name": "country_code",
+                        "in": "path",
+                        "description": "country_code",
+                        "required": true,
+                        "example": "country_code"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -9805,7 +9995,7 @@
         "/v1.0/services-all/{categoryId}": {
             "get": {
                 "tags": [
-                    "service_management"
+                    "basics"
                 ],
                 "summary": "This method is to get all automobile Services by category id ",
                 "description": "This method is to get all automobile Services by category id",
@@ -10924,6 +11114,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    },
+                    {
+                        "name": "country_code",
+                        "in": "query",
+                        "description": "country_code",
+                        "required": true,
+                        "example": "country_code"
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "description": "city",
+                        "required": true,
+                        "example": "city"
                     }
                 ],
                 "responses": {
@@ -11343,6 +11554,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -11572,6 +11804,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -11646,6 +11899,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -11882,6 +12156,27 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {

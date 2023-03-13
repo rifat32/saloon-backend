@@ -107,15 +107,21 @@ class AuthController extends Controller
             $insertableData['password'] = Hash::make($request['password']);
             $insertableData['remember_token'] = Str::random(10);
             $user =  User::create($insertableData);
+
+              // verify email starts
+              $email_token = Str::random(30);
+              $user->email_verify_token = $email_token;
+              $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+              $user->save();
+
+
              $user->assignRole("customer");
 
             $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
             $user->roles = $user->roles->pluck('name');
-            // verify email starts
-            $email_token = Str::random(30);
-            $user->email_verify_token = $email_token;
-            $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+
+
             if(env("SEND_EMAIL") == true) {
                 Mail::to($user->email)->send(new VerifyMail($user));
             }
@@ -634,10 +640,12 @@ $datediff = $now - $user_created_date;
                 if(!$serviceUpdate["success"]){
                     throw new Exception($serviceUpdate["message"]);
                  }
-// verify email starts
-                $email_token = Str::random(30);
-                $user->email_verify_token = $email_token;
-                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+
+               // verify email starts
+               $email_token = Str::random(30);
+               $user->email_verify_token = $email_token;
+               $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+               $user->save();
                 if(env("SEND_EMAIL") == true) {
                     Mail::to($user->email)->send(new VerifyMail($user));
                 }
