@@ -11,6 +11,7 @@ class Service extends Model
     use HasFactory,SoftDeletes;
     protected $fillable = [
         "name",
+        "icon",
         "description",
         "image",
         "automobile_category_id"

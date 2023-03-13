@@ -25,6 +25,7 @@ class ServiceCreateRequest extends FormRequest
     {
         return [
             "name" => "required|string",
+            "icon"=> "nullable|string",
             "description" => "nullable|string",
             "image" => "nullable|string",
             "automobile_category_id" => "required|numeric"

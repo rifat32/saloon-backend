@@ -31,8 +31,9 @@ class ServiceController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"name","description","automobile_category_id"},
+     *            required={"name","icon","description","automobile_category_id"},
      *    @OA\Property(property="name", type="string", format="string",example="car"),
+     *  *    @OA\Property(property="icon", type="string", format="string",example="fa fa tui halua kha"),
      *    @OA\Property(property="description", type="string", format="string",example="car"),
      *    @OA\Property(property="automobile_category_id", type="string", format="number",example="1"),
      *
@@ -107,9 +108,10 @@ class ServiceController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","name","description"},
+     *            required={"id","name","icon","description"},
      *             @OA\Property(property="id", type="number", format="number",example="1"),
      *             @OA\Property(property="name", type="string", format="string",example="car"),
+     *   *  *    @OA\Property(property="icon", type="string", format="string",example="fa fa-- tui halua kha"),
      *             @OA\Property(property="description", type="string", format="string",example="description"),
      *
      *         ),

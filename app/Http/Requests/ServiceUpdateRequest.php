@@ -26,6 +26,7 @@ class ServiceUpdateRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "name" => "required|string",
+            "icon"=> "nullable|string",
             "description" => "nullable|string",
             "image" => "nullable|string",
             // "automobile_category_id" => "required|numeric"

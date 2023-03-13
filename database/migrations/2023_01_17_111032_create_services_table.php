@@ -16,6 +16,7 @@ class CreateServicesTable extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string("name");
+            $table->string("icon")->nullable();
             $table->text("description")->nullable();
             $table->text("image")->nullable();
             $table->unsignedBigInteger("automobile_category_id");
