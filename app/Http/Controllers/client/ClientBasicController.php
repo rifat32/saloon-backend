@@ -42,6 +42,13 @@ class ClientBasicController extends Controller
 * required=true,
 * example="country_code"
 * ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -98,6 +105,10 @@ class ClientBasicController extends Controller
 
             if (!empty($request->country_code)) {
                 $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
+
+            }
+            if (!empty($request->city)) {
+                $garagesQuery =   $garagesQuery->orWhere("city", "like", "%" . $request->city . "%");
 
             }
 

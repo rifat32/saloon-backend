@@ -297,7 +297,7 @@ class AutomobilesController extends Controller
      * @OA\Get(
      *      path="/v1.0/automobile-categories/get/all",
      *      operationId="getAllAutomobileCategories",
-     *      tags={"automobile_management.category"},
+     *      tags={"basics"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -835,7 +835,7 @@ class AutomobilesController extends Controller
      * @OA\Get(
      *      path="/v1.0/automobile-makes-all/{categoryId}",
      *      operationId="getAutomobileMakesAll",
-     *      tags={"automobile_management.make"},
+     *      tags={"basics"},
     *       security={
      *           {"bearerAuth": {}}
      *       },

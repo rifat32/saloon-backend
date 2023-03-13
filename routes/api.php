@@ -50,6 +50,9 @@ Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAll
 
 
 
+Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
+
+Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "getAvailableCities"]);
 
 
 

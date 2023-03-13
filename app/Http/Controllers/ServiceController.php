@@ -373,7 +373,7 @@ class ServiceController extends Controller
      * @OA\Get(
      *      path="/v1.0/services-all/{categoryId}",
      *      operationId="getAllServicesByCategoryId",
-     *      tags={"service_management"},
+     *      tags={"basics"},
     *       security={
      *           {"bearerAuth": {}}
      *       },

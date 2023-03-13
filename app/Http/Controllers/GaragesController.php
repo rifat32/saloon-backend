@@ -500,6 +500,13 @@ class GaragesController extends Controller
 * required=true,
 * example="country_code"
 * ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -592,6 +599,10 @@ class GaragesController extends Controller
 
             if (!empty($request->country_code)) {
                 $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
+
+            }
+            if (!empty($request->city)) {
+                $garagesQuery =   $garagesQuery->orWhere("city", "like", "%" . $request->city . "%");
 
             }
 
@@ -775,5 +786,191 @@ class GaragesController extends Controller
 
 
     }
+
+
+
+
+   /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/available-countries",
+     *      operationId="getAvailableCountries",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+
+     *      summary="This method is to get available country list",
+     *      description="This method is to get available country list",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAvailableCountries(Request $request) {
+        try{
+
+
+            $countryQuery = new Garage();
+
+            if(!empty($request->search_key)) {
+                $automobilesQuery = $countryQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("country", "like", "%" . $term . "%");
+                });
+
+            }
+
+
+
+            $countries = $countryQuery
+            ->distinct("country")
+            ->orderByDesc("country")
+            ->select("id","country")
+            ->get();
+            return response()->json($countries, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
+
+
+    /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/available-cities/{country_code}",
+     *      operationId="getAvailableCities",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     * *  @OA\Parameter(
+* name="country_code",
+* in="path",
+* description="country_code",
+* required=true,
+* example="country_code"
+* ),
+
+
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+
+     *      summary="This method is to get available city list",
+     *      description="This method is to get available city list",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAvailableCities($country_code,Request $request) {
+        try{
+
+
+            $countryQuery =  Garage::where("country",$country_code);
+
+            if(!empty($request->search_key)) {
+                $automobilesQuery = $countryQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("city", "like", "%" . $term . "%");
+                });
+
+            }
+
+
+
+            $countries = $countryQuery
+            ->distinct("city")
+            ->orderByDesc("city")
+            ->select("id","city")
+            ->get();
+            return response()->json($countries, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
+
+
 
 }
