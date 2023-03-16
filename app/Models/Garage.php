@@ -18,6 +18,8 @@ class Garage extends Model
         "additional_information",
         "address_line_1",
         "address_line_2",
+        "lat",
+        "long",
         "country",
         "city",
         "postcode",

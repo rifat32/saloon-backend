@@ -49,6 +49,8 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.email' => 'required|string|email|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
 
+            'garage.lat' => 'nullable|string',
+            'garage.long' => 'nullable|string',
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
             'garage.postcode' => 'required|string',

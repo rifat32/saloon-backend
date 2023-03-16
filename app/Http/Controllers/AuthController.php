@@ -536,6 +536,8 @@ $datediff = $now - $user_created_date;
      *  "additional_information":"No Additional Information",
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
+     *    * *  "lat":"lat",
+     *    * *  "long":"long",
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -625,9 +627,7 @@ $datediff = $now - $user_created_date;
                 $user->assignRole('garage_owner');
                 // end user info ##############
 
-                 $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
-                 $user->permissions = $user->getAllPermissions()->pluck('name');
-                $user->roles = $user->roles->pluck('name');
+
 
                 //  garage info ##############
                 $insertableData['garage']['status'] = "pending";
@@ -651,6 +651,12 @@ $datediff = $now - $user_created_date;
                 }
 
 // verify email ends
+
+
+
+$user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
+$user->permissions = $user->getAllPermissions()->pluck('name');
+$user->roles = $user->roles->pluck('name');
                 return response([
                      "user" => $user,
                      "garage" => $garage,

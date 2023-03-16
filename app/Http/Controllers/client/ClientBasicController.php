@@ -49,6 +49,35 @@ class ClientBasicController extends Controller
 * required=true,
 * example="city"
 * ),
+     * *  @OA\Parameter(
+* name="make_id",
+* in="query",
+* description="automobile_make_id",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="make_id",
+* in="query",
+* description="automobile_model_id",
+* required=true,
+* example="1"
+* ),
+*  @OA\Parameter(
+*      name="service_ids[]",
+*      in="query",
+*      description="service_id",
+*      required=true,
+*      example="1,2"
+* ),
+*  @OA\Parameter(
+*      name="sub_service_ids[]",
+*      in="query",
+*      description="sub_service_id",
+*      required=true,
+*      example="1,2"
+* ),
+
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -90,7 +119,13 @@ class ClientBasicController extends Controller
     public function getGaragesClient($perPage,Request $request) {
 
         try{
-            $garagesQuery = Garage::with("owner");
+            $garagesQuery = Garage::with("owner")
+            ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
+            ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+
+            ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
+            ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+            ;
             if(!empty($request->search_key)) {
                 $garagesQuery = $garagesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
@@ -104,15 +139,46 @@ class ClientBasicController extends Controller
             }
 
             if (!empty($request->country_code)) {
-                $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
+                $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country_code . "%");
 
             }
             if (!empty($request->city)) {
-                $garagesQuery =   $garagesQuery->orWhere("city", "like", "%" . $request->city . "%");
+                $garagesQuery =   $garagesQuery->where("city", "like", "%" . $request->city . "%");
 
             }
 
-            $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
+            if (!empty($request->automobile_make_id)) {
+                $garagesQuery =   $garagesQuery->where("garage_automobile_makes.automobile_make_id",$request->automobile_make_id);
+
+            }
+            if (!empty($request->automobile_model_id)) {
+                $garagesQuery =   $garagesQuery->where("garage_automobile_models.automobile_model_id",$request->automobile_model_id);
+            }
+            if(!empty($request->service_ids)) {
+                if(count($request->service_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$request->service_ids);
+                }
+
+            }
+
+
+            if(!empty($request->sub_service_ids)) {
+                if(count($request->sub_service_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$request->sub_service_ids);
+                }
+
+            }
+
+
+
+            $garages = $garagesQuery
+
+            ->distinct("garages.id")
+
+            ->orderByDesc("garages.id")
+            ->select("garages.*")
+
+            ->paginate($perPage);
             return response()->json($garages, 200);
         } catch(Exception $e){
 

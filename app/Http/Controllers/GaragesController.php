@@ -51,6 +51,8 @@ class GaragesController extends Controller
      *
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
+     * *  "country":"Bangladesh",
+     * *  "country":"Bangladesh",
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -67,6 +69,8 @@ class GaragesController extends Controller
      *  "additional_information":"No Additional Information",
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
+     *    * *  "lat":"lat",
+     *    * *  "long":"long",
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -236,6 +240,8 @@ class GaragesController extends Controller
      *  "additional_information":"No Additional Information",
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
+     *    * *  "lat":"lat",
+     *    * *  "long":"long",
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -422,6 +428,8 @@ class GaragesController extends Controller
                 "additional_information",
                 "address_line_1",
                 "address_line_2",
+                "lat",
+                "long",
                 "country",
                 "city",
                 "postcode",
@@ -430,7 +438,8 @@ class GaragesController extends Controller
                 // "is_active",
                 "is_mobile_garage",
                 "wifi_available",
-                "labour_rate"
+                "labour_rate",
+
         ])->toArray()
         )
             // ->with("somthing")
