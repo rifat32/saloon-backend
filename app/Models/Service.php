@@ -18,10 +18,22 @@ class Service extends Model
         // "is_active",
 
     ];
+    
     public function category(){
         return $this->belongsTo(AutomobileCategory::class,'automobile_category_id', 'id');
     }
     public function subServices(){
         return $this->hasMany(SubService::class,'service_id', 'id');
     }
+
+
+
+
+
+
+
+
+
+
+
 }

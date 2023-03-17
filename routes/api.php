@@ -8,6 +8,7 @@ use App\Http\Controllers\client\ClientBasicController;
 use App\Http\Controllers\client\ClientBookingController;
 use App\Http\Controllers\client\ClientCouponController;
 use App\Http\Controllers\client\ClientJobController;
+use App\Http\Controllers\client\ClientPreBookingController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
@@ -517,8 +518,24 @@ Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [Cli
 // coupon management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// client pre booking management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
+
+Route::post('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "createPreBookingClient"]);
+Route::put('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "updatePreBookingClient"]);
+
+
+Route::get('/v1.0/client/pre-bookings', [JobController::class, "getJobs"]);
+Route::get('/v1.0/client/pre-bookings/{id}', [JobController::class, "getJobById"]);
+Route::delete('/v1.0/client/pre-bookings/{id}', [JobController::class, "deleteJobById"]);
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//  client pre booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
