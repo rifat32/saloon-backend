@@ -50,5 +50,9 @@ class Garage extends Model
         return $this->hasMany(GarageGallery::class,'garage_id', 'id');
     }
 
+    public function garage_times(){
+        return $this->hasMany(GarageTime::class,'garage_id', 'id');
+    }
+
 
 }

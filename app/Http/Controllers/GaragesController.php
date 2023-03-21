@@ -691,7 +691,10 @@ class GaragesController extends Controller
             $garagesQuery = Garage::with(
                 "owner",
                 "garageAutomobileMakes.garageAutomobileModels",
-                "garageServices.garageSubServices.garage_sub_service_prices"
+                "garageServices.garageSubServices.garage_sub_service_prices",
+                "garage_times",
+                "garageGalleries",
+
             );
 
 
@@ -711,7 +714,7 @@ class GaragesController extends Controller
         $data["garage"] = $garage;
         $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
         $data["garage_service_ids"] = $garage_service_ids;
-            return response()->json($data, 200);
+        return response()->json($data, 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500);

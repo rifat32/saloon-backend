@@ -482,6 +482,227 @@ class ServiceController extends Controller
 
     }
 
+      /**
+        *
+     * @OA\Get(
+     *      path="/v2.0/services-all/{categoryId}",
+     *      operationId="getAllServicesByCategoryIdV2",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         description="categoryId",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get all automobile Services by category id ",
+     *      description="This method is to get all automobile Services by category id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAllServicesByCategoryIdV2($categoryId,Request $request) {
+        try{
+
+
+            $servicesQuery = Service::where([
+                "automobile_category_id" => $categoryId
+            ]);
+
+            if(!empty($request->search_key)) {
+                $servicesQuery = $servicesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
+            }
+
+            $services = $servicesQuery->orderByDesc("name")->get();
+            return response()->json($services, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
+  /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/sub-services-all",
+     *      operationId="getSubServicesAll",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+*  @OA\Parameter(
+*      name="service_ids[]",
+*      in="query",
+*      description="service_id",
+*      required=true,
+*      example="1,2"
+* ),
+     *      summary="This method is to get all sub services by service ids",
+     *      description="This method is to get all sub services by service ids",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getSubServicesAll(Request $request) {
+        try{
+
+
+            $subServiceQuery = new SubService();
+
+            if(!empty($request->search_key)) {
+                $subServiceQuery = $subServiceQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $subServiceQuery = $subServiceQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $subServiceQuery = $subServiceQuery->where('created_at', "<=", $request->end_date);
+            }
+            if(!empty($request->service_ids)) {
+                if(count($request->service_ids)) {
+                    $subServiceQuery = $subServiceQuery->whereIn("service_id",$request->service_ids);
+                }
+
+            }
+
+            $sub_services = $subServiceQuery->orderBy("name")->get();
+            return response()->json($sub_services, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
 
 
 /**

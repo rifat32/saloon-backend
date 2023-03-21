@@ -8,6 +8,7 @@ use App\Http\Requests\JobStatusChangeRequest;
 use App\Http\Requests\JobUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\PriceUtil;
 use App\Models\Booking;
 use App\Models\BookingSubService;
 use App\Models\GarageSubService;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,PriceUtil;
 
       /**
         *
@@ -113,16 +114,14 @@ class JobController extends Controller
             ])
             ->first();
 
-            $coupon_discount = false;
-            if(!empty($insertableData["coupon_code"])){
-                $coupon_discount = $this->getDiscount(
-                    $insertableData["garage_id"],
-                    $insertableData["coupon_code"],
-                    $insertableData["price"]
-                );
-
-
-            }
+            // $coupon_discount = false;
+            // if(!empty($insertableData["coupon_code"])){
+            //     $coupon_discount = $this->getDiscount(
+            //         $insertableData["garage_id"],
+            //         $insertableData["coupon_code"],
+            //         $insertableData["price"]
+            //     );
+            // }
 
 
                 if(!$booking){
@@ -144,8 +143,8 @@ class JobController extends Controller
                     "additional_information" => $booking->additional_information,
 
 
-                    "coupon_discount_type" => ($coupon_discount?$coupon_discount["discount_type"]:0),
-                    "coupon_discount_amount" => ($coupon_discount?$coupon_discount["discount_amount"]:0),
+                    // "coupon_discount_type" => ($coupon_discount?$coupon_discount["discount_type"]:0),
+                    // "coupon_discount_amount" => ($coupon_discount?$coupon_discount["discount_amount"]:0),
 
 
 
@@ -159,7 +158,7 @@ class JobController extends Controller
 
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount"=> $updatableData["discount_amount"],
-                    "price"=>$updatableData["price"],
+                    "price"=>($updatableData["price"]?$updatableData["price"]:$booking->price),
                     "status" => $updatableData["status"],
                     "payment_status" => "due",
                 ]);
@@ -180,6 +179,26 @@ class JobController extends Controller
                  ]);
 
                 }
+
+
+                if(!empty($updatableData["coupon_code"])){
+                    $coupon_discount = $this->getDiscount(
+                        $updatableData["garage_id"],
+                        $updatableData["coupon_code"],
+                        $job->price
+
+                    );
+
+                    if($coupon_discount) {
+
+                        $job->coupon_discount_type = $coupon_discount["discount_type"];
+                        $job->coupon_discount_amount = $coupon_discount["discount_amount"];
+
+
+                    }
+                }
+
+                $job->save();
 
 
                 $booking->delete();
@@ -295,21 +314,21 @@ class JobController extends Controller
         ], 401);
     }
 
-    $coupon_discount = false;
-    if(!empty($updatableData["coupon_code"])){
-        $coupon_discount = $this->getDiscount(
-            $updatableData["garage_id"],
-            $updatableData["coupon_code"],
-            $updatableData["price"]
-        );
+    // $coupon_discount = false;
+    // if(!empty($updatableData["coupon_code"])){
+    //     $coupon_discount = $this->getDiscount(
+    //         $updatableData["garage_id"],
+    //         $updatableData["coupon_code"],
+    //         $updatableData["price"]
+    //     );
 
-    }
+    // }
 
-    if($coupon_discount) {
-        $updatableData["coupon_discount_type"] = $coupon_discount["discount_type"];
-        $updatableData["coupon_discount_amount"] = $coupon_discount["discount_amount"];
+    // if($coupon_discount) {
+    //     $updatableData["coupon_discount_type"] = $coupon_discount["discount_type"];
+    //     $updatableData["coupon_discount_amount"] = $coupon_discount["discount_amount"];
 
-    }
+    // }
 
 
         $job  =  tap(Job::where([
@@ -321,8 +340,8 @@ class JobController extends Controller
 
 
 
-            "coupon_discount_type",
-            "coupon_discount_amount",
+            // "coupon_discount_type",
+            // "coupon_discount_amount",
 
             "coupon_code",
 
@@ -373,7 +392,24 @@ class JobController extends Controller
 
                 }
 
+                if(!empty($updatableData["coupon_code"])){
+                    $coupon_discount = $this->getDiscount(
+                        $updatableData["garage_id"],
+                        $updatableData["coupon_code"],
+                        $job->price
 
+                    );
+
+                    if($coupon_discount) {
+
+                        $job->coupon_discount_type = $coupon_discount["discount_type"];
+                        $job->coupon_discount_amount = $coupon_discount["discount_amount"];
+
+
+                    }
+                }
+
+                $job->save();
 
 
 

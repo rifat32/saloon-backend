@@ -188,25 +188,25 @@ class BookingController extends Controller
 
                 }
                 $booking->price = (!empty($updatableData["total_price"]?$updatableData["total_price"]:$total_price));
-                $booking->save();
+
 
                 if(!empty($updatableData["coupon_code"])){
                     $coupon_discount = $this->getDiscount(
                         $updatableData["garage_id"],
                         $updatableData["coupon_code"],
-                        $total_price
+                        $booking->price
                     );
 
                     if($coupon_discount) {
 
                         $booking->coupon_discount_type = $coupon_discount["discount_type"];
                         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-                        $booking->save();
+
 
                     }
                 }
 
-
+                $booking->save();
 
 
 

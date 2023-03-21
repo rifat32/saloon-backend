@@ -70,7 +70,8 @@ return "swagger generated";
         "email_verified_at"=>now(),
         'is_active' => 1
         ]);
-
+        $admin->email_verified_at = now();
+        $admin->save();
         // ###############################
         // permissions
         // ###############################

@@ -846,13 +846,7 @@ class AutomobilesController extends Controller
      *         required=true,
      *  example="6"
      *      ),
-     *              @OA\Parameter(
-     *         name="perPage",
-     *         in="path",
-     *         description="perPage",
-     *         required=true,
-     *  example="6"
-     *      ),
+
      *      * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -914,13 +908,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakesAll($categoryId,Request $request) {
         try{
-        //     if(!$request->user()->hasPermissionTo('automobile_view')||!$request->user()->hasPermissionTo('garage_create')){
-        //         return response()->json([
-        //            "message" => "You can not perform this action"
-        //         ],401);
-        //    }
 
-            // $automobilesQuery = AutomobileMake::with("makes");
 
             $automobilesQuery = AutomobileMake::with("models")
             ->where([
@@ -951,6 +939,227 @@ class AutomobilesController extends Controller
 
     }
 
+    /**
+        *
+     * @OA\Get(
+     *      path="/v2.0/automobile-makes-all/{categoryId}",
+     *      operationId="getAutomobileMakesAllV2",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *         @OA\Parameter(
+     *         name="categoryId",
+     *         in="path",
+     *         description="categoryId",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get all automobile makes by category id",
+     *      description="This method is to get all automobile makes by category id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAutomobileMakesAllV2($categoryId,Request $request) {
+        try{
+
+
+            $automobilesQuery = AutomobileMake::where([
+                "automobile_category_id" => $categoryId
+            ]);
+
+            if(!empty($request->search_key)) {
+                $automobilesQuery = $automobilesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
+            }
+
+            $makes = $automobilesQuery->orderBy("name")->get();
+            return response()->json($makes, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
+
+   /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/automobile-models-all",
+     *      operationId="getAutomobileModelsAll",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+*  @OA\Parameter(
+*      name="automobile_make_ids[]",
+*      in="query",
+*      description="automobile_make_id",
+*      required=true,
+*      example="1,2"
+* ),
+     *      summary="This method is to get all automobile models by make ids",
+     *      description="This method is to get all automobile models by make ids",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAutomobileModelsAll(Request $request) {
+        try{
+
+
+            $automobilesQuery = new AutomobileModel();
+
+            if(!empty($request->search_key)) {
+                $automobilesQuery = $automobilesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
+            }
+            if(!empty($request->automobile_make_ids)) {
+                if(count($request->automobile_make_ids)) {
+                    $automobilesQuery = $automobilesQuery->whereIn("automobile_make_id",$request->automobile_make_ids);
+                }
+
+            }
+
+            $models = $automobilesQuery->orderBy("name")->get();
+            return response()->json($models, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
 
 
 

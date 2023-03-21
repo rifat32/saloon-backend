@@ -15,5 +15,6 @@ class GarageTime extends Model
         "closing_time",
         "garage_id"
     ];
+    
 
 }

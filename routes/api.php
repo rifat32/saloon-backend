@@ -46,9 +46,18 @@ Route::patch('/forgetpassword/reset/{token}', [AuthController::class, "changePas
 
 Route::post('/v1.0/auth/user-register-with-garage', [AuthController::class, "registerUserWithGarageClient"]);
 Route::get('/v1.0/automobile-categories/get/all', [AutomobilesController::class, "getAllAutomobileCategories"]);
-Route::get('/v1.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAll"]);
-Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
 
+Route::get('/v1.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAll"]);
+Route::get('/v2.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAllV2"]);
+
+Route::get('/v1.0/automobile-models-all', [AutomobilesController::class, "getAutomobileModelsAll"]);
+
+
+
+Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
+Route::get('/v2.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryIdV2"]);
+
+Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesAll"]);
 
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
@@ -466,7 +475,7 @@ Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageS
 
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
-
+Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient"]);
 
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
@@ -528,9 +537,11 @@ Route::post('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "cr
 Route::put('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "updatePreBookingClient"]);
 
 
-Route::get('/v1.0/client/pre-bookings', [JobController::class, "getJobs"]);
-Route::get('/v1.0/client/pre-bookings/{id}', [JobController::class, "getJobById"]);
-Route::delete('/v1.0/client/pre-bookings/{id}', [JobController::class, "deleteJobById"]);
+Route::get('/v1.0/client/pre-bookings/{perPage}', [ClientPreBookingController::class, "getPreBookingsClient"]);
+
+Route::get('/v1.0/client/pre-bookings/single/{id}', [ClientPreBookingController::class, "getPreBookingByIdClient"]);
+
+Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::class, "deletePreBookingByIdClient"]);
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

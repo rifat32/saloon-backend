@@ -32,7 +32,7 @@ class BookingToJobRequest extends FormRequest
 
             "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
 
-            "price" => "required|numeric",
+            "price" => "nullable|numeric",
 
             "coupon_code" => "nullable|string",
 

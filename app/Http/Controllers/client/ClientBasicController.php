@@ -5,6 +5,8 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Garage;
+use App\Models\GarageAutomobileMake;
+use App\Models\GarageService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -186,4 +188,102 @@ class ClientBasicController extends Controller
         }
 
     }
+
+
+     /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garages/single/{id}",
+     *      operationId="getGarageByIdClient",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get garage by id",
+     *      description="This method is to get garage by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageByIdClient($id,Request $request) {
+
+        try{
+            $garagesQuery = Garage::with(
+                "owner",
+                "garageAutomobileMakes.garageAutomobileModels",
+                "garageServices.garageSubServices.garage_sub_service_prices",
+                "garage_times",
+                "garageGalleries",
+
+            );
+
+
+
+            $garage = $garagesQuery->where([
+                "id" => $id
+            ])
+            ->first();
+       $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
+        $garage_service_ids =   GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
+
+        $data["garage"] = $garage;
+        $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
+        $data["garage_service_ids"] = $garage_service_ids;
+        return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
 }
