@@ -690,8 +690,11 @@ class GaragesController extends Controller
 
             $garagesQuery = Garage::with(
                 "owner",
-                "garageAutomobileMakes.garageAutomobileModels",
+                "garageAutomobileMakes.automobileMake",
+                "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+                "garageServices.service",
                 "garageServices.garageSubServices.garage_sub_service_prices",
+                "garageServices.garageSubServices.subService",
                 "garage_times",
                 "garageGalleries",
 

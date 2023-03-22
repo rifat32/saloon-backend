@@ -18,12 +18,13 @@ use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
+use App\Http\Controllers\JobBidController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
-
+use App\Models\JobBid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -291,11 +292,11 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 
 
 
+
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-
 
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
@@ -307,6 +308,25 @@ Route::get('/v1.0/bookings/single/{garage_id}/{id}', [BookingController::class, 
 Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // booking management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// job bid management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::get('/v1.0/pre-bookings/{garage_id}/{perPage}', [JobBidController::class, "getPreBookings"]);
+Route::get('/v1.0/pre-bookings/single/{garage_id}/{id}', [JobBidController::class, "getPreBookingById"]);
+
+
+Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
+Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
+Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);
+
+
+
+
+Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// job bid management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

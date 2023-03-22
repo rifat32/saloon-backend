@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 class ClientBasicController extends Controller
 {
     use ErrorUtil;
+
+
     /**
         *
      * @OA\Get(
@@ -249,8 +251,11 @@ class ClientBasicController extends Controller
         try{
             $garagesQuery = Garage::with(
                 "owner",
-                "garageAutomobileMakes.garageAutomobileModels",
+                "garageAutomobileMakes.automobileMake",
+                "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+                "garageServices.service",
                 "garageServices.garageSubServices.garage_sub_service_prices",
+                "garageServices.garageSubServices.subService",
                 "garage_times",
                 "garageGalleries",
 
@@ -262,6 +267,18 @@ class ClientBasicController extends Controller
                 "id" => $id
             ])
             ->first();
+
+
+            if(!$garage) {
+
+
+           return response()->json([
+            "message" => "no garage found"
+           ],404);
+
+            }
+
+
        $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
         $garage_service_ids =   GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
 
