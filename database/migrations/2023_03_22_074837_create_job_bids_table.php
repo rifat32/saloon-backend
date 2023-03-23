@@ -15,6 +15,12 @@ class CreateJobBidsTable extends Migration
     {
         Schema::create('job_bids', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("pre_booking_id");
+            $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('cascade');
+            $table->unsignedBigInteger("garage_id");
+            $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
+            $table->double("price");
+            $table->text("offer_template");
             $table->timestamps();
         });
     }

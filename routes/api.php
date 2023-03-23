@@ -316,6 +316,8 @@ Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "del
 Route::get('/v1.0/pre-bookings/{garage_id}/{perPage}', [JobBidController::class, "getPreBookings"]);
 Route::get('/v1.0/pre-bookings/single/{garage_id}/{id}', [JobBidController::class, "getPreBookingById"]);
 
+Route::post('/v1.0/job-bids', [JobBidController::class, "createJobBid"]);
+Route::put('/v1.0/job-bids', [JobBidController::class, "updateJobBid"]);
 
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);

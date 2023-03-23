@@ -34,5 +34,7 @@ class PreBooking extends Model
     public function pre_booking_sub_services(){
         return $this->hasMany(PreBookingSubService::class,'pre_booking_id', 'id');
     }
-
+    public function job_bids(){
+        return $this->hasMany(JobBid::class,'pre_booking_id', 'id');
+    }
 }

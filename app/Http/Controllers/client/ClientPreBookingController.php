@@ -415,7 +415,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service")
+            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage")
                 ->where([
                     "customer_id" => $request->user()->id
                 ]);
@@ -510,7 +510,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service")
+            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage")
                 ->where([
                     "id" => $id,
                     "customer_id" => $request->user()->id

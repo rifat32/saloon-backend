@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\JobBidCreateRequest;
+use App\Http\Requests\JobBidUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
 use App\Models\GarageSubService;
+use App\Models\JobBid;
 use App\Models\PreBooking;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobBidController extends Controller
 {
@@ -246,4 +250,252 @@ return response()->json([
         return $this->sendError($e,500);
         }
     }
+
+ /**
+     *
+     * @OA\Post(
+     *      path="/v1.0/job-bids",
+     *      operationId="createJobBid",
+     *      tags={"job_bid_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store job bid",
+     *      description="This method is to store job bid",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"garage_id","pre_booking_id","price","offer_template","description"},
+     *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="price", type="number", format="number",example="10.99"),
+     * *    @OA\Property(property="offer_template", type="string", format="string",example="offer template goes here"),
+
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function createJobBid(JobBidCreateRequest $request)
+    {
+        try {
+
+            return DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('job_bids_create')) {
+                    return response()->json([
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+
+                $insertableData = $request->validated();
+                if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
+                    return response()->json([
+                        "message" => "you are not the owner of the garage or the requested garage does not exist."
+                    ], 401);
+                }
+
+                $garage_sub_service_ids = GarageSubService::
+                leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                ->where([
+                    "garage_services.garage_id" => $insertableData["garage_id"]
+                ])
+                ->pluck("garage_sub_services.sub_service_id");
+
+                $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service")
+                ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
+                ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids)
+                ->where([
+                    "pre_bookings.id" => $insertableData["pre_booking_id"]
+                ])
+                ->first();
+
+                if(!$pre_booking) {
+    return response()->json([
+        "message" => "no pre booking found"
+    ],
+    404);
+                }
+
+                $previous_job_bid = JobBid::where([
+                    "pre_booking_id" => $insertableData["pre_booking_id"],
+                    "garage_id" => $insertableData["garage_id"],
+                ])
+                ->first();
+
+                if($previous_job_bid){
+                    return response()->json([
+                        "message" => "bid already present"
+                    ],
+                    409);
+                }
+
+                $job_bid =  JobBid::create($insertableData);
+
+
+                return response($job_bid, 201);
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return $this->sendError($e, 500);
+        }
+    }
+
+
+ /**
+     *
+     * @OA\Put(
+     *      path="/v1.0/job-bids",
+     *      operationId="updateJobBid",
+     *      tags={"job_bid_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update job bid",
+     *      description="This method is to update job bid",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+   *            required={"id","garage_id","pre_booking_id","price","offer_template","description"},
+   *    @OA\Property(property="id", type="number", format="number",example="1"),
+     *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="price", type="number", format="number",example="10.99"),
+     * *    @OA\Property(property="offer_template", type="string", format="string",example="offer template goes here"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function updateJobBid(JobBidUpdateRequest $request)
+    {
+        try {
+            return  DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('fuel_station_update')) {
+                    return response()->json([
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+                $updatableData = $request->validated();
+
+                if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                    return response()->json([
+                        "message" => "you are not the owner of the garage or the requested garage does not exist."
+                    ], 401);
+                }
+
+                $garage_sub_service_ids = GarageSubService::
+                leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                ->where([
+                    "garage_services.garage_id" => $updatableData["garage_id"]
+                ])
+                ->pluck("garage_sub_services.sub_service_id");
+
+                $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service")
+                ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
+                ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids)
+                ->where([
+                    "pre_bookings.id" => $updatableData["pre_booking_id"]
+                ])
+                ->first();
+
+                if(!$pre_booking) {
+    return response()->json([
+        "message" => "no pre booking found"
+    ],
+    404);
+      }
+
+
+
+
+
+
+                $job_bid  =  tap(JobBid::where(["id" => $updatableData["id"]]))->update(
+                    collect($updatableData)->only([
+                        "garage_id",
+                        "pre_booking_id",
+                        "price",
+                        "offer_template",
+                    ])->toArray()
+                )
+                    // ->with("somthing")
+
+                    ->first();
+
+                return response($job_bid, 201);
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return $this->sendError($e, 500);
+        }
+    }
+
+
+
 }
