@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PreBookingConfirmRequestClient;
 use App\Http\Requests\PreBookingCreateRequestClient;
 use App\Http\Requests\PreBookingUpdateRequestClient;
 use App\Http\Utils\ErrorUtil;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\GarageSubService;
+use App\Models\Job;
+use App\Models\JobBid;
 use App\Models\PreBooking;
 use App\Models\PreBookingSubService;
 use App\Models\SubService;
@@ -531,6 +535,204 @@ class ClientPreBookingController extends Controller
         }
     }
 
+
+    /**
+     *
+     * @OA\Post(
+     *      path="/v1.0/client/pre-bookings/confirm",
+     *      operationId="confirmPreBookingClient",
+     *      tags={"client.prebooking"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to confirm pre  booking",
+     *      description="This method is to confirm pre booking",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids"},
+
+
+     *
+     *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
+     * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
+     *
+
+     *
+     *
+     * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+
+
+     *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *
+     *
+     *  * @OA\Property(property="country", type="string", format="string",example="country"),
+     *  * @OA\Property(property="city", type="string", format="string",example="city"),
+     *  * @OA\Property(property="post_code", type="string", format="string",example="postcode"),
+     *  * @OA\Property(property="address", type="string", format="string",example="address"),
+     *
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function confirmPreBookingClient(PreBookingConfirmRequestClient $request)
+    {
+        try {
+
+            return DB::transaction(function () use ($request) {
+                $insertableData = $request->validated();
+
+                $insertableData["customer_id"] = auth()->user()->id;
+
+
+
+                $pre_booking  = PreBooking::where([
+                    "id" => $insertableData["pre_booking_id"],
+                    "customer_id" => auth()->user()->id,
+                    ])
+                    ->first();
+
+
+                        if(!$pre_booking){
+                            return response()->json([
+                        "message" => "booking not found"
+                            ], 404);
+                        }
+
+                        $job_bid  = JobBid::where([
+        "id" => $insertableData["job_bid_id"],
+        "pre_booking_id"=>$pre_booking->id,
+                            ])
+                            ->first();
+
+
+                                if(!$job_bid ){
+                                    return response()->json([
+                                "message" => "job bid not found"
+                                    ], 404);
+                                }
+
+
+                        $job = Job::create([
+                            "garage_id" => $pre_booking->garage_id,
+                            "customer_id" => $pre_booking->customer_id,
+                            "automobile_make_id" => $pre_booking->automobile_make_id,
+                            "automobile_model_id" => $pre_booking->automobile_model_id,
+                            "car_registration_no" => $pre_booking->car_registration_no,
+                            "additional_information" => $pre_booking->additional_information,
+                            "job_start_date" => $pre_booking->job_start_date,
+                            "job_start_time" => $pre_booking->job_start_time,
+                            "job_end_time" => $pre_booking->job_end_time,
+
+
+                            // "coupon_discount_type" => $pre_booking->coupon_discount_type,
+                            // "coupon_discount_amount" => $pre_booking->coupon_discount_amount,
+
+
+                            "discount_type" => "fixed",
+                            "discount_amount" => 0,
+                            "price" => $job_bid->price,
+                            "status" => "pending",
+                            "payment_status" => "due",
+
+
+
+                        ]);
+
+                        $total_price = 0;
+
+                        foreach (PreBookingSubService::where([
+                                "pre_booking_id" => $pre_booking->id
+                            ])->get()
+                            as
+                            $pre_booking_sub_service) {
+                                $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                                ->where([
+                                    "garage_services.garage_id" => $job_bid->garage_id,
+                                    "garage_sub_services.sub_service_id" => $pre_booking_sub_service->sub_service_id
+                                ])
+                                ->select(
+                                    "garage_sub_services.id",
+                                    "garage_sub_services.sub_service_id",
+                                    "garage_sub_services.garage_service_id"
+                                )
+                                ->first();
+
+                            if (!$garage_sub_service) {
+                                throw new Exception("invalid service");
+                            }
+
+                            $price = $this->getPrice($garage_sub_service->id, $insertableData["automobile_make_id"]);
+
+                            $job->job_sub_services()->create([
+                                "sub_service_id" => $pre_booking_sub_service->sub_service_id,
+                                "price" => $price
+                            ]);
+                            $total_price += $price;
+
+                        }
+                        // $job->price = $total_price;
+
+                        $job->save();
+                        $pre_booking->status = "booked";
+                        $pre_booking->save();
+                        // $pre_booking_sub_service->delete();
+
+
+
+
+            return response([
+                "ok" => true
+            ], 201);
+
+
+
+
+
+
+
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return $this->sendError($e, 500);
+        }
+    }
 
 
 

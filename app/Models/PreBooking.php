@@ -20,7 +20,6 @@ class PreBooking extends Model
 
 
 
-
         "address",
         "country",
         "city",

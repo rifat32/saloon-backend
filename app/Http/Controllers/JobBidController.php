@@ -126,18 +126,24 @@ class JobBidController extends Controller
             if(!empty($request->search_key)) {
                 $preBookingQuery = $preBookingQuery->where(function($query) use ($request){
                     $term = $request->search_key;
-                    $query->where("car_registration_no", "like", "%" . $term . "%");
+                    $query->where("pre_bookings.car_registration_no", "like", "%" . $term . "%");
                 });
 
             }
 
             if (!empty($request->start_date)) {
-                $preBookingQuery = $preBookingQuery->where('created_at', ">=", $request->start_date);
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
             }
             if (!empty($request->end_date)) {
-                $preBookingQuery = $preBookingQuery->where('created_at', "<=", $request->end_date);
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
             }
-            $pre_bookings = $preBookingQuery->orderByDesc("id")->paginate($perPage);
+            $pre_bookings = $preBookingQuery
+
+            ->orderByDesc("pre_bookings.id")
+            ->select(
+                "pre_bookings.*"
+                )
+            ->paginate($perPage);
             return response()->json($pre_bookings, 200);
         } catch(Exception $e){
 
@@ -233,6 +239,7 @@ class JobBidController extends Controller
             ->where([
                 "pre_bookings.id" => $id
             ])
+            ->select("pre_bookings.*")
             ->first();
 
             if(!$pre_booking) {
@@ -495,6 +502,333 @@ return response()->json([
             return $this->sendError($e, 500);
         }
     }
+
+  /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/job-bids/{garage_id}/{perPage}",
+     *      operationId="getJobBids",
+     *      tags={"job_bid_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+ *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get job bids",
+     *      description="This method is to get job bids",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getJobBids($garage_id,$perPage,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('job_bids_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+            if (!$this->garageOwnerCheck($garage_id)) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
+
+
+
+            $jobBidQuery = JobBid::with("pre_booking.pre_booking_sub_services")
+            ->leftJoin('pre_bookings', 'job_bids.pre_booking_id', '=', 'pre_bookings.id')
+           ;
+
+            if(!empty($request->search_key)) {
+                $jobBidQuery = $jobBidQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("pre_bookings.car_registration_no", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $jobBidQuery = $jobBidQuery->where('job_bids.created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $jobBidQuery = $jobBidQuery->where('job_bids.created_at', "<=", $request->end_date);
+            }
+            $job_bids = $jobBidQuery->orderByDesc("job_bids.id")
+            ->select("job_bids.*")
+            ->paginate($perPage);
+            return response()->json($job_bids, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+    }
+
+
+
+   /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/job-bids/single/{garage_id}/{id}",
+     *      operationId="getJobBidById",
+     *      tags={"job_bid_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+ *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+     *      summary="This method is to get job bid by garae id and id ",
+     *      description="This method is to get job bid by garage id and id.",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getJobBidById($garage_id,$id,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('job_bids_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+            if (!$this->garageOwnerCheck($garage_id)) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
+
+
+
+            $job_bid =  JobBid::with("pre_booking.pre_booking_sub_services")
+            ->leftJoin('pre_bookings', 'job_bids.pre_booking_id', '=', 'pre_bookings.id')
+
+
+            ->where([
+                "job_bids.id" => $id
+            ])
+            ->select("job_bids.*")
+            ->first();
+
+            if(!$job_bid) {
+return response()->json([
+    "message" => "no job bid found"
+],
+404);
+            }
+
+
+
+            return response()->json($job_bid, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+    }
+
+
+     /**
+        *
+     * @OA\Delete(
+     *      path="/v1.0/job-bids/{garage_id}/{id}",
+     *      operationId="deleteJobBidById",
+     *      tags={"job_bid_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+ *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to  delete job bid by id",
+     *      description="This method is to delete job bid by id",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function deleteJobBidById($garage_id,$id,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('job_bids_delete')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+            if (!$this->garageOwnerCheck($garage_id)) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
+
+
+            $job_bid = JobBid::where([
+                "garage_id" => $garage_id,
+                "id" => $id
+            ])
+            ->first();
+             if(!$job_bid){
+                return response()->json([
+            "message" => "job bid not found"
+                ], 404);
+            }
+            $job_bid->delete();
+
+
+            return response()->json($job_bid, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+    }
+
+
 
 
 

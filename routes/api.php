@@ -319,9 +319,14 @@ Route::get('/v1.0/pre-bookings/single/{garage_id}/{id}', [JobBidController::clas
 Route::post('/v1.0/job-bids', [JobBidController::class, "createJobBid"]);
 Route::put('/v1.0/job-bids', [JobBidController::class, "updateJobBid"]);
 
-Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
-Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
-Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);
+Route::get('/v1.0/job-bids/{garage_id}/{perPage}', [JobBidController::class, "getJobBids"]);
+Route::get('/v1.0/job-bids/single/{garage_id}/{id}', [JobBidController::class, "getJobBidById"]);
+
+Route::delete('/v1.0/job-bids/{garage_id}/{id}', [JobBidController::class, "deleteJobBidById"]);
+
+
+
+
 
 
 
@@ -562,6 +567,8 @@ Route::put('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "upd
 Route::get('/v1.0/client/pre-bookings/{perPage}', [ClientPreBookingController::class, "getPreBookingsClient"]);
 
 Route::get('/v1.0/client/pre-bookings/single/{id}', [ClientPreBookingController::class, "getPreBookingByIdClient"]);
+
+Route::post('/v1.0/client/pre-bookings/confirm', [ClientPreBookingController::class, "confirmPreBookingClient"]);
 
 Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::class, "deletePreBookingByIdClient"]);
 
