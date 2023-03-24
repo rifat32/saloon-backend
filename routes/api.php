@@ -15,6 +15,7 @@ use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageGalleryController;
+use App\Http\Controllers\GaragePackageController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
+use App\Models\GaragePackage;
 use App\Models\JobBid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -422,11 +424,32 @@ Route::delete('/v1.0/garage-service-prices/{id}', [GarageServicePriceController:
 Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceByGarageSubServiceId"]);
 
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// price management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// package management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/garage-packages', [GaragePackageController::class, "createGaragePackage"]);
+
+Route::put('/v1.0/garage-service-prices', [GarageServicePriceController::class, "updateGarageSubServicePrice"]);
+
+
+
+Route::delete('/v1.0/garage-service-prices/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceById"]);
+
+Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceByGarageSubServiceId"]);
+
+
 
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// price management section
+// package management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

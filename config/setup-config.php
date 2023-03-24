@@ -144,6 +144,11 @@ return [
        "garage_service_price_delete",
 
 
+       "garage_package_create",
+       "garage_package_update",
+       "garage_package_view",
+       "garage_package_delete",
+
        "job_bids_create",
        "job_bids_update",
        "job_bids_view",
@@ -264,6 +269,11 @@ return [
        "garage_service_price_update",
        "garage_service_price_view",
        "garage_service_price_delete",
+
+       "garage_package_create",
+       "garage_package_update",
+       "garage_package_view",
+       "garage_package_delete",
 
 
        "job_bids_create",
