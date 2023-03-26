@@ -436,13 +436,17 @@ Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageS
 
 Route::post('/v1.0/garage-packages', [GaragePackageController::class, "createGaragePackage"]);
 
-Route::put('/v1.0/garage-service-prices', [GarageServicePriceController::class, "updateGarageSubServicePrice"]);
+Route::put('/v1.0/garage-packages', [GaragePackageController::class, "updateGaragePackage"]);
+
+Route::get('/v1.0/garage-packages/{garage_id}', [GaragePackageController::class, "getGaragePackages"]);
+
+Route::get('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageById"]);
 
 
 
-Route::delete('/v1.0/garage-service-prices/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceById"]);
+Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "deleteGaragePackageById"]);
 
-Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageServicePriceController::class, "deleteGarageSubServicePriceByGarageSubServiceId"]);
+
 
 
 

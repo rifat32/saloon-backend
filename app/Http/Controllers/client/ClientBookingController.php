@@ -789,4 +789,15 @@ class ClientBookingController extends Controller
             return $this->sendError($e, 500);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -31,7 +31,7 @@ class Garage extends Model
         "labour_rate",
         "average_time_slot",
         "owner_id",
-        "created_by"
+        "created_by",
     ];
 
     public function owner(){
@@ -53,6 +53,69 @@ class Garage extends Model
     public function garage_times(){
         return $this->hasMany(GarageTime::class,'garage_id', 'id');
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
