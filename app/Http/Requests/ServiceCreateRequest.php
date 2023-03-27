@@ -28,7 +28,9 @@ class ServiceCreateRequest extends FormRequest
             "icon"=> "nullable|string",
             "description" => "nullable|string",
             "image" => "nullable|string",
-            "automobile_category_id" => "required|numeric"
+            "automobile_category_id" => "required|numeric",
+         
+
         ];
     }
 }

@@ -46,8 +46,9 @@ class CreateJobsTable extends Migration
             // $table->date("job_end_date")->nullable();
 
             $table->time("job_start_time")->nullable();
-            $table->time("job_end_time")->nullable();
             
+            $table->time("job_end_time")->nullable();
+
             $table->string("coupon_code")->nullable();
 
             $table->enum("status",['pending','active','completed','cancelled'])->default("pending");

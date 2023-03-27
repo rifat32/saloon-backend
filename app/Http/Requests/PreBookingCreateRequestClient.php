@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PreBookingCreateRequestClient extends FormRequest
@@ -32,7 +33,8 @@ class PreBookingCreateRequestClient extends FormRequest
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date",
-
+            "job_start_time" => ['required','date_format:H:i', new TimeValidation
+        ],
             "coupon_code" => "nullable|string",
 
     'pre_booking_sub_service_ids' => 'required|array',

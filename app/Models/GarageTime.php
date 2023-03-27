@@ -13,8 +13,9 @@ class GarageTime extends Model
         "day",
         "opening_time",
         "closing_time",
-        "garage_id"
+        "garage_id",
+        "is_closed"
     ];
-    
+
 
 }

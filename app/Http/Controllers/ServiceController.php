@@ -36,6 +36,7 @@ class ServiceController extends Controller
      *  *    @OA\Property(property="icon", type="string", format="string",example="fa fa tui halua kha"),
      *    @OA\Property(property="description", type="string", format="string",example="car"),
      *    @OA\Property(property="automobile_category_id", type="string", format="number",example="1"),
+
      *
      *         ),
      *      ),
@@ -113,6 +114,7 @@ class ServiceController extends Controller
      *             @OA\Property(property="name", type="string", format="string",example="car"),
      *   *  *    @OA\Property(property="icon", type="string", format="string",example="fa fa-- tui halua kha"),
      *             @OA\Property(property="description", type="string", format="string",example="description"),
+
      *
      *         ),
      *      ),
@@ -218,6 +220,8 @@ class ServiceController extends Controller
 * required=true,
 * example="search_key"
 * ),
+
+
      *      summary="This method is to get automobile Services ",
      *      description="This method is to get automobile Services",
      *
@@ -279,9 +283,17 @@ class ServiceController extends Controller
             if (!empty($request->start_date)) {
                 $servicesQuery = $servicesQuery->where('created_at', ">=", $request->start_date);
             }
+
             if (!empty($request->end_date)) {
                 $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
+
+
+
+
+
+
+
 
             $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($services, 200);
@@ -473,6 +485,8 @@ class ServiceController extends Controller
                 $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
 
+
+
             $services = $servicesQuery->orderByDesc("name")->get();
             return response()->json($services, 200);
         } catch(Exception $e){
@@ -629,6 +643,14 @@ class ServiceController extends Controller
 *      required=true,
 *      example="1,2"
 * ),
+     * *  @OA\Parameter(
+* name="is_fixed_price",
+* in="query",
+* description="is_fixed_price 0 or 1 as it is string sending in request true will be catch in string like 'true'",
+* required=true,
+* example="0"
+* ),
+
      *      summary="This method is to get all sub services by service ids",
      *      description="This method is to get all sub services by service ids",
      *
@@ -687,6 +709,12 @@ class ServiceController extends Controller
             if (!empty($request->end_date)) {
                 $subServiceQuery = $subServiceQuery->where('created_at', "<=", $request->end_date);
             }
+
+            if (!empty($request->is_fixed_price)) {
+                $is_fixed_price = (int)$request->is_fixed_price;
+                $subServiceQuery = $subServiceQuery->where('is_fixed_price',  $is_fixed_price);
+            }
+
             if(!empty($request->service_ids)) {
                 if(count($request->service_ids)) {
                     $subServiceQuery = $subServiceQuery->whereIn("service_id",$request->service_ids);
@@ -803,6 +831,7 @@ class ServiceController extends Controller
      *    @OA\Property(property="name", type="string", format="string",example="car"),
      *    @OA\Property(property="description", type="string", format="string",example="car"),
      *    @OA\Property(property="service_id", type="string", format="number",example="1"),
+     *      *    *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
      *
      *         ),
      *      ),
@@ -881,7 +910,7 @@ class ServiceController extends Controller
      *             @OA\Property(property="id", type="number", format="number",example="1"),
      *             @OA\Property(property="name", type="string", format="string",example="car"),
      *             @OA\Property(property="description", type="string", format="string",example="description"),
-     *
+     *     *    *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
      *         ),
      *      ),
      *      @OA\Response(
@@ -993,6 +1022,14 @@ class ServiceController extends Controller
 * required=true,
 * example="search_key"
 * ),
+*
+     * *  @OA\Parameter(
+* name="is_fixed_price",
+* in="query",
+* description="is_fixed_price 0 or 1 as it is string sending in request true will be catch in string like 'true'",
+* required=true,
+* example="0"
+* ),
      *      summary="This method is to get automobile sub Services by service id",
      *      description="This method is to get automobile sub Services by service id",
      *
@@ -1054,6 +1091,10 @@ class ServiceController extends Controller
             if (!empty($request->end_date)) {
                 $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
+            if (!empty($request->is_fixed_price)) {
+                $is_fixed_price = (int)$request->is_fixed_price;
+                $servicesQuery = $servicesQuery->where('is_fixed_price',  $is_fixed_price);
+            }
             $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($services, 200);
         } catch(Exception $e){
@@ -1065,7 +1106,7 @@ class ServiceController extends Controller
 /**
         *
      * @OA\Get(
-     *      path="/v1.0/services-all/{serviceId}",
+     *      path="/v1.0/sub-services-all/{serviceId}",
      *      operationId="getAllSubServicesByServiceId",
      *      tags={"service_management"},
     *       security={
@@ -1099,6 +1140,13 @@ class ServiceController extends Controller
 * description="search_key",
 * required=true,
 * example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="is_fixed_price",
+* in="query",
+* description="is_fixed_price 0 or 1 as it is string sending in request true will be catch in string like 'true'",
+* required=true,
+* example="0"
 * ),
      *      summary="This method is to get all automobile sub Services by service id ",
      *      description="This method is to get all automobile sub Services by service id",
@@ -1166,6 +1214,11 @@ class ServiceController extends Controller
             if (!empty($request->end_date)) {
                 $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
+            if (!empty($request->is_fixed_price)) {
+                $is_fixed_price = (int)$request->is_fixed_price;
+                $servicesQuery = $servicesQuery->where('is_fixed_price',  $is_fixed_price);
+            }
+
 
             $services = $servicesQuery->orderByDesc("name")->get();
             return response()->json($services, 200);

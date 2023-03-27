@@ -19,6 +19,7 @@ class CreateSubServicesTable extends Migration
             $table->text("description")->nullable();
             $table->unsignedBigInteger("service_id");
             $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
+            $table->boolean("is_fixed_price")->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

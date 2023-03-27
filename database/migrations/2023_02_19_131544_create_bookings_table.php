@@ -41,6 +41,7 @@ class CreateBookingsTable extends Migration
 
 
             $table->date("job_start_date")->nullable();
+
             // $table->date("job_end_date")->nullable();
 
             $table->time("job_start_time")->nullable();

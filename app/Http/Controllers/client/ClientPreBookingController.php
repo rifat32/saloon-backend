@@ -50,6 +50,7 @@ class ClientPreBookingController extends Controller
      *
      *
      * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
 
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
@@ -564,6 +565,7 @@ class ClientPreBookingController extends Controller
      *
      *
      * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *   * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
 
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),

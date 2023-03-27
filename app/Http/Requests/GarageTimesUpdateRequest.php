@@ -33,7 +33,7 @@ class GarageTimesUpdateRequest extends FormRequest
             ],
              "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation
             ],
-
+            "times.*.is_closed" => ['required',"boolean"],
         ];
     }
 }

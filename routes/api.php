@@ -442,14 +442,7 @@ Route::get('/v1.0/garage-packages/{garage_id}', [GaragePackageController::class,
 
 Route::get('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageById"]);
 
-
-
 Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "deleteGaragePackageById"]);
-
-
-
-
-
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
