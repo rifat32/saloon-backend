@@ -19,7 +19,10 @@ class Booking extends Model
         "status",
         "job_start_date",
         "job_start_time",
-        "coupon_code"
+        "coupon_code",
+
+        "fuel",
+        "transmission",
         // "job_end_date"
     ];
 
@@ -37,7 +40,9 @@ class Booking extends Model
     }
 
 
-
+    public function booking_packages(){
+        return $this->hasMany(BookingPackage::class,'booking_id', 'id');
+    }
 
 
 

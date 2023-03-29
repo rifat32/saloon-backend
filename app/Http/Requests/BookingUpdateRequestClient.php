@@ -33,8 +33,12 @@ class BookingUpdateRequestClient extends FormRequest
              "additional_information" => "nullable|string",
             // "status",
             "coupon_code" => "nullable|string",
+
     'booking_sub_service_ids' => 'required|array',
     'booking_sub_service_ids.*' => 'required|numeric',
+
+    'booking_garage_package_ids' => 'required|array',
+    'booking_garage_package_ids.*' => 'required|numeric',
 
         ];
     }

@@ -42,6 +42,8 @@ class BookingToJobRequest extends FormRequest
             "job_end_time" => ['required','date_format:H:i', new TimeValidation
         ],
         "status" => "required|string|in:pending,active",
+        "fuel" => "nullable|string",
+        "transmission" => "nullable|string",
         ];
     }
 

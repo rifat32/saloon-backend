@@ -38,7 +38,11 @@ class JobUpdateRequest extends FormRequest
 
             'job_sub_service_ids' => 'required|array',
             'job_sub_service_ids.*' => 'required|numeric',
-            
+
+            'job_garage_package_ids' => 'required|array',
+            'job_garage_package_ids.*' => 'required|numeric',
+
+
             "coupon_code" => "nullable|string",
 
              "discount_type" => "nullable|string|in:fixed,percentage",
@@ -52,6 +56,8 @@ class JobUpdateRequest extends FormRequest
          ],
          "status" => "required|string|in:pending,active,completed,cancelled",
 
+         "fuel" => "nullable|string",
+         "transmission" => "nullable|string",
 
         ];
     }

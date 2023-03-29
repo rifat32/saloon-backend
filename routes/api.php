@@ -522,7 +522,10 @@ Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageCon
 
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
+
 Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient"]);
+
+Route::get('/v1.0/client/garages/service-model-details/{id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
 
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^

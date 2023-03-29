@@ -25,10 +25,16 @@ class Job extends Model
         "job_start_date",
         "job_start_time",
         "job_end_time",
-         "coupon_code"
+         "coupon_code",
+
+         "fuel",
+         "transmission",
     ];
     public function job_sub_services(){
         return $this->hasMany(JobSubService::class,'job_id', 'id');
+    }
+    public function job_packages(){
+        return $this->hasMany(JobPackage::class,'job_id', 'id');
     }
     public function job_payments(){
         return $this->hasMany(JobPayment::class,'job_id', 'id');

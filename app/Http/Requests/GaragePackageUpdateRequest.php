@@ -31,6 +31,7 @@ class GaragePackageUpdateRequest extends FormRequest
             "price" => "required|numeric",
             'sub_service_ids' => 'required|array',
             'sub_service_ids.*' => 'required|numeric',
+            "is_active" => "required|boolean"
         ];
     }
 }

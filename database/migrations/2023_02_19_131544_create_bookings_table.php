@@ -38,7 +38,9 @@ class CreateBookingsTable extends Migration
 
             $table->string("coupon_code")->nullable();
 
-
+        
+            $table->string("fuel")->nullable();
+            $table->string("transmission")->nullable();
 
             $table->date("job_start_date")->nullable();
 

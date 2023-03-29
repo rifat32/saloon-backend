@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGaragePackagesTable extends Migration
+class CreateJobPackagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,18 @@ class CreateGaragePackagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('garage_packages', function (Blueprint $table) {
+        Schema::create('job_packages', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->text("description");
-            $table->double("price")->default(0);
-            $table->unsignedBigInteger("garage_id");
-            $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
+            $table->unsignedBigInteger("job_id");
+            $table->foreign('job_id')->references('id')->on('jobs')->onDelete('cascade');
 
-            $table->boolean("is_active")->default(1);
+            $table->unsignedBigInteger("garage_package_id");
+            $table->foreign('garage_package_id')->references('id')->on('garage_packages')->onDelete('restrict');
+
+
+            $table->double("price")->default(0);
+
+
             $table->timestamps();
         });
     }
@@ -33,6 +36,6 @@ class CreateGaragePackagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('garage_packages');
+        Schema::dropIfExists('job_packages');
     }
 }

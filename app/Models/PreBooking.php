@@ -23,9 +23,10 @@ class PreBooking extends Model
         "address",
         "country",
         "city",
-        "postcode"
+        "postcode",
 
-
+        "fuel",
+        "transmission",
 
 
     ];

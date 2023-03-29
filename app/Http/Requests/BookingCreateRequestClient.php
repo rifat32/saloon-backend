@@ -41,6 +41,12 @@ class BookingCreateRequestClient extends FormRequest
     'booking_sub_service_ids' => 'required|array',
     'booking_sub_service_ids.*' => 'required|numeric',
 
+    'booking_garage_package_ids' => 'required|array',
+    'booking_garage_package_ids.*' => 'required|numeric',
+
+    "fuel" => "nullable|string",
+    "transmission" => "nullable|string",
+
         ];
     }
 }

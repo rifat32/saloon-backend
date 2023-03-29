@@ -40,13 +40,15 @@ class CreateJobsTable extends Migration
 
             $table->double("price")->default(0);
             $table->double("final_price")->default(0);
-
+            
+            $table->string("fuel")->nullable();
+            $table->string("transmission")->nullable();
 
             $table->date("job_start_date")->nullable();
             // $table->date("job_end_date")->nullable();
 
             $table->time("job_start_time")->nullable();
-            
+
             $table->time("job_end_time")->nullable();
 
             $table->string("coupon_code")->nullable();

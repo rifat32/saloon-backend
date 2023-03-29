@@ -45,6 +45,9 @@ class PreBookingCreateRequestClient extends FormRequest
     'postcode' => 'required|string',
     'address' => 'required|string',
 
+    "fuel" => "nullable|string",
+    "transmission" => "nullable|string",
+
         ];
     }
 }

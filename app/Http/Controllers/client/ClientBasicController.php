@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
+use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
+use App\Models\GarageSubService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -285,6 +287,118 @@ class ClientBasicController extends Controller
         $data["garage"] = $garage;
         $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
         $data["garage_service_ids"] = $garage_service_ids;
+        return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+  /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garages/service-model-details/{id}",
+     *      operationId="getGarageServiceModelDetailsByIdClient",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get garage service-model-details by garage id by id",
+     *      description="This method is to get garage service-model-details by garage id by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageServiceModelDetailsByIdClient($id,Request $request) {
+
+        try{
+            $garage = Garage::where([
+                "id" => $id
+            ])->first();
+
+
+            if(!$garage) {
+
+
+           return response()->json([
+            "message" => "no garage found"
+           ],404);
+
+            }
+$data["garage_services"] = GarageService::with("service")
+->where([
+    "garage_id" => $garage->id
+])
+->get();
+
+$data["garage_sub_services"] = GarageSubService::with("subService")
+->leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+->where([
+    "garage_services.garage_id" => $garage->id
+])
+->select(
+    "garage_sub_services.*"
+)
+->get();
+
+$data["garage_automobile_makes"] = GarageAutomobileMake::with("automobileMake")
+->where([
+    "garage_id" => $garage->id
+])
+->get();
+
+$data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel")
+->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+->where([
+    "garage_automobile_makes.garage_id" => $garage->id
+])
+->select(
+    "garage_automobile_models.*"
+)
+->get();
+
+
+
+
         return response()->json($data, 200);
         } catch(Exception $e){
 

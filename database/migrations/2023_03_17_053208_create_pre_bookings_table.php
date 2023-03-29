@@ -30,7 +30,8 @@ class CreatePreBookingsTable extends Migration
             $table->string("car_registration_no");
             $table->string("additional_information")->nullable();
 
-
+            $table->string("fuel")->nullable();
+            $table->string("transmission")->nullable();
 
             $table->date("job_start_date")->nullable();
             // $table->date("job_end_date")->nullable();

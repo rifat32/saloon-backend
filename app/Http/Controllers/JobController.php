@@ -10,9 +10,12 @@ use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
 use App\Models\Booking;
+use App\Models\BookingPackage;
 use App\Models\BookingSubService;
+use App\Models\GaragePackage;
 use App\Models\GarageSubService;
 use App\Models\Job;
+use App\Models\JobPackage;
 use App\Models\JobPayment;
 use App\Models\JobSubService;
 use Exception;
@@ -51,6 +54,10 @@ class JobController extends Controller
 
      *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
      *  *  * *    @OA\Property(property="status", type="string", format="string",example="pending"),
+     *
+     *
+     * *     *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
      *
      *         ),
      *  * *
@@ -156,6 +163,9 @@ class JobController extends Controller
                     "job_start_time"=> $updatableData["job_start_time"],
                     "job_end_time"=> $updatableData["job_end_time"],
 
+                    "fuel" => $updatableData['fuel'],
+                    "transmission" => $updatableData['transmission'],
+
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount"=> $updatableData["discount_amount"],
                     "price"=>($updatableData["price"]?$updatableData["price"]:$booking->price),
@@ -180,6 +190,22 @@ class JobController extends Controller
 
                 }
 
+                foreach(
+
+                    BookingPackage::where([
+                        "booking_id" => $booking->id
+                    ])->get()
+                    as
+                    $booking_package
+                    ) {
+
+                     JobPackage::create([
+                        "job_id" => $job->id,
+                        "garage_package_id" => $booking_package->garage_package_id,
+                        "price" => $booking_package->price,
+                     ]);
+
+                    }
 
                 if(!empty($updatableData["coupon_code"])){
                     $coupon_discount = $this->getDiscount(
@@ -231,7 +257,7 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
     * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
@@ -239,7 +265,11 @@ class JobController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     *
      *  * *    @OA\Property(property="job_sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *
+     *    *  * *    @OA\Property(property="job_garage_package_ids", type="string", format="array",example={1,2,3,4}),
+     *
      *  *  * *
 
      *
@@ -255,7 +285,8 @@ class JobController extends Controller
      *  *  * *    @OA\Property(property="status", type="string", format="string",example="pending"),
      *
      *
-     *
+     *   * *     *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
      *
      *
      *
@@ -353,7 +384,8 @@ class JobController extends Controller
             "discount_type",
             "discount_amount",
             "price",
-
+            "fuel",
+            "transmission",
         ])->toArray()
         )
             // ->with("somthing")
@@ -368,6 +400,9 @@ class JobController extends Controller
                "job_id" => $job->id
             ])->delete();
 
+            JobPackage::where([
+                "job_id" => $job->id
+             ])->delete();
 
             foreach($updatableData["job_sub_service_ids"] as $sub_service_id) {
                 $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
@@ -385,12 +420,37 @@ class JobController extends Controller
                     if(!$garage_sub_service ){
                  throw new Exception("invalid service");
                     }
+                    $price = $this->getPrice($garage_sub_service->id, $updatableData["automobile_make_id"]);
+
                     JobSubService::create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
-                        "job_id" => $job->id
+                        "job_id" => $job->id,
+                        "price" => $price
                     ]);
 
                 }
+                foreach($updatableData["job_garage_package_ids"] as $garage_package_id) {
+                    $garage_package =  GaragePackage::where([
+                        "garage_id" => $job->garage_id,
+                         "id" => $garage_package_id
+                    ])
+                    ->first();
+
+                        if(!$garage_package ){
+                     throw new Exception("invalid package");
+                        }
+                        JobPackage::create([
+                            "garage_package_id" => $garage_package->id,
+                            "job_id" => $job->id,
+                            "price" => $garage_package->price
+                        ]);
+
+                    }
+
+
+
+
+
 
                 if(!empty($updatableData["coupon_code"])){
                     $coupon_discount = $this->getDiscount(

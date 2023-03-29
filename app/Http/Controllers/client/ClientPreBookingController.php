@@ -9,6 +9,7 @@ use App\Http\Requests\PreBookingUpdateRequestClient;
 use App\Http\Utils\ErrorUtil;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\Booking;
 use App\Models\GarageSubService;
 use App\Models\Job;
 use App\Models\JobBid;
@@ -46,6 +47,8 @@ class ClientPreBookingController extends Controller
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
      *
+*  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
 
      *
      *
@@ -651,7 +654,7 @@ class ClientPreBookingController extends Controller
                                 }
 
 
-                        $job = Job::create([
+                        $booking = Booking::create([
                             "garage_id" => $pre_booking->garage_id,
                             "customer_id" => $pre_booking->customer_id,
                             "automobile_make_id" => $pre_booking->automobile_make_id,
@@ -662,7 +665,8 @@ class ClientPreBookingController extends Controller
                             "job_start_time" => $pre_booking->job_start_time,
                             "job_end_time" => $pre_booking->job_end_time,
 
-
+                            "fuel" => $pre_booking->fuel,
+                            "transmission" => $pre_booking->transmission,
                             // "coupon_discount_type" => $pre_booking->coupon_discount_type,
                             // "coupon_discount_amount" => $pre_booking->coupon_discount_amount,
 
@@ -702,16 +706,22 @@ class ClientPreBookingController extends Controller
 
                             $price = $this->getPrice($garage_sub_service->id, $insertableData["automobile_make_id"]);
 
-                            $job->job_sub_services()->create([
+                            $booking->booking_sub_services()->create([
                                 "sub_service_id" => $pre_booking_sub_service->sub_service_id,
                                 "price" => $price
                             ]);
                             $total_price += $price;
 
                         }
+
+
+
+
+
+
                         // $job->price = $total_price;
 
-                        $job->save();
+                        $booking->save();
                         $pre_booking->status = "booked";
                         $pre_booking->save();
                         // $pre_booking_sub_service->delete();

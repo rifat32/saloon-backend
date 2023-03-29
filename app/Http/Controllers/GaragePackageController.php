@@ -42,6 +42,7 @@ class GaragePackageController extends Controller
      *   * * *    @OA\Property(property="price", type="number", format="number",example="10.99"),
     *  * *    @OA\Property(property="sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
+     *  *   * * *    @OA\Property(property="is_active", type="number", format="number",example="1"),
      *
      *
      *
@@ -152,7 +153,6 @@ class GaragePackageController extends Controller
         }
     }
 
-
  /**
      *
      * @OA\Put(
@@ -168,12 +168,19 @@ class GaragePackageController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","name","description","price","sub_service_ids"},
+     *            required={"id","garage_id","name","description","price"},
+     *     *    @OA\Property(property="id", type="number", format="number",example="1"),
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *    @OA\Property(property="name", type="string", format="string",example="name"),
      * * *    @OA\Property(property="description", type="string", format="string",example="description"),
      *   * * *    @OA\Property(property="price", type="number", format="number",example="10.99"),
     *  * *    @OA\Property(property="sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *
+     *  *   * * *    @OA\Property(property="is_active", type="number", format="number",example="1"),
+     *
+     *
+     *
+     *         ),
      *      ),
      *      @OA\Response(
      *          response=200,
@@ -209,6 +216,11 @@ class GaragePackageController extends Controller
      *     )
      */
 
+
+
+
+
+
     public function updateGaragePackage(GaragePackageUpdateRequest $request)
     {
         try {
@@ -242,6 +254,7 @@ class GaragePackageController extends Controller
                         "description",
                         "price",
                         "garage_id",
+                        "is_active"
                     ])->toArray()
                 )
                     // ->with("somthing")
@@ -305,7 +318,7 @@ class GaragePackageController extends Controller
     *       security={
      *           {"bearerAuth": {}}
      *       },
- *              @OA\Parameter(
+     *              @OA\Parameter(
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
@@ -418,7 +431,7 @@ class GaragePackageController extends Controller
         *
      * @OA\Get(
      *      path="/v1.0/garage-packages/single/{garage_id}/{id}",
-     *      operationId="getBookingById",
+     *      operationId="getGaragePackageById",
      *      tags={"garage_package_management"},
     *       security={
      *           {"bearerAuth": {}}

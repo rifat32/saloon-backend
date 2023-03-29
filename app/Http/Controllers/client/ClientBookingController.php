@@ -10,10 +10,12 @@ use App\Http\Utils\CouponUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
 use App\Models\Booking;
+use App\Models\BookingPackage;
 use App\Models\BookingSubService;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
+use App\Models\GaragePackage;
 use App\Models\GarageSubService;
 use App\Models\Job;
 use Exception;
@@ -38,7 +40,7 @@ class ClientBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids"},
+     *            required={"garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","booking_garage_package_ids"},
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
      *
@@ -47,6 +49,8 @@ class ClientBookingController extends Controller
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
      *
+     *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
 
      *
      *
@@ -54,6 +58,7 @@ class ClientBookingController extends Controller
 
 
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *  *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
      *         ),
      *      ),
      *      @OA\Response(
@@ -147,7 +152,7 @@ class ClientBookingController extends Controller
                 foreach ($insertableData["booking_sub_service_ids"] as $sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
-                            "garage_services.garage_id" => $insertableData["automobile_make_id"],
+                            "garage_services.garage_id" => $garage->id,
                             "garage_sub_services.sub_service_id" => $sub_service_id
                         ])
                         ->select(
@@ -171,6 +176,32 @@ class ClientBookingController extends Controller
                         "price" => $price
                     ]);
                 }
+
+                foreach ($insertableData["booking_garage_package_ids"] as $garage_package_id) {
+                    $garage_package =  GaragePackage::where([
+                            "garage_id" => $garage->id,
+                            "id" => $garage_package_id
+                        ])
+
+                        ->first();
+
+                    if (!$garage_package) {
+                        throw new Exception("invalid package");
+                    }
+
+
+                    $total_price += $garage_package->price;
+
+                    $booking->booking_packages()->create([
+                        "garage_package_id" => $garage_package->id,
+                        "price" => $garage_package->price
+                    ]);
+
+
+                }
+
+
+
                 $booking->price = $total_price;
                 $booking->save();
 
@@ -298,8 +329,13 @@ class ClientBookingController extends Controller
                         "car_registration_no" => $booking->car_registration_no,
                         "additional_information" => $booking->additional_information,
                         "job_start_date" => $booking->job_start_date,
+
                         "job_start_time" => $booking->job_start_time,
                         "job_end_time" => $booking->job_end_time,
+
+                        "fuel" => $booking->fuel,
+                        "transmission" => $booking->transmission,
+
 
 
                         "coupon_discount_type" => $booking->coupon_discount_type,
@@ -330,6 +366,23 @@ class ClientBookingController extends Controller
                         $total_price += $booking_sub_service->price;
 
                     }
+
+                    foreach (BookingPackage::where([
+                        "booking_id" => $booking->id
+                    ])->get()
+                    as
+                    $booking_package) {
+                    $job->job_packages()->create([
+                        "garage_package_id" => $booking_package->garage_package_id,
+                        "price" => $booking_package->price
+                    ]);
+                    $total_price += $booking_package->price;
+
+                }
+
+
+
+
                     $job->price = $total_price;
                     $job->save();
                     $booking->delete();
@@ -364,7 +417,7 @@ class ClientBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","booking_garage_package_ids"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
@@ -372,6 +425,8 @@ class ClientBookingController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
+     *   *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
+     *
      *         ),
      *      ),
      *      @OA\Response(
@@ -415,10 +470,24 @@ class ClientBookingController extends Controller
 
                 $updatableData = $request->validated();
 
+                $garage = Garage::where([
+                    "id" => $updatableData["garage_id"]
+                ])
+                    ->first();
+
+                if (!$garage) {
+                    return response()
+                        ->json(
+                            [
+                                "message" => "garage not found."
+                            ],
+                            404
+                        );
+                }
 
                 $garage_make = GarageAutomobileMake::where([
                     "automobile_make_id" => $updatableData["automobile_make_id"],
-                    "garage_id"=>$updatableData["garage_id"]
+                    "garage_id"=>$garage->id
                 ])
                     ->first();
                 if (!$garage_make) {
@@ -463,7 +532,7 @@ class ClientBookingController extends Controller
                 foreach ($updatableData["booking_sub_service_ids"] as $sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
-                            "garage_services.garage_id" => $updatableData["garage_id"],
+                            "garage_services.garage_id" => $garage->id,
                             "garage_sub_services.sub_service_id" => $sub_service_id
                         ])
                         ->select(
@@ -487,6 +556,32 @@ class ClientBookingController extends Controller
                         "price" => $price
                     ]);
                 }
+
+                foreach ($updatableData["booking_garage_package_ids"] as $garage_package_id) {
+                    $garage_package =  GaragePackage::where([
+                            "garage_id" => $garage->id,
+                             "id" => $garage_package_id
+                        ])
+
+                        ->first();
+
+                    if (!$garage_package) {
+                        throw new Exception("invalid package");
+                    }
+
+
+                    $total_price += $garage_package->price;
+
+                    $booking->booking_packages()->create([
+                        "garage_package_id" => $garage_package->id,
+                        "price" => $garage_package->price
+                    ]);
+
+
+                }
+
+
+
                 $booking->price = $total_price;
                 $booking->save();
                 if (!empty($insertableData["coupon_code"])) {
