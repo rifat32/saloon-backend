@@ -41,6 +41,9 @@ class Garage extends Model
     public function garageServices(){
         return $this->hasMany(GarageService::class,'garage_id', 'id');
     }
+    public function garage_packages(){
+        return $this->hasMany(GaragePackage::class,'garage_id', 'id');
+    }
 
     public function garageAutomobileMakes(){
         return $this->hasMany(GarageAutomobileMake::class,'garage_id', 'id');

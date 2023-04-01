@@ -420,7 +420,11 @@ class JobController extends Controller
                     if(!$garage_sub_service ){
                  throw new Exception("invalid service");
                     }
-                    $price = $this->getPrice($garage_sub_service->id, $updatableData["automobile_make_id"]);
+                    $price = $this->getPrice(
+                        $sub_service_id,
+                        $garage_sub_service->id,
+                        $updatableData["automobile_make_id"]
+                    );
 
                     JobSubService::create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
@@ -680,7 +684,7 @@ class JobController extends Controller
             }
 
 
-            $jobQuery = Job::with("job_sub_services.sub_service")
+            $jobQuery = Job::with("job_sub_services.sub_service","automobile_make","automobile_model")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -782,7 +786,7 @@ class JobController extends Controller
             }
 
 
-            $job = Job::with("job_sub_services.sub_service")
+            $job = Job::with("job_sub_services.sub_service","automobile_make","automobile_model")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id

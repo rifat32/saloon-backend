@@ -273,12 +273,16 @@ return response()->json([
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"garage_id","pre_booking_id","price","offer_template","description"},
+     *            required={"garage_id","pre_booking_id","price","offer_template","description",  "job_start_date","job_start_time","job_end_time"},
      *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
      *    @OA\Property(property="price", type="number", format="number",example="10.99"),
      * *    @OA\Property(property="offer_template", type="string", format="string",example="offer template goes here"),
+ *     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
 
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
      *
      *         ),
      *      ),
@@ -402,7 +406,11 @@ return response()->json([
      *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
      *    @OA\Property(property="price", type="number", format="number",example="10.99"),
      * *    @OA\Property(property="offer_template", type="string", format="string",example="offer template goes here"),
+     * *     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
      *         ),
      *      ),
      *      @OA\Response(
@@ -489,6 +497,9 @@ return response()->json([
                         "pre_booking_id",
                         "price",
                         "offer_template",
+                        "job_start_date",
+                        "job_start_time",
+                        "job_end_time"
                     ])->toArray()
                 )
                     // ->with("somthing")

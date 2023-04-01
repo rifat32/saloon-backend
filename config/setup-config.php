@@ -102,6 +102,8 @@ return [
        "garage_times_update",
        "garage_times_view",
 
+       "garage_rules_update",
+       "garage_rules_view",
 
        "garage_gallery_create",
        "garage_gallery_view",
@@ -214,6 +216,9 @@ return [
 
        "garage_times_update",
        "garage_times_view",
+
+       "garage_rules_update",
+       "garage_rules_view",
 
 
        "garage_gallery_create",

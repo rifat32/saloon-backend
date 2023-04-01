@@ -13,7 +13,8 @@ class SubService extends Model
         "name",
         "description",
 
-        "service_id"
+        "service_id",
+        "is_fixed_price"
         // "is_active",
 
     ];

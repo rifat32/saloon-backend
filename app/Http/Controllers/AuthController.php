@@ -7,6 +7,8 @@ use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\EmailVerifyTokenRequest;
 use App\Http\Requests\ForgetPasswordRequest;
+use App\Http\Requests\PasswordChangeRequest;
+use App\Http\Requests\UserInfoUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Mail\ForgetPasswordMail;
@@ -687,6 +689,274 @@ public function getUser (Request $request) {
         200
     );
 }
+
+
+
+  /**
+        *
+     * @OA\Post(
+     *      path="/auth/check/email",
+     *      operationId="checkEmail",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to check user",
+     *      description="This method is to check user",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"email"},
+     *
+     *             @OA\Property(property="email", type="string", format="string",example="test@g.c"),
+     *
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+
+    public function checkEmail(Request $request) {
+        $user = User::where([
+         "email" => $request->email
+        ])->first();
+        if($user) {
+return response()->json(["data" => true],200);
+        }
+        return response()->json(["data" => false],200);
+ }
+
+
+
+
+
+
+  /**
+        *
+     * @OA\Patch(
+     *      path="/auth/changepassword",
+     *      operationId="changePassword",
+     *      tags={"auth"},
+
+     *      summary="This method is to change password",
+     *      description="This method is to change password",
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"password","cpassword"},
+     *
+     *     @OA\Property(property="password", type="string", format="string",* example="aaaaaaaa"),
+    *  * *  @OA\Property(property="password_confirmation", type="string", format="string",example="aaaaaaaa"),
+     *     @OA\Property(property="current_password", type="string", format="string",* example="aaaaaaaa"),
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+
+
+
+
+    public function changePassword(PasswordChangeRequest $request)
+    {
+
+        $client_request = $request->validated();
+        $user = $request->user();
+        if (!Hash::check($client_request["current_password"], $client_request["password"])) {
+            return response()->json([
+                "message" => "Invalid password"
+            ], 400);
+        }
+        $password = Hash::make($client_request["password"]);
+        $user->update([
+            "password" => $password
+        ]);
+        return response()->json([
+            "message" => "password changed"
+        ], 200);;
+    }
+
+
+
+
+
+
+ /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/users",
+     *      operationId="updateUser",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update user by user",
+     *      description="This method is to update user by user",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode","role"},
+     *             @OA\Property(property="first_Name", type="string", format="string",example="Rifat"),
+     *            @OA\Property(property="last_Name", type="string", format="string",example="How was this?"),
+     *            @OA\Property(property="email", type="string", format="string",example="How was this?"),
+
+     * *  @OA\Property(property="password", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="phone", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="address_line_1", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="address_line_2", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="country", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="city", type="boolean", format="boolean",example="1"),
+     *  * *  @OA\Property(property="postcode", type="boolean", format="boolean",example="1"),
+     *  *  * *  @OA\Property(property="role", type="boolean", format="boolean",example="customer"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function updateUser(UserInfoUpdateRequest $request)
+    {
+
+        try{
+
+
+
+
+
+            $updatableData = $request->validated();
+
+
+            if(!empty($updatableData['password'])) {
+                $updatableData['password'] = Hash::make($updatableData['password']);
+            } else {
+                unset($updatableData['password']);
+            }
+            $updatableData['is_active'] = true;
+            $updatableData['remember_token'] = Str::random(10);
+            $user  =  tap(User::where(["id" => $request->user()->id]))->update(collect($updatableData)->only([
+                'first_Name' ,
+                'last_Name',
+                'password',
+                'phone',
+                'address_line_1',
+                'address_line_2',
+                'country',
+                'city',
+                'postcode',
+
+            ])->toArray()
+            )
+                // ->with("somthing")
+
+                ->first();
+
+
+
+            $user->roles = $user->roles->pluck('name');
+
+
+            return response($user, 201);
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
+
+
 
 
 

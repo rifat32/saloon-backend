@@ -166,7 +166,7 @@ class ClientBookingController extends Controller
                         throw new Exception("invalid service");
                     }
 
-                    $price = $this->getPrice($garage_sub_service->id, $insertableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $insertableData["automobile_make_id"]);
 
 
                     $total_price += $price;
@@ -545,7 +545,7 @@ class ClientBookingController extends Controller
                     if (!$garage_sub_service) {
                         throw new Exception("invalid service");
                     }
-                    $price = $this->getPrice($garage_sub_service->id, $updatableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
                     $total_price += $price;
@@ -693,7 +693,7 @@ class ClientBookingController extends Controller
     {
         try {
 
-            $bookingQuery = Booking::with("booking_sub_services.sub_service")
+            $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
                 ->where([
                     "customer_id" => $request->user()->id
                 ]);
@@ -788,7 +788,7 @@ class ClientBookingController extends Controller
     {
         try {
 
-            $booking = Booking::with("booking_sub_services.sub_service")
+            $booking = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
                 ->where([
                     "id" => $id,
                     "customer_id" => $request->user()->id

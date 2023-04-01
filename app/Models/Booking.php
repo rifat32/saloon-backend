@@ -35,6 +35,14 @@ class Booking extends Model
     public function customer(){
         return $this->belongsTo(User::class,'customer_id', 'id');
     }
+
+    public function automobile_make(){
+        return $this->belongsTo(AutomobileMake::class,'automobile_make_id', 'id');
+    }
+    public function automobile_model(){
+        return $this->belongsTo(AutomobileModel::class,'automobile_model_id', 'id');
+    }
+
     public function booking_sub_services(){
         return $this->hasMany(BookingSubService::class,'booking_id', 'id');
     }

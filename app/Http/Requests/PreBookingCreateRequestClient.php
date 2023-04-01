@@ -25,17 +25,20 @@ class PreBookingCreateRequestClient extends FormRequest
     public function rules()
     {
         return [
-            "garage_id" => "required|numeric",
-            // "customer_id",
+
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
             "additional_information" => "nullable|string",
             // "status",
+
+
             "job_start_date" => "required|date",
             "job_start_time" => ['required','date_format:H:i', new TimeValidation
         ],
-            "coupon_code" => "nullable|string",
+    "job_end_date" => "required|date",
+
+    "coupon_code" => "nullable|string",
 
     'pre_booking_sub_service_ids' => 'required|array',
     'pre_booking_sub_service_ids.*' => 'required|numeric',

@@ -260,6 +260,7 @@ class ClientBasicController extends Controller
                 "garageServices.garageSubServices.subService",
                 "garage_times",
                 "garageGalleries",
+                "garage_packages",
 
             );
 

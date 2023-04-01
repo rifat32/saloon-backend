@@ -38,7 +38,7 @@ class ClientPreBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids"},
+     *            required={"automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids","job_end_date"},
 
 
      *
@@ -54,6 +54,8 @@ class ClientPreBookingController extends Controller
      *
      * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
+     *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
+     *
 
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
@@ -204,7 +206,9 @@ class ClientPreBookingController extends Controller
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *         ),
-     *
+     *    * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
+     *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *   *
      *  * @OA\Property(property="country", type="string", format="string",example="country"),
      *  * @OA\Property(property="city", type="string", format="string",example="city"),
@@ -279,14 +283,22 @@ class ClientPreBookingController extends Controller
                 $pre_booking  =  tap(PreBooking::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
 
-                        "automobile_make_id",
-                        "automobile_model_id",
+                        "automobile_make_id" ,
+                        "automobile_model_id" ,
                         "car_registration_no",
-
-        "address",
-        "country",
-        "city",
-        "postcode"
+                         "additional_information" ,
+                        "job_start_date",
+                        "job_start_time" ,
+                    "job_end_date" ,
+                        "coupon_code",
+                'pre_booking_sub_service_ids',
+                'pre_booking_sub_service_ids.*',
+                'country',
+                'city',
+                'postcode',
+                'address',
+                "fuel",
+                "transmission",
 
                     ])->toArray()
                 )
@@ -423,7 +435,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage")
+            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage","automobile_make","automobile_model")
                 ->where([
                     "customer_id" => $request->user()->id
                 ]);
@@ -518,7 +530,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage")
+            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage","automobile_make","automobile_model")
                 ->where([
                     "id" => $id,
                     "customer_id" => $request->user()->id
@@ -555,29 +567,13 @@ class ClientPreBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids"},
+     *            required={"pre_booking_id","job_bid_id"},
 
 
      *
-     *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
-     *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
-     * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
-     *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
+     *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
+     *    @OA\Property(property="job_bid_id", type="number", format="number",example="1"),
      *
-
-     *
-     *
-     * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
-     *   * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
-
-
-     *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
-     *
-     *
-     *  * @OA\Property(property="country", type="string", format="string",example="country"),
-     *  * @OA\Property(property="city", type="string", format="string",example="city"),
-     *  * @OA\Property(property="post_code", type="string", format="string",example="postcode"),
-     *  * @OA\Property(property="address", type="string", format="string",example="address"),
      *
      *
      *         ),
@@ -661,9 +657,9 @@ class ClientPreBookingController extends Controller
                             "automobile_model_id" => $pre_booking->automobile_model_id,
                             "car_registration_no" => $pre_booking->car_registration_no,
                             "additional_information" => $pre_booking->additional_information,
-                            "job_start_date" => $pre_booking->job_start_date,
-                            "job_start_time" => $pre_booking->job_start_time,
-                            "job_end_time" => $pre_booking->job_end_time,
+                            "job_start_date" => $job_bid->job_start_date,
+                            "job_start_time" => $job_bid->job_start_time,
+                            // "job_end_time" => $pre_booking->job_end_time,
 
                             "fuel" => $pre_booking->fuel,
                             "transmission" => $pre_booking->transmission,
@@ -704,7 +700,7 @@ class ClientPreBookingController extends Controller
                                 throw new Exception("invalid service");
                             }
 
-                            $price = $this->getPrice($garage_sub_service->id, $insertableData["automobile_make_id"]);
+                            $price = $this->getPrice($pre_booking_sub_service->sub_service_id,$garage_sub_service->id, $pre_booking->automobile_make_id);
 
                             $booking->booking_sub_services()->create([
                                 "sub_service_id" => $pre_booking_sub_service->sub_service_id,

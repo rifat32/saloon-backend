@@ -747,6 +747,7 @@ class ComposerStaticInit21d3eeeef4e11a73df45b8701b58e483
         'App\\Models\\GarageGallery' => __DIR__ . '/../..' . '/app/Models/GarageGallery.php',
         'App\\Models\\GaragePackage' => __DIR__ . '/../..' . '/app/Models/GaragePackage.php',
         'App\\Models\\GaragePackageSubService' => __DIR__ . '/../..' . '/app/Models/GaragePackageSubService.php',
+        'App\\Models\\GarageRule' => __DIR__ . '/../..' . '/app/Models/GarageRule.php',
         'App\\Models\\GarageService' => __DIR__ . '/../..' . '/app/Models/GarageService.php',
         'App\\Models\\GarageSubService' => __DIR__ . '/../..' . '/app/Models/GarageSubService.php',
         'App\\Models\\GarageSubServicePrice' => __DIR__ . '/../..' . '/app/Models/GarageSubServicePrice.php',

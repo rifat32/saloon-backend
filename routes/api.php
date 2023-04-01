@@ -16,6 +16,7 @@ use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragePackageController;
+use App\Http\Controllers\GarageRuleController;
 use App\Http\Controllers\GaragesController;
 use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
@@ -45,6 +46,13 @@ Route::post('/v1.0/login', [AuthController::class, "login"]);
 Route::post('/forgetpassword', [AuthController::class, "storeToken"]);
 Route::post('/resend-email-verify-mail', [AuthController::class, "resendEmailVerifyToken"]);
 Route::patch('/forgetpassword/reset/{token}', [AuthController::class, "changePasswordByToken"]);
+Route::post('/auth/check/email', [AuthController::class, "checkEmail"]);
+
+Route::patch('/auth/changepassword', [AuthController::class, "changePassword"]);
+
+Route::put('/v1.0/update-user-info', [AuthController::class, "updateUserInfo"]);
+
+
 
 
 Route::post('/v1.0/auth/user-register-with-garage', [AuthController::class, "registerUserWithGarageClient"]);
@@ -263,6 +271,18 @@ Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "get
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end Garage Time Management
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// Garage Rule Management
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::patch('/v1.0/garage-rules', [GarageRuleController::class, "updateGarageRules"]);
+Route::get('/v1.0/garage-rules/{garage_id}', [GarageRuleController::class, "getGarageRules"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end Garage Rule Management
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

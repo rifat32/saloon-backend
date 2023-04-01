@@ -19,7 +19,7 @@ class GaragePackage extends Model
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id');
     }
-    public function garage_package_sub_service(){
+    public function garage_package_sub_services(){
         return $this->hasMany(GaragePackageSubService::class,'garage_package_id', 'id');
     }
 

@@ -36,11 +36,11 @@ class JobUpdateRequest extends FormRequest
             "job_start_time" => "required|date",
             "job_end_time" => "required|date",
 
-            'job_sub_service_ids' => 'required|array',
-            'job_sub_service_ids.*' => 'required|numeric',
+            'job_sub_service_ids' => 'nullable|array',
+            'job_sub_service_ids.*' => 'nullable|numeric',
 
-            'job_garage_package_ids' => 'required|array',
-            'job_garage_package_ids.*' => 'required|numeric',
+            'job_garage_package_ids' => 'nullable|array',
+            'job_garage_package_ids.*' => 'nullable|numeric',
 
 
             "coupon_code" => "nullable|string",

@@ -399,7 +399,7 @@ class GaragePackageController extends Controller
             }
 
 
-            $garagePackageQuery = GaragePackage::with("garage_package_sub_service.garage_sub_service.subService")
+            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -501,7 +501,7 @@ class GaragePackageController extends Controller
             }
 
 
-            $garage_package = GaragePackage::with("garage_package_sub_service.garage_sub_service.subService")
+            $garage_package = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id

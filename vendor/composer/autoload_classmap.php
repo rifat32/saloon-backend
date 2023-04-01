@@ -132,6 +132,7 @@ return array(
     'App\\Models\\GarageGallery' => $baseDir . '/app/Models/GarageGallery.php',
     'App\\Models\\GaragePackage' => $baseDir . '/app/Models/GaragePackage.php',
     'App\\Models\\GaragePackageSubService' => $baseDir . '/app/Models/GaragePackageSubService.php',
+    'App\\Models\\GarageRule' => $baseDir . '/app/Models/GarageRule.php',
     'App\\Models\\GarageService' => $baseDir . '/app/Models/GarageService.php',
     'App\\Models\\GarageSubService' => $baseDir . '/app/Models/GarageSubService.php',
     'App\\Models\\GarageSubServicePrice' => $baseDir . '/app/Models/GarageSubServicePrice.php',

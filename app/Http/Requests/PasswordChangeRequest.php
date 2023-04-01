@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PreBookingConfirmRequestClient extends FormRequest
+class PasswordChangeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,8 @@ class PreBookingConfirmRequestClient extends FormRequest
     public function rules()
     {
         return [
-            "pre_booking_id"=>"required|numeric",
-            "job_bid_id"=>"required|numeric"
+            'current_password' => 'required|string|min:6',
+            'password' => 'required|confirmed|string|min:6',
         ];
     }
 }
