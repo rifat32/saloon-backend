@@ -48,9 +48,7 @@ Route::post('/resend-email-verify-mail', [AuthController::class, "resendEmailVer
 Route::patch('/forgetpassword/reset/{token}', [AuthController::class, "changePasswordByToken"]);
 Route::post('/auth/check/email', [AuthController::class, "checkEmail"]);
 
-Route::patch('/auth/changepassword', [AuthController::class, "changePassword"]);
 
-Route::put('/v1.0/update-user-info', [AuthController::class, "updateUserInfo"]);
 
 
 
@@ -85,7 +83,9 @@ Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 Route::middleware(['auth:api'])->group(function () {
     Route::get('/v1.0/user', [AuthController::class, "getUser"]);
+    Route::patch('/auth/changepassword', [AuthController::class, "changePassword"]);
 
+    Route::put('/v1.0/update-user-info', [AuthController::class, "updateUserInfo"]);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

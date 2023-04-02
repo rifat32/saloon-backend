@@ -9,6 +9,7 @@ use App\Http\Requests\JobUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
+use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
 use App\Models\BookingSubService;
@@ -21,6 +22,7 @@ use App\Models\JobSubService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
@@ -229,6 +231,12 @@ class JobController extends Controller
 
                 $booking->delete();
 
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($job->customer->email)->send(new DynamicMail(
+                    $job,
+                    "job_created_by_garage_owner"
+                ));
+            }
 
     return response([
         "ok" => true
@@ -475,7 +483,12 @@ class JobController extends Controller
 
                 $job->save();
 
-
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($job->customer->email)->send(new DynamicMail(
+                    $job,
+                    "job_updated_by_garage_owner"
+                ));
+            }
 
 
     return response($job, 201);
@@ -575,6 +588,12 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($job->customer->email)->send(new DynamicMail(
+                $job,
+                "job_status_changed_by_garage_owner"
+            ));
+        }
     return response($job, 201);
 });
 
@@ -895,7 +914,12 @@ class JobController extends Controller
             }
             $job->delete();
 
-
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($job->customer->email)->send(new DynamicMail(
+                $job,
+                "job_deleted_by_garage_owner"
+            ));
+        }
             return response()->json($job, 200);
         } catch(Exception $e){
 

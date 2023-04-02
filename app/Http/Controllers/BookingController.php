@@ -9,6 +9,7 @@ use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
+use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
 use App\Models\BookingSubService;
@@ -20,6 +21,7 @@ use App\Models\GarageSubService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -135,11 +137,11 @@ class BookingController extends Controller
             "car_registration_no",
             "status",
             "job_start_date",
-
              "job_start_time",
             "job_end_time",
             "fuel",
             "transmission",
+
         ])->toArray()
         )
             // ->with("somthing")
@@ -250,7 +252,12 @@ class BookingController extends Controller
 
                 $booking->save();
 
-
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                    $booking,
+                    "booking_updated_by_garage_owner"
+                ));
+                }
 
     return response($booking, 201);
 });
@@ -349,6 +356,13 @@ class BookingController extends Controller
                 return response()->json([
             "message" => "booking not found"
                 ], 404);
+            }
+
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($booking->customer->email)->send(new DynamicMail(
+                $booking,
+                "booking_status_changed_by_garage_owner"
+            ));
             }
     return response($booking, 201);
 });
@@ -467,7 +481,12 @@ class BookingController extends Controller
             "message" => "booking not found"
                 ], 404);
             }
-
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($booking->customer->email)->send(new DynamicMail(
+                $booking,
+                "booking_confirmed_by_garage_owner"
+            ));
+            }
     return response($booking, 201);
 });
 
@@ -786,6 +805,12 @@ class BookingController extends Controller
             }
             $booking->delete();
 
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($booking->customer->email)->send(new DynamicMail(
+                $booking,
+                "booking_deleted_by_garage_owner"
+            ));
+            }
 
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){

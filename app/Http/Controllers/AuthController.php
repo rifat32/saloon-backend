@@ -648,6 +648,7 @@ $datediff = $now - $user_created_date;
                $user->email_verify_token = $email_token;
                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
                $user->save();
+
                 if(env("SEND_EMAIL") == true) {
                     Mail::to($user->email)->send(new VerifyMail($user));
                 }
@@ -674,12 +675,58 @@ $user->roles = $user->roles->pluck('name');
 
 
 
+ /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/user",
+     *      operationId="getUser",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+
+     *      summary="This method is to get  user ",
+     *      description="This method is to get user",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
 
 public function getUser (Request $request) {
     $user = $request->user();
-
-
-
     $user->token = auth()->user()->createToken('authToken')->accessToken;
     $user->permissions = $user->getAllPermissions()->pluck('name');
     $user->roles = $user->roles->pluck('name');
@@ -767,7 +814,7 @@ return response()->json(["data" => true],200);
      *      path="/auth/changepassword",
      *      operationId="changePassword",
      *      tags={"auth"},
-
+ *
      *      summary="This method is to change password",
      *      description="This method is to change password",
     *       security={
@@ -822,12 +869,17 @@ return response()->json(["data" => true],200);
     {
 
         $client_request = $request->validated();
+
         $user = $request->user();
-        if (!Hash::check($client_request["current_password"], $client_request["password"])) {
+
+
+
+        if (!Hash::check($client_request["current_password"],$user->password)) {
             return response()->json([
                 "message" => "Invalid password"
             ], 400);
         }
+
         $password = Hash::make($client_request["password"]);
         $user->update([
             "password" => $password
@@ -845,8 +897,8 @@ return response()->json(["data" => true],200);
  /**
         *
      * @OA\Put(
-     *      path="/v1.0/users",
-     *      operationId="updateUser",
+     *      path="/v1.0/update-user-info",
+     *      operationId="updateUserInfo",
      *      tags={"auth"},
     *       security={
      *           {"bearerAuth": {}}
@@ -857,20 +909,20 @@ return response()->json(["data" => true],200);
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode","role"},
-     *             @OA\Property(property="first_Name", type="string", format="string",example="Rifat"),
-     *            @OA\Property(property="last_Name", type="string", format="string",example="How was this?"),
-     *            @OA\Property(property="email", type="string", format="string",example="How was this?"),
+     *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode"},
+     *             @OA\Property(property="first_Name", type="string", format="string",example="tsa"),
+     *            @OA\Property(property="last_Name", type="string", format="string",example="ts"),
+     *            @OA\Property(property="email", type="string", format="string",example="admin@gmail.com"),
 
-     * *  @OA\Property(property="password", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="password_confirmation", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="phone", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="address_line_1", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="address_line_2", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="country", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="city", type="boolean", format="boolean",example="1"),
-     *  * *  @OA\Property(property="postcode", type="boolean", format="boolean",example="1"),
-     *  *  * *  @OA\Property(property="role", type="boolean", format="boolean",example="customer"),
+     * *  @OA\Property(property="password", type="boolean", format="boolean",example="12345678"),
+     *  * *  @OA\Property(property="password_confirmation", type="string", format="string",example="12345678"),
+     *  * *  @OA\Property(property="phone", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="country", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="postcode", type="string", format="string",example="1"),
+
      *
      *         ),
      *      ),
@@ -908,7 +960,7 @@ return response()->json(["data" => true],200);
      *     )
      */
 
-    public function updateUser(UserInfoUpdateRequest $request)
+    public function updateUserInfo(UserInfoUpdateRequest $request)
     {
 
         try{

@@ -126,7 +126,9 @@ class EmailTemplateController extends Controller
      *
      *  @OA\RequestBody(
      *         required=true,
-     *  description="use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink] in the template",
+     *  description="use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink]
+     * [customer_FirstName],[customer_LastName],[customer_FullName],[garage_owner_FirstName],[garage_owner_LastName],[garage_owner_FullName],[automobile_make],[automobile_model],[car_registration_no],[status],[payment_status],[additional_information],[discount_type],[discount_amount],[price],[job_start_date],[job_start_time],[job_end_time],[coupon_code],[fuel],[transmission]
+     *  in the template",
      *         @OA\JsonContent(
      *            required={"id","template","is_active"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
@@ -461,7 +463,31 @@ class EmailTemplateController extends Controller
                 ], 401);
             }
 
-$types = ["email_verification_mail","forget_password_mail","welcome_message"];
+$types = [
+    "email_verification_mail",
+    "forget_password_mail",
+    "welcome_message",
+
+    "booking_updated_by_garage_owner",
+    "booking_status_changed_by_garage_owner",
+    "booking_confirmed_by_garage_owner",
+    "booking_deleted_by_garage_owner",
+    // "booking_rejected_by_garage_owner",
+
+    "booking_created_by_client",
+    "booking_updated_by_client",
+    "booking_deleted_by_client",
+    "booking_accepted_by_client",
+    "booking_rejected_by_client",
+
+
+    "job_created_by_garage_owner",
+    "job_updated_by_garage_owner",
+    "job_status_changed_by_garage_owner",
+    "job_deleted_by_garage_owner",
+
+
+];
 
 
             return response()->json($types, 200);

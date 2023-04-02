@@ -9,6 +9,7 @@ use App\Http\Requests\BookingUpdateRequestClient;
 use App\Http\Utils\CouponUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
+use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
 use App\Models\BookingSubService;
@@ -21,6 +22,7 @@ use App\Models\Job;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ClientBookingController extends Controller
 {
@@ -223,7 +225,12 @@ class ClientBookingController extends Controller
                 }
 
 
-
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                    $booking,
+                    "booking_created_by_client"
+                ));
+                }
 
                 return response($booking, 201);
             });
@@ -319,6 +326,13 @@ class ClientBookingController extends Controller
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
                     $booking->save();
+                    if(env("SEND_EMAIL") == true) {
+                        Mail::to($booking->customer->email)->send(new DynamicMail(
+                        $booking,
+                        "booking_rejected_by_client"
+                    ));
+                    }
+
                 } else if ($updatableData["status"] == "accepted") {
 
                     $job = Job::create([
@@ -386,6 +400,12 @@ class ClientBookingController extends Controller
                     $job->price = $total_price;
                     $job->save();
                     $booking->delete();
+
+                    if(env("SEND_EMAIL") == true) {
+                        Mail::to($booking->customer->email)->send(new DynamicMail(
+                        $booking,
+                        "booking_accepted_by_client"
+                    ));}
                 }
 
 
@@ -600,7 +620,11 @@ class ClientBookingController extends Controller
                     }
                 }
 
-
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                    $booking,
+                    "booking_updated_by_client"
+                ));}
 
 
                 return response($booking, 201);
@@ -872,13 +896,24 @@ class ClientBookingController extends Controller
     {
 
         try {
-
-            Booking::where([
+            $booking =  Booking::where([
                 "id" => $id,
                 "customer_id" => $request->user()->id
-            ])
-                ->delete();
+            ])->first();
+            if(!$booking){
+                return response()->json([
+                    "message" => "no booking found"
+                ],
+            404);
+            }
+            $booking->delete();
 
+                if(env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                    $booking,
+                    "booking_deleted_by_client"
+                ));
+            }
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
             return $this->sendError($e, 500);
