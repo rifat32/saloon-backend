@@ -17,7 +17,11 @@ class FuelStation extends Model
         "opening_time",
         "closing_time",
         "description",
+        "lat",
+        "long",
         "is_active"
     ];
-
+    public function options(){
+        return $this->hasMany(FuelStationOption::class,'fuel_station_id', 'id');
+    }
 }

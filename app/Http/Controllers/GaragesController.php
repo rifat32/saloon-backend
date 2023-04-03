@@ -516,6 +516,34 @@ class GaragesController extends Controller
 * required=true,
 * example="city"
 * ),
+     * *  @OA\Parameter(
+* name="start_lat",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="end_lat",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="start_long",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="end_long",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
     *       security={
      *           {"bearerAuth": {}}
      *       },
@@ -605,6 +633,20 @@ class GaragesController extends Controller
             if (!empty($request->end_date)) {
                 $garagesQuery = $garagesQuery->where('created_at', "<=", $request->end_date);
             }
+
+            if (!empty($request->start_lat)) {
+                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_lat);
+            }
+            if (!empty($request->end_lat)) {
+                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
+            }
+            if (!empty($request->start_long)) {
+                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_long);
+            }
+            if (!empty($request->end_long)) {
+                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_long);
+            }
+
 
             if (!empty($request->country_code)) {
                 $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");

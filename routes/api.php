@@ -74,7 +74,7 @@ Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailable
 Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "getAvailableCities"]);
 
 
-
+Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 
 
 
@@ -228,7 +228,7 @@ Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubSe
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStation"]);
 Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
-Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
+
 Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section

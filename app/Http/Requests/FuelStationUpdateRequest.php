@@ -33,6 +33,14 @@ class FuelStationUpdateRequest extends FormRequest
             "closing_time" => ['required','date_format:H:i', new TimeValidation
         ],
             "description" => "nullable|string",
+
+            'lat' => 'nullable|string',
+            'long' => 'nullable|string',
+
+            "options" => "nullable|array",
+            "options.*.option" => "required_if:options,!=,null|string",
+            "options.*.is_active" => "required_if:options,!=,null|boolean",
         ];
+
     }
 }
