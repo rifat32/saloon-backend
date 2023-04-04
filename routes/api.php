@@ -77,7 +77,7 @@ Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "
 
 Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 
-
+Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAll"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes

@@ -17,7 +17,10 @@ class CreateFuelStationOptionsTable extends Migration
             $table->id();
             $table->unsignedBigInteger("fuel_station_id");
             $table->foreign('fuel_station_id')->references('id')->on('fuel_stations')->onDelete('cascade')->nullable();
-            $table->string("option");
+
+            $table->unsignedBigInteger("option_id");
+            $table->foreign('option_id')->references('id')->on('fuel_station_services')->onDelete('cascade')->nullable();
+
             $table->boolean("is_active");
             $table->timestamps();
         });

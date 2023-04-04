@@ -10,7 +10,7 @@ class FuelStationOption extends Model
     use HasFactory;
     protected $fillable = [
         "fuel_station_id",
-        "option",
+        "option_id",
         "is_active",
     ];
 }

@@ -319,6 +319,116 @@ class FuelStationServiceController extends Controller
         }
     }
 
+       /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/fuel-station-services/get/all",
+     *      operationId="getFuelStationServicesAll",
+     *      tags={"fuel_station_service_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+
+     *      summary="This method is to get fuel station services ",
+     *      description="This method is to get fuel station services",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getFuelStationServicesAll( Request $request)
+    {
+        try {
+            // if (!$request->user()->hasPermissionTo('fuel_station_service_view')) {
+            //     return response()->json([
+            //         "message" => "You can not perform this action"
+            //     ], 401);
+            // }
+
+
+
+            $fuelStationServiceQuery = new FuelStationService();
+
+            if (!empty($request->search_key)) {
+                $fuelStationServiceQuery = $fuelStationServiceQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+            }
+
+            if (!empty($request->start_date)) {
+                $fuelStationServiceQuery = $fuelStationServiceQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $fuelStationServiceQuery = $fuelStationServiceQuery->where('created_at', "<=", $request->end_date);
+            }
+
+
+
+            $fuelStationServices= $fuelStationServiceQuery
+
+            ->orderByDesc("id")
+            ->get();
+            return response()->json($fuelStationServices, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
+
      /**
      *
      *     @OA\Delete(

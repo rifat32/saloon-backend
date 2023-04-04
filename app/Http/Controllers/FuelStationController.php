@@ -47,8 +47,8 @@ class FuelStationController extends Controller
      *   *  * *  @OA\Property(property="additional_information", type="string", format="string",example="1"),
      *
      * *  * *    @OA\Property(property="options", type="string", format="array",example={
-     * {"option":"toilet","is_active":true},
-     *  * {"option":"cng","is_active":true},
+     * {"option_id":1,"is_active":true},
+     *  * {"option_id":2,"is_active":true},
      * }),
      *
      *
@@ -111,7 +111,7 @@ class FuelStationController extends Controller
 
                     FuelStationOption::create([
                         "fuel_station_id"=>$fuel_station->id,
-                        "option"=> $option["option"],
+                        "option_id"=> $option["option_id"],
                         "is_active"=> $option["is_active"],
                     ]);
 
@@ -158,8 +158,8 @@ class FuelStationController extends Controller
      *   *  * *  @OA\Property(property="additional_information", type="string", format="string",example="1"),
      *
      *   * *  * *    @OA\Property(property="options", type="string", format="array",example={
-     * {"option":"toilet","is_active":true},
-     *  * {"option":"cng","is_active":true},
+      * {"option_id":1,"is_active":true},
+     *  * {"option_id":2,"is_active":true},
      * }),
      *
      *         ),
@@ -254,7 +254,7 @@ class FuelStationController extends Controller
 
                         FuelStationOption::create([
                             "fuel_station_id"=>$fuel_station->id,
-                            "option"=> $option["option"],
+                            "option_id"=> $option["option_id"],
                             "is_active"=> $option["is_active"],
                         ]);
 
@@ -338,11 +338,11 @@ class FuelStationController extends Controller
 * example="4"
 * ),
 *  @OA\Parameter(
-*      name="active_options[]",
+*      name="active_option_ids[]",
 *      in="query",
-*      description="active_options",
+*      description="active_option_ids",
 *      required=true,
-*      example="toilet,cng"
+*      example="1,2"
 * ),
      *      summary="This method is to get fuel stations ",
      *      description="This method is to get fuel stations",
@@ -423,14 +423,11 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
             }
 
-            if(!empty($request->active_options)) {
-                if(count($request->active_options)) {
+            if(!empty($request->active_option_ids)) {
+                if(count($request->active_option_ids)) {
                     $fuelStationQuery =   $fuelStationQuery
-                    ->whereIn("fuel_station_options.option",
-                    $request->active_options)
-
-
-
+                    ->whereIn("fuel_station_options.option_id",
+                    $request->active_option_ids)
                     ->where("fuel_station_options.is_active",1)
                     ;
                 }
