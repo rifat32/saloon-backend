@@ -13,6 +13,7 @@ use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
+use App\Http\Controllers\FuelStationServiceController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragePackageController;
@@ -221,6 +222,20 @@ Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubSe
 // end service management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// fuel station services management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/fuel-station-services', [FuelStationServiceController::class, "createFuelStationService"]);
+
+Route::put('/v1.0/fuel-station-services', [FuelStationServiceController::class, "updateFuelStationService"]);
+
+Route::get('/v1.0/fuel-station-services/{perPage}', [FuelStationServiceController::class, "getFuelStationServices"]);
+
+Route::delete('/v1.0/fuel-station-services/{id}', [FuelStationServiceController::class, "deleteFuelStationServiceById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// fuel station services management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

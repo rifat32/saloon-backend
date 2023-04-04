@@ -69,8 +69,9 @@ class GaragesController extends Controller
      *  "additional_information":"No Additional Information",
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
-     *    * *  "lat":"lat",
-     *    * *  "long":"long",
+     *    * *  "lat":"23.704263332849386",
+     *    * *  "long":"90.44707059805279",
+     *
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -240,8 +241,9 @@ class GaragesController extends Controller
      *  "additional_information":"No Additional Information",
      *  "address_line_1":"Dhaka",
      *  "address_line_2":"Dinajpur",
-     *    * *  "lat":"lat",
-     *    * *  "long":"long",
+     *    * *  "lat":"23.704263332849386",
+     *    * *  "long":"90.44707059805279",
+     *
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
@@ -516,33 +518,33 @@ class GaragesController extends Controller
 * required=true,
 * example="city"
 * ),
-     * *  @OA\Parameter(
+    * *  @OA\Parameter(
 * name="start_lat",
 * in="query",
-* description="search_key",
+* description="start_lat",
 * required=true,
-* example="search_key"
+* example="3"
 * ),
      * *  @OA\Parameter(
 * name="end_lat",
 * in="query",
-* description="search_key",
+* description="end_lat",
 * required=true,
-* example="search_key"
+* example="2"
 * ),
      * *  @OA\Parameter(
 * name="start_long",
 * in="query",
-* description="search_key",
+* description="start_long",
 * required=true,
-* example="search_key"
+* example="1"
 * ),
      * *  @OA\Parameter(
 * name="end_long",
 * in="query",
-* description="search_key",
+* description="end_long",
 * required=true,
-* example="search_key"
+* example="4"
 * ),
     *       security={
      *           {"bearerAuth": {}}

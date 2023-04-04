@@ -36,8 +36,15 @@ class FuelStationController extends Controller
      *    @OA\Property(property="opening_time", type="string", format="string",example="10:10"),
      * *    @OA\Property(property="closing_time", type="string", format="string",example="10:10"),
      * *    @OA\Property(property="description", type="string", format="number",example="description"),
-     *    *  * *    @OA\Property(property="lat", type="string", format="string",example="1"),
-     *  * *    @OA\Property(property="long", type="string", format="string",example="1"),
+     *    *  * *    @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
+     *  * *    @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
+     *
+     *      *  * *  @OA\Property(property="country", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="postcode", type="string", format="string",example="1"),
+     *     *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="1"),
+     *   *  * *  @OA\Property(property="additional_information", type="string", format="string",example="1"),
      *
      * *  * *    @OA\Property(property="options", type="string", format="array",example={
      * {"option":"toilet","is_active":true},
@@ -141,8 +148,14 @@ class FuelStationController extends Controller
      * *    @OA\Property(property="closing_time", type="string", format="string",example="10:10"),
      * *    @OA\Property(property="description", type="string", format="number",example="description"),
      *
-     *  *    *  * *    @OA\Property(property="lat", type="string", format="string",example="1"),
-     *  * *    @OA\Property(property="long", type="string", format="string",example="1"),
+     *  *    *  * *    @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
+     *  * *    @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
+     *  *      *  * *  @OA\Property(property="country", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="postcode", type="string", format="string",example="1"),
+     *     *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="1"),
+     *   *  * *  @OA\Property(property="additional_information", type="string", format="string",example="1"),
      *
      *   * *  * *    @OA\Property(property="options", type="string", format="array",example={
      * {"option":"toilet","is_active":true},
@@ -207,9 +220,15 @@ class FuelStationController extends Controller
                         "description",
                         "lat",
                         "long",
+        "country",
+        "city",
+        "postcode",
+        "additional_information",
+        "address_line_1",
+        "address_line_2",
                     ])->toArray()
                 )
-                    // ->with("somthing")
+                     ->with("options")
 
                     ->first();
 
@@ -293,30 +312,30 @@ class FuelStationController extends Controller
      * *  @OA\Parameter(
 * name="start_lat",
 * in="query",
-* description="search_key",
+* description="start_lat",
 * required=true,
-* example="search_key"
+* example="3"
 * ),
      * *  @OA\Parameter(
 * name="end_lat",
 * in="query",
-* description="search_key",
+* description="end_lat",
 * required=true,
-* example="search_key"
+* example="2"
 * ),
      * *  @OA\Parameter(
 * name="start_long",
 * in="query",
-* description="search_key",
+* description="start_long",
 * required=true,
-* example="search_key"
+* example="1"
 * ),
      * *  @OA\Parameter(
 * name="end_long",
 * in="query",
-* description="search_key",
+* description="end_long",
 * required=true,
-* example="search_key"
+* example="4"
 * ),
 *  @OA\Parameter(
 *      name="active_options[]",
@@ -374,7 +393,8 @@ class FuelStationController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $fuelStationQuery = FuelStation::leftJoin('fues_station_options', 'fues_station_options.fuel_station_id', '=', 'fuel_stations.id');
+            $fuelStationQuery = FuelStation::with("options")
+            ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
 
             if (!empty($request->search_key)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
@@ -411,13 +431,16 @@ class FuelStationController extends Controller
 
 
 
-                    ->whereIn("fuel_station_options.is_active",$request->active_options)
+                    ->where("fuel_station_options.is_active",1)
                     ;
                 }
 
             }
 
-            $fuelStations = $fuelStationQuery->orderByDesc("id")->paginate($perPage);
+            $fuelStations = $fuelStationQuery
+            ->select("fuel_stations.*")
+            ->orderByDesc("fuel_stations.id")
+            ->paginate($perPage);
             return response()->json($fuelStations, 200);
         } catch (Exception $e) {
 

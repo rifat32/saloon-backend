@@ -36,6 +36,11 @@ return [
        "fuel_station_view",
        "fuel_station_delete",
 
+       "fuel_station_service_create",
+       "fuel_station_service_update",
+       "fuel_station_service_view",
+       "fuel_station_service_delete",
+
        "template_create",
        "template_update",
        "template_view",
@@ -80,6 +85,11 @@ return [
                 "fuel_station_update",
                 "fuel_station_view",
                 "fuel_station_delete",
+
+                "fuel_station_service_create",
+                "fuel_station_service_update",
+                "fuel_station_service_view",
+                "fuel_station_service_delete",
 
 
                 "affiliation_create",
@@ -205,6 +215,11 @@ return [
        "fuel_station_update",
        "fuel_station_view",
        "fuel_station_delete",
+
+       "fuel_station_service_create",
+       "fuel_station_service_update",
+       "fuel_station_service_view",
+       "fuel_station_service_delete",
 
 
        "template_create",

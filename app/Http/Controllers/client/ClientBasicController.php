@@ -55,33 +55,33 @@ class ClientBasicController extends Controller
 * required=true,
 * example="city"
 * ),
-     * *  @OA\Parameter(
+    * *  @OA\Parameter(
 * name="start_lat",
 * in="query",
-* description="search_key",
+* description="start_lat",
 * required=true,
-* example="search_key"
+* example="3"
 * ),
      * *  @OA\Parameter(
 * name="end_lat",
 * in="query",
-* description="search_key",
+* description="end_lat",
 * required=true,
-* example="search_key"
+* example="2"
 * ),
      * *  @OA\Parameter(
 * name="start_long",
 * in="query",
-* description="search_key",
+* description="start_long",
 * required=true,
-* example="search_key"
+* example="1"
 * ),
      * *  @OA\Parameter(
 * name="end_long",
 * in="query",
-* description="search_key",
+* description="end_long",
 * required=true,
-* example="search_key"
+* example="4"
 * ),
      * *  @OA\Parameter(
 * name="make_id",

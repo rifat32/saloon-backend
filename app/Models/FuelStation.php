@@ -19,6 +19,12 @@ class FuelStation extends Model
         "description",
         "lat",
         "long",
+        "country",
+        "city",
+        "postcode",
+        "additional_information",
+        "address_line_1",
+        "address_line_2",
         "is_active"
     ];
     public function options(){

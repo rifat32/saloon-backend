@@ -20,11 +20,29 @@ class CreateFuelStationsTable extends Migration
             $table->text("description")->nullable();
             $table->time("opening_time");
             $table->time("closing_time");
+
             $table->string("lat")->nullable();
             $table->string("long")->nullable();
+
+            $table->string("country");
+            $table->string("city");
+            $table->string("postcode");
+            $table->text("additional_information")->nullable();
+            $table->string("address_line_1")->nullable();
+            $table->string("address_line_2")->nullable();
+
+
             $table->boolean("is_active")->default(1);
             $table->softDeletes();
             $table->timestamps();
+
+
+
+
+
+      
+
+
         });
     }
 

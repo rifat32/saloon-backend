@@ -39,6 +39,12 @@ class FuelStationCreateRequest extends FormRequest
             "options.*.option" => "required_if:options,!=,null|string",
             "options.*.is_active" => "required_if:options,!=,null|boolean",
 
+            'country' => 'required|string',
+            'city' => 'required|string',
+            'postcode' => 'required|string',
+            'address_line_1' => 'required|string',
+            'address_line_2' => 'nullable|string',
+            'additional_information' => 'nullable|string',
 
         ];
     }

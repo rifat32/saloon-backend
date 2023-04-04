@@ -1066,6 +1066,71 @@
                 }
             }
         },
+        "/v1.0/user": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to get  user ",
+                "description": "This method is to get user",
+                "operationId": "getUser",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/auth/check/email": {
             "post": {
                 "tags": [
@@ -1121,6 +1186,231 @@
                     },
                     "403": {
                         "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/changepassword": {
+            "patch": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to change password",
+                "description": "This method is to change password",
+                "operationId": "changePassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password",
+                                    "cpassword"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "aaaaaaaa"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "aaaaaaaa"
+                                    },
+                                    "current_password": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "aaaaaaaa"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/update-user-info": {
+            "put": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to update user by user",
+                "description": "This method is to update user by user",
+                "operationId": "updateUserInfo",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_Name",
+                                    "last_Name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "phone",
+                                    "address_line_1",
+                                    "address_line_2",
+                                    "country",
+                                    "city",
+                                    "postcode"
+                                ],
+                                "properties": {
+                                    "first_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "tsa"
+                                    },
+                                    "last_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "ts"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "admin@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "12345678"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "12345678"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_1": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_2": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "postcode": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
                         "content": {
                             "application/json": {
                                 "schema": {}
@@ -4926,7 +5216,7 @@
                 "description": "This method is to update email template",
                 "operationId": "updateEmailTemplate",
                 "requestBody": {
-                    "description": "use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink] in the template",
+                    "description": "use [FirstName],[LastName],[FullName],[AccountVerificationLink],[ForgotPasswordLink]\n     * [customer_FirstName],[customer_LastName],[customer_FullName],[garage_owner_FirstName],[garage_owner_LastName],[garage_owner_FullName],[automobile_make],[automobile_model],[car_registration_no],[status],[payment_status],[additional_information],[discount_type],[discount_amount],[price],[job_start_date],[job_start_time],[job_end_time],[coupon_code],[fuel],[transmission]\n     *  in the template",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -5757,6 +6047,60 @@
                                         "type": "string",
                                         "format": "number",
                                         "example": "description"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "postcode": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_1": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_2": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "additional_information": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "options": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "option": "toilet",
+                                                "is_active": true
+                                            },
+                                            {
+                                                "option": "cng",
+                                                "is_active": true
+                                            }
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -5864,6 +6208,60 @@
                                         "type": "string",
                                         "format": "number",
                                         "example": "description"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "postcode": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_1": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "address_line_2": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "additional_information": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "options": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "option": "toilet",
+                                                "is_active": true
+                                            },
+                                            {
+                                                "option": "cng",
+                                                "is_active": true
+                                            }
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -5964,6 +6362,41 @@
                         "description": "search_key",
                         "required": true,
                         "example": "search_key"
+                    },
+                    {
+                        "name": "start_lat",
+                        "in": "query",
+                        "description": "start_lat",
+                        "required": true,
+                        "example": "3"
+                    },
+                    {
+                        "name": "end_lat",
+                        "in": "query",
+                        "description": "end_lat",
+                        "required": true,
+                        "example": "2"
+                    },
+                    {
+                        "name": "start_long",
+                        "in": "query",
+                        "description": "start_long",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "end_long",
+                        "in": "query",
+                        "description": "end_long",
+                        "required": true,
+                        "example": "4"
+                    },
+                    {
+                        "name": "active_options[]",
+                        "in": "query",
+                        "description": "active_options",
+                        "required": true,
+                        "example": "toilet,cng"
                     }
                 ],
                 "responses": {
@@ -6040,6 +6473,195 @@
                         "example": "1"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/fuel-station-services": {
+            "put": {
+                "tags": [
+                    "fuel_station_management"
+                ],
+                "summary": "This method is to update fuel station service",
+                "description": "This method is to update fuel station service",
+                "operationId": "updateFuelStationService",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "icon"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "car"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "car"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "fuel_station_service_management"
+                ],
+                "summary": "This method is to store fuel station services",
+                "description": "This method is to store fuel station servces",
+                "operationId": "createFuelStationService",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "address",
+                                    "opening_time",
+                                    "closing_time",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "car"
+                                    },
+                                    "icon": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "car"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -7434,6 +8056,80 @@
                 ]
             }
         },
+        "/v1.0/garage-rules/{garage_id}": {
+            "get": {
+                "tags": [
+                    "garage_rules_management"
+                ],
+                "summary": "This method is to get garage rules ",
+                "description": "This method is to get garage rules",
+                "operationId": "getGarageRules",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/garage-sub-service-prices": {
             "post": {
                 "tags": [
@@ -8379,6 +9075,34 @@
                         "example": "city"
                     },
                     {
+                        "name": "start_lat",
+                        "in": "query",
+                        "description": "start_lat",
+                        "required": true,
+                        "example": "3"
+                    },
+                    {
+                        "name": "end_lat",
+                        "in": "query",
+                        "description": "end_lat",
+                        "required": true,
+                        "example": "2"
+                    },
+                    {
+                        "name": "start_long",
+                        "in": "query",
+                        "description": "start_long",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "end_long",
+                        "in": "query",
+                        "description": "end_long",
+                        "required": true,
+                        "example": "4"
+                    },
+                    {
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
@@ -8975,6 +9699,21 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "offer template goes here"
+                                    },
+                                    "job_start_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "job_start_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "08:10"
+                                    },
+                                    "job_end_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "10:10"
                                     }
                                 },
                                 "type": "object"
@@ -9055,7 +9794,10 @@
                                     "pre_booking_id",
                                     "price",
                                     "offer_template",
-                                    "description"
+                                    "description",
+                                    "job_start_date",
+                                    "job_start_time",
+                                    "job_end_time"
                                 ],
                                 "properties": {
                                     "garage_id": {
@@ -9077,6 +9819,21 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "offer template goes here"
+                                    },
+                                    "job_start_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "job_start_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "08:10"
+                                    },
+                                    "job_end_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "10:10"
                                     }
                                 },
                                 "type": "object"
@@ -12951,6 +13708,34 @@
                         "example": "city"
                     },
                     {
+                        "name": "start_lat",
+                        "in": "query",
+                        "description": "start_lat",
+                        "required": true,
+                        "example": "3"
+                    },
+                    {
+                        "name": "end_lat",
+                        "in": "query",
+                        "description": "end_lat",
+                        "required": true,
+                        "example": "2"
+                    },
+                    {
+                        "name": "start_long",
+                        "in": "query",
+                        "description": "start_long",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "end_long",
+                        "in": "query",
+                        "description": "end_long",
+                        "required": true,
+                        "example": "4"
+                    },
+                    {
                         "name": "make_id",
                         "in": "query",
                         "description": "automobile_make_id",
@@ -14461,7 +15246,8 @@
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
-                                    "pre_booking_sub_service_ids"
+                                    "pre_booking_sub_service_ids",
+                                    "job_end_date"
                                 ],
                                 "properties": {
                                     "automobile_make_id": {
@@ -14503,6 +15289,11 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "10:10"
+                                    },
+                                    "job_end_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-07-29"
                                     },
                                     "pre_booking_sub_service_ids": {
                                         "type": "string",
@@ -14780,71 +15571,19 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "automobile_make_id",
-                                    "automobile_model_id",
-                                    "car_registration_no",
-                                    "pre_booking_sub_service_ids"
+                                    "pre_booking_id",
+                                    "job_bid_id"
                                 ],
                                 "properties": {
-                                    "automobile_make_id": {
+                                    "pre_booking_id": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
                                     },
-                                    "automobile_model_id": {
+                                    "job_bid_id": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
-                                    },
-                                    "car_registration_no": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "r-00011111"
-                                    },
-                                    "additional_information": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "r-00011111"
-                                    },
-                                    "job_start_date": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "2019-06-29"
-                                    },
-                                    "job_start_time": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "10:10"
-                                    },
-                                    "pre_booking_sub_service_ids": {
-                                        "type": "string",
-                                        "format": "array",
-                                        "example": [
-                                            1,
-                                            2,
-                                            3,
-                                            4
-                                        ]
-                                    },
-                                    "country": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "country"
-                                    },
-                                    "city": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "city"
-                                    },
-                                    "post_code": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "postcode"
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "address"
                                     }
                                 },
                                 "type": "object"
