@@ -956,8 +956,8 @@
                                             "additional_information": "No Additional Information",
                                             "address_line_1": "Dhaka",
                                             "address_line_2": "Dinajpur",
-                                            "lat": "lat",
-                                            "long": "long",
+                                            "lat": "23.704263332849386",
+                                            "long": "90.44707059805279",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
@@ -6051,12 +6051,12 @@
                                     "lat": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "1"
+                                        "example": "23.704263332849386"
                                     },
                                     "long": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "1"
+                                        "example": "90.44707059805279"
                                     },
                                     "country": {
                                         "type": "string",
@@ -6093,11 +6093,11 @@
                                         "format": "array",
                                         "example": [
                                             {
-                                                "option": "toilet",
+                                                "option_id": 1,
                                                 "is_active": true
                                             },
                                             {
-                                                "option": "cng",
+                                                "option_id": 2,
                                                 "is_active": true
                                             }
                                         ]
@@ -6212,12 +6212,12 @@
                                     "lat": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "1"
+                                        "example": "23.704263332849386"
                                     },
                                     "long": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "1"
+                                        "example": "90.44707059805279"
                                     },
                                     "country": {
                                         "type": "string",
@@ -6254,11 +6254,11 @@
                                         "format": "array",
                                         "example": [
                                             {
-                                                "option": "toilet",
+                                                "option_id": 1,
                                                 "is_active": true
                                             },
                                             {
-                                                "option": "cng",
+                                                "option_id": 2,
                                                 "is_active": true
                                             }
                                         ]
@@ -6392,11 +6392,11 @@
                         "example": "4"
                     },
                     {
-                        "name": "active_options[]",
+                        "name": "active_option_ids[]",
                         "in": "query",
-                        "description": "active_options",
+                        "description": "active_option_ids",
                         "required": true,
-                        "example": "toilet,cng"
+                        "example": "1,2"
                     }
                 ],
                 "responses": {
@@ -6533,7 +6533,7 @@
         "/v1.0/fuel-station-services": {
             "put": {
                 "tags": [
-                    "fuel_station_management"
+                    "fuel_station_service_management"
                 ],
                 "summary": "This method is to update fuel station service",
                 "description": "This method is to update fuel station service",
@@ -6562,7 +6562,7 @@
                                     "icon": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "car"
+                                        "example": "fa fa-halua-kha"
                                     }
                                 },
                                 "type": "object"
@@ -6654,7 +6654,7 @@
                                     "icon": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "car"
+                                        "example": "fa fa-halua-kha"
                                     }
                                 },
                                 "type": "object"
@@ -6662,6 +6662,263 @@
                         }
                     }
                 },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/fuel-station-services/{perPage}": {
+            "get": {
+                "tags": [
+                    "fuel_station_service_management"
+                ],
+                "summary": "This method is to get fuel station services ",
+                "description": "This method is to get fuel station services",
+                "operationId": "getFuelStationServices",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/fuel-station-services/get/all": {
+            "get": {
+                "tags": [
+                    "fuel_station_service_management"
+                ],
+                "summary": "This method is to get fuel station services ",
+                "description": "This method is to get fuel station services",
+                "operationId": "getFuelStationServicesAll",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/fuel-station-services/{id}": {
+            "delete": {
+                "tags": [
+                    "fuel_station_service_management"
+                ],
+                "summary": "This method is to delete fuel station service by id",
+                "description": "This method is to delete fuel station service by id",
+                "operationId": "deleteFuelStationServiceById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -8749,8 +9006,8 @@
                                             "additional_information": "No Additional Information",
                                             "address_line_1": "Dhaka",
                                             "address_line_2": "Dinajpur",
-                                            "lat": "lat",
-                                            "long": "long",
+                                            "lat": "23.704263332849386",
+                                            "long": "90.44707059805279",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
@@ -8915,8 +9172,8 @@
                                             "additional_information": "No Additional Information",
                                             "address_line_1": "Dhaka",
                                             "address_line_2": "Dinajpur",
-                                            "lat": "lat",
-                                            "long": "long",
+                                            "lat": "23.704263332849386",
+                                            "long": "90.44707059805279",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
@@ -11410,6 +11667,914 @@
                 ]
             }
         },
+        "/review-new/create/questions": {
+            "post": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to store question",
+                "description": "This method is to store question",
+                "operationId": "storeQuestion",
+                "requestBody": {
+                    "description": "supported value is of type is 'star','emoji','numbers','heart'",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question",
+                                    "garage_id",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "question": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "How was this?"
+                                    },
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "star"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/update/questions": {
+            "put": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to update question",
+                "description": "This method is to update question",
+                "operationId": "updateQuestion",
+                "requestBody": {
+                    "description": "supported value is of type is 'star','emoji','numbers','heart'",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question",
+                                    "is_active",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "question": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "was it good?"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "star"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/update/active_state/questions": {
+            "put": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to update question's active state",
+                "description": "This method is to update question's active state",
+                "operationId": "updateQuestionActiveState",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "is_active",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get question",
+                "description": "This method is to get question",
+                "operationId": "getQuestion",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions-all": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question without pagination",
+                "description": "This method is to get all question without pagination",
+                "operationId": "getQuestionAll",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions-all-report": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question report",
+                "description": "This method is to get all question report",
+                "operationId": "getQuestionAllReport",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions/{id}": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get question by id",
+                "description": "This method is to get question by id",
+                "operationId": "getQuestionById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "question Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions/{id}/{garageId}": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get question by id",
+                "description": "This method is to get question by id",
+                "operationId": "getQuestionById2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "question Id",
+                        "required": false
+                    },
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/delete/questions/{id}": {
+            "delete": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to delete question by id",
+                "description": "This method is to delete question by id",
+                "operationId": "deleteQuestionById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "question Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions-all-report/guest": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question report guest",
+                "description": "This method is to get all question report guest",
+                "operationId": "getQuestionAllReportGuest",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions-all-report/guest/quantum": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question report guest and only garage owner of the garage can view this ",
+                "description": "This method is to get all question report guest and only garage owner of the garage can view this ",
+                "operationId": "getQuestionAllReportGuestQuantum",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    },
+                    {
+                        "name": "quantum",
+                        "in": "query",
+                        "description": "quantum",
+                        "required": false
+                    },
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "description": "period",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/questions-all-report/quantum": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question report.  and only garage owner of the garage can view this ",
+                "description": "This method is to get all question report. and only garage owner of the garage can view this ",
+                "operationId": "getQuestionAllReportQuantum",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    },
+                    {
+                        "name": "quantum",
+                        "in": "query",
+                        "description": "quantum",
+                        "required": false
+                    },
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "description": "period",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/roles": {
             "put": {
                 "tags": [
@@ -13736,18 +14901,18 @@
                         "example": "4"
                     },
                     {
-                        "name": "make_id",
+                        "name": "automobile_make_ids[]",
                         "in": "query",
-                        "description": "automobile_make_id",
+                        "description": "automobile_make_ids",
                         "required": true,
-                        "example": "1"
+                        "example": "1,2"
                     },
                     {
-                        "name": "make_id",
+                        "name": "automobile_model_ids[]",
                         "in": "query",
                         "description": "automobile_model_id",
                         "required": true,
-                        "example": "1"
+                        "example": "1,2"
                     },
                     {
                         "name": "service_ids[]",
@@ -13762,6 +14927,20 @@
                         "description": "sub_service_id",
                         "required": true,
                         "example": "1,2"
+                    },
+                    {
+                        "name": "wifi_available",
+                        "in": "query",
+                        "description": "wifi_available",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "is_mobile_garage",
+                        "in": "query",
+                        "description": "is_mobile_garage",
+                        "required": true,
+                        "example": "1"
                     }
                 ],
                 "responses": {
@@ -14022,6 +15201,16 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "r-00011111"
+                                    },
+                                    "transmission": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "transmission"
+                                    },
+                                    "fuel": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Fuel"
                                     },
                                     "booking_sub_service_ids": {
                                         "type": "string",
@@ -15720,6 +16909,186 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/client/review-new/get/questions-all": {
+            "get": {
+                "tags": [
+                    "client.review.setting.question"
+                ],
+                "summary": "This method is to get all question without pagination",
+                "description": "This method is to get all question without pagination",
+                "operationId": "getQuestionAllUnauthorized",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client/review-new/get/questions-all-report": {
+            "get": {
+                "tags": [
+                    "client.review.setting.question"
+                ],
+                "summary": "This method is to get all question report unauthorized",
+                "description": "This method is to get all question report unauthorized",
+                "operationId": "getQuestionAllReportUnauthorized",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/client/review-new/get/questions-all-report/guest": {
+            "get": {
+                "tags": [
+                    "review.setting.question"
+                ],
+                "summary": "This method is to get all question report guest unauthorized",
+                "description": "This method is to get all question report guest unauthorized",
+                "operationId": "getQuestionAllReportGuestUnauthorized",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
             }
         }
     },

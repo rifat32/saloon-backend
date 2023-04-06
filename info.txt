@@ -7,3 +7,11 @@ utils to set up super admin for the first time. clear the database.
  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
  * *  * *    @OA\Property(property="discount", type="number", format="number",example="percentage"),
  *  * *  * *    @OA\Property(property="discount", type="number", format="number",example="percentage"),
+
+
+
+
+
+\https://mughalsignandprint.co.uk/garage-management/api/v1.0/client/garages/100?search_key=abc&country_code=null&city=null&service_ids[]=null&sub_service_ids[]=null&make_ids[]=null&model_ids[]=null
+
+

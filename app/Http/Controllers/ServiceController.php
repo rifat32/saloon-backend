@@ -963,6 +963,8 @@ class ServiceController extends Controller
                 $service  =  tap(SubService::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
                     'name',
                     "description",
+                    "service_id",
+                    "is_fixed_price"
                     // "automobile_category_id"
                 ])->toArray()
                 )

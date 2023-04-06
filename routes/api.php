@@ -9,6 +9,7 @@ use App\Http\Controllers\client\ClientBookingController;
 use App\Http\Controllers\client\ClientCouponController;
 use App\Http\Controllers\client\ClientJobController;
 use App\Http\Controllers\client\ClientPreBookingController;
+use App\Http\Controllers\client\ClientReviewController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\JobBidController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserManagementController;
@@ -248,6 +250,67 @@ Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteF
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// review management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/review-new/create/questions', [ReviewController::class, "storeQuestion"]);
+Route::put('/review-new/update/questions', [ReviewController::class, "updateQuestion"]);
+Route::put('/review-new/update/active_state/questions', [ReviewController::class, "updateQuestionActiveState"]);
+
+Route::get('/review-new/get/questions', [ReviewController::class, "getQuestion"]);
+Route::get('/review-new/get/questions-all', [ReviewController::class, "getQuestionAll"]);
+
+Route::get('/review-new/get/questions-all-report', [ReviewController::class, "getQuestionAllReport"]);
+
+Route::get('/review-new/get/questions/{id}', [ReviewController::class, "getQuestionById"]);
+
+Route::get('/review-new/get/questions/{id}/{garageId}', [ReviewController::class, "getQuestionById2"]);
+
+Route::delete('/review-new/delete/questions/{id}', [ReviewController::class, "deleteQuestionById"]);
+
+
+Route::get('/review-new/get/questions-all-report/guest', [ReviewController::class, "getQuestionAllReportGuest"]);
+
+Route::get('/review-new/get/questions-all-report/guest/quantum', [ReviewController::class, "getQuestionAllReportGuestQuantum"]);
+
+
+Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::class, "getQuestionAllReportQuantum"]);
+
+
+
+Route::post('/review-new/create/tags', [ReviewController::class, "storeTag"]);
+Route::post('/review-new/create/tags/multiple/{garageId}', [ReviewController::class, "storeTagMultiple"]);
+Route::put('/review-new/update/tags', [ReviewController::class, "updateTag"]);
+Route::get('/review-new/get/tags', [ReviewController::class, "getTag"]);
+Route::get('/review-new/get/tags/{id}', [ReviewController::class, "getTagById"]);
+Route::get('/review-new/get/tags/{id}/{reataurantId}', [ReviewController::class, "getTagById2"]);
+Route::delete('/review-new/delete/tags/{id}', [ReviewController::class, "deleteTagById"]);
+
+Route::post('/review-new/owner/create/questions', [ReviewController::class, "storeOwnerQuestion"]);
+
+Route::patch('/review-new/owner/update/questions', [ReviewController::class, "updateOwnerQuestion"]);
+Route::get('/review-new/getavg/review/{garageId}/{start}/{end}', [ReviewController::class, "getAverage"]);
+Route::get('/review-new/getreview/{garageId}/{rate}/{start}/{end}', [ReviewController::class, "filterReview"]);
+Route::get('/review-new/getreviewAll/{garageId}', [ReviewController::class, "getReviewByGarageId"]);
+Route::get('/review-new/getcustomerreview/{garageId}/{start}/{end}', [ReviewController::class, "getCustommerReview"]);
+Route::post('/review-new/{garageId}', [ReviewController::class, "storeReview"]);
+Route::post('/review-new-guest/{garageId}', [ReviewController::class, "storeReviewByGuest"]);
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// fuel station management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // template management section
@@ -562,6 +625,13 @@ Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "g
 
 Route::get('/v1.0/client/garages/service-model-details/{id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
 
+
+
+
+Route::get('/client/review-new/get/questions-all', [ClientReviewController::class, "getQuestionAllUnauthorized"]);
+
+Route::get('/client/review-new/get/questions-all-report', [ClientReviewController::class, "getQuestionAllReportUnauthorized"]);
+Route::get('/client/review-new/get/questions-all-report/guest', [ClientReviewController::class, "getQuestionAllReportGuestUnauthorized"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // client protected routes

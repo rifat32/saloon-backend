@@ -444,6 +444,12 @@ class ClientBookingController extends Controller
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     *
+     *    *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
+     *
+     *
+     *
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *   *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -533,7 +539,10 @@ class ClientBookingController extends Controller
                         "automobile_make_id",
                         "automobile_model_id",
                         "car_registration_no",
-                        "status",
+                        "additional_information",
+                        "coupon_code",
+                        "fuel",
+                        "transmission",
                     ])->toArray()
                 )
                     // ->with("somthing")

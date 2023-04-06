@@ -31,7 +31,7 @@ class FuelStationServiceController extends Controller
      *         @OA\JsonContent(
      *            required={"name","address","opening_time","closing_time","description"},
      *    @OA\Property(property="name", type="string", format="string",example="car"),
-     *    @OA\Property(property="icon", type="string", format="string",example="car"),
+     *    @OA\Property(property="icon", type="string", format="string",example="fa fa-halua-kha"),
 
      *
      *
@@ -117,7 +117,7 @@ class FuelStationServiceController extends Controller
      *            required={"id","name","icon"},
      *    @OA\Property(property="id", type="number", format="number", example="1"),
      *    @OA\Property(property="name", type="string", format="string",example="car"),
-     *    @OA\Property(property="icon", type="string", format="string",example="car"),
+     *    @OA\Property(property="icon", type="string", format="string",example="fa fa-halua-kha"),
 
      *
      *         ),
@@ -391,6 +391,7 @@ class FuelStationServiceController extends Controller
     public function getFuelStationServicesAll( Request $request)
     {
         try {
+
             // if (!$request->user()->hasPermissionTo('fuel_station_service_view')) {
             //     return response()->json([
             //         "message" => "You can not perform this action"

@@ -39,6 +39,11 @@ class DynamicMail extends Mailable
 
         ])->first();
 
+        if(!$email_content){
+            return $this->view('email.dummy');
+
+        }
+
 
         $html_content = json_decode($email_content->template);
         $html_content =  str_replace("[customer_FirstName]", $this->data->customer->first_Name, $html_content );

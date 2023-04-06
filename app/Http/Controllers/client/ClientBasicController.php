@@ -83,19 +83,20 @@ class ClientBasicController extends Controller
 * required=true,
 * example="4"
 * ),
-     * *  @OA\Parameter(
-* name="make_id",
-* in="query",
-* description="automobile_make_id",
-* required=true,
-* example="1"
+
+*  @OA\Parameter(
+*      name="automobile_make_ids[]",
+*      in="query",
+*      description="automobile_make_ids",
+*      required=true,
+*      example="1,2"
 * ),
-     * *  @OA\Parameter(
-* name="make_id",
-* in="query",
-* description="automobile_model_id",
-* required=true,
-* example="1"
+*  @OA\Parameter(
+*      name="automobile_model_ids[]",
+*      in="query",
+*      description="automobile_model_id",
+*      required=true,
+*      example="1,2"
 * ),
 *  @OA\Parameter(
 *      name="service_ids[]",
@@ -111,6 +112,22 @@ class ClientBasicController extends Controller
 *      required=true,
 *      example="1,2"
 * ),
+     * *  @OA\Parameter(
+* name="wifi_available",
+* in="query",
+* description="wifi_available",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="is_mobile_garage",
+* in="query",
+* description="is_mobile_garage",
+* required=true,
+* example="1"
+* ),
+
+
 
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
@@ -153,7 +170,16 @@ class ClientBasicController extends Controller
     public function getGaragesClient($perPage,Request $request) {
 
         try{
-            $garagesQuery = Garage::with("owner")
+            $garagesQuery = Garage::with("owner",
+            "garageAutomobileMakes.automobileMake",
+            "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+            "garageServices.service",
+            "garageServices.garageSubServices.garage_sub_service_prices",
+            "garageServices.garageSubServices.subService",
+            "garage_times",
+            "garageGalleries",
+            "garage_packages",
+)
             ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
             ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 
@@ -163,11 +189,11 @@ class ClientBasicController extends Controller
             if(!empty($request->search_key)) {
                 $garagesQuery = $garagesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
-                    $query->where("name", "like", "%" . $term . "%");
-                    $query->orWhere("phone", "like", "%" . $term . "%");
-                    $query->orWhere("email", "like", "%" . $term . "%");
-                    $query->orWhere("city", "like", "%" . $term . "%");
-                    $query->orWhere("postcode", "like", "%" . $term . "%");
+                    $query->where("garages.name", "like", "%" . $term . "%");
+                    $query->orWhere("garages.phone", "like", "%" . $term . "%");
+                    $query->orWhere("garages.email", "like", "%" . $term . "%");
+                    $query->orWhere("garages.city", "like", "%" . $term . "%");
+                    $query->orWhere("garages.postcode", "like", "%" . $term . "%");
                 });
 
             }
@@ -181,24 +207,58 @@ class ClientBasicController extends Controller
 
             }
 
-            if (!empty($request->automobile_make_id)) {
-                $garagesQuery =   $garagesQuery->where("garage_automobile_makes.automobile_make_id",$request->automobile_make_id);
+
+
+
+            if (!empty($request->is_mobile_garage)) {
+                $garagesQuery =   $garagesQuery->where("garages.is_mobile_garage",$request->is_mobile_garage);
 
             }
-            if (!empty($request->automobile_model_id)) {
-                $garagesQuery =   $garagesQuery->where("garage_automobile_models.automobile_model_id",$request->automobile_model_id);
+            if (!empty($request->wifi_available)) {
+                $garagesQuery =   $garagesQuery->where("garages.wifi_available",$request->wifi_available);
+
             }
-            if(!empty($request->service_ids)) {
-                if(count($request->service_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$request->service_ids);
+
+
+
+            if(!empty($request->automobile_make_ids)) {
+                $null_filter = collect(array_filter($request->automobile_make_ids))->values();
+                $automobile_make_ids =  $null_filter->all();
+                if(count($automobile_make_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_automobile_makes.automobile_make_id",$automobile_make_ids);
+                }
+
+            }
+            if(!empty($request->automobile_model_ids)) {
+
+                $null_filter = collect(array_filter($request->automobile_model_ids))->values();
+                $automobile_model_ids =  $null_filter->all();
+                if(count($automobile_model_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_automobile_models.automobile_model_id",$automobile_model_ids);
                 }
 
             }
 
 
+            if(!empty($request->service_ids)) {
+
+                $null_filter = collect(array_filter($request->service_ids))->values();
+            $service_ids =  $null_filter->all();
+
+                if(count($service_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$service_ids);
+                }
+
+            }
+
+
+
+
             if(!empty($request->sub_service_ids)) {
-                if(count($request->sub_service_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$request->sub_service_ids);
+                $null_filter = collect(array_filter($request->sub_service_ids))->values();
+            $sub_service_ids =  $null_filter->all();
+                if(count($sub_service_ids)) {
+                    $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$sub_service_ids);
                 }
 
             }

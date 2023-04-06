@@ -33,7 +33,7 @@ class BookingCreateRequestClient extends FormRequest
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date",
-            "job_start_time" => ['required','date_format:H:i', new TimeValidation
+            "job_start_time" => ['nullable','date_format:H:i', new TimeValidation
         ],
             // "job_end_date" => "required|date",
             "coupon_code" => "nullable|string",
