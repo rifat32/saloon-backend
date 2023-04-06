@@ -59,7 +59,15 @@ return [
        "affiliation_view",
        "affiliation_delete",
 
+       "questions_create",
+       "questions_update",
+       "questions_view",
+       "questions_delete",
 
+       "review_create",
+       "review_update",
+       "review_view",
+       "review_delete",
 
 
 // this permission may remove later
@@ -300,6 +308,16 @@ return [
        "job_bids_update",
        "job_bids_view",
        "job_bids_delete",
+
+       "questions_create",
+       "questions_update",
+       "questions_view",
+       "questions_delete",
+
+       "review_create",
+       "review_update",
+       "review_view",
+       "review_delete",
 
     ],
 

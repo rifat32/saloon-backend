@@ -11,12 +11,11 @@ class Tag extends Model
 
     protected $fillable = [
         'tag',
-        "garage_id",
         "is_default"
     ];
     protected $hidden = [
         'created_at',
         'updated_at',
-        "garage_id",
+
     ];
 }

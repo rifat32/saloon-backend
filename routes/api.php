@@ -263,13 +263,16 @@ Route::put('/review-new/update/active_state/questions', [ReviewController::class
 Route::get('/review-new/get/questions', [ReviewController::class, "getQuestion"]);
 Route::get('/review-new/get/questions-all', [ReviewController::class, "getQuestionAll"]);
 
+
+
 Route::get('/review-new/get/questions-all-report', [ReviewController::class, "getQuestionAllReport"]);
 
 Route::get('/review-new/get/questions/{id}', [ReviewController::class, "getQuestionById"]);
 
-Route::get('/review-new/get/questions/{id}/{garageId}', [ReviewController::class, "getQuestionById2"]);
+
 
 Route::delete('/review-new/delete/questions/{id}', [ReviewController::class, "deleteQuestionById"]);
+
 
 
 Route::get('/review-new/get/questions-all-report/guest', [ReviewController::class, "getQuestionAllReportGuest"]);
@@ -281,23 +284,28 @@ Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::cl
 
 
 
+
+
 Route::post('/review-new/create/tags', [ReviewController::class, "storeTag"]);
-Route::post('/review-new/create/tags/multiple/{garageId}', [ReviewController::class, "storeTagMultiple"]);
+Route::post('/review-new/create/tags/multiple', [ReviewController::class, "storeTagMultiple"]);
 Route::put('/review-new/update/tags', [ReviewController::class, "updateTag"]);
 Route::get('/review-new/get/tags', [ReviewController::class, "getTag"]);
 Route::get('/review-new/get/tags/{id}', [ReviewController::class, "getTagById"]);
-Route::get('/review-new/get/tags/{id}/{reataurantId}', [ReviewController::class, "getTagById2"]);
+
 Route::delete('/review-new/delete/tags/{id}', [ReviewController::class, "deleteTagById"]);
 
 Route::post('/review-new/owner/create/questions', [ReviewController::class, "storeOwnerQuestion"]);
 
 Route::patch('/review-new/owner/update/questions', [ReviewController::class, "updateOwnerQuestion"]);
+
+
+
 Route::get('/review-new/getavg/review/{garageId}/{start}/{end}', [ReviewController::class, "getAverage"]);
 Route::get('/review-new/getreview/{garageId}/{rate}/{start}/{end}', [ReviewController::class, "filterReview"]);
 Route::get('/review-new/getreviewAll/{garageId}', [ReviewController::class, "getReviewByGarageId"]);
 Route::get('/review-new/getcustomerreview/{garageId}/{start}/{end}', [ReviewController::class, "getCustommerReview"]);
 Route::post('/review-new/{garageId}', [ReviewController::class, "storeReview"]);
-Route::post('/review-new-guest/{garageId}', [ReviewController::class, "storeReviewByGuest"]);
+
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section
@@ -632,6 +640,7 @@ Route::get('/client/review-new/get/questions-all', [ClientReviewController::clas
 
 Route::get('/client/review-new/get/questions-all-report', [ClientReviewController::class, "getQuestionAllReportUnauthorized"]);
 Route::get('/client/review-new/get/questions-all-report/guest', [ClientReviewController::class, "getQuestionAllReportGuestUnauthorized"]);
+Route::post('/client/review-new-guest/{garageId}', [ClientReviewController::class, "storeReviewByGuest"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // client protected routes

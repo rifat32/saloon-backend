@@ -4,6 +4,7 @@ namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Garage;
+use App\Models\GuestUser;
 use App\Models\Question;
 use App\Models\ReviewNew;
 use App\Models\ReviewValueNew;
@@ -506,7 +507,130 @@ return response([
 
 
 
+ /**
+        *
+     * @OA\Post(
+     *      path="/client/review-new-guest/{garageId}",
+     *      operationId="storeReviewByGuest",
+     *      tags={"client.review"},
+     *    *  @OA\Parameter(
+* name="garageId",
+* in="path",
+* description="garageId",
+* required=true,
+* example="1"
+* ),
+*
+  *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store review by guest user",
+     *      description="This method is to store review by guest user",
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"guest_full_name","guest_phone","description","rate","comment","values"},
+     *
+     * *             @OA\Property(property="guest_full_name", type="string", format="string",example="Rifat"),
+     * *             @OA\Property(property="guest_phone", type="string", format="string",example="0177"),
+     *             @OA\Property(property="description", type="string", format="string",example="test"),
+     *            @OA\Property(property="rate", type="string", format="string",example="2.5"),
+     *              @OA\Property(property="comment", type="string", format="string",example="not good"),
+     *
+     *
+     *    *  @OA\Property(property="values", type="string", format="array",example={
 
+     *  {"question_id":1,"tag_id":2,"star_id":1},
+    *  {"question_id":2,"tag_id":1,"star_id":4},
+
+     * }
+     *
+     * ),
+     *
+     *
+     *
+
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+    public function storeReviewByGuest($garageId,  Request $request)
+    {
+
+            $guestData = [
+                'full_name' => $request["guest_full_name"],
+                'phone' => $request["guest_phone"],
+            ];
+
+            $guest = GuestUser::create($guestData);
+            $review = [
+                'description' => $request["description"],
+                'garage_id' => $garageId,
+                'rate' => $request["rate"],
+                'guest_id' => $guest->id,
+                'comment' => $request["comment"],
+
+            ];
+            $createdReview =   ReviewNew::create($review);
+
+            $rate = 0;
+            $questionCount = 0;
+            $previousQuestionId = NULL;
+            foreach ($request["values"] as $value) {
+               if(!$previousQuestionId) {
+                $previousQuestionId = $value["question_id"];
+                $rate += $value["star_id"];
+               }else {
+
+                if($value["question_id"] != $previousQuestionId) {
+                    $rate += $value["star_id"];
+                    $previousQuestionId = $value["question_id"];
+                    $questionCount += 1;
+                }
+
+               }
+
+               $createdReview->rate =  $rate;
+               $createdReview->save();
+                $value["review_id"] = $createdReview->id;
+                // $value["question_id"] = $createdReview->question_id;
+                // $value["tag_id"] = $createdReview->tag_id;
+                // $value["star_id"] = $createdReview->star_id;
+                ReviewValueNew::create($value);
+            }
+
+
+        return response(["message" => "created successfully"], 201);
+    }
 
 
 

@@ -76,27 +76,21 @@ class ReviewController extends Controller
 
     public function storeQuestion(Request $request)
     {
-
+        if (!$request->user()->hasPermissionTo('questions_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $question = [
             'question' => $request->question,
-            'garage_id' => $request->garage_id,
             'is_active' => $request->is_active,
-            'type' => !empty($request->type)?$request->type:"star"
+            'type' => !empty($request->type)?$request->type:"star",
+            "is_default" => true
         ];
-        if ($request->user()->hasRole("superadmin")) {
-            $question["is_default"] = true;
-            $question["garage_id"] = NULL;
-        } else {
 
-            $garage =    Garage::where(["id" => $request->garage_id,"owner_id" => $request->user()->id])->first();
 
-            if(!$garage){
-                return response()->json(["message" => "No garage Found"],400);
-            }
-            if ($garage->enable_question == true) {
-                return response()->json(["message" => "question is enabled"],400);
-            }
-        }
+
+
 
 
 
@@ -172,15 +166,18 @@ class ReviewController extends Controller
 
     public function updateQuestion(Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_update')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $question = [
             'type' => $request->type,
             'question' => $request->question,
             "is_active"=>$request->is_active,
         ];
-        $checkQuestion =    Question::where(["id" => $request->id])->first();
-        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
-            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
-        }
+
+
         $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
             $question
         )
@@ -251,13 +248,15 @@ class ReviewController extends Controller
      */
     public function updateQuestionActiveState(Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_update')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $question = [
             "is_active"=>$request->is_active,
         ];
-        $checkQuestion =    Question::where(["id" => $request->id])->first();
-        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
-            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
-        }
+
         $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
             $question
         )
@@ -281,12 +280,7 @@ class ReviewController extends Controller
      *      summary="This method is to get question",
      *      description="This method is to get question",
      *
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
+
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -324,26 +318,15 @@ class ReviewController extends Controller
      */
     public function   getQuestion(Request $request)
     {
-        $is_dafault = false;
-        $garageId = !empty($request->garage_id)?$request->garage_id:NULL;
-        if ($request->user()->hasRole("superadmin")) {
-
-            $is_dafault = true;
-            $garageId = NULL;
-
-        }else{
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage && !$request->user()->hasRole("superadmin")){
-                return response("no garage found", 404);
-            }
-            // if ($garage->enable_question == true) {
-            //     $is_dafault = true;
-
-            // }
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
         }
+        $is_dafault = true;
 
 
-        $query =  Question::where(["garage_id" => $garageId,"is_default" => $is_dafault]);
+        $query =  Question::where(["is_default" => $is_dafault]);
 
 
         $questions =  $query->get();
@@ -384,12 +367,7 @@ class ReviewController extends Controller
      *       security={
      *           {"bearerAuth": {}}
      *       },
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
+
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -427,24 +405,18 @@ class ReviewController extends Controller
      */
     public function   getQuestionAll(Request $request)
     {
-        $is_dafault = false;
-        if ($request->user()->hasRole("superadmin")) {
+
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
 
             $is_dafault = true;
 
-        }else{
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage && !$request->user()->hasRole("superadmin")){
-                return response("no garage found", 404);
-            }
-            // if ($garage->enable_question == true) {
-            //     $is_dafault = true;
-
-            // }
-        }
 
 
-        $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => $is_dafault]);
+        $query =  Question::where(["is_default" => $is_dafault]);
 
 
         $questions =  $query->get();
@@ -547,13 +519,18 @@ if($starTag->question_id == $question->id) {
 
     public function getQuestionAllReport(Request $request) {
 
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
 
         $garage =    Garage::where(["id" => $request->garage_id])->first();
         if(!$garage){
             return response("no garage found", 404);
         }
 
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
+    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => true]);
 
     $questions =  $query->get();
 
@@ -786,6 +763,12 @@ return response([
 
     public function   getQuestionById($id, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
+
         $questions =    Question::where(["id" => $id])
             ->first();
 
@@ -824,99 +807,6 @@ return response([
 
 
 
-        /**
-        *
-     * @OA\Get(
-     *      path="/review-new/get/questions/{id}/{garageId}",
-     *      operationId="getQuestionById2",
-     *      tags={"review.setting.question"},
-     *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *      summary="This method is to get question by id",
-     *      description="This method is to get question by id",
-     *
-     *         @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="question Id",
-     *         required=false,
-     *      ),
-     *   *         @OA\Parameter(
-     *         name="garageId",
-     *         in="path",
-     *         description="garageId",
-     *         required=false,
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *           @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-
-    public function   getQuestionById2($id,$garageId, Request $request)
-    {
-        $questions =    Question::where(["id" => $id,"garage_id"=>$garageId])
-            ->first();
-
-
-            if(!$questions) {
-                return response([
-                    "message" => "No question found"
-                ], 404);
-            }
-            $data =  json_decode(json_encode($questions), true);
-
-            foreach($questions->question_stars as $key2=>$questionStar){
-                $data["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-
-                $data["stars"][$key2]["tags"] = [];
-                foreach($questionStar->star->star_tags as $key3=>$starTag){
-
-    if($starTag->question_id == $questions->id) {
-
-        array_push($data["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
-
-    }
-
-
-
-                }
-
-            }
-        return response($data, 200);
-    }
 
 
 
@@ -976,6 +866,12 @@ return response([
      */
     public function   deleteQuestionById($id, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_delete')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
+
         $questions =    Question::where(["id" => $id])
             ->delete();
 
@@ -1052,13 +948,18 @@ return response([
 
     public function getQuestionAllReportGuest(Request $request) {
 
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
 
         $garage =    Garage::where(["id" => $request->garage_id])->first();
         if(!$garage){
             return response("no garage found", 404);
         }
 
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
+    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => true]);
 
     $questions =  $query->get();
 
@@ -1316,9 +1217,14 @@ return response([
 
     public function getQuestionAllReportGuestQuantum(Request $request) {
 
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
 
         $garage =    Garage::where(["id" => $request->garage_id,
-        "OwnerID" => $request->user()->id
+        "owner_id" => $request->user()->id
         ])->first();
         if(!$garage){
             return response("no garage found", 404);
@@ -1448,9 +1354,13 @@ return response([
 
     public function getQuestionAllReportQuantum(Request $request) {
 
-
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $garage =    Garage::where(["id" => $request->garage_id,
-        "OwnerID" => $request->user()->id
+        "owner_id" => $request->user()->id
         ])->first();
         if(!$garage){
             return response("no garage found", 404);
@@ -1528,9 +1438,9 @@ return response([
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"tag","garage_id"},
+     *            required={"tag"},
      *            @OA\Property(property="tag", type="string", format="string",example="How was this?"),
-     *  @OA\Property(property="garage_id", type="number", format="number",example="1"),
+
 
      *
      *
@@ -1568,21 +1478,15 @@ return response([
      */
     public function storeTag(Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $question = [
             'tag' => $request->tag,
-            'garage_id' => $request->garage_id
         ];
-        if ($request->user()->hasRole("superadmin")) {
-            $question["is_default"] = true;
-        } else {
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage){
-                return response()->json(["message" => "No garage Found"]);
-            }
-            if ($garage->enable_question == true) {
-                return response()->json(["message" => "question is enabled"]);
-            }
-        }
+        $question["is_default"] = true;
 
 
 
@@ -1593,14 +1497,12 @@ return response([
 
 
 
-
-        return response($createdQuestion, 201);
     }
 
    /**
         *
      * @OA\Post(
-     *      path="/review-new/create/tags/multiple/{garageId}",
+     *      path="/review-new/create/tags/multiple",
      *      operationId="storeTagMultiple",
      *      tags={"review.setting.tag"},
     *       security={
@@ -1608,13 +1510,7 @@ return response([
      *       },
      *      summary="This method is to store tag",
      *      description="This method is to store tag",
-          *  @OA\Parameter(
-* name="garageId",
-* in="path",
-* description="garageId",
-* required=true,
-* example="1"
-* ),
+
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -1658,10 +1554,14 @@ return response([
      *      )
      *     )
      */
-    public function storeTagMultiple($garageId,Request $request)
+    public function storeTagMultiple(Request $request)
     {
 
-
+        if (!$request->user()->hasPermissionTo('questions_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
 
         $duplicate_indexes_array = [];
 
@@ -1672,11 +1572,11 @@ return response([
         foreach($uniqueTags as $index=>$tag) {
             $question = [
                 'tag' => $tag,
-                'garage_id' => $garageId
+
             ];
 
 
-            if ($request->user()->hasRole("superadmin")) {
+
 
 
             $tag_found =    Tag::where([
@@ -1690,25 +1590,8 @@ return response([
 
             array_push($duplicate_indexes_array,$index);
         }
-            } else {
-                $tag_found =    Tag::where(["garage_id" => $garageId,"is_default" => 0,"tag" => $question["tag"]])
-
-                ->first();
-
-         if($tag_found) {
-
-            array_push($duplicate_indexes_array,$index);
-        } else {
-            $tag_found =    Tag::where(["garage_id" => NULL,"is_default" => 1,"tag" => $question["tag"]])
-            ->first();
-            if($tag_found) {
-
-                array_push($duplicate_indexes_array,$index);
-            }
-        }
 
 
-            }
 
 
 
@@ -1725,32 +1608,20 @@ return response([
                 "duplicate_indexes_array"=> $duplicate_indexes_array
         ], 409);
 
-        }
-
-        else {
+        } else {
  foreach($uniqueTags as $index=>$tag) {
             $question = [
-                'tag' => $tag,
-                'garage_id' => $garageId
+                'tag' => $tag
             ];
 
 
-            if ($request->user()->hasRole("superadmin")) {
+
                 $question["is_default"] = true;
-                $garageId = NULL;
-                $question["garage_id"] = NULL;
 
 
 
-            } else {
 
-                $question["is_default"] = false;
 
-                $garage =    Garage::where(["id" => $garageId])->first();
-                if(!$garage){
-                    return response()->json(["message" => "No garage Found"]);
-                }
-            }
 
             if(!count($duplicate_indexes_array)) {
                 Tag::create($question);
@@ -1827,14 +1698,15 @@ return response([
      */
     public function updateTag(Request $request)
     {
-
+        if (!$request->user()->hasPermissionTo('questions_update')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $question = [
             'tag' => $request->tag
         ];
-        $checkQuestion =    Tag::where(["id" => $request->id])->first();
-        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
-            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
-        }
+
         $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
             $question
         )
@@ -1862,12 +1734,7 @@ return response([
      *       },
      *      summary="This method is to get tag",
      *      description="This method is to get tag",
-     *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
+
 
      *      @OA\Response(
      *          response=200,
@@ -1901,29 +1768,13 @@ return response([
      */
     public function   getTag(Request $request)
     {
-
-        $is_dafault = false;
-        $garageId = $request->garage_id;
-
-        if ($request->user()->hasRole("superadmin")) {
-            $is_dafault = true;
-            $garageId = NULL;
-            $query =  Tag::where(["garage_id" => NULL,"is_default" => true]);
-        }
-        else{
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage && !$request->user()->hasRole("superadmin")){
-                return response("no garage found", 404);
-            }
-            // if ($garage->enable_question == true) {
-            //     $is_dafault = true;
-            // }
-            $query =  Tag::where(["garage_id" => $garageId,"is_default" => 0])
-            ->orWhere(["garage_id" => NULL,"is_default" => 1]);
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
         }
 
-
-
+            $query =  Tag::where(["is_default" => true]);
         $questions =  $query->get();
 
 
@@ -1984,6 +1835,12 @@ return response([
      */
     public function   getTagById($id, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
+
         $questions =    Tag::where(["id" => $id])
             ->first();
             if(!$questions) {
@@ -1994,71 +1851,7 @@ return response([
         return response($questions, 200);
     }
 
-       /**
-        *
-     * @OA\Get(
-     *      path="/review-new/get/tags/{id}/{reataurantId}",
-     *      operationId="getTagById2",
-     *      tags={"review.setting.tag"},
-     *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *      summary="This method is to get tag  by id",
-     *      description="This method is to get tag  by id",
-     *         @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="tag Id",
-     *         required=false,
-     *      ),
-     * *         @OA\Parameter(
-     *         name="reataurantId",
-     *         in="path",
-     *         description="reataurantId",
-     *         required=false,
-     *      ),
 
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-    public function   getTagById2($id,$reataurantId, Request $request)
-    {
-        $questions =    Tag::where(["id" => $id,"garage_id" => $reataurantId])
-            ->first();
-            if(!$questions) {
-                return response([
-                    "message" => "No Tag Found"
-                ], 404);
-            }
-        return response($questions, 200);
-    }
 
       /**
         *
@@ -2110,17 +1903,15 @@ return response([
      */
     public function   deleteTagById($id, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_delete')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         $tag =    Tag::where(["id" => $id])
         ->first();
 
-
-            if ($request->user()->hasRole("superadmin") &&  $tag->is_default == 1) {
-                $tag->delete();
-            }
-            else  if(!$request->user()->hasRole("superadmin") &&  $tag->is_default == 0){
-                $tag->delete();
-            }
-
+        $tag->delete();
 
 
         return response(["message" => "ok"], 200);
@@ -2199,6 +1990,11 @@ return response([
 
     public function storeOwnerQuestion(Request $request)
     {
+        if (!$request->user()->hasPermissionTo('questions_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         return DB::transaction(function ()use($request) {
             $question_id = $request->question_id;
             foreach($request->stars as $requestStar){
@@ -2303,7 +2099,11 @@ return response([
 
     public function updateOwnerQuestion(Request $request)
     {
-
+        if (!$request->user()->hasPermissionTo('questions_update')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         return DB::transaction(function ()use($request) {
             $question_id = $request->question_id;
             QusetionStar::where([
@@ -2412,6 +2212,11 @@ return response([
      */
     public function  getAverage($garageId, $start, $end, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('review_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         // with
         $reviews = ReviewNew::where([
             "garage_id" => $garageId
@@ -2524,6 +2329,11 @@ return response([
 
     public function  filterReview($garageId, $rate, $start, $end, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('review_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         // with
         $reviewValues = ReviewNew::where([
             "garage_id" => $garageId,
@@ -2589,6 +2399,11 @@ return response([
 
     public function  getReviewByGarageId($garageId, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('review_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         // with
         $reviewValue = ReviewNew::with("value")->where([
             "garage_id" => $garageId,
@@ -2671,6 +2486,11 @@ return response([
 
     public function  getCustommerReview($garageId, $start, $end, Request $request)
     {
+        if (!$request->user()->hasPermissionTo('review_view')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
         // with
         $data["reviews"] = ReviewNew::where([
             "garage_id" => $garageId,
@@ -2784,7 +2604,11 @@ return response([
 
     public function storeReview($garageId,  Request $request)
     {
-
+        if (!$request->user()->hasPermissionTo('review_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
             $review = [
                 'description' => $request["description"],
                 'garage_id' => $garageId,
@@ -2829,128 +2653,5 @@ return response([
     }
 
 
-     /**
-        *
-     * @OA\Post(
-     *      path="/review-new-guest/{garageId}",
-     *      operationId="storeReviewByGuest",
-     *      tags={"review"},
-     *    *  @OA\Parameter(
-* name="garageId",
-* in="path",
-* description="garageId",
-* required=true,
-* example="1"
-* ),
-*
-  *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *      summary="This method is to store review by guest user",
-     *      description="This method is to store review by guest user",
-     *  @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *            required={"guest_full_name","guest_phone","description","rate","comment","values"},
-     *
-     * *             @OA\Property(property="guest_full_name", type="string", format="string",example="Rifat"),
-     * *             @OA\Property(property="guest_phone", type="string", format="string",example="0177"),
-     *             @OA\Property(property="description", type="string", format="string",example="test"),
-     *            @OA\Property(property="rate", type="string", format="string",example="2.5"),
-     *              @OA\Property(property="comment", type="string", format="string",example="not good"),
-     *
-     *
-     *    *  @OA\Property(property="values", type="string", format="array",example={
 
-     *  {"question_id":1,"tag_id":2,"star_id":1},
-    *  {"question_id":2,"tag_id":1,"star_id":4},
-
-     * }
-     *
-     * ),
-     *
-     *
-     *
-
-     *         ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-
-    public function storeReviewByGuest($garageId,  Request $request)
-    {
-
-            $guestData = [
-                'full_name' => $request["guest_full_name"],
-                'phone' => $request["guest_phone"],
-            ];
-
-            $guest = GuestUser::create($guestData);
-            $review = [
-                'description' => $request["description"],
-                'garage_id' => $garageId,
-                'rate' => $request["rate"],
-                'guest_id' => $guest->id,
-                'comment' => $request["comment"],
-
-            ];
-            $createdReview =   ReviewNew::create($review);
-
-            $rate = 0;
-            $questionCount = 0;
-            $previousQuestionId = NULL;
-            foreach ($request["values"] as $value) {
-               if(!$previousQuestionId) {
-                $previousQuestionId = $value["question_id"];
-                $rate += $value["star_id"];
-               }else {
-
-                if($value["question_id"] != $previousQuestionId) {
-                    $rate += $value["star_id"];
-                    $previousQuestionId = $value["question_id"];
-                    $questionCount += 1;
-                }
-
-               }
-
-               $createdReview->rate =  $rate;
-               $createdReview->save();
-                $value["review_id"] = $createdReview->id;
-                // $value["question_id"] = $createdReview->question_id;
-                // $value["tag_id"] = $createdReview->tag_id;
-                // $value["star_id"] = $createdReview->star_id;
-                ReviewValueNew::create($value);
-            }
-
-
-        return response(["message" => "created successfully"], 201);
-    }
 }

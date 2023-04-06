@@ -17,8 +17,7 @@ class CreateTagsTable extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
             $table->string("tag")->nullable();
-            $table->unsignedBigInteger("garage_id")->nullable();
-            $table->boolean("is_default")->default(false);
+            $table->boolean("is_default")->default(true);
             $table->timestamps();
         });
         $defaultTags =  [

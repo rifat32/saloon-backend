@@ -22,8 +22,8 @@ class CreateQuestionsTable extends Migration
              'numbers',
              'heart'
             ])->default("star")->nullable();
-            $table->unsignedBigInteger("garage_id")->nullable();
-            $table->boolean("is_default")->default(false);
+
+            $table->boolean("is_default")->default(true);
             $table->boolean("is_active")->default(false);
 
             $table->timestamps();
