@@ -127,6 +127,16 @@ return [
        "garage_gallery_view",
        "garage_gallery_delete",
 
+       "garage_services_create",
+       "garage_services_update",
+       "garage_services_view",
+       "garage_services_delete",
+
+       "garage_automobile_create",
+       "garage_automobile_update",
+       "garage_automobile_view",
+       "garage_automobile_delete",
+
 
     //    "booking_create",
        "booking_update",
@@ -248,7 +258,10 @@ return [
        "garage_gallery_view",
        "garage_gallery_delete",
 
-
+       "garage_services_create",
+       "garage_services_update",
+       "garage_services_view",
+       "garage_services_delete",
 
 
 
@@ -318,6 +331,11 @@ return [
        "review_update",
        "review_view",
        "review_delete",
+
+       "garage_automobile_create",
+       "garage_automobile_update",
+       "garage_automobile_view",
+       "garage_automobile_delete",
 
     ],
 

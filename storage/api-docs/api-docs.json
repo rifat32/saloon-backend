@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Laravel Restaurant Documentation",
-        "description": "L5 Swagger OpenApi description for restaurant project",
+        "title": "Laravel Garage Management Documentation",
+        "description": "L5 Swagger OpenApi description for garage project",
         "contact": {
             "email": "drrifatalashwad0@gmail.com"
         },
@@ -7383,6 +7383,108 @@
                 ]
             }
         },
+        "/v1.0/garage-affiliations/get/all/{garage_id}": {
+            "get": {
+                "tags": [
+                    "garage_affiliation_management"
+                ],
+                "summary": "This method is to get garage affiliations ",
+                "description": "This method is to get garage affiliations",
+                "operationId": "getGarageAffiliationsAllByGarageId",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/garage-affiliations/{id}": {
             "delete": {
                 "tags": [
@@ -7396,6 +7498,80 @@
                         "name": "id",
                         "in": "path",
                         "description": "id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garage-automobile-makes/all/{garage_id}": {
+            "get": {
+                "tags": [
+                    "garage_automobile_management.make"
+                ],
+                "summary": "This method is to get automobile makes  by garage  id",
+                "description": "This method is to get automobile makes by  garage id",
+                "operationId": "getGarageAutomobileMakesAll",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
                         "required": true,
                         "example": "1"
                     }
@@ -8328,6 +8504,189 @@
                         "description": "garage_id",
                         "required": true,
                         "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garage-services/{garage_id}/{perPage}": {
+            "get": {
+                "tags": [
+                    "garage_service_management"
+                ],
+                "summary": "This method is to get automobile Services ",
+                "description": "This method is to get automobile Services",
+                "operationId": "getGarageServices",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garage-sub-services/{garage_id}/{garage_service_id}/{perPage}": {
+            "get": {
+                "tags": [
+                    "garage_service_management"
+                ],
+                "summary": "This method is to get automobile Services ",
+                "description": "This method is to get automobile Services",
+                "operationId": "getGarageSubServices",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "garage_service_id",
+                        "in": "path",
+                        "description": "garage_service_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
                     }
                 ],
                 "responses": {
@@ -9668,6 +10027,80 @@
                         "description": "search_key",
                         "required": true,
                         "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garages/by-garage-owner/all": {
+            "get": {
+                "tags": [
+                    "garage_management"
+                ],
+                "summary": "This method is to get garages",
+                "description": "This method is to get garages",
+                "operationId": "getAllGaragesByGarageOwner",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
                     }
                 ],
                 "responses": {
@@ -11300,6 +11733,343 @@
                 ]
             }
         },
+        "/v1.0/notification-templates": {
+            "put": {
+                "tags": [
+                    "template_management.notification"
+                ],
+                "summary": "This method is to update notification template",
+                "description": "This method is to update notification template",
+                "operationId": "updateNotificationTemplate",
+                "requestBody": {
+                    "description": "use [customer_name],[garage_owner_name],[garage_name],\n     *  in the template",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "template",
+                                    "is_active"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "emal v1"
+                                    },
+                                    "is_active": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "template": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "html template goes here"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/notification-templates/{perPage}": {
+            "get": {
+                "tags": [
+                    "template_management.notification"
+                ],
+                "summary": "This method is to get notification templates ",
+                "description": "This method is to get notification templates",
+                "operationId": "getNotificationTemplates",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/notification-templates/single/{id}": {
+            "get": {
+                "tags": [
+                    "template_management.notification"
+                ],
+                "summary": "This method is to get notification template by id",
+                "description": "This method is to get notification template by id",
+                "operationId": "getNotificationTemplateById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/notification-template-types": {
+            "get": {
+                "tags": [
+                    "template_management.notification"
+                ],
+                "summary": "This method is to get notification template types ",
+                "description": "This method is to get notification template types",
+                "operationId": "getNotificationTemplateTypes",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/payment-types": {
             "put": {
                 "tags": [
@@ -11940,14 +12710,6 @@
                 "summary": "This method is to get question",
                 "description": "This method is to get question",
                 "operationId": "getQuestion",
-                "parameters": [
-                    {
-                        "name": "garage_id",
-                        "in": "query",
-                        "description": "garage Id",
-                        "required": false
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -12005,14 +12767,6 @@
                 "summary": "This method is to get all question without pagination",
                 "description": "This method is to get all question without pagination",
                 "operationId": "getQuestionAll",
-                "parameters": [
-                    {
-                        "name": "garage_id",
-                        "in": "query",
-                        "description": "garage Id",
-                        "required": false
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -12154,77 +12908,6 @@
                         "name": "id",
                         "in": "path",
                         "description": "question Id",
-                        "required": false
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/review-new/get/questions/{id}/{garageId}": {
-            "get": {
-                "tags": [
-                    "review.setting.question"
-                ],
-                "summary": "This method is to get question by id",
-                "description": "This method is to get question by id",
-                "operationId": "getQuestionById2",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "question Id",
-                        "required": false
-                    },
-                    {
-                        "name": "garageId",
-                        "in": "path",
-                        "description": "garageId",
                         "required": false
                     }
                 ],
@@ -12536,6 +13219,956 @@
                         }
                     },
                     "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/create/tags": {
+            "post": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to store tag",
+                "description": "This method is to store tag",
+                "operationId": "storeTag",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tag"
+                                ],
+                                "properties": {
+                                    "tag": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "How was this?"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/create/tags/multiple": {
+            "post": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to store tag",
+                "description": "This method is to store tag",
+                "operationId": "storeTagMultiple",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tags"
+                                ],
+                                "properties": {
+                                    "tags": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            "tag1",
+                                            "tag2"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/update/tags": {
+            "put": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to update tag",
+                "description": "This method is to update tag",
+                "operationId": "updateTag",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tag",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "tag": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "How was this?"
+                                    },
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/tags": {
+            "get": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to get tag",
+                "description": "This method is to get tag",
+                "operationId": "getTag",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/get/tags/{id}": {
+            "get": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to get tag  by id",
+                "description": "This method is to get tag  by id",
+                "operationId": "getTagById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "tag Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/delete/tags/{id}": {
+            "delete": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to delete tag  by id",
+                "description": "This method is to delete tag  by id",
+                "operationId": "deleteTagById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "tag Id",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/owner/create/questions": {
+            "post": {
+                "tags": [
+                    "review.setting.link"
+                ],
+                "summary": "This method is to store question",
+                "description": "This method is to store question.",
+                "operationId": "storeOwnerQuestion",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question_id",
+                                    "stars"
+                                ],
+                                "properties": {
+                                    "question_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "stars": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "star_id": "2",
+                                                "tags": [
+                                                    {
+                                                        "tag_id": "2"
+                                                    },
+                                                    {
+                                                        "tag_id": "2"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/owner/update/questions": {
+            "post": {
+                "tags": [
+                    "review.setting.link"
+                ],
+                "summary": "This method is to update question",
+                "description": "This method is to update question",
+                "operationId": "updateOwnerQuestion",
+                "parameters": [
+                    {
+                        "name": "_method",
+                        "in": "query",
+                        "description": "method",
+                        "required": false,
+                        "example": "PATCH"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "question_id",
+                                    "stars"
+                                ],
+                                "properties": {
+                                    "question_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "stars": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "star_id": "2",
+                                                "tags": [
+                                                    {
+                                                        "tag_id": "2"
+                                                    },
+                                                    {
+                                                        "tag_id": "2"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/getavg/review/{garageId}/{start}/{end}": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to get average",
+                "description": "This method is to get average",
+                "operationId": "getAverage",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "start",
+                        "in": "path",
+                        "description": "from date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end",
+                        "in": "path",
+                        "description": "to date",
+                        "required": true,
+                        "example": "2026-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/getreview/{garageId}/{rate}/{start}/{end}": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to filter   Review",
+                "description": "This method is to filter   Review",
+                "operationId": "filterReview",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "rate",
+                        "in": "path",
+                        "description": "rate",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "start",
+                        "in": "path",
+                        "description": "from date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end",
+                        "in": "path",
+                        "description": "to date",
+                        "required": true,
+                        "example": "2026-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/getreviewAll/{garageId}": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to get review by garage id",
+                "description": "This method is to get review by garage id",
+                "operationId": "getReviewByGarageId",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/getcustomerreview/{garageId}/{start}/{end}": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to get customer review",
+                "description": "This method is to get customer review",
+                "operationId": "getCustommerReview",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "start",
+                        "in": "path",
+                        "description": "from date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end",
+                        "in": "path",
+                        "description": "to date",
+                        "required": true,
+                        "example": "2026-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/{garageId}": {
+            "post": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to store review",
+                "description": "This method is to store review",
+                "operationId": "storeReview",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "description",
+                                    "rate",
+                                    "comment",
+                                    "values"
+                                ],
+                                "properties": {
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "test"
+                                    },
+                                    "rate": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2.5"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "not good"
+                                    },
+                                    "values": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "question_id": 1,
+                                                "tag_id": 2,
+                                                "star_id": 1
+                                            },
+                                            {
+                                                "question_id": 2,
+                                                "tag_id": 1,
+                                                "star_id": 4
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
                         "description": "Successful operation",
                         "content": {
                             "application/json": {
@@ -15148,6 +16781,101 @@
                 ]
             }
         },
+        "/v1.0/client/garage-affiliations/get/all/{garage_id}": {
+            "get": {
+                "tags": [
+                    "client.basics"
+                ],
+                "summary": "This method is to get garage affiliations ",
+                "description": "This method is to get garage affiliations",
+                "operationId": "getGarageAffiliationsAllByGarageIdClient",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/client/bookings": {
             "put": {
                 "tags": [
@@ -17090,6 +18818,125 @@
                     }
                 }
             }
+        },
+        "/client/review-new-guest/{garageId}": {
+            "post": {
+                "tags": [
+                    "client.review"
+                ],
+                "summary": "This method is to store review by guest user",
+                "description": "This method is to store review by guest user",
+                "operationId": "storeReviewByGuest",
+                "parameters": [
+                    {
+                        "name": "garageId",
+                        "in": "path",
+                        "description": "garageId",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "guest_full_name",
+                                    "guest_phone",
+                                    "description",
+                                    "rate",
+                                    "comment",
+                                    "values"
+                                ],
+                                "properties": {
+                                    "guest_full_name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Rifat"
+                                    },
+                                    "guest_phone": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "0177"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "test"
+                                    },
+                                    "rate": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2.5"
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "not good"
+                                    },
+                                    "values": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "question_id": 1,
+                                                "tag_id": 2,
+                                                "star_id": 1
+                                            },
+                                            {
+                                                "question_id": 2,
+                                                "tag_id": 1,
+                                                "star_id": 4
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -17105,8 +18952,8 @@
     },
     "tags": [
         {
-            "name": "Restaurants",
-            "description": "API Endpoints of Restaurants"
+            "name": "Garages",
+            "description": "API Endpoints of Garages"
         }
     ]
 }

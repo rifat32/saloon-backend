@@ -300,7 +300,7 @@ class GarageAffiliationController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $affiliationQuery =  GarageAffiliation::with("garage_affiliation","garage")
+            $affiliationQuery =  GarageAffiliation::with("affiliation","garage")
             ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id');
 
             if (!empty($request->search_key)) {
@@ -434,7 +434,7 @@ class GarageAffiliationController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $affiliationQuery =  GarageAffiliation::with("garage_affiliation","garage")
+            $affiliationQuery =  GarageAffiliation::with("affiliation","garage")
             ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id')
             ->where([
                 "garage_id" => $garage_id
@@ -461,6 +461,143 @@ class GarageAffiliationController extends Controller
             return $this->sendError($e, 500);
         }
     }
+
+
+     /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/garage-affiliations/get/all/{garage_id}",
+     *      operationId="getGarageAffiliationsAllByGarageId",
+     *      tags={"garage_affiliation_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+*              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get garage affiliations ",
+     *      description="This method is to get garage affiliations",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageAffiliationsAllByGarageId($garage_id, Request $request)
+    {
+        try {
+            if (!$request->user()->hasPermissionTo('garage_affiliation_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+
+        if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($garage_id)) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+             ], 401);
+        }
+
+
+
+
+
+
+
+
+            // $automobilesQuery = AutomobileMake::with("makes");
+
+            $affiliationQuery =  GarageAffiliation::with("affiliation","garage")
+            ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id')
+            ->where([
+                "garage_id" => $garage_id
+            ]);
+
+            if (!empty($request->search_key)) {
+                $affiliationQuery = $affiliationQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("affiliations.name", "like", "%" . $term . "%");
+                });
+            }
+
+            if (!empty($request->start_date)) {
+                $affiliationQuery = $affiliationQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $affiliationQuery = $affiliationQuery->where('created_at', "<=", $request->end_date);
+            }
+
+            $affiliations = $affiliationQuery->orderByDesc("garage_affiliations.id")->get();
+            return response()->json($affiliations, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
 
 
 

@@ -16,14 +16,17 @@ use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\FuelStationServiceController;
 use App\Http\Controllers\GarageAffiliationController;
+use App\Http\Controllers\GarageAutomobilesController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragePackageController;
 use App\Http\Controllers\GarageRuleController;
 use App\Http\Controllers\GaragesController;
+use App\Http\Controllers\GarageServiceController;
 use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\JobBidController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
@@ -126,6 +129,8 @@ Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageByI
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
 
+
+Route::get('/v1.0/garages/by-garage-owner/all', [GaragesController::class, "getAllGaragesByGarageOwner"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -156,6 +161,7 @@ Route::put('/v1.0/automobile-makes', [AutomobilesController::class, "updateAutom
 Route::get('/v1.0/automobile-makes/{categoryId}/{perPage}', [AutomobilesController::class, "getAutomobileMakes"]);
 Route::get('/v1.0/automobile-makes/single/get/{id}', [AutomobilesController::class, "getAutomobileMakeById"]);
 Route::delete('/v1.0/automobile-makes/{id}', [AutomobilesController::class, "deleteAutomobileMakeById"]);
+
 
 
 
@@ -199,6 +205,18 @@ Route::delete('/v1.0/automobile-fuel-types/{id}', [AutomobilesController::class,
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// garage automobile management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::get('/v1.0/garage-automobile-makes/all/{garage_id}', [GarageAutomobilesController::class, "getGarageAutomobileMakesAll"]);
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end garage automobile management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // service management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -220,8 +238,23 @@ Route::get('/v1.0/sub-services/{serviceId}/{perPage}', [ServiceController::class
 Route::get('/v1.0/sub-services-all/{serviceId}', [ServiceController::class, "getAllSubServicesByServiceId"]);
 Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubServiceById"]);
 
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end service management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// garage service management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::get('/v1.0/garage-services/{garage_id}/{perPage}', [GarageServiceController::class, "getGarageServices"]);
+
+Route::get('/v1.0/garage-sub-services/{garage_id}/{garage_service_id}/{perPage}', [GarageServiceController::class, "getGarageSubServices"]);
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end garage service management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -347,6 +380,25 @@ Route::get('/v1.0/email-template-types', [EmailTemplateController::class, "getEm
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // template management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+// ********************************************
+// notification template management section
+// ********************************************
+
+Route::put('/v1.0/notification-templates', [NotificationTemplateController::class, "updateNotificationTemplate"]);
+Route::get('/v1.0/notification-templates/{perPage}', [NotificationTemplateController::class, "getNotificationTemplates"]);
+Route::get('/v1.0/notification-templates/single/{id}', [NotificationTemplateController::class, "getEmailTemplateById"]);
+Route::get('/v1.0/notification-template-types', [NotificationTemplateController::class, "getNotificationTemplateTypes"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// notification template management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // Garage Time Management
@@ -509,6 +561,12 @@ Route::post('/v1.0/garage-affiliations', [GarageAffiliationController::class, "c
 Route::put('/v1.0/garage-affiliations', [GarageAffiliationController::class, "updateGarageAffiliation"]);
 Route::get('/v1.0/garage-affiliations/{perPage}', [GarageAffiliationController::class, "getGarageAffiliations"]);
 Route::get('/v1.0/garage-affiliations/{garage_id}/{perPage}', [GarageAffiliationController::class, "getGarageAffiliationsByGarageId"]);
+
+
+Route::get('/v1.0/garage-affiliations/get/all/{garage_id}', [GarageAffiliationController::class, "getGarageAffiliationsAllByGarageId"]);
+
+
+
 Route::delete('/v1.0/garage-affiliations/{id}', [GarageAffiliationController::class, "deleteGarageAffiliationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // affiliation management section
@@ -633,6 +691,7 @@ Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "g
 
 Route::get('/v1.0/client/garages/service-model-details/{id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
 
+Route::get('/v1.0/client/garage-affiliations/get/all/{garage_id}', [ClientBasicController::class, "getGarageAffiliationsAllByGarageIdClient"]);
 
 
 
@@ -641,6 +700,9 @@ Route::get('/client/review-new/get/questions-all', [ClientReviewController::clas
 Route::get('/client/review-new/get/questions-all-report', [ClientReviewController::class, "getQuestionAllReportUnauthorized"]);
 Route::get('/client/review-new/get/questions-all-report/guest', [ClientReviewController::class, "getQuestionAllReportGuestUnauthorized"]);
 Route::post('/client/review-new-guest/{garageId}', [ClientReviewController::class, "storeReviewByGuest"]);
+
+
+
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // client protected routes

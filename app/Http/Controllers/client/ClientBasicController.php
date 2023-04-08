@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
 use App\Models\Garage;
+use App\Models\GarageAffiliation;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
@@ -361,6 +362,7 @@ class ClientBasicController extends Controller
                 "garage_times",
                 "garageGalleries",
                 "garage_packages",
+                "garage_affiliations.affiliation"
 
             );
 
@@ -509,6 +511,128 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
     }
 
 
+
+
+
+ /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/garage-affiliations/get/all/{garage_id}",
+     *      operationId="getGarageAffiliationsAllByGarageIdClient",
+     *      tags={"client.basics"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+*              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get garage affiliations ",
+     *      description="This method is to get garage affiliations",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageAffiliationsAllByGarageIdClient($garage_id, Request $request)
+    {
+        try {
+
+
+
+
+
+
+
+
+
+
+
+            // $automobilesQuery = AutomobileMake::with("makes");
+
+            $affiliationQuery =  GarageAffiliation::with("affiliation","garage")
+            ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id')
+            ->where([
+                "garage_id" => $garage_id
+            ]);
+
+            if (!empty($request->search_key)) {
+                $affiliationQuery = $affiliationQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("affiliations.name", "like", "%" . $term . "%");
+                });
+            }
+
+            if (!empty($request->start_date)) {
+                $affiliationQuery = $affiliationQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $affiliationQuery = $affiliationQuery->where('created_at', "<=", $request->end_date);
+            }
+
+            $affiliations = $affiliationQuery->orderByDesc("garage_affiliations.id")->get();
+            return response()->json($affiliations, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
 
 
 

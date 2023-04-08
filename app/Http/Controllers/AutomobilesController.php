@@ -18,6 +18,8 @@ use App\Models\AutomobileFuelType;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
 use App\Models\AutomobileModelVariant;
+use App\Models\GarageAutomobileMake;
+use App\Models\GarageService;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -1322,7 +1324,6 @@ class AutomobilesController extends Controller
         }
 
     }
-
 
     /**
         *

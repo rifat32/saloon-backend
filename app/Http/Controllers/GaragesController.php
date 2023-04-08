@@ -1030,6 +1030,89 @@ class GaragesController extends Controller
     }
 
 
+    /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/garages/by-garage-owner/all",
+     *      operationId="getAllGaragesByGarageOwner",
+     *      tags={"garage_management"},
+
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get garages",
+     *      description="This method is to get garages",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getAllGaragesByGarageOwner($perPage,Request $request) {
+
+        try{
+            if(!$request->user()->hasRole('garage_owner')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+            $garagesQuery = Garage::with(
+                "owner",
+                "garageAutomobileMakes.garageAutomobileModels",
+                "garageServices.garageSubServices.garage_sub_service_prices"
+            )
+            ->where([
+                "owner_id" => $request->user()->id
+            ]);
+
+
+
+            $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($garages, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
 
 
 }

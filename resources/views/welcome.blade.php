@@ -25,6 +25,9 @@
         <div class="col-md-3">
             <a href="{{env('APP_URL')}}/automobile-refresh" class="btn btn-primary" target="_blank">Automobile Refresh</a>
         </div>
+             <div class="col-md-3">
+            <a href="{{env('APP_URL')}}/roleRefresh" class="btn btn-primary" target="_blank">Role Refresh </a>
+        </div>
 
 
     </div>
