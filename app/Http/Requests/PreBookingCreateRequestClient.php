@@ -51,6 +51,14 @@ class PreBookingCreateRequestClient extends FormRequest
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
+
+    'lat' => 'nullable|string',
+    'long' => 'nullable|string',
+
+
+
+
+
         ];
     }
 }

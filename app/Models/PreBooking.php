@@ -29,6 +29,13 @@ class PreBooking extends Model
         "transmission",
 
 
+
+        "lat",
+        "long",
+
+
+
+
     ];
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id');

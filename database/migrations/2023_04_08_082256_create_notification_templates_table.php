@@ -29,24 +29,24 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'bid_created_by_garage_owner',
-                    "template"=> "A garage named [garage_name] posted a bid. its owner is",
-                    "link"=> "/[garage_id]/[bid_id]",
+                    "template"=> json_encode("A garage named [garage_name] posted a bid. its owner is"),
+                    "link"=> json_encode("/[garage_id]/[bid_id]"),
                     "is_active" => 1
                 ],
 
                 [
 
                     'type' => 'bid_accepted_by_client',
-                    "template"=> "A client named [customer_name] accepted your bid.",
-                    "link"=> "/[customer_id]/[pre_booking_id]",
+                    "template"=> json_encode("A client named [customer_name] accepted your bid."),
+                    "link"=> json_encode("/[customer_id]/[pre_booking_id]"),
                     "is_active" => 1
                 ],
 
                 [
 
                     'type' => 'bid_rejected_by_client',
-                    "template"=> "A client named [customer_name] rejected your bid.",
-                    "link"=> "/[customer_id]/[pre_booking_id]",
+                    "template"=> json_encode("A client named [customer_name] rejected your bid."),
+                    "link"=> json_encode("/[customer_id]/[pre_booking_id]"),
                     "is_active" => 1
                 ],
 

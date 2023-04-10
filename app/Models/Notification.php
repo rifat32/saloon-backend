@@ -12,6 +12,7 @@ class Notification extends Model
     protected $fillable = [
         "sender_id",
         "receiver_id",
+        "customer_id",
         "garage_id",
         "bid_id",
         "pre_booking_id",
@@ -20,5 +21,15 @@ class Notification extends Model
 
     ];
 
+    public function template(){
+        return $this->belongsTo(NotificationTemplate::class,'notification_template_id', 'id');
+    }
 
+    public function customer(){
+        return $this->belongsTo(User::class,'customer_id', 'id');
+    }
+
+    public function garage(){
+        return $this->belongsTo(Garage::class,'garage_id', 'id');
+    }
 }

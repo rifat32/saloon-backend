@@ -50,8 +50,7 @@ class CreateTagsTable extends Migration
             DB::table("tags")
             ->insert([
                 "tag" => $tag,
-                "is_default" => true,
-                "garage_id" => NULL
+                "is_default" => true
 
             ]);
         }

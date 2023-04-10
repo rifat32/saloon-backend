@@ -51,6 +51,13 @@ class CreatePreBookingsTable extends Migration
 
 
             $table->enum("status",["pending","confirmed","rejected_by_client"]);
+
+
+
+            $table->string("lat")->nullable();
+            $table->string("long")->nullable();
+
+            
             $table->timestamps();
         });
     }

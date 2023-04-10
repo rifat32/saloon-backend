@@ -13,4 +13,15 @@ class FuelStationOption extends Model
         "option_id",
         "is_active",
     ];
+
+
+
+    public function option(){
+        return $this->hasOne(FuelStationService::class,'id', 'option_id');
+    }
+
+
+
+
+
 }

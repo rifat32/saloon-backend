@@ -21,6 +21,15 @@ class CreateJobBidsTable extends Migration
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->double("price");
             $table->text("offer_template");
+
+
+
+          $table->date("job_start_date")->nullable();
+           $table->time("job_start_time")->nullable();
+           $table->time("job_end_time")->nullable();
+
+
+
             $table->timestamps();
         });
     }

@@ -26,6 +26,7 @@ use App\Http\Controllers\GarageServicePriceController;
 use App\Http\Controllers\GarageTimesController;
 use App\Http\Controllers\JobBidController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\ReviewController;
@@ -84,6 +85,8 @@ Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFu
 
 Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAll"]);
 
+
+
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
@@ -92,6 +95,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::patch('/auth/changepassword', [AuthController::class, "changePassword"]);
 
     Route::put('/v1.0/update-user-info', [AuthController::class, "updateUserInfo"]);
+
+
+    Route::get('/v1.0/notifications/{perPage}', [NotificationController::class, "getNotifications"]);
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

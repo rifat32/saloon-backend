@@ -393,13 +393,16 @@ class FuelStationController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $fuelStationQuery = FuelStation::with("options")
+            $fuelStationQuery = FuelStation::with("options.option")
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
 
             if (!empty($request->search_key)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
                     $term = $request->search_key;
                     $query->where("fuel_stations.name", "like", "%" . $term . "%");
+                    $query->orWhere("fuel_stations.country", "like", "%" . $term . "%");
+                    $query->orWhere("fuel_stations.city", "like", "%" . $term . "%");
+
                 });
             }
 
@@ -435,6 +438,7 @@ class FuelStationController extends Controller
             }
 
             $fuelStations = $fuelStationQuery
+            ->distinct("fuel_stations.id")
             ->select("fuel_stations.*")
             ->orderByDesc("fuel_stations.id")
             ->paginate($perPage);

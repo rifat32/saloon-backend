@@ -11733,6 +11733,80 @@
                 ]
             }
         },
+        "/v1.0/notifications/{perPage}": {
+            "get": {
+                "tags": [
+                    "basics_management"
+                ],
+                "summary": "This method is to get notification",
+                "description": "This method is to get notification",
+                "operationId": "getNotifications",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/notification-templates": {
             "put": {
                 "tags": [
@@ -11742,7 +11816,7 @@
                 "description": "This method is to update notification template",
                 "operationId": "updateNotificationTemplate",
                 "requestBody": {
-                    "description": "use [customer_name],[garage_owner_name],[garage_name],\n     *  in the template",
+                    "description": "use [customer_name],[garage_owner_name],[garage_name],\n     *  in the template and use [customer_id], [pre_booking_id],[garage_id],[bid_id] in link",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -11769,6 +11843,11 @@
                                         "example": "1"
                                     },
                                     "template": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "html template goes here"
+                                    },
+                                    "link": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "html template goes here"
@@ -18241,6 +18320,16 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "address"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "23.704263332849386"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "90.44707059805279"
                                     }
                                 },
                                 "type": "object"

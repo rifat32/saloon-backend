@@ -9,6 +9,8 @@ use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
 use App\Models\GarageSubService;
 use App\Models\JobBid;
+use App\Models\Notification;
+use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
 use Exception;
 use Illuminate\Http\Request;
@@ -325,6 +327,7 @@ return response()->json([
         try {
 
             return DB::transaction(function () use ($request) {
+
                 if (!$request->user()->hasPermissionTo('job_bids_create')) {
                     return response()->json([
                         "message" => "You can not perform this action"
@@ -374,6 +377,24 @@ return response()->json([
                 }
 
                 $job_bid =  JobBid::create($insertableData);
+
+                $notification_template = NotificationTemplate::where([
+                    "type" => "bid_created_by_garage_owner"
+                ])
+                ->first();
+
+
+                Notification::create([
+                    "sender_id" => $request->user()->id,
+                    "receiver_id" => $job_bid->pre_booking->customer_id,
+                    "customer_id" => $job_bid->pre_booking->customer_id,
+                    "garage_id" => $job_bid->garage_id,
+                    "bid_id" => $job_bid->id,
+                    "pre_booking_id" => $job_bid->pre_booking->id,
+                    "notification_template_id" => $notification_template->id ,
+                    "status" => "unread",
+                ]);
+
 
 
                 return response($job_bid, 201);

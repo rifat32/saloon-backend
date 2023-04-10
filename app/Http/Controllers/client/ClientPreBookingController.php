@@ -63,8 +63,13 @@ class ClientPreBookingController extends Controller
      *
      *  * @OA\Property(property="country", type="string", format="string",example="country"),
      *  * @OA\Property(property="city", type="string", format="string",example="city"),
-     *  * @OA\Property(property="post_code", type="string", format="string",example="postcode"),
+     *  * @OA\Property(property="postcode", type="string", format="string",example="postcode"),
      *  * @OA\Property(property="address", type="string", format="string",example="address"),
+     *
+     *   *  * @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
+     *  * @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
+     *
+
      *
      *
      *         ),
@@ -212,8 +217,11 @@ class ClientPreBookingController extends Controller
      *   *
      *  * @OA\Property(property="country", type="string", format="string",example="country"),
      *  * @OA\Property(property="city", type="string", format="string",example="city"),
-     *  * @OA\Property(property="post_code", type="string", format="string",example="postcode"),
+     *  * @OA\Property(property="postcode", type="string", format="string",example="postcode"),
      *  * @OA\Property(property="address", type="string", format="string",example="address"),
+     *
+     *   *  * @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
+     *  * @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
      *
      *
      *      ),
@@ -299,6 +307,11 @@ class ClientPreBookingController extends Controller
                 'address',
                 "fuel",
                 "transmission",
+
+
+    'lat',
+    'long',
+
 
                     ])->toArray()
                 )

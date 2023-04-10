@@ -27,7 +27,7 @@ class PreBookingUpdateRequestClient extends FormRequest
         return [
             "id" => "required|numeric",
 
- 
+
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
@@ -54,6 +54,11 @@ class PreBookingUpdateRequestClient extends FormRequest
 
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
+
+
+    'lat' => 'nullable|string',
+    'long' => 'nullable|string',
+
         ];
     }
 }

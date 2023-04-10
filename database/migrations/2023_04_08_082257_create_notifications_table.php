@@ -21,6 +21,9 @@ class CreateNotificationsTable extends Migration
             $table->unsignedBigInteger("receiver_id");
             $table->foreign('receiver_id')->references('id')->on('users')->onDelete('cascade');
 
+            $table->unsignedBigInteger("customer_id");
+            $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
+
             $table->unsignedBigInteger("garage_id")->nullable();
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
 
@@ -36,7 +39,7 @@ class CreateNotificationsTable extends Migration
 
             $table->enum("status",['read', 'unread'])->default("unread")->nullable();
 
-          
+
             $table->timestamps();
         });
     }

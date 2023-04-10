@@ -84,7 +84,7 @@ class NotificationTemplateController extends Controller
                     ], 401);
                 }
                 $updatableData = $request->validated();
-                $updatableData["wrapper_id"]  = !empty($updatableData["wrapper_id"])?$updatableData["wrapper_id"]:1;
+
                 $template  =  tap(NotificationTemplate::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
                         "name",
