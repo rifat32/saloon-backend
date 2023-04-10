@@ -99,6 +99,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::get('/v1.0/notifications/{perPage}', [NotificationController::class, "getNotifications"]);
 
+    Route::get('/v1.0/notifications/{garage_id}/{perPage}', [NotificationController::class, "getNotificationsByGarageId"]);
+
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // user management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
