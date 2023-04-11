@@ -33,6 +33,13 @@ class CreateNotificationTemplatesTable extends Migration
                     "link"=> json_encode("/[garage_id]/[bid_id]"),
                     "is_active" => 1
                 ],
+                [
+
+                    'type' => 'bid_updated_by_garage_owner',
+                    "template"=> json_encode("A garage named [garage_name] updated their bid. its owner is"),
+                    "link"=> json_encode("/[garage_id]/[bid_id]"),
+                    "is_active" => 1
+                ],
 
                 [
 

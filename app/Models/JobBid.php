@@ -15,7 +15,8 @@ class JobBid extends Model
         "offer_template",
         "job_start_date",
         "job_start_time",
-        "job_end_time"
+        "job_end_time",
+        "status"
     ];
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id');

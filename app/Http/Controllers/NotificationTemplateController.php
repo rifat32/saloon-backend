@@ -368,6 +368,7 @@ class NotificationTemplateController extends Controller
 $types = [
 
     "bid_created_by_garage_owner",
+    "bid_updated_by_garage_owner",
     "bid_accepted_by_client",
     "bid_rejected_by_client",
 ];

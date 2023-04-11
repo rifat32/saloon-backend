@@ -13,6 +13,8 @@ use App\Models\Booking;
 use App\Models\GarageSubService;
 use App\Models\Job;
 use App\Models\JobBid;
+use App\Models\Notification;
+use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
 use App\Models\PreBookingSubService;
 use App\Models\SubService;
@@ -23,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 class ClientPreBookingController extends Controller
 {
     use ErrorUtil;
-       /**
+    /**
      *
      * @OA\Post(
      *      path="/v1.0/client/pre-bookings",
@@ -47,7 +49,7 @@ class ClientPreBookingController extends Controller
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
      *
-*  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
+     *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
      *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
 
      *
@@ -123,7 +125,7 @@ class ClientPreBookingController extends Controller
 
 
                 $automobile_make = AutomobileMake::where([
-                   "id" =>  $insertableData["automobile_make_id"]
+                    "id" =>  $insertableData["automobile_make_id"]
                 ])
                     ->first();
                 if (!$automobile_make) {
@@ -149,8 +151,7 @@ class ClientPreBookingController extends Controller
 
 
                 foreach ($insertableData["pre_booking_sub_service_ids"] as $sub_service_id) {
-                    $sub_service =  SubService::
-                        where([
+                    $sub_service =  SubService::where([
                             "id" => $sub_service_id,
 
                         ])
@@ -188,7 +189,7 @@ class ClientPreBookingController extends Controller
 
 
 
- /**
+    /**
      *
      * @OA\Put(
      *      path="/v1.0/client/pre-bookings",
@@ -269,19 +270,19 @@ class ClientPreBookingController extends Controller
 
                 $automobile_make = AutomobileMake::where([
                     "id" =>  $updatableData["automobile_make_id"]
-                 ])
-                     ->first();
-                 if (!$automobile_make) {
-                     throw new Exception("invalid automobile make id");
-                 }
-                 $automobile_model = AutomobileModel::where([
-                     "id" => $updatableData["automobile_model_id"],
-                     "automobile_make_id" => $automobile_make->id
-                 ])
-                     ->first();
-                 if (!$automobile_model) {
-                     throw new Exception("Invalid automobile model id");
-                 }
+                ])
+                    ->first();
+                if (!$automobile_make) {
+                    throw new Exception("invalid automobile make id");
+                }
+                $automobile_model = AutomobileModel::where([
+                    "id" => $updatableData["automobile_model_id"],
+                    "automobile_make_id" => $automobile_make->id
+                ])
+                    ->first();
+                if (!$automobile_model) {
+                    throw new Exception("Invalid automobile model id");
+                }
 
 
 
@@ -291,26 +292,26 @@ class ClientPreBookingController extends Controller
                 $pre_booking  =  tap(PreBooking::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
 
-                        "automobile_make_id" ,
-                        "automobile_model_id" ,
+                        "automobile_make_id",
+                        "automobile_model_id",
                         "car_registration_no",
-                         "additional_information" ,
+                        "additional_information",
                         "job_start_date",
-                        "job_start_time" ,
-                    "job_end_date" ,
+                        "job_start_time",
+                        "job_end_date",
                         "coupon_code",
-                'pre_booking_sub_service_ids',
-                'pre_booking_sub_service_ids.*',
-                'country',
-                'city',
-                'postcode',
-                'address',
-                "fuel",
-                "transmission",
+                        'pre_booking_sub_service_ids',
+                        'pre_booking_sub_service_ids.*',
+                        'country',
+                        'city',
+                        'postcode',
+                        'address',
+                        "fuel",
+                        "transmission",
 
 
-    'lat',
-    'long',
+                        'lat',
+                        'long',
 
 
                     ])->toArray()
@@ -330,8 +331,7 @@ class ClientPreBookingController extends Controller
 
 
                 foreach ($updatableData["pre_booking_sub_service_ids"] as $sub_service_id) {
-                    $sub_service =  SubService::
-                        where([
+                    $sub_service =  SubService::where([
                             "id" => $sub_service_id,
 
                         ])
@@ -368,7 +368,7 @@ class ClientPreBookingController extends Controller
 
 
 
- /**
+    /**
      *
      * @OA\Get(
      *      path="/v1.0/client/pre-bookings/{perPage}",
@@ -386,26 +386,26 @@ class ClientPreBookingController extends Controller
      *  example="6"
      *      ),
      *      * *  @OA\Parameter(
-* name="start_date",
-* in="query",
-* description="start_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="end_date",
-* in="query",
-* description="end_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      *      summary="This method is to get pre bookings ",
      *      description="This method is to get pre bookings",
      *
@@ -448,7 +448,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage","automobile_make","automobile_model")
+            $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
                 ->where([
                     "customer_id" => $request->user()->id
                 ]);
@@ -543,7 +543,7 @@ class ClientPreBookingController extends Controller
     {
         try {
 
-            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service","job_bids.garage","automobile_make","automobile_model")
+            $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
                 ->where([
                     "id" => $id,
                     "customer_id" => $request->user()->id
@@ -586,6 +586,10 @@ class ClientPreBookingController extends Controller
      *
      *    @OA\Property(property="pre_booking_id", type="number", format="number",example="1"),
      *    @OA\Property(property="job_bid_id", type="number", format="number",example="1"),
+     *
+     *  *    @OA\Property(property="is_confirmed", type="boolean", format="boolean",example="true"),
+     *
+     *
      *
      *
      *
@@ -630,124 +634,162 @@ class ClientPreBookingController extends Controller
         try {
 
             return DB::transaction(function () use ($request) {
+
                 $insertableData = $request->validated();
-
-                $insertableData["customer_id"] = auth()->user()->id;
-
-
 
                 $pre_booking  = PreBooking::where([
                     "id" => $insertableData["pre_booking_id"],
                     "customer_id" => auth()->user()->id,
-                    ])
+                ])
                     ->first();
 
 
-                        if(!$pre_booking){
-                            return response()->json([
-                        "message" => "booking not found"
-                            ], 404);
-                        }
+                if (!$pre_booking) {
+                    return response()->json([
+                        "message" => "pre booking not found"
+                    ], 404);
+                }
 
-                        $job_bid  = JobBid::where([
-        "id" => $insertableData["job_bid_id"],
-        "pre_booking_id"=>$pre_booking->id,
+                $job_bid  = JobBid::where([
+                    "id" => $insertableData["job_bid_id"],
+                    "pre_booking_id" => $pre_booking->id,
+                ])
+                    ->first();
+
+
+                if (!$job_bid) {
+                    return response()->json([
+                        "message" => "job bid not found"
+                    ], 404);
+                }
+
+                if (!$insertableData["is_confirmed"]) {
+
+$job_bid->status = "rejected";
+$job_bid->save();
+
+                    $notification_template = NotificationTemplate::where([
+                        "type" => "bid_rejected_by_client"
+                    ])
+                        ->first();
+
+                    Notification::create([
+                        "sender_id" => $request->user()->id,
+                        "receiver_id" => $job_bid->pre_booking->customer_id,
+                        "customer_id" => $job_bid->pre_booking->customer_id,
+                        "garage_id" => $job_bid->garage_id,
+                        "bid_id" => $job_bid->id,
+                        "pre_booking_id" => $job_bid->pre_booking->id,
+                        "notification_template_id" => $notification_template->id,
+                        "status" => "unread",
+                    ]);
+                } else {
+
+
+                    $insertableData["customer_id"] = auth()->user()->id;
+
+
+                    $booking = Booking::create([
+                        "garage_id" => $pre_booking->garage_id,
+                        "customer_id" => $pre_booking->customer_id,
+                        "automobile_make_id" => $pre_booking->automobile_make_id,
+                        "automobile_model_id" => $pre_booking->automobile_model_id,
+                        "car_registration_no" => $pre_booking->car_registration_no,
+                        "additional_information" => $pre_booking->additional_information,
+                        "job_start_date" => $job_bid->job_start_date,
+                        "job_start_time" => $job_bid->job_start_time,
+                        // "job_end_time" => $pre_booking->job_end_time,
+
+                        "fuel" => $pre_booking->fuel,
+                        "transmission" => $pre_booking->transmission,
+                        // "coupon_discount_type" => $pre_booking->coupon_discount_type,
+                        // "coupon_discount_amount" => $pre_booking->coupon_discount_amount,
+
+
+                        "discount_type" => "fixed",
+                        "discount_amount" => 0,
+                        "price" => $job_bid->price,
+                        "status" => "pending",
+                        "payment_status" => "due",
+
+
+
+                    ]);
+
+                    $total_price = 0;
+
+                    foreach (PreBookingSubService::where([
+                        "pre_booking_id" => $pre_booking->id
+                    ])->get()
+                        as
+                        $pre_booking_sub_service) {
+                        $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                            ->where([
+                                "garage_services.garage_id" => $job_bid->garage_id,
+                                "garage_sub_services.sub_service_id" => $pre_booking_sub_service->sub_service_id
                             ])
+                            ->select(
+                                "garage_sub_services.id",
+                                "garage_sub_services.sub_service_id",
+                                "garage_sub_services.garage_service_id"
+                            )
                             ->first();
 
-
-                                if(!$job_bid ){
-                                    return response()->json([
-                                "message" => "job bid not found"
-                                    ], 404);
-                                }
-
-
-                        $booking = Booking::create([
-                            "garage_id" => $pre_booking->garage_id,
-                            "customer_id" => $pre_booking->customer_id,
-                            "automobile_make_id" => $pre_booking->automobile_make_id,
-                            "automobile_model_id" => $pre_booking->automobile_model_id,
-                            "car_registration_no" => $pre_booking->car_registration_no,
-                            "additional_information" => $pre_booking->additional_information,
-                            "job_start_date" => $job_bid->job_start_date,
-                            "job_start_time" => $job_bid->job_start_time,
-                            // "job_end_time" => $pre_booking->job_end_time,
-
-                            "fuel" => $pre_booking->fuel,
-                            "transmission" => $pre_booking->transmission,
-                            // "coupon_discount_type" => $pre_booking->coupon_discount_type,
-                            // "coupon_discount_amount" => $pre_booking->coupon_discount_amount,
-
-
-                            "discount_type" => "fixed",
-                            "discount_amount" => 0,
-                            "price" => $job_bid->price,
-                            "status" => "pending",
-                            "payment_status" => "due",
-
-
-
-                        ]);
-
-                        $total_price = 0;
-
-                        foreach (PreBookingSubService::where([
-                                "pre_booking_id" => $pre_booking->id
-                            ])->get()
-                            as
-                            $pre_booking_sub_service) {
-                                $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-                                ->where([
-                                    "garage_services.garage_id" => $job_bid->garage_id,
-                                    "garage_sub_services.sub_service_id" => $pre_booking_sub_service->sub_service_id
-                                ])
-                                ->select(
-                                    "garage_sub_services.id",
-                                    "garage_sub_services.sub_service_id",
-                                    "garage_sub_services.garage_service_id"
-                                )
-                                ->first();
-
-                            if (!$garage_sub_service) {
-                                throw new Exception("invalid service");
-                            }
-
-                            $price = $this->getPrice($pre_booking_sub_service->sub_service_id,$garage_sub_service->id, $pre_booking->automobile_make_id);
-
-                            $booking->booking_sub_services()->create([
-                                "sub_service_id" => $pre_booking_sub_service->sub_service_id,
-                                "price" => $price
-                            ]);
-                            $total_price += $price;
-
+                        if (!$garage_sub_service) {
+                            throw new Exception("invalid service");
                         }
 
+                        $price = $this->getPrice($pre_booking_sub_service->sub_service_id, $garage_sub_service->id, $pre_booking->automobile_make_id);
 
-
-
-
-
-                        // $job->price = $total_price;
-
-                        $booking->save();
-                        $pre_booking->status = "booked";
-                        $pre_booking->save();
-                        // $pre_booking_sub_service->delete();
-
-
-
-
-            return response([
-                "ok" => true
-            ], 201);
+                        $booking->booking_sub_services()->create([
+                            "sub_service_id" => $pre_booking_sub_service->sub_service_id,
+                            "price" => $price
+                        ]);
+                        $total_price += $price;
+                    }
 
 
 
 
 
 
+                    // $job->price = $total_price;
 
+                    $booking->save();
+                    $pre_booking->status = "booked";
+                    $pre_booking->save();
+                    
+                    $job_bid->status = "accepted";
+                    $job_bid->save();
+
+                    $notification_template = NotificationTemplate::where([
+                        "type" => "bid_accepted_by_client"
+                    ])
+                        ->first();
+
+                    Notification::create([
+                        "sender_id" => $request->user()->id,
+                        "receiver_id" => $job_bid->pre_booking->customer_id,
+                        "customer_id" => $job_bid->pre_booking->customer_id,
+                        "garage_id" => $job_bid->garage_id,
+                        "bid_id" => $job_bid->id,
+                        "pre_booking_id" => $job_bid->pre_booking->id,
+                        "notification_template_id" => $notification_template->id,
+                        "status" => "unread",
+                    ]);
+                    // $pre_booking_sub_service->delete();
+
+
+                }
+
+
+
+
+
+
+                return response([
+                    "ok" => true
+                ], 201);
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -829,11 +871,4 @@ class ClientPreBookingController extends Controller
             return $this->sendError($e, 500);
         }
     }
-
-
-
-
-
-
-
 }

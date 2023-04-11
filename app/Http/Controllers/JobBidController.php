@@ -527,6 +527,23 @@ return response()->json([
 
                     ->first();
 
+                    $notification_template = NotificationTemplate::where([
+                        "type" => "bid_updated_by_garage_owner"
+                    ])
+                    ->first();
+
+                    Notification::create([
+                        "sender_id" => $request->user()->id,
+                        "receiver_id" => $job_bid->pre_booking->customer_id,
+                        "customer_id" => $job_bid->pre_booking->customer_id,
+                        "garage_id" => $job_bid->garage_id,
+                        "bid_id" => $job_bid->id,
+                        "pre_booking_id" => $job_bid->pre_booking->id,
+                        "notification_template_id" => $notification_template->id ,
+                        "status" => "unread",
+                    ]);
+
+
                 return response($job_bid, 201);
             });
         } catch (Exception $e) {

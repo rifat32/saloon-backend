@@ -25,7 +25,8 @@ class PreBookingConfirmRequestClient extends FormRequest
     {
         return [
             "pre_booking_id"=>"required|numeric",
-            "job_bid_id"=>"required|numeric"
+            "job_bid_id"=>"required|numeric",
+            "is_confirmed"=>"required|boolean"
         ];
     }
 }

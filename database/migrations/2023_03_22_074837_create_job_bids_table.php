@@ -23,12 +23,14 @@ class CreateJobBidsTable extends Migration
             $table->text("offer_template");
 
 
+            $table->date("job_start_date")->nullable();
 
           $table->date("job_start_date")->nullable();
            $table->time("job_start_time")->nullable();
            $table->time("job_end_time")->nullable();
 
 
+           $table->enum("status",['accepted', 'rejected'])->nullable();
 
             $table->timestamps();
         });
