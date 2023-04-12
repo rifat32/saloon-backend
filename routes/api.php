@@ -132,11 +132,16 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // garage management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
+
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageById"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
+
+
 
 
 

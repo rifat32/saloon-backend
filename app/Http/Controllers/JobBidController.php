@@ -122,6 +122,12 @@ class JobBidController extends Controller
             ->pluck("garage_sub_services.sub_service_id");
 
             $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service")
+
+            ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+
+
+
+
             ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
             ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids);
 
@@ -140,11 +146,14 @@ class JobBidController extends Controller
                 $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
             }
             $pre_bookings = $preBookingQuery
-
-            ->orderByDesc("pre_bookings.id")
             ->select(
-                "pre_bookings.*"
-                )
+                "pre_bookings.*",
+                DB::raw('COUNT(job_bids.id) AS bid_count')
+            )
+            ->groupBy("pre_bookings.id")
+            ->orderByDesc("pre_bookings.id")
+
+                ->havingRaw('bid_count < 4')
             ->paginate($perPage);
             return response()->json($pre_bookings, 200);
         } catch(Exception $e){
@@ -349,11 +358,20 @@ return response()->json([
                 ->pluck("garage_sub_services.sub_service_id");
 
                 $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service")
+
+                ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+
+
+
                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
                 ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids)
                 ->where([
                     "pre_bookings.id" => $insertableData["pre_booking_id"]
                 ])
+
+    ->select("pre_bookings.*", DB::raw('COUNT(job_bids.id) AS bid_count'))
+    ->groupBy("pre_bookings.id")
+    ->havingRaw('bid_count < 4')
                 ->first();
 
                 if(!$pre_booking) {

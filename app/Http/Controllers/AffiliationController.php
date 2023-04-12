@@ -97,7 +97,7 @@ class AffiliationController extends Controller
             $insertableData["image"]->move(public_path($location), $new_file_name);
 
 
-            return response()->json(["image" => $new_file_name], 200);
+            return response()->json(["image" => $new_file_name,"location" => $location,"full_location"=>("/".$location."/".$new_file_name)], 200);
 
 
         } catch(Exception $e){

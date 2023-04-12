@@ -109,7 +109,7 @@ use ErrorUtil,GarageUtil;
 
 
                 GarageGallery::create([
-                    "image" => $new_file_name,
+                    "image" => ("/".$location."/".$new_file_name),
                     "garage_id" => $garage_id
                 ]);
 

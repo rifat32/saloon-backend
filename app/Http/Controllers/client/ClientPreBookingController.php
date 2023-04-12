@@ -122,8 +122,6 @@ class ClientPreBookingController extends Controller
 
 
 
-
-
                 $automobile_make = AutomobileMake::where([
                     "id" =>  $insertableData["automobile_make_id"]
                 ])
@@ -758,7 +756,7 @@ $job_bid->save();
                     $booking->save();
                     $pre_booking->status = "booked";
                     $pre_booking->save();
-                    
+
                     $job_bid->status = "accepted";
                     $job_bid->save();
 
