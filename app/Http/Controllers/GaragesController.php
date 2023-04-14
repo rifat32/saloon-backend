@@ -89,11 +89,11 @@ class GaragesController extends Controller
     public function createGarageImage(ImageUploadRequest $request)
     {
         try{
-            if(!$request->user()->hasPermissionTo('garage_create')){
-                 return response()->json([
-                    "message" => "You can not perform this action"
-                 ],401);
-            }
+            // if(!$request->user()->hasPermissionTo('garage_create')){
+            //      return response()->json([
+            //         "message" => "You can not perform this action"
+            //      ],401);
+            // }
 
             $insertableData = $request->validated();
 
@@ -734,10 +734,10 @@ class GaragesController extends Controller
                 $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
             }
             if (!empty($request->start_long)) {
-                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_long);
+                $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
             }
             if (!empty($request->end_long)) {
-                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_long);
+                $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
             }
 
 
@@ -922,10 +922,21 @@ class GaragesController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
-           Garage::where([
+
+           $garagesQuery =   Garage::where([
             "id" => $id
-           ])
-           ->delete();
+           ]);
+           if(!$request->user()->hasRole('superadmin')) {
+            $garagesQuery =    $garagesQuery->where([
+                "created_by" =>$request->user()->id
+            ]);
+        }
+
+        $garage = $garagesQuery->first();
+
+        $garage->delete();
+
+
 
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){

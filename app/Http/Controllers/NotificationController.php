@@ -285,6 +285,16 @@ class NotificationController extends Controller
                     $notifications->items()[$i]->pre_booking_id,
                     $notifications->items()[$i]["link"]
                 );
+                $notifications->items()[$i]["link"] =  str_replace(
+                    "[booking_id]",
+                    $notifications->items()[$i]->booking_id,
+                    $notifications->items()[$i]["link"]
+                );
+                $notifications->items()[$i]["link"] =  str_replace(
+                    "[job_id]",
+                    $notifications->items()[$i]->job_id,
+                    $notifications->items()[$i]["link"]
+                );
 
                 $notifications->items()[$i]["link"] =  str_replace(
                     "[garage_id]",

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Utils\ErrorUtil;
@@ -16,6 +17,103 @@ use Illuminate\Support\Str;
 class UserManagementController extends Controller
 {
     use ErrorUtil;
+
+
+
+       /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/user-image",
+     *      operationId="createUserImage",
+     *      tags={"user_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store user image ",
+     *      description="This method is to store user image",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"image"},
+*         @OA\Property(
+*             description="image to upload",
+*             property="image",
+*             type="file",
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function createUserImage(ImageUploadRequest $request)
+    {
+        try{
+            // if(!$request->user()->hasPermissionTo('user_create')){
+            //      return response()->json([
+            //         "message" => "You can not perform this action"
+            //      ],401);
+            // }
+
+            $insertableData = $request->validated();
+
+            $location =  config("setup-config.user_image_location");
+
+            $new_file_name = time() . '_' . $insertableData["image"]->getClientOriginalName();
+
+            $insertableData["image"]->move(public_path($location), $new_file_name);
+
+
+            return response()->json(["image" => $new_file_name,"location" => $location,"full_location"=>("/".$location."/".$new_file_name)], 200);
+
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
+
+
+
+
+
     /**
         *
      * @OA\Post(
@@ -227,6 +325,7 @@ class UserManagementController extends Controller
                 'country',
                 'city',
                 'postcode',
+                "image"
 
             ])->toArray()
             )

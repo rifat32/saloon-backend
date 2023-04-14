@@ -25,7 +25,8 @@ class FuelStation extends Model
         "additional_information",
         "address_line_1",
         "address_line_2",
-        "is_active"
+        "is_active",
+        "created_by",
     ];
     public function options(){
         return $this->hasMany(FuelStationOption::class,'fuel_station_id', 'id');

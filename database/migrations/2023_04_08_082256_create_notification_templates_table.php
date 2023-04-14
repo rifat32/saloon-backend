@@ -57,8 +57,119 @@ class CreateNotificationTemplatesTable extends Migration
                     "is_active" => 1
                 ],
 
+                [
+
+                    'type' => 'booking_updated_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking is updated by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_status_changed_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking status updated by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_confirmed_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking confirmed by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+                [
+
+                    'type' => 'booking_deleted_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking deleted by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_rejected_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking rejected by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
 
 
+                [
+
+                    'type' => 'booking_created_by_client',
+                    "template"=> json_encode("hello [garage_owner_name]!  booking created by [customer_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_updated_by_client',
+                    "template"=> json_encode("hello [garage_owner_name]!  booking updated by [customer_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_deleted_by_client',
+                    "template"=> json_encode("hello [garage_owner_name]!  booking deleted by [customer_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_accepted_by_client',
+                    "template"=> json_encode("hello [garage_owner_name]!  booking accepted by [customer_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'booking_rejected_by_client',
+                    "template"=> json_encode("hello [garage_owner_name]!  booking rejected by [customer_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'job_created_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]!  job created  by [garage_owner_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'job_updated_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]!  job updated  by [garage_owner_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+                [
+
+                    'type' => 'job_status_changed_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]!  job status changed  by [garage_owner_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+                [
+
+                    'type' => 'job_deleted_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]!  job deleted changed  by [garage_owner_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
+
+
+               
             )
         );
     }

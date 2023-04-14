@@ -472,7 +472,7 @@ $types = [
     "booking_status_changed_by_garage_owner",
     "booking_confirmed_by_garage_owner",
     "booking_deleted_by_garage_owner",
-    // "booking_rejected_by_garage_owner",
+     "booking_rejected_by_garage_owner",
 
     "booking_created_by_client",
     "booking_updated_by_client",

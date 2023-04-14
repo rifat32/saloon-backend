@@ -59,21 +59,20 @@ Route::post('/auth/check/email', [AuthController::class, "checkEmail"]);
 
 
 
-
 Route::post('/v1.0/auth/user-register-with-garage', [AuthController::class, "registerUserWithGarageClient"]);
-Route::get('/v1.0/automobile-categories/get/all', [AutomobilesController::class, "getAllAutomobileCategories"]);
 
+
+Route::get('/v1.0/automobile-categories/get/all', [AutomobilesController::class, "getAllAutomobileCategories"]);
 Route::get('/v1.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAll"]);
 Route::get('/v2.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAllV2"]);
-
 Route::get('/v1.0/automobile-models-all', [AutomobilesController::class, "getAutomobileModelsAll"]);
 
 
 
 Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
 Route::get('/v2.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryIdV2"]);
-
 Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesAll"]);
+
 
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
@@ -81,11 +80,13 @@ Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailable
 Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "getAvailableCities"]);
 
 
-Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
+
 
 Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAll"]);
 
+Route::post('/v1.0/user-image', [UserManagementController::class, "createUserImage"]);
 
+Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes
@@ -109,6 +110,11 @@ Route::middleware(['auth:api'])->group(function () {
 // ********************************************
 // user management section --user
 // ********************************************
+
+
+
+
+
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
@@ -133,7 +139,7 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 // garage management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
+
 
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
@@ -293,7 +299,7 @@ Route::delete('/v1.0/fuel-station-services/{id}', [FuelStationServiceController:
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStation"]);
 Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
-
+Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section
@@ -699,6 +705,7 @@ Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageCon
 // client routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 
+Route::get('/v1.0/clientfuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
 

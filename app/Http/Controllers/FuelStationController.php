@@ -101,6 +101,8 @@ class FuelStationController extends Controller
 
                 $insertableData = $request->validated();
 
+                $insertableData["created_by"] = $request->user()->id;
+
                 $fuel_station =  FuelStation::create($insertableData);
 
                 if(empty($insertableData["options"])) {
@@ -209,7 +211,21 @@ class FuelStationController extends Controller
                 }
                 $updatableData = $request->validated();
 
+                $fuelStationPrev = FuelStation::where([
+                    "id" => $updatableData["id"]
+                   ]);
 
+                   if(!$request->user()->hasRole('superadmin')) {
+                    $fuelStationPrev =    $fuelStationPrev->where([
+                        "created_by" =>$request->user()->id
+                    ]);
+                }
+                $fuelStationPrev = $fuelStationPrev->first();
+                 if(!$fuelStationPrev) {
+                        return response()->json([
+                           "message" => "you did not create this fuel station."
+                        ],404);
+                 }
 
                 $fuel_station  =  tap(FuelStation::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
@@ -385,16 +401,197 @@ class FuelStationController extends Controller
     public function getFuelStations($perPage, Request $request)
     {
         try {
-            // if (!$request->user()->hasPermissionTo('fuel_station_view')) {
-            //     return response()->json([
-            //         "message" => "You can not perform this action"
-            //     ], 401);
-            // }
+            if (!$request->user()->hasPermissionTo('fuel_station_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
             $fuelStationQuery = FuelStation::with("options.option")
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
+
+            if(!$request->user()->hasRole('superadmin')) {
+                $fuelStationQuery =    $fuelStationQuery->where([
+                    "created_by" =>$request->user()->id
+                ]);
+            }
+
+
+            if (!empty($request->search_key)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("fuel_stations.name", "like", "%" . $term . "%");
+                    $query->orWhere("fuel_stations.country", "like", "%" . $term . "%");
+                    $query->orWhere("fuel_stations.city", "like", "%" . $term . "%");
+
+                });
+            }
+
+            if (!empty($request->start_date)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', "<=", $request->end_date);
+            }
+
+            if (!empty($request->start_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_lat);
+            }
+            if (!empty($request->end_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_lat);
+            }
+            if (!empty($request->start_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_long);
+            }
+            if (!empty($request->end_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
+            }
+
+            if(!empty($request->active_option_ids)) {
+                if(count($request->active_option_ids)) {
+                    $fuelStationQuery =   $fuelStationQuery
+                    ->whereIn("fuel_station_options.option_id",
+                    $request->active_option_ids)
+                    ->where("fuel_station_options.is_active",1)
+                    ;
+                }
+
+            }
+
+            $fuelStations = $fuelStationQuery
+            ->distinct("fuel_stations.id")
+            ->select("fuel_stations.*")
+            ->orderByDesc("fuel_stations.id")
+            ->paginate($perPage);
+            return response()->json($fuelStations, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
+      /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/fuel-station/{perPage}",
+     *      operationId="getFuelStationsClient",
+     *      tags={"client.basics"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="start_lat",
+* in="query",
+* description="start_lat",
+* required=true,
+* example="3"
+* ),
+     * *  @OA\Parameter(
+* name="end_lat",
+* in="query",
+* description="end_lat",
+* required=true,
+* example="2"
+* ),
+     * *  @OA\Parameter(
+* name="start_long",
+* in="query",
+* description="start_long",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="end_long",
+* in="query",
+* description="end_long",
+* required=true,
+* example="4"
+* ),
+*  @OA\Parameter(
+*      name="active_option_ids[]",
+*      in="query",
+*      description="active_option_ids",
+*      required=true,
+*      example="1,2"
+* ),
+     *      summary="This method is to get fuel stations ",
+     *      description="This method is to get fuel stations",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getFuelStationsClient($perPage, Request $request)
+    {
+        try {
+
+
+            $fuelStationQuery = FuelStation::with("options.option")
+            ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
+
+
 
             if (!empty($request->search_key)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
@@ -512,10 +709,19 @@ class FuelStationController extends Controller
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            FuelStation::where([
+            $fuelStationQuery =   FuelStation::where([
                 "id" => $id
-            ])
-                ->delete();
+               ]);
+               if(!$request->user()->hasRole('superadmin')) {
+                $fuelStationQuery =    $fuelStationQuery->where([
+                    "created_by" =>$request->user()->id
+                ]);
+            }
+
+            $fuelStation = $fuelStationQuery->first();
+
+            $fuelStation->delete();
+
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

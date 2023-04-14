@@ -16,9 +16,9 @@
         <div class="col-md-3">
             <a href="{{env('APP_URL')}}/api/documentation#/" class="btn btn-primary" target="_blank">Api Doc</a>
         </div>
-        <div class="col-md-3">
+        {{-- <div class="col-md-3">
             <a href="{{env('APP_URL')}}/setup" class="btn btn-primary" target="_blank">Clear Every Thing</a>
-        </div>
+        </div> --}}
         <div class="col-md-3">
             <a href="{{env('APP_URL')}}/swagger-refresh" class="btn btn-primary" target="_blank">Swagger Refresh</a>
         </div>

@@ -339,6 +339,7 @@ return [
 
     ],
 
+    "user_image_location" => "user_image",
     "garage_gallery_location" => "garage_gallery",
     "affiliation_logo_location" => "affiliation_logo"
 

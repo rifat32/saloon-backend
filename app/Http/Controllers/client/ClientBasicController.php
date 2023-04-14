@@ -271,10 +271,10 @@ class ClientBasicController extends Controller
                 $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
             }
             if (!empty($request->start_long)) {
-                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_long);
+                $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
             }
             if (!empty($request->end_long)) {
-                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_long);
+                $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
             }
 
 

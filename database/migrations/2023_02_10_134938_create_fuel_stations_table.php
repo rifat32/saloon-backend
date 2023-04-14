@@ -30,7 +30,8 @@ class CreateFuelStationsTable extends Migration
             $table->text("additional_information")->nullable();
             $table->string("address_line_1")->nullable();
             $table->string("address_line_2")->nullable();
-
+            $table->unsignedBigInteger("created_by")->nullable(true);
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
 
             $table->boolean("is_active")->default(1);
             $table->softDeletes();
@@ -40,7 +41,7 @@ class CreateFuelStationsTable extends Migration
 
 
 
-      
+
 
 
         });

@@ -275,8 +275,8 @@ class AffiliationController extends Controller
                         "created_by" =>$request->user()->id
                     ]);
                 }
-                $userPrev = $affiliationPrev->first();
-                 if(!$userPrev) {
+                $affiliationPrev = $affiliationPrev->first();
+                 if(!$affiliationPrev) {
                         return response()->json([
                            "message" => "you did not create this affiliation."
                         ],404);
@@ -477,10 +477,20 @@ class AffiliationController extends Controller
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            Affiliation::where([
-                "id" => $id
-            ])
-                ->delete();
+
+
+                $affiliationQuery =   Affiliation::where([
+                    "id" => $id
+                   ]);
+                   if(!$request->user()->hasRole('superadmin')) {
+                    $affiliationQuery =    $affiliationQuery->where([
+                        "created_by" =>$request->user()->id
+                    ]);
+                }
+
+                $affiliation = $affiliationQuery->first();
+
+                $affiliation->delete();
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

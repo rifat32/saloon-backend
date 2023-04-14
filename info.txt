@@ -15,3 +15,11 @@ utils to set up super admin for the first time. clear the database.
 \https://mughalsignandprint.co.uk/garage-management/api/v1.0/client/garages/100?search_key=abc&country_code=null&city=null&service_ids[]=null&sub_service_ids[]=null&make_ids[]=null&model_ids[]=null
 
 
+/usr/bin/mysqldump -u mughalsign_garage -p 'zzlDrkvWbms*' mughalsign_garage > public_html/backup-garage.sql
+
+
+
+/usr/bin/mysqldump -u mughalsign_garage -p'zzlDrkvWbms*' mughalsign_garage > /home/mughalsign/db_`date +\%Y\%m\%d\%H\%M`.sql
+
+
+/usr/bin/mysqldump -u mughalsi_restaurant -p'mughalsi_restaurant' mughalsign_restaurant2 > /home/mughalsign/db_restaurant`date +\%Y\%m\%d\%H\%M`.sql

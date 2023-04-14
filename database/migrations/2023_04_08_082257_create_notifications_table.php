@@ -33,6 +33,12 @@ class CreateNotificationsTable extends Migration
             $table->unsignedBigInteger("pre_booking_id")->nullable();
             $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('cascade');
 
+            $table->unsignedBigInteger("booking_id")->nullable();
+            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+
+            $table->unsignedBigInteger("job_id")->nullable();
+            $table->foreign('job_id')->references('id')->on('jobs')->onDelete('cascade');
+
             $table->unsignedBigInteger("notification_template_id");
             $table->foreign('notification_template_id')->references('id')->on('notification_templates')->onDelete('cascade');
 
