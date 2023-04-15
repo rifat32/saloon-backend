@@ -86,14 +86,12 @@ $data["pre_booking_count"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id',
 ->whereNotIn('job_bids.garage_id', [$garage->id])
 ->where('pre_bookings.status',"pending")
 ->groupBy("pre_bookings.id")
-->select(
-    "pre_bookings.*",
-    DB::raw('COUNT(job_bids.id) AS bid_count')
-)
+// ->select(
+//     "pre_bookings.*",
+//     DB::raw('COUNT(job_bids.id) AS bid_count')
+// )
+->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
 
-->orderByDesc("pre_bookings.id")
-
-->havingRaw('bid_count < 4')
 ->count();
 
 
