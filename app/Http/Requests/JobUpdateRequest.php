@@ -31,6 +31,7 @@ class JobUpdateRequest extends FormRequest
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
+            "car_registration_year" => "nullable|date",
             "additional_information" => "nullable|string",
 
             "job_start_time" => "required|date",

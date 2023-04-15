@@ -16,6 +16,7 @@ class Job extends Model
         "automobile_make_id",
         "automobile_model_id",
         "car_registration_no",
+        "car_registration_year",
         "status",
         "payment_status",
         "additional_information",

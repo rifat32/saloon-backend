@@ -14,6 +14,7 @@ class PreBooking extends Model
         "automobile_make_id",
         "automobile_model_id",
         "car_registration_no",
+        "car_registration_year",
         "additional_information",
         "status",
         "job_start_date",

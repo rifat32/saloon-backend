@@ -29,6 +29,7 @@ class CreateJobsTable extends Migration
 
 
             $table->string("car_registration_no");
+            $table->date("car_registration_year")->nullable();
             $table->string("additional_information")->nullable();
 
 
@@ -40,7 +41,7 @@ class CreateJobsTable extends Migration
 
             $table->double("price")->default(0);
             $table->double("final_price")->default(0);
-            
+
             $table->string("fuel")->nullable();
             $table->string("transmission")->nullable();
 

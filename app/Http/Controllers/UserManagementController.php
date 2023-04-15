@@ -464,6 +464,86 @@ class UserManagementController extends Controller
         }
 
     }
+       /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/users/get-by-id/{id}",
+     *      operationId="getUserById",
+     *      tags={"user_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+     *      summary="This method is to get user by id",
+     *      description="This method is to get user by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getUserById($id,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('user_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+            $user = User::with("roles")
+            ->where([
+                "id" => $id
+            ])
+            ->first();
+            // ->whereHas('roles', function ($query) {
+            //     // return $query->where('name','!=', 'customer');
+            // });
+
+
+            return response()->json($user, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
 /**
         *
      * @OA\Delete(

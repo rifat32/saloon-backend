@@ -30,6 +30,7 @@ class BookingCreateRequestClient extends FormRequest
             "automobile_make_id" => "required|numeric",
             "automobile_model_id" =>"required|numeric",
             "car_registration_no" => "required|string",
+            "car_registration_year" => "nullable|date",
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date",

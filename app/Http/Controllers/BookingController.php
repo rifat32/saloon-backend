@@ -43,7 +43,7 @@ class BookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","total_price","automobile_make_id","automobile_model_id","car_registration_no","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","total_price","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
@@ -52,6 +52,7 @@ class BookingController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     * *     * * *    @OA\Property(property="car_registration_year", type="string", format="string",example="2019-06-29"),
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      * *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -135,6 +136,7 @@ class BookingController extends Controller
             "automobile_make_id",
             "automobile_model_id",
             "car_registration_no",
+            "car_registration_year",
             "status",
             "job_start_date",
              "job_start_time",

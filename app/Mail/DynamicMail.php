@@ -61,6 +61,8 @@ class DynamicMail extends Mailable
 
     $html_content =  str_replace("[car_registration_no]", $this->data->car_registration_no, $html_content );
 
+    $html_content =  str_replace("[car_registration_year]", $this->data->car_registration_year, $html_content );
+
     $html_content =  str_replace("[status]", $this->data->status, $html_content );
 
 

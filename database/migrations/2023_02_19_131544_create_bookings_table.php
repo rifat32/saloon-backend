@@ -29,6 +29,8 @@ class CreateBookingsTable extends Migration
 
 
             $table->string("car_registration_no");
+            $table->date("car_registration_year")->nullable();
+
             $table->string("additional_information")->nullable();
 
             $table->enum("coupon_discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
@@ -38,7 +40,7 @@ class CreateBookingsTable extends Migration
 
             $table->string("coupon_code")->nullable();
 
-        
+
             $table->string("fuel")->nullable();
             $table->string("transmission")->nullable();
 

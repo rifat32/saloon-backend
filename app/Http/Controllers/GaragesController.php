@@ -1142,13 +1142,7 @@ class GaragesController extends Controller
     *       security={
      *           {"bearerAuth": {}}
      *       },
-     *              @OA\Parameter(
-     *         name="perPage",
-     *         in="path",
-     *         description="perPage",
-     *         required=true,
-     *  example="6"
-     *      ),
+
      *      summary="This method is to get garages",
      *      description="This method is to get garages",
      *
@@ -1187,7 +1181,7 @@ class GaragesController extends Controller
      *     )
      */
 
-    public function getAllGaragesByGarageOwner($perPage,Request $request) {
+    public function getAllGaragesByGarageOwner(Request $request) {
 
         try{
             if(!$request->user()->hasRole('garage_owner')){
@@ -1196,18 +1190,13 @@ class GaragesController extends Controller
                 ],401);
            }
 
-            $garagesQuery = Garage::with(
-                "owner",
-                "garageAutomobileMakes.garageAutomobileModels",
-                "garageServices.garageSubServices.garage_sub_service_prices"
-            )
-            ->where([
+            $garagesQuery = Garage::where([
                 "owner_id" => $request->user()->id
             ]);
 
 
 
-            $garages = $garagesQuery->orderByDesc("id")->paginate($perPage);
+            $garages = $garagesQuery->orderByDesc("id")->get();
             return response()->json($garages, 200);
         } catch(Exception $e){
 

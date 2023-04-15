@@ -11,6 +11,7 @@ use App\Http\Controllers\client\ClientJobController;
 use App\Http\Controllers\client\ClientPreBookingController;
 use App\Http\Controllers\client\ClientReviewController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\DashboardManagementController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
@@ -118,6 +119,7 @@ Route::middleware(['auth:api'])->group(function () {
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getUserById"]);
 
 Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);
 
@@ -632,6 +634,24 @@ Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageCon
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // package management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// dashboard section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardData"]);
+
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// dashboard section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

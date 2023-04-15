@@ -40,13 +40,14 @@ class ClientPreBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids","job_end_date"},
+     *            required={"automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","pre_booking_sub_service_ids","job_end_date"},
 
 
      *
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     * *     * * *    @OA\Property(property="car_registration_year", type="string", format="string",example="2019-06-29"),
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
      *
      *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
@@ -202,12 +203,13 @@ class ClientPreBookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","automobile_make_id","automobile_model_id","car_registration_no","pre_booking_sub_service_ids"},
+     *            required={"id","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","pre_booking_sub_service_ids"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
 
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     * *     * * *    @OA\Property(property="car_registration_year", type="string", format="string",example="2019-06-29"),
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *         ),
      *    * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
@@ -293,6 +295,7 @@ class ClientPreBookingController extends Controller
                         "automobile_make_id",
                         "automobile_model_id",
                         "car_registration_no",
+                        "car_registration_year",
                         "additional_information",
                         "job_start_date",
                         "job_start_time",
@@ -693,6 +696,7 @@ $job_bid->save();
                         "automobile_make_id" => $pre_booking->automobile_make_id,
                         "automobile_model_id" => $pre_booking->automobile_model_id,
                         "car_registration_no" => $pre_booking->car_registration_no,
+                        "car_registration_year" => $pre_booking->car_registration_year,
                         "additional_information" => $pre_booking->additional_information,
                         "job_start_date" => $job_bid->job_start_date,
                         "job_start_time" => $job_bid->job_start_time,

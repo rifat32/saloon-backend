@@ -149,6 +149,7 @@ class JobController extends Controller
                     "automobile_make_id"=> $booking->automobile_make_id,
                     "automobile_model_id"=> $booking->automobile_model_id,
                     "car_registration_no"=> $booking->car_registration_no,
+                    "car_registration_year"=> $booking->car_registration_year,
                     "additional_information" => $booking->additional_information,
 
 
@@ -265,7 +266,7 @@ class JobController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","job_sub_service_ids","job_garage_package_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","job_sub_service_ids","job_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
     * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
@@ -273,6 +274,7 @@ class JobController extends Controller
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
      * *    @OA\Property(property="car_registration_no", type="string", format="string",example="r-00011111"),
+     * *     * * *    @OA\Property(property="car_registration_year", type="string", format="string",example="2019-06-29"),
      *
      *  * *    @OA\Property(property="job_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -385,6 +387,7 @@ class JobController extends Controller
             "coupon_code",
 
             "car_registration_no",
+            "car_registration_year",
             "status",
             "job_start_date",
             "job_start_time",

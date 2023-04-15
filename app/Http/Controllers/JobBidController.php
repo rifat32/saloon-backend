@@ -178,7 +178,7 @@ class JobBidController extends Controller
 
             $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service")
 
-                ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+
 
                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id');
 
@@ -240,12 +240,13 @@ class JobBidController extends Controller
             $pre_bookings = $preBookingQuery
                 ->select(
                     "pre_bookings.*",
-                    DB::raw('COUNT(job_bids.id) AS bid_count')
+                    DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count')
+
                 )
                 ->groupBy("pre_bookings.id")
                 ->orderByDesc("pre_bookings.id")
 
-                ->havingRaw('bid_count < 4')
+                 ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
                 ->paginate($perPage);
             return response()->json($pre_bookings, 200);
         } catch (Exception $e) {
@@ -512,13 +513,13 @@ class JobBidController extends Controller
 
                 $garage_automobile_make =   GarageAutomobileMake::where([
                     "garage_id" => $insertableData["garage_id"],
-                    "automobile_make_id" => $$pre_booking->automobile_make_id
+                    "automobile_make_id" => $pre_booking->automobile_make_id
                 ])
                     ->first();
                 if (!$garage_automobile_make) {
                     $garage_automobile_make =  GarageAutomobileMake::create([
                         "garage_id" => $insertableData["garage_id"],
-                        "automobile_make_id" => $$pre_booking->automobile_make_id
+                        "automobile_make_id" => $pre_booking->automobile_make_id
                     ]);
                 }
                 $garage_automobile_model = GarageAutomobileModel::where([
@@ -713,13 +714,13 @@ class JobBidController extends Controller
 
                 $garage_automobile_make =   GarageAutomobileMake::where([
                     "garage_id" => $updatableData["garage_id"],
-                    "automobile_make_id" => $$pre_booking->automobile_make_id
+                    "automobile_make_id" => $pre_booking->automobile_make_id
                 ])
                     ->first();
                 if (!$garage_automobile_make) {
                     $garage_automobile_make =  GarageAutomobileMake::create([
                         "garage_id" => $updatableData["garage_id"],
-                        "automobile_make_id" => $$pre_booking->automobile_make_id
+                        "automobile_make_id" => $pre_booking->automobile_make_id
                     ]);
                 }
                 $garage_automobile_model = GarageAutomobileModel::where([

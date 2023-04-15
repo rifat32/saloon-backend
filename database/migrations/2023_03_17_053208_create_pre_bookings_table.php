@@ -28,6 +28,7 @@ class CreatePreBookingsTable extends Migration
 
 
             $table->string("car_registration_no");
+            $table->date("car_registration_year")->nullable();
             $table->string("additional_information")->nullable();
 
             $table->string("fuel")->nullable();
@@ -50,14 +51,14 @@ class CreatePreBookingsTable extends Migration
 
 
 
-            $table->enum("status",["pending","confirmed","rejected_by_client"]);
+            $table->enum("status",["pending","booked"])->nullable()->default("pending");
 
 
 
             $table->string("lat")->nullable();
             $table->string("long")->nullable();
 
-            
+
             $table->timestamps();
         });
     }

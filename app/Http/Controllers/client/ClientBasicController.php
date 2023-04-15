@@ -172,14 +172,14 @@ class ClientBasicController extends Controller
 
         try{
             $garagesQuery = Garage::with("owner",
-            "garageAutomobileMakes.automobileMake",
-            "garageAutomobileMakes.garageAutomobileModels.automobileModel",
-            "garageServices.service",
-            "garageServices.garageSubServices.garage_sub_service_prices",
-            "garageServices.garageSubServices.subService",
-            "garage_times",
-            "garageGalleries",
-            "garage_packages",
+            // "garageAutomobileMakes.automobileMake",
+            // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+            // "garageServices.service",
+            // "garageServices.garageSubServices.garage_sub_service_prices",
+            // "garageServices.garageSubServices.subService",
+            // "garage_times",
+            // "garageGalleries",
+            // "garage_packages",
 )
             ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
             ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
