@@ -77,6 +77,10 @@ return [
        "garage_affiliation_delete",
 // end this permission may remove later
 
+"garage_gallery_create",
+"garage_gallery_view",
+"garage_gallery_delete",
+
 
             ],
         ],
@@ -110,6 +114,10 @@ return [
                 "garage_affiliation_update",
                 "garage_affiliation_view",
                 "garage_affiliation_delete",
+
+"garage_gallery_create",
+"garage_gallery_view",
+"garage_gallery_delete",
 
             ],
         ],
