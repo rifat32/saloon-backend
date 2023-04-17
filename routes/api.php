@@ -645,7 +645,17 @@ Route::delete('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageCon
 
 
 
-Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardData"]);
+Route::get('/v1.0/garage-owner-dashboard/jobs-in-area/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardDataJobList"]);
+
+Route::get('/v1.0/garage-owner-dashboard/jobs-application/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardDataJobApplications"]);
+
+
+Route::get('/v1.0/garage-owner-dashboard/winned-jobs-application/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardDataWinnedJobApplications"]);
+
+Route::get('/v1.0/garage-owner-dashboard/completed-bookings/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardDataCompletedBookings"]);
+
+
+Route::get('/v1.0/garage-owner-dashboard/upcoming-jobs/{garage_id}/{duration}', [DashboardManagementController::class, "getGarageOwnerDashboardDataUpcomingJobs"]);
 
 
 

@@ -10,6 +10,7 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
+        "pre_booking_id",
         "garage_id",
         "customer_id",
         "automobile_make_id",

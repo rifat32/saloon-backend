@@ -691,6 +691,7 @@ $job_bid->save();
 
 
                     $booking = Booking::create([
+                        "pre_booking_id" => $pre_booking->id,
                         "garage_id" => $pre_booking->garage_id,
                         "customer_id" => $pre_booking->customer_id,
                         "automobile_make_id" => $pre_booking->automobile_make_id,

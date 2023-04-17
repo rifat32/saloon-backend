@@ -16,6 +16,8 @@ class Notification extends Model
         "garage_id",
         "bid_id",
         "pre_booking_id",
+        "booking_id",
+        "job_id",
         "notification_template_id",
         "status",
 

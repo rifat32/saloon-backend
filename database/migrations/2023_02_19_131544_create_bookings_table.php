@@ -15,6 +15,11 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger("pre_booking_id");
+            $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('cascade');
+
+
             $table->unsignedBigInteger("garage_id");
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->unsignedBigInteger("customer_id");
@@ -51,7 +56,7 @@ class CreateBookingsTable extends Migration
             $table->time("job_start_time")->nullable();
             $table->time("job_end_time")->nullable();
 
-            $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner"]);
+            $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
             $table->timestamps();
         });
     }

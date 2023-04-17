@@ -17,7 +17,8 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
-
+use App\Models\Notification;
+use App\Models\NotificationTemplate;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -253,7 +254,19 @@ class BookingController extends Controller
                 }
 
                 $booking->save();
-
+                $notification_template = NotificationTemplate::where([
+                    "type" => "booking_updated_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $booking->garage->owner_id,
+                    "receiver_id" => $booking->customer_id,
+                    "customer_id" => $booking->customer_id,
+                    "garage_id" => $booking->garage_id,
+                    "booking_id" => $booking->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
                 if(env("SEND_EMAIL") == true) {
                     Mail::to($booking->customer->email)->send(new DynamicMail(
                     $booking,
@@ -360,6 +373,19 @@ class BookingController extends Controller
                 ], 404);
             }
 
+            $notification_template = NotificationTemplate::where([
+                "type" => "booking_status_changed_by_garage_owner"
+            ])
+                ->first();
+            Notification::create([
+                "sender_id" =>  $booking->garage->owner_id,
+                "receiver_id" => $booking->customer_id,
+                "customer_id" => $booking->customer_id,
+                "garage_id" => $booking->garage_id,
+                "booking_id" => $booking->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($booking->customer->email)->send(new DynamicMail(
                 $booking,
@@ -483,6 +509,19 @@ class BookingController extends Controller
             "message" => "booking not found"
                 ], 404);
             }
+            $notification_template = NotificationTemplate::where([
+                "type" => "booking_confirmed_by_garage_owner"
+            ])
+                ->first();
+            Notification::create([
+                "sender_id" =>  $booking->garage->owner_id,
+                "receiver_id" => $booking->customer_id,
+                "customer_id" => $booking->customer_id,
+                "garage_id" => $booking->garage_id,
+                "booking_id" => $booking->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($booking->customer->email)->send(new DynamicMail(
                 $booking,
@@ -807,6 +846,19 @@ class BookingController extends Controller
             }
             $booking->delete();
 
+            $notification_template = NotificationTemplate::where([
+                "type" => "booking_deleted_by_garage_owner"
+            ])
+                ->first();
+            Notification::create([
+                "sender_id" =>  $booking->garage->owner_id,
+                "receiver_id" => $booking->customer_id,
+                "customer_id" => $booking->customer_id,
+                "garage_id" => $booking->garage_id,
+                "booking_id" => $booking->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($booking->customer->email)->send(new DynamicMail(
                 $booking,

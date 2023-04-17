@@ -15,6 +15,11 @@ class CreateJobsTable extends Migration
     {
         Schema::create('jobs', function (Blueprint $table) {
             $table->id();
+
+            $table->unsignedBigInteger("booking_id");
+            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+
+
             $table->unsignedBigInteger("garage_id");
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->unsignedBigInteger("customer_id");

@@ -19,6 +19,8 @@ use App\Models\Job;
 use App\Models\JobPackage;
 use App\Models\JobPayment;
 use App\Models\JobSubService;
+use App\Models\Notification;
+use App\Models\NotificationTemplate;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -143,7 +145,7 @@ class JobController extends Controller
 
 
                 $job = Job::create([
-
+                    "booking_id" => $booking->id,
                     "garage_id" => $booking->garage_id,
                     "customer_id" => $booking->customer_id,
                     "automobile_make_id"=> $booking->automobile_make_id,
@@ -229,9 +231,23 @@ class JobController extends Controller
 
                 $job->save();
 
+                $booking->status = "converted_to_job";
+                $booking->save();
 
-                $booking->delete();
-
+                // $booking->delete();
+                $notification_template = NotificationTemplate::where([
+                    "type" => "job_created_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $job->garage->owner_id,
+                    "receiver_id" => $job->customer_id,
+                    "customer_id" => $job->customer_id,
+                    "garage_id" => $job->garage_id,
+                    "job_id" => $job->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
                 if(env("SEND_EMAIL") == true) {
                     Mail::to($job->customer->email)->send(new DynamicMail(
                     $job,
@@ -486,6 +502,19 @@ class JobController extends Controller
 
                 $job->save();
 
+                $notification_template = NotificationTemplate::where([
+                    "type" => "job_updated_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $job->garage->owner_id,
+                    "receiver_id" => $job->customer_id,
+                    "customer_id" => $job->customer_id,
+                    "garage_id" => $job->garage_id,
+                    "job_id" => $job->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
                 if(env("SEND_EMAIL") == true) {
                     Mail::to($job->customer->email)->send(new DynamicMail(
                     $job,
@@ -591,6 +620,19 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
+            $notification_template = NotificationTemplate::where([
+                "type" => "job_status_changed_by_garage_owner"
+            ])
+                ->first();
+            Notification::create([
+                "sender_id" =>  $job->garage->owner_id,
+                "receiver_id" => $job->customer_id,
+                "customer_id" => $job->customer_id,
+                "garage_id" => $job->garage_id,
+                "job_id" => $job->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($job->customer->email)->send(new DynamicMail(
                 $job,
@@ -917,6 +959,19 @@ class JobController extends Controller
             }
             $job->delete();
 
+            $notification_template = NotificationTemplate::where([
+                "type" => "job_deleted_by_garage_owner"
+            ])
+                ->first();
+            Notification::create([
+                "sender_id" =>  $job->garage->owner_id,
+                "receiver_id" => $job->customer_id,
+                "customer_id" => $job->customer_id,
+                "garage_id" => $job->garage_id,
+                "job_id" => $job->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($job->customer->email)->send(new DynamicMail(
                 $job,

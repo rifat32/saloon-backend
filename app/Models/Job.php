@@ -11,6 +11,7 @@ class Job extends Model
 
 
     protected $fillable = [
+        "booking_id",
         "garage_id",
         "customer_id",
         "automobile_make_id",
