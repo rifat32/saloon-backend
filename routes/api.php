@@ -658,6 +658,7 @@ Route::get('/v1.0/garage-owner-dashboard/completed-bookings/{garage_id}', [Dashb
 Route::get('/v1.0/garage-owner-dashboard/upcoming-jobs/{garage_id}/{duration}', [DashboardManagementController::class, "getGarageOwnerDashboardDataUpcomingJobs"]);
 
 
+Route::get('/v1.0/garage-owner-dashboard/expiring-affiliations/{garage_id}/{duration}', [DashboardManagementController::class, "getGarageOwnerDashboardDataExpiringAffiliations"]);
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

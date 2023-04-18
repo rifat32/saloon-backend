@@ -94,7 +94,7 @@ class GarageAffiliationController extends Controller
 
 
 
-                    if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($insertableData["garage_id"])) {
+                    if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
                         return response()->json([
                             "message" => "you are not the owner of the garage or the requested garage does not exist."
                         ], 401);
@@ -187,7 +187,7 @@ class GarageAffiliationController extends Controller
                 $updatableData = $request->validated();
 
 
-                if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
                     return response()->json([
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
                     ], 401);
@@ -196,8 +196,6 @@ class GarageAffiliationController extends Controller
 
                 $garage_affiliation  =  tap(GarageAffiliation::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
-                        "name",
-                        "description",
                         "start_date",
                         "end_date",
                     ])->toArray()
@@ -419,7 +417,7 @@ class GarageAffiliationController extends Controller
             }
 
 
-        if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($garage_id)) {
+        if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
              ], 401);
@@ -555,7 +553,7 @@ class GarageAffiliationController extends Controller
             }
 
 
-        if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($garage_id)) {
+        if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
              ], 401);
@@ -677,7 +675,7 @@ class GarageAffiliationController extends Controller
             ])
             ->first();
 
-            if (!$request->user()->hasRole('superadmin') &&!$this->garageOwnerCheck($garage_affiliation->garage_id)) {
+            if (!$this->garageOwnerCheck($garage_affiliation->garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
                 ], 401);

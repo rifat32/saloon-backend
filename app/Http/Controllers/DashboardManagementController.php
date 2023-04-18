@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Models\Affiliation;
 use App\Models\Booking;
 use App\Models\Garage;
+use App\Models\GarageAffiliation;
 use App\Models\Job;
 use App\Models\PreBooking;
 use Illuminate\Http\Request;
@@ -488,6 +490,96 @@ return response()->json($data,200);
         //  ->whereNotIn('job_bids.garage_id', [$garage->id])
 
         // ->groupBy("bookings.id")
+
+
+
+        ->count();
+
+
+
+        return response()->json($data,200);
+
+            }
+
+                     /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/garage-owner-dashboard/expiring-affiliations/{garage_id}/{duration}",
+     *      operationId="getGarageOwnerDashboardDataExpiringAffiliations",
+     *      tags={"dashboard_management.garage_owner"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *   *              @OA\Parameter(
+     *         name="duration",
+     *         in="path",
+     *         description="duration",
+     *         required=true,
+     *  example="7"
+     *      ),
+     *      summary="Total completed Bookings Total Bookings completed by this garage owner",
+     *      description="Total completed Bookings Total Bookings completed by this garage owner",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageOwnerDashboardDataExpiringAffiliations($garage_id,$duration,Request $request) {
+        $garage = Garage::where([
+            "id" => $garage_id,
+            "owner_id" => $request->user()->id
+        ])
+        ->first();
+        if(!$garage){
+            return response()->json([
+                "message" => "you are not the owner of the garage or the request garage does not exits"
+            ],404);
+        }
+        $startDate = now();
+        $endDate = $startDate->copy()->addDays($duration);
+
+
+        $data = GarageAffiliation::with("affiliation")
+        ->where('garage_affiliations.end_date' ,"<",  $endDate)
+
 
 
 
