@@ -10,6 +10,7 @@ use App\Models\Garage;
 use App\Models\GarageAffiliation;
 use App\Models\Job;
 use App\Models\PreBooking;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,20 @@ class DashboardManagementController extends Controller
      *         required=true,
      *  example="1"
      *      ),
+     *      *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
      *      summary="This should return list of jobs posted by drivers within same city and which are still not finalised and this garage owner have not applied yet.",
      *      description="This should return list of jobs posted by drivers within same city and which are still not finalised and this garage owner have not applied yet.",
      *
@@ -83,13 +98,21 @@ if(!$garage){
     ],404);
 }
 
-$data = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+$prebookingQuery = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
 ->where([
     "pre_bookings.city" => $garage->city
 ])
  ->whereNotIn('job_bids.garage_id', [$garage->id])
-->where('pre_bookings.status',"pending")
-->groupBy("pre_bookings.id")
+->where('pre_bookings.status',"pending");
+
+
+if (!empty($request->start_date)) {
+    $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
+}
+if (!empty($request->end_date)) {
+    $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
+}
+$data = $prebookingQuery->groupBy("pre_bookings.id")
 ->select(
     "pre_bookings.*",
     DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
@@ -184,23 +207,31 @@ return response()->json($data,200);
         //  ->whereNotIn('job_bids.garage_id', [$garage->id])
         ->where('pre_bookings.status',"pending")
         ->groupBy("pre_bookings.id")
-    //     ->select(
-    //         "pre_bookings.*",
-    // DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
 
-    // DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
-    // WHERE
-    // job_bids.pre_booking_id = pre_bookings.id
-    // AND
-    // job_bids.garage_id = ' . $garage->id .'
-
-    // ) AS garage_applied')
-    //     )
-        // ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
 
         ->count();
 
-        $data["applied_jobs"] = PreBooking::
+        $data["weekly_jobs"] = PreBooking::where([
+            "pre_bookings.city" => $garage->city
+        ])
+        //  ->whereNotIn('job_bids.garage_id', [$garage->id])
+        ->where('pre_bookings.status',"pending")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->groupBy("pre_bookings.id")
+        ->count();
+        $data["monthly_jobs"] = PreBooking::where([
+            "pre_bookings.city" => $garage->city
+        ])
+        //  ->whereNotIn('job_bids.garage_id', [$garage->id])
+        ->where('pre_bookings.status',"pending")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+        ->groupBy("pre_bookings.id")
+        ->count();
+
+
+
+
+        $data["applied_total_jobs"] = PreBooking::
         leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
         ->where([
             "pre_bookings.city" => $garage->city
@@ -208,19 +239,28 @@ return response()->json($data,200);
          ->whereIn('job_bids.garage_id', [$garage->id])
         ->where('pre_bookings.status',"pending")
         ->groupBy("pre_bookings.id")
-        // ->select(
-        //     "pre_bookings.*",
-        //     DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
 
-        //     DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
-        //     WHERE
-        //     job_bids.pre_booking_id = pre_bookings.id
-        //     AND
-        //     job_bids.garage_id = ' . $garage->id .'
+        ->count();
+        $data["applied_weekly_jobs"] = PreBooking::
+        leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        ->where([
+            "pre_bookings.city" => $garage->city
+        ])
+         ->whereIn('job_bids.garage_id', [$garage->id])
+        ->where('pre_bookings.status',"pending")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->groupBy("pre_bookings.id")
 
-        //     ) AS garage_applied')
-        // )
-        // ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
+        ->count();
+        $data["applied_monthly_jobs"] = PreBooking::
+        leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        ->where([
+            "pre_bookings.city" => $garage->city
+        ])
+         ->whereIn('job_bids.garage_id', [$garage->id])
+        ->where('pre_bookings.status',"pending")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+        ->groupBy("pre_bookings.id")
 
         ->count();
 
@@ -294,21 +334,33 @@ return response()->json($data,200);
             ],404);
         }
 
-        $data = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+        $data["total"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
         ->where([
             "bookings.garage_id" => $garage->id
         ])
-        //  ->whereNotIn('job_bids.garage_id', [$garage->id])
+
         ->where('pre_bookings.status',"booked")
         ->groupBy("pre_bookings.id")
-        // ->select(
-        //     "pre_bookings.*",
-
-        // )
-
-
         ->count();
 
+        $data["weekly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+        ->where([
+            "bookings.garage_id" => $garage->id
+        ])
+        ->where('pre_bookings.status',"booked")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->groupBy("pre_bookings.id")
+        ->count();
+
+        $data["monthly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+        ->where([
+            "bookings.garage_id" => $garage->id
+        ])
+
+        ->where('pre_bookings.status',"booked")
+        ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+        ->groupBy("pre_bookings.id")
+        ->count();
 
 
         return response()->json($data,200);
@@ -383,18 +435,27 @@ return response()->json($data,200);
             ],404);
         }
 
-        $data = Booking::where([
+        $data["total"] = Booking::where([
             "bookings.status" => "converted_to_job",
             "bookings.garage_id" => $garage->id
 
         ])
-        //  ->whereNotIn('job_bids.garage_id', [$garage->id])
-
-        // ->groupBy("bookings.id")
-
-
-
         ->count();
+        $data["weekly"] = Booking::where([
+            "bookings.status" => "converted_to_job",
+            "bookings.garage_id" => $garage->id
+
+        ])
+        ->whereBetween('bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+        ->count();
+        $data["monthly"] = Booking::where([
+            "bookings.status" => "converted_to_job",
+            "bookings.garage_id" => $garage->id
+
+        ])
+        ->whereBetween('bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+        ->count();
+
 
 
 
@@ -487,9 +548,7 @@ return response()->json($data,200);
 
         ])
         ->whereBetween('jobs.job_start_date', [$startDate, $endDate])
-        //  ->whereNotIn('job_bids.garage_id', [$garage->id])
 
-        // ->groupBy("bookings.id")
 
 
 
@@ -579,10 +638,6 @@ return response()->json($data,200);
 
         $data = GarageAffiliation::with("affiliation")
         ->where('garage_affiliations.end_date' ,"<",  $endDate)
-
-
-
-
         ->count();
 
 
