@@ -400,16 +400,16 @@ class ClientBasicController extends Controller
   /**
         *
      * @OA\Get(
-     *      path="/v1.0/client/garages/service-model-details/{id}",
+     *      path="/v1.0/client/garages/service-model-details/{garage_id}",
      *      operationId="getGarageServiceModelDetailsByIdClient",
      *      tags={"client.basics"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
-     *         name="id",
+     *         name="garage_id",
      *         in="path",
-     *         description="id",
+     *         description="garage_id",
      *         required=true,
      *  example="1"
      *      ),
@@ -451,11 +451,11 @@ class ClientBasicController extends Controller
      *     )
      */
 
-    public function getGarageServiceModelDetailsByIdClient($id,Request $request) {
+    public function getGarageServiceModelDetailsByIdClient($garage_id,Request $request) {
 
         try{
             $garage = Garage::where([
-                "id" => $id
+                "id" => $garage_id
             ])->first();
 
 
@@ -492,6 +492,103 @@ $data["garage_automobile_makes"] = GarageAutomobileMake::with("automobileMake")
 $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel")
 ->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 ->where([
+    "garage_automobile_makes.garage_id" => $garage->id
+])
+->select(
+    "garage_automobile_models.*"
+)
+->get();
+
+
+
+
+        return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
+  /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garages/garage-automobile-makes/{garage_id}/{automobile_make_id}",
+     *      operationId="getGarageAutomobileMakesByModelId",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *   *              @OA\Parameter(
+     *         name="automobile_make_id",
+     *         in="path",
+     *         description="automobile_make_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get garage service-model-details by garage id by id",
+     *      description="This method is to get garage service-model-details by garage id by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageAutomobileMakesByModelId($garage_id,$automobile_make_id,Request $request) {
+
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id
+            ])->first();
+
+
+            if(!$garage) {
+
+           return response()->json([
+            "message" => "no garage found"
+           ],404);
+
+            }
+$data = GarageAutomobileModel::with("automobileModel")
+->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+->where([
+    "garage_automobile_makes.automobile_make_id" => $automobile_make_id,
     "garage_automobile_makes.garage_id" => $garage->id
 ])
 ->select(

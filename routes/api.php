@@ -742,7 +742,9 @@ Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "get
 
 Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient"]);
 
-Route::get('/v1.0/client/garages/service-model-details/{id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
+Route::get('/v1.0/client/garages/service-model-details/{garage_id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
+
+Route::get('/v1.0/client/garages/garage-automobile-makes/{garage_id}/{automobile_make_id}', [ClientBasicController::class, "getGarageAutomobileMakesByModelId"]);
 
 Route::get('/v1.0/client/garage-affiliations/get/all/{garage_id}', [ClientBasicController::class, "getGarageAffiliationsAllByGarageIdClient"]);
 
