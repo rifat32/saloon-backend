@@ -244,4 +244,112 @@ return "swagger generated";
 
         return "You are done with setup";
     }
+
+
+    public function backup() {
+        foreach(DB::connection('backup_database')->table('users')->get() as $backup_data){
+        $data_exists = DB::connection('mysql')->table('users')->where([
+            "id" => $backup_data->id
+           ])->first();
+           if(!$data_exists) {
+            DB::connection('mysql')->table('users')->insert(get_object_vars($backup_data));
+           }
+        }
+
+
+        foreach(DB::connection('backup_database')->table('automobile_categories')->get() as $backup_data){
+            $data_exists = DB::connection('mysql')->table('automobile_categories')->where([
+                "id" => $backup_data->id
+               ])->first();
+               if(!$data_exists) {
+                DB::connection('mysql')->table('automobile_categories')->insert(get_object_vars($backup_data));
+               }
+            }
+
+            foreach(DB::connection('backup_database')->table('automobile_makes')->get() as $backup_data){
+                $data_exists = DB::connection('mysql')->table('automobile_makes')->where([
+                    "id" => $backup_data->id
+                   ])->first();
+                   if(!$data_exists) {
+                    DB::connection('mysql')->table('automobile_makes')->insert(get_object_vars($backup_data));
+                   }
+                }
+
+                foreach(DB::connection('backup_database')->table('automobile_models')->get() as $backup_data){
+                    $data_exists = DB::connection('mysql')->table('automobile_models')->where([
+                        "id" => $backup_data->id
+                       ])->first();
+                       if(!$data_exists) {
+                        DB::connection('mysql')->table('automobile_models')->insert(get_object_vars($backup_data));
+                       }
+                    }
+
+                    foreach(DB::connection('backup_database')->table('services')->get() as $backup_data){
+                        $data_exists = DB::connection('mysql')->table('services')->where([
+                            "id" => $backup_data->id
+                           ])->first();
+                           if(!$data_exists) {
+                            DB::connection('mysql')->table('services')->insert(get_object_vars($backup_data));
+                           }
+                        }
+
+
+                        foreach(DB::connection('backup_database')->table('sub_services')->get() as $backup_data){
+                            $data_exists = DB::connection('mysql')->table('sub_services')->where([
+                                "id" => $backup_data->id
+                               ])->first();
+                               if(!$data_exists) {
+                                DB::connection('mysql')->table('sub_services')->insert(get_object_vars($backup_data));
+                               }
+                            }
+
+
+
+                            foreach(DB::connection('backup_database')->table('garages')->get() as $backup_data){
+                                $data_exists = DB::connection('mysql')->table('garages')->where([
+                                    "id" => $backup_data->id
+                                   ])->first();
+                                   if(!$data_exists) {
+                                    DB::connection('mysql')->table('garages')->insert(get_object_vars($backup_data));
+                                   }
+                                }
+
+                                foreach(DB::connection('backup_database')->table('garage_automobile_makes')->get() as $backup_data){
+                                    $data_exists = DB::connection('mysql')->table('garage_automobile_makes')->where([
+                                        "id" => $backup_data->id
+                                       ])->first();
+                                       if(!$data_exists) {
+                                        DB::connection('mysql')->table('garage_automobile_makes')->insert(get_object_vars($backup_data));
+                                       }
+                                    }
+
+                                    foreach(DB::connection('backup_database')->table('garage_automobile_models')->get() as $backup_data){
+                                        $data_exists = DB::connection('mysql')->table('garage_automobile_models')->where([
+                                            "id" => $backup_data->id
+                                           ])->first();
+                                           if(!$data_exists) {
+                                            DB::connection('mysql')->table('garage_automobile_models')->insert(get_object_vars($backup_data));
+                                           }
+                                        }
+
+                                        foreach(DB::connection('backup_database')->table('garage_services')->get() as $backup_data){
+                                            $data_exists = DB::connection('mysql')->table('garage_services')->where([
+                                                "id" => $backup_data->id
+                                               ])->first();
+                                               if(!$data_exists) {
+                                                DB::connection('mysql')->table('garage_services')->insert(get_object_vars($backup_data));
+                                               }
+                                            }
+
+                                            foreach(DB::connection('backup_database')->table('garage_sub_services')->get() as $backup_data){
+                                                $data_exists = DB::connection('mysql')->table('garage_sub_services')->where([
+                                                    "id" => $backup_data->id
+                                                   ])->first();
+                                                   if(!$data_exists) {
+                                                    DB::connection('mysql')->table('garage_sub_services')->insert(get_object_vars($backup_data));
+                                                   }
+                                                }
+
+                                                return response()->json("done",200);
+    }
 }

@@ -512,8 +512,8 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
   /**
         *
      * @OA\Get(
-     *      path="/v1.0/client/garages/garage-automobile-makes/{garage_id}/{automobile_make_id}",
-     *      operationId="getGarageAutomobileMakesByModelId",
+     *      path="/v1.0/client/garages/garage-automobile-models/{garage_id}/{automobile_make_id}",
+     *      operationId="getGarageAutomobileModelsByAutomobileMakeId",
      *      tags={"client.basics"},
     *       security={
      *           {"bearerAuth": {}}
@@ -570,7 +570,7 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
      *     )
      */
 
-    public function getGarageAutomobileMakesByModelId($garage_id,$automobile_make_id,Request $request) {
+    public function getGarageAutomobileModelsByAutomobileMakeId($garage_id,$automobile_make_id,Request $request) {
 
         try{
             $garage = Garage::where([
