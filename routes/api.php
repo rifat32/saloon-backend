@@ -15,6 +15,7 @@ use App\Http\Controllers\DashboardManagementController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
 use App\Http\Controllers\FuelStationController;
+use App\Http\Controllers\FuelStationGalleryController;
 use App\Http\Controllers\FuelStationServiceController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageAutomobilesController;
@@ -456,6 +457,16 @@ Route::get('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class
 Route::delete('/v1.0/garage-galleries/{garage_id}/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage gallery management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// fuel station gallery management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/fuel-stations-galleries/{garage_id}', [FuelStationGalleryController::class, "createFuelStationGallery"]);
+Route::get('/v1.0/fuel-stations-galleries/{garage_id}', [FuelStationGalleryController::class, "getFuelStationGalleries"]);
+Route::delete('/v1.0/fuel-stations-galleries/{garage_id}/{id}', [FuelStationGalleryController::class, "deleteFuelStationGalleryById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end fuel station gallery management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 

@@ -81,6 +81,12 @@ return [
 "garage_gallery_view",
 "garage_gallery_delete",
 
+"fuel_station_gallery_create",
+"fuel_station_gallery_view",
+"fuel_station_gallery_delete",
+
+
+
 
             ],
         ],
@@ -118,6 +124,10 @@ return [
 "garage_gallery_create",
 "garage_gallery_view",
 "garage_gallery_delete",
+
+"fuel_station_gallery_create",
+"fuel_station_gallery_view",
+"fuel_station_gallery_delete",
 
             ],
         ],
@@ -266,6 +276,10 @@ return [
        "garage_gallery_view",
        "garage_gallery_delete",
 
+"fuel_station_gallery_create",
+"fuel_station_gallery_view",
+"fuel_station_gallery_delete",
+
        "garage_services_create",
        "garage_services_update",
        "garage_services_view",
@@ -349,6 +363,8 @@ return [
 
     "user_image_location" => "user_image",
     "garage_gallery_location" => "garage_gallery",
+    "fuel_station_gallery_location" => "fuel_station_gallery",
+
     "affiliation_logo_location" => "affiliation_logo"
 
 ];

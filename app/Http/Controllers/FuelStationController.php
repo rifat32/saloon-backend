@@ -709,6 +709,7 @@ class FuelStationController extends Controller
                     "message" => "You can not perform this action"
                 ], 401);
             }
+
             $fuelStationQuery =   FuelStation::where([
                 "id" => $id
                ]);
