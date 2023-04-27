@@ -433,7 +433,7 @@ class FuelStationServiceController extends Controller
      * @OA\Get(
      *      path="/v1.0/client/fuel-station-services/get/all",
      *      operationId="getFuelStationServicesAllClient",
-     *      tags={"client/basics"},
+     *      tags={"client.fuel_station_service_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },

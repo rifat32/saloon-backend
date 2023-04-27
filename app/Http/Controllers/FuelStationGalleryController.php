@@ -219,13 +219,89 @@ class FuelStationGalleryController extends Controller
                "fuel_station_id" => $fuel_station_id
             ])->orderByDesc("id")->get();
 
-            $data["image_location_folder"] =  config("setup-config.fuel_station_gallery_location");
+
             return response()->json($data, 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500);
         }
     }
+     /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/fuel-stations-galleries/{fuel_station_id}",
+     *      operationId="getFuelStationGalleriesClient",
+     *      tags={"client.fuel_station_gallery_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="fuel_station_id",
+     *         in="path",
+     *         description="fuel_station_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get fuel station galleries client",
+     *      description="This method is to get fuel station galleries client",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getFuelStationGalleriesClient($fuel_station_id,Request $request) {
+        try{
+            if(!$request->user()->hasPermissionTo('fuel_station_gallery_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+
+            $data["fuel_station_galleries"] = FuelStationGallery::where([
+               "fuel_station_id" => $fuel_station_id
+            ])->orderByDesc("id")->get();
+
+
+            return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+    }
+
 
 
        /**
@@ -313,7 +389,7 @@ class FuelStationGalleryController extends Controller
             ],404);
         }
 
-        
+
         $fuel_station_gallery  = FuelStationGallery::where([
             "id" => $id,
             "fuel_station_id" => $fuel_station_id

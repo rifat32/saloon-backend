@@ -204,6 +204,79 @@ use ErrorUtil,GarageUtil;
         }
     }
 
+     /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garage-galleries/{garage_id}",
+     *      operationId="getGarageGalleriesClient",
+     *      tags={"client.garage_gallery_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get garage galleries",
+     *      description="This method is to get garage galleries",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageGalleriesClient($garage_id,Request $request) {
+        try{
+
+
+
+
+            $data["garage_galleries"] = GarageGallery::where([
+               "garage_id" => $garage_id
+            ])->orderByDesc("id")->get();
+
+
+            return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+    }
+
 
        /**
         *

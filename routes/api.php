@@ -462,9 +462,9 @@ Route::delete('/v1.0/garage-galleries/{garage_id}/{id}', [GarageGalleryControlle
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // fuel station gallery management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Route::post('/v1.0/fuel-stations-galleries/{garage_id}', [FuelStationGalleryController::class, "createFuelStationGallery"]);
-Route::get('/v1.0/fuel-stations-galleries/{garage_id}', [FuelStationGalleryController::class, "getFuelStationGalleries"]);
-Route::delete('/v1.0/fuel-stations-galleries/{garage_id}/{id}', [FuelStationGalleryController::class, "deleteFuelStationGalleryById"]);
+Route::post('/v1.0/fuel-stations-galleries/{fuel_station_id}', [FuelStationGalleryController::class, "createFuelStationGallery"]);
+Route::get('/v1.0/fuel-stations-galleries/{fuel_station_id}', [FuelStationGalleryController::class, "getFuelStationGalleries"]);
+Route::delete('/v1.0/fuel-stations-galleries/{fuel_station_id}/{id}', [FuelStationGalleryController::class, "deleteFuelStationGalleryById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end fuel station gallery management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -751,6 +751,10 @@ Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementContr
 
 Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
 Route::get('/v1.0/client/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAllClient"]);
+
+
+Route::get('/v1.0/client/garage-galleries/{garage_id}', [GarageGalleryController::class, "getGarageGalleriesClient"]);
+Route::get('/v1.0/client/fuel-stations-galleries/{fuel_station_id}', [FuelStationGalleryController::class, "getFuelStationGalleriesClient"]);
 
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
