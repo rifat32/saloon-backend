@@ -15,6 +15,10 @@ class CreateReviewValueNewsTable extends Migration
     {
         Schema::create('review_value_news', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger("question_id");
+            $table->unsignedBigInteger("star_id");
+            $table->unsignedBigInteger("tag_id");
+            $table->unsignedBigInteger("review_id");
             $table->timestamps();
         });
     }

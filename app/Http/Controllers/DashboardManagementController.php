@@ -982,6 +982,7 @@ class DashboardManagementController extends Controller
         $endDateOfThisWeek = Carbon::now()->endOfWeek();
         $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
         $data["total_data_count"] = Booking::where([
             "bookings.status" => "converted_to_job",
             "bookings.garage_id" => $garage->id
@@ -1040,12 +1041,31 @@ class DashboardManagementController extends Controller
     public function upcoming_jobs($garage)
     {
         $startDate = now();
-        $weeklyEndDate = $startDate->copy()->addDays(7);
-        $secondWeeklyStartDate = $startDate->copy()->addDays(8);
-        $secondWeeklyEndDate = $startDate->copy()->addDays(14);
-        $monthlyEndDate = $startDate->copy()->addDays(30);
-        $secondMonthlyStartDate = $startDate->copy()->addDays(31);
-        $secondMonthlyStartDate = $startDate->copy()->addDays(60);
+
+        // $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfNextMonth = Carbon::now()->startOfMonth()->addMonth(1);
+        $endDateOfNextMonth = Carbon::now()->endOfMonth()->addMonth(1);
+
+        // $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfNextWeek = Carbon::now()->startOfWeek()->addWeek(1);
+        $endDateOfNextWeek = Carbon::now()->endOfWeek()->addWeek(1);
+
+
+
+        // $weeklyEndDate = $startDate->copy()->addDays(7);
+        // $secondWeeklyStartDate = $startDate->copy()->addDays(8);
+        // $secondWeeklyEndDate = $startDate->copy()->addDays(14);
+        // $monthlyEndDate = $startDate->copy()->addDays(30);
+        // $secondMonthlyStartDate = $startDate->copy()->addDays(31);
+        // $secondMonthlyStartDate = $startDate->copy()->addDays(60);
+
+
+
+
+
+
         $data["total_data_count"] = Job::where([
             "jobs.status" => "pending",
             "jobs.garage_id" => $garage->id
@@ -1054,92 +1074,98 @@ class DashboardManagementController extends Controller
             ->count();
 
 
-        $data["upcoming_first_week_data"] = Job::where([
+        $data["this_week_data"] = Job::where([
             "jobs.status" => "pending",
             "jobs.garage_id" => $garage->id
 
-        ])->whereBetween('jobs.job_start_date', [$startDate, $weeklyEndDate])
+        ])->whereBetween('jobs.job_start_date', [$startDate, $endDateOfThisWeek])
         ->select("jobs.id","jobs.created_at","jobs.updated_at")
             ->get();
-        $data["upcoming_second_week_data"] = Job::where([
+        $data["next_week_data"] = Job::where([
             "jobs.status" => "pending",
             "jobs.garage_id" => $garage->id
 
-        ])->whereBetween('jobs.job_start_date', [$secondWeeklyStartDate, $secondWeeklyEndDate])
+        ])->whereBetween('jobs.job_start_date', [$startDateOfNextWeek, $endDateOfNextWeek])
         ->select("jobs.id","jobs.created_at","jobs.updated_at")
             ->get();
 
-        $data["upcoming_first_month_data"] = Job::where([
+        $data["this_month_data"] = Job::where([
             "jobs.status" => "pending",
             "jobs.garage_id" => $garage->id
 
-        ])->whereBetween('jobs.job_start_date', [$startDate, $monthlyEndDate])
+        ])->whereBetween('jobs.job_start_date', [$startDate, $endDateOfThisMonth])
         ->select("jobs.id","jobs.created_at","jobs.updated_at")
             ->get();
-        $data["upcoming_second_month_data"] = Job::where([
+        $data["next_month_data"] = Job::where([
             "jobs.status" => "pending",
             "jobs.garage_id" => $garage->id
 
-        ])->whereBetween('jobs.job_start_date', [$secondMonthlyStartDate, $secondMonthlyStartDate])
+        ])->whereBetween('jobs.job_start_date', [$startDateOfNextMonth, $endDateOfNextMonth])
         ->select("jobs.id","jobs.created_at","jobs.updated_at")
             ->get();
 
 
-            $data["upcoming_first_week_data_count"] = $data["upcoming_first_week_data"]->count();
-            $data["upcoming_second_week_data_count"] = $data["upcoming_second_week_data"]->count();
-            $data["upcoming_first_month_data_count"] = $data["upcoming_first_month_data"]->count();
-            $data["upcoming_second_month_data_count"] = $data["upcoming_second_month_data"]->count();
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["next_week_data_count"] = $data["next_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["next_month_data_count"] = $data["next_month_data"]->count();
 
         return $data;
     }
     public function affiliation_expirings($garage)
     {
         $startDate = now();
-        $weeklyEndDate = $startDate->copy()->addDays(7);
-        $secondWeeklyStartDate = $startDate->copy()->addDays(8);
-        $secondWeeklyEndDate = $startDate->copy()->addDays(14);
-        $monthlyEndDate = $startDate->copy()->addDays(30);
-        $secondMonthlyStartDate = $startDate->copy()->addDays(31);
-        $secondMonthlyStartDate = $startDate->copy()->addDays(60);
+
+        // $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfNextMonth = Carbon::now()->startOfMonth()->addMonth(1);
+        $endDateOfNextMonth = Carbon::now()->endOfMonth()->addMonth(1);
+
+        // $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfNextWeek = Carbon::now()->startOfWeek()->addWeek(1);
+        $endDateOfNextWeek = Carbon::now()->endOfWeek()->addWeek(1);
+
+
         $data["total_data_count"] = GarageAffiliation::where([
             "garage_affiliations.garage_id"=>$garage->id
         ])
         ->count();
 
 
-        $data["upcoming_first_week_data"] = GarageAffiliation::where([
+        $data["this_week_data"] = GarageAffiliation::where([
             "garage_affiliations.garage_id"=>$garage->id
         ])
-        ->whereBetween('garage_affiliations.end_date', [$startDate, $weeklyEndDate])
+        ->whereBetween('garage_affiliations.end_date', [$startDate, $endDateOfThisWeek])
 
         ->select("garage_affiliations.id","garage_affiliations.created_at","garage_affiliations.updated_at")
             ->get();
-        $data["upcoming_second_week_data"] = GarageAffiliation::where([
+        $data["next_week_data"] = GarageAffiliation::where([
             "garage_affiliations.garage_id"=>$garage->id
         ])
-        ->whereBetween('garage_affiliations.end_date', [$secondWeeklyStartDate, $secondWeeklyEndDate])
+        ->whereBetween('garage_affiliations.end_date', [$startDateOfNextWeek, $endDateOfNextWeek])
 
         ->select("garage_affiliations.id","garage_affiliations.created_at","garage_affiliations.updated_at")
             ->get();
 
-        $data["upcoming_first_month_data"] = GarageAffiliation::where([
+        $data["this_month_data"] = GarageAffiliation::where([
             "garage_affiliations.garage_id"=>$garage->id
         ])
-        ->whereBetween('garage_affiliations.end_date', [$startDate, $monthlyEndDate])
+        ->whereBetween('garage_affiliations.end_date', [$startDate, $endDateOfThisMonth])
         ->select("garage_affiliations.id","garage_affiliations.created_at","garage_affiliations.updated_at")
             ->get();
 
-        $data["upcoming_second_month_data"] = GarageAffiliation::where([
+        $data["next_month_data"] = GarageAffiliation::where([
             "garage_affiliations.garage_id"=>$garage->id
         ])
-        ->whereBetween('garage_affiliations.end_date', [$secondMonthlyStartDate, $secondMonthlyStartDate])
+        ->whereBetween('garage_affiliations.end_date', [$startDateOfNextMonth, $endDateOfNextMonth])
         ->select("garage_affiliations.id","garage_affiliations.created_at","garage_affiliations.updated_at")
             ->get();
 
-            $data["upcoming_first_week_data_count"] = $data["upcoming_first_week_data"]->count();
-            $data["upcoming_second_week_data_count"] = $data["upcoming_second_week_data"]->count();
-            $data["upcoming_first_month_data_count"] = $data["upcoming_first_month_data"]->count();
-            $data["upcoming_second_month_data_count"] = $data["upcoming_second_month_data"]->count();
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["next_week_data_count"] = $data["next_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["next_month_data_count"] = $data["next_month_data"]->count();
 
 
         return $data;

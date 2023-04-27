@@ -12,6 +12,7 @@ class Booking extends Model
     protected $fillable = [
         "pre_booking_id",
         "garage_id",
+        "booking_id",
         "customer_id",
         "automobile_make_id",
         "automobile_model_id",

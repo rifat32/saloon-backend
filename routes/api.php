@@ -361,7 +361,7 @@ Route::get('/review-new/getavg/review/{garageId}/{start}/{end}', [ReviewControll
 Route::get('/review-new/getreview/{garageId}/{rate}/{start}/{end}', [ReviewController::class, "filterReview"]);
 Route::get('/review-new/getreviewAll/{garageId}', [ReviewController::class, "getReviewByGarageId"]);
 Route::get('/review-new/getcustomerreview/{garageId}/{start}/{end}', [ReviewController::class, "getCustommerReview"]);
-Route::post('/review-new/{garageId}', [ReviewController::class, "storeReview"]);
+Route::post('/review-new/{jobId}', [ReviewController::class, "storeReview"]);
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -749,7 +749,9 @@ Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementContr
 // client routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 
-Route::get('/v1.0/clientfuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
+Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
+Route::get('/v1.0/client/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAllClient"]);
+
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
 

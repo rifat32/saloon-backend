@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\Garage;
 use App\Models\GuestUser;
+use App\Models\Job;
 use App\Models\Question;
 use App\Models\QusetionStar;
 use App\Models\ReviewNew;
@@ -32,9 +34,9 @@ class ReviewController extends Controller
      *  * description="supported value is of type is 'star','emoji','numbers','heart'",
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"question","garage_id","is_active"},
+     *            required={"question","is_active"},
      *            @OA\Property(property="question", type="string", format="string",example="How was this?"),
-     *  @OA\Property(property="garage_id", type="number", format="number",example="1"),
+
      * *  @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
      * * *  @OA\Property(property="type", type="string", format="string",example="star"),
      *
@@ -530,7 +532,7 @@ if($starTag->question_id == $question->id) {
             return response("no garage found", 404);
         }
 
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => true]);
+    $query =  Question::where(["is_active" => true]);
 
     $questions =  $query->get();
 
@@ -2531,13 +2533,13 @@ return response([
      /**
         *
      * @OA\Post(
-     *      path="/review-new/{garageId}",
+     *      path="/review-new/{jobId}",
      *      operationId="storeReview",
      *      tags={"review"},
      *    *  @OA\Parameter(
-* name="garageId",
+* name="jobId",
 * in="path",
-* description="garageId",
+* description="jobId",
 * required=true,
 * example="1"
 * ),
@@ -2602,16 +2604,29 @@ return response([
      *     )
      */
 
-    public function storeReview($garageId,  Request $request)
+    public function storeReview($jobId,  Request $request)
     {
         if (!$request->user()->hasPermissionTo('review_create')) {
             return response()->json([
                 "message" => "You can not perform this action"
             ], 401);
         }
+    $job =   Job::where([
+            "id" => $jobId,
+            "customer_id" => $request->user()->id,
+    ])
+    ->first();
+    if(!$job) {
+return response()->json([
+    "message" => "job does not exists or you are not the owner of the job"
+],404);
+
+    }
+
             $review = [
                 'description' => $request["description"],
-                'garage_id' => $garageId,
+                'job_id' => $job->job_id,
+                'garage_id' => $job->garage_id,
                 'rate' => $request["rate"],
                 'user_id' => $request->user()->id,
                 'comment' => $request["comment"],

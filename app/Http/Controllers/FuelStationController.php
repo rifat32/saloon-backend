@@ -489,6 +489,27 @@ class FuelStationController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *
+     *   *              @OA\Parameter(
+     *         name="time",
+     *         in="query",
+     *         description="current time",
+     *         required=true,
+     *  example="10:10"
+     *      ),
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
      *      * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -545,8 +566,8 @@ class FuelStationController extends Controller
 *      required=true,
 *      example="1,2"
 * ),
-     *      summary="This method is to get fuel stations ",
-     *      description="This method is to get fuel stations",
+     *      summary="This method is to get fuel stations client ",
+     *      description="This method is to get fuel stations client",
      *
 
      *      @OA\Response(
@@ -591,7 +612,14 @@ class FuelStationController extends Controller
             $fuelStationQuery = FuelStation::with("options.option")
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
 
+            if (!empty($request->time)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->time;
+                    $query->whereTime("fuel_stations.opening_time","<=", $term);
+                    $query->whereTime("fuel_stations.closing_time",">", $term);
 
+                });
+            }
 
             if (!empty($request->search_key)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
