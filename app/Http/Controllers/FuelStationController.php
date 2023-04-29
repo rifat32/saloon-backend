@@ -677,12 +677,16 @@ class FuelStationController extends Controller
 
 
             if(!empty($request->active_option_ids)) {
-                if(count($request->active_option_ids)) {
+
+                $null_filter = collect(array_filter($request->active_option_ids))->values();
+                $active_option_ids =  $null_filter->all();
+
+
+                if(count($active_option_ids)) {
                     $fuelStationQuery =   $fuelStationQuery
                     ->whereIn("fuel_station_options.option_id",
-                    $request->active_option_ids)
-                    ->where("fuel_station_options.is_active",1)
-                    ;
+                    $active_option_ids)
+                    ->where("fuel_station_options.is_active",1);
                 }
 
             }
