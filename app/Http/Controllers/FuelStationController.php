@@ -499,7 +499,20 @@ class FuelStationController extends Controller
      *      ),
      *
      *
-     *
+     *     * *  @OA\Parameter(
+* name="country",
+* in="query",
+* description="country",
+* required=true,
+* example="country"
+* ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
      *
      *
      *
@@ -650,6 +663,18 @@ class FuelStationController extends Controller
             if (!empty($request->end_long)) {
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
             }
+
+
+
+            if (!empty($request->country)) {
+                $fuelStationQuery =   $fuelStationQuery->where("country", "like", "%" . $request->country . "%");
+
+            }
+            if (!empty($request->city)) {
+                $fuelStationQuery =   $fuelStationQuery->where("city", "like", "%" . $request->city . "%");
+
+            }
+
 
             if(!empty($request->active_option_ids)) {
                 if(count($request->active_option_ids)) {

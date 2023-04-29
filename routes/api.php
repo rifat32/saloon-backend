@@ -673,6 +673,8 @@ Route::get('/v1.0/garage-owner-dashboard/expiring-affiliations/{garage_id}/{dura
 
 Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardData"]);
 
+Route::get('/v1.0/superadmin-dashboard', [DashboardManagementController::class, "getSuperAdminDashboardData"]);
+
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // dashboard section
@@ -784,6 +786,10 @@ Route::post('/client/review-new-guest/{garageId}', [ClientReviewController::clas
 
 Route::middleware(['auth:api'])->group(function () {
 
+
+    Route::get('/v1.0/client/favourite-sub-services/{perPage}', [ClientBasicController::class, "getFavouriteSubServices"]);
+
+
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -800,6 +806,8 @@ Route::delete('/v1.0/client/bookings/{id}', [ClientBookingController::class, "de
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
 
 Route::get('/v1.0/client/jobs/{perPage}', [ClientJobController::class, "getJobsClient"]);
 Route::get('/v1.0/client/jobs/single/{id}', [ClientJobController::class, "getJobByIdClient"]);

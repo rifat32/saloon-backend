@@ -6,10 +6,13 @@ use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Models\Affiliation;
 use App\Models\Booking;
+use App\Models\FuelStation;
 use App\Models\Garage;
 use App\Models\GarageAffiliation;
 use App\Models\Job;
 use App\Models\PreBooking;
+use App\Models\Service;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -646,108 +649,6 @@ class DashboardManagementController extends Controller
 
 
 
-
-    /**
-     *
-     * @OA\Get(
-     *      path="/v1.0/garage-owner-dashboard/{garage_id}",
-     *      operationId="getGarageOwnerDashboardData",
-     *      tags={"dashboard_management.garage_owner"},
-     *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *              @OA\Parameter(
-     *         name="garage_id",
-     *         in="path",
-     *         description="garage_id",
-     *         required=true,
-     *  example="1"
-     *      ),
-
-     *      summary="get all dashboard data combined",
-     *      description="get all dashboard data combined",
-     *
-
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *   @OA\JsonContent()
-     * ),
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request",
-     *   *@OA\JsonContent()
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found",
-     *   *@OA\JsonContent()
-     *   )
-     *      )
-     *     )
-     */
-
-    public function getGarageOwnerDashboardData($garage_id, Request $request)
-    {
-
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
-        }
-
-
-        // affiliation expiry
-        $data["affiliation_expirings"] = $this->affiliation_expirings($garage);
-
-        //    end affiliation expiry
-        //   upcoming_jobs
-        $data["upcoming_jobs"] = $this->upcoming_jobs($garage);
-
-        //  end  upcoming_jobs
-
-        // completed bookings
-        $data["completed_bookings"] = $this->completed_bookings($garage);
-        // end completed bookings
-
-        // winned jobs
-        $data["winned_jobs"] = $this->winned_jobs($garage);
-        // end winned jobs
-
-        //   jobs
-        $data["pre_bookings"] = $this->pre_bookings($garage);
-        // end jobs
-
-
-        // applied jobs
-        $data["applied_jobs"] = $this->applied_jobs($garage);
-        // end applied jobs
-
-
-        return response()->json($data, 200);
-    }
-
-
     public function applied_jobs($garage)
     {
         $startDateOfThisMonth = Carbon::now()->startOfMonth();
@@ -1170,4 +1071,491 @@ class DashboardManagementController extends Controller
 
         return $data;
     }
+
+    /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/garage-owner-dashboard/{garage_id}",
+     *      operationId="getGarageOwnerDashboardData",
+     *      tags={"dashboard_management.garage_owner"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="1"
+     *      ),
+
+     *      summary="get all dashboard data combined",
+     *      description="get all dashboard data combined",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageOwnerDashboardData($garage_id, Request $request)
+    {
+
+        if (!$request->user()->hasRole('garage_owner')) {
+            return response()->json([
+                "message" => "You are not a garage owner"
+            ], 401);
+        }
+        $garage = Garage::where([
+            "id" => $garage_id,
+            "owner_id" => $request->user()->id
+        ])
+            ->first();
+        if (!$garage) {
+            return response()->json([
+                "message" => "you are not the owner of the garage or the request garage does not exits"
+            ], 404);
+        }
+
+
+        // affiliation expiry
+        $data["affiliation_expirings"] = $this->affiliation_expirings($garage);
+
+        //    end affiliation expiry
+        //   upcoming_jobs
+        $data["upcoming_jobs"] = $this->upcoming_jobs($garage);
+
+        //  end  upcoming_jobs
+
+        // completed bookings
+        $data["completed_bookings"] = $this->completed_bookings($garage);
+        // end completed bookings
+
+        // winned jobs
+        $data["winned_jobs"] = $this->winned_jobs($garage);
+        // end winned jobs
+
+        //   jobs
+        $data["pre_bookings"] = $this->pre_bookings($garage);
+        // end jobs
+
+
+        // applied jobs
+        $data["applied_jobs"] = $this->applied_jobs($garage);
+        // end applied jobs
+
+
+        return response()->json($data, 200);
+    }
+    public function garages()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = Garage::count();
+
+
+
+        $data["this_week_data"] = Garage::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = Garage::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = Garage::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+        $data["previous_month_data"] = Garage::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+    public function fuel_stations()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = FuelStation::count();
+
+
+        $data["this_week_data"] = FuelStation::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = FuelStation::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = FuelStation::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+        $data["previous_month_data"] = FuelStation::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+
+    public function customers()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = User::with("roles")->whereHas("roles", function($q) {
+            $q->whereIn("name", ["customer"]);
+        })->count();
+
+
+        $data["this_week_data"] = User::with("roles")->whereHas("roles", function($q) {
+            $q->whereIn("name", ["customer"]);
+        })->whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = User::with("roles")->whereHas("roles", function($q) {
+            $q->whereIn("name", ["customer"]);
+        })->whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = User::with("roles")->whereHas("roles", function($q) {
+            $q->whereIn("name", ["customer"]);
+        })->whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+        $data["previous_month_data"] = User::with("roles")->whereHas("roles", function($q) {
+            $q->whereIn("name", ["customer"]);
+        })->whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+    public function overall_customer_jobs()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = PreBooking::count();
+
+
+        $data["this_week_data"] = PreBooking::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = PreBooking::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = PreBooking::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_month_data"] = PreBooking::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+
+    public function overall_bookings()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = Booking::count();
+
+
+        $data["this_week_data"] = Booking::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = Booking::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = Booking::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+        $data["previous_month_data"] = Booking::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+
+    public function overall_jobs()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = Job::count();
+
+
+        $data["this_week_data"] = Job::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = Job::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = Job::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_month_data"] = Job::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+
+
+
+    public function overall_services()
+    {
+        $startDateOfThisMonth = Carbon::now()->startOfMonth();
+        $endDateOfThisMonth = Carbon::now()->endOfMonth();
+        $startDateOfPreviousMonth = Carbon::now()->startOfMonth()->subMonth(1);
+        $endDateOfPreviousMonth = Carbon::now()->endOfMonth()->subMonth(1);
+
+        $startDateOfThisWeek = Carbon::now()->startOfWeek();
+        $endDateOfThisWeek = Carbon::now()->endOfWeek();
+        $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
+        $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
+
+
+
+        $data["total_data_count"] = Service::count();
+
+
+        $data["this_week_data"] = Service::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+        $data["previous_week_data"] = Service::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+
+
+        $data["this_month_data"] = Service::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+        $data["previous_month_data"] = Service::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
+            ->select("id","created_at","updated_at")
+            ->get();
+
+            $data["this_week_data_count"] = $data["this_week_data"]->count();
+            $data["previous_week_data_count"] = $data["previous_week_data"]->count();
+            $data["this_month_data_count"] = $data["this_month_data"]->count();
+            $data["previous_month_data_count"] = $data["previous_month_data"]->count();
+        return $data;
+    }
+      /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/superadmin-dashboard",
+     *      operationId="getSuperAdminDashboardData",
+     *      tags={"dashboard_management.superadmin"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *      summary="get all dashboard data combined",
+     *      description="get all dashboard data combined",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getSuperAdminDashboardData( Request $request)
+    {
+
+        if (!$request->user()->hasRole('superadmin')) {
+            return response()->json([
+                "message" => "You are not a superadmin"
+            ], 401);
+        }
+
+        $data["garages"] = $this->garages();
+
+        $data["fuel_stations"] = $this->fuel_stations();
+
+        $data["customers"] = $this->customers();
+
+        $data["overall_customer_jobs"] = $this->overall_customer_jobs();
+
+        $data["overall_bookings"] = $this->overall_bookings();
+
+        $data["overall_jobs"] = $this->overall_jobs();
+
+
+
+        $data["overall_services"] = $this->overall_services();
+
+
+
+
+
+
+        return response()->json($data, 200);
+    }
+
+
+
 }

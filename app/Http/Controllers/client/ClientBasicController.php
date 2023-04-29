@@ -10,8 +10,11 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
 use App\Models\GarageSubService;
+use App\Models\SubService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientBasicController extends Controller
 {
@@ -128,8 +131,14 @@ class ClientBasicController extends Controller
 * example="1"
 * ),
 
-
-
+     * *  @OA\Parameter(
+* name="date_time",
+* in="query",
+* description="2019-06-29 22:00",
+* required=true,
+* example="1"
+* ),
+*
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -186,7 +195,10 @@ class ClientBasicController extends Controller
 
             ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
             ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+
+->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
             ;
+
             if(!empty($request->search_key)) {
                 $garagesQuery = $garagesQuery->where(function($query) use ($request){
                     $term = $request->search_key;
@@ -276,11 +288,21 @@ class ClientBasicController extends Controller
             if (!empty($request->end_long)) {
                 $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
             }
+            if (!empty($request->date_time)) {
+
+                $date = Carbon::createFromFormat('Y-m-d H:i', $request->date_time);
+                $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
+                $time = $date->format('H:i');
+                $garagesQuery = $garagesQuery->where('garage_times.day', "=", $dayOfWeek)
+                ->whereTime('garage_times.opening_time', "<=", $time)
+                ->whereTime('garage_times.closing_time', ">", $time);
+            }
+
 
 
             $garages = $garagesQuery
 
-            ->distinct("garages.id")
+            ->groupBy("garages.id")
 
             ->orderByDesc("garages.id")
             ->select("garages.*")
@@ -735,6 +757,104 @@ $data = GarageAutomobileModel::with("automobileModel")
 
 
 
+
+
+
+  /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/favourite-sub-services/{perPage}",
+     *      operationId="getFavouriteSubServices",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *   *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+     *      summary="This method is to get favourite jobs",
+     *      description="This method is to get favourite jobs",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getFavouriteSubServices($perPage,Request $request) {
+
+        try{
+            $user = $request->user();
+            $data = SubService::
+            select("sub_services.*",
+            DB::raw('(SELECT COUNT(job_sub_services.sub_service_id)
+            FROM
+            job_sub_services
+            LEFT JOIN jobs ON job_sub_services.job_id = jobs.id
+
+
+            WHERE jobs.customer_id = '
+            .
+            $user->id
+            .
+            '
+            AND
+            job_sub_services.sub_service_id = sub_services.id
+
+            ) AS sub_service_id_count'),
+            )
+            ->orderByRaw('sub_service_id_count desc')
+            ->havingRaw('sub_service_id_count > 0')
+            ->paginate($perPage);
+
+
+
+
+
+
+
+
+        return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500);
+        }
+
+    }
 
 
 
