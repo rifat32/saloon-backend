@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ServiceUpdateRequest extends FormRequest
+class ProductCategoryCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,12 @@ class ServiceUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            "id" => "required|numeric|unique:services,name," . $this->id . ",id",
-            "name" => "required|string",
+            "name" => "required|string|unique:product_categories,name",
             "icon"=> "nullable|string",
             "description" => "nullable|string",
-            "image" => "nullable|string",
-            //  "automobile_category_id" => "required|numeric"
+            "image" => "nullable|string"
+
+
         ];
     }
 }

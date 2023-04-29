@@ -168,6 +168,7 @@ class ServiceController extends Controller
                 $service  =  tap(Service::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
                     'name',
                     'image',
+                    'icon',
                     "description",
                     // "automobile_category_id"
                 ])->toArray()
@@ -175,7 +176,11 @@ class ServiceController extends Controller
                     // ->with("somthing")
 
                     ->first();
-
+                    if(!$service) {
+                        return response()->json([
+                            "message" => "no  service found"
+                        ],404);
+                    }
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
@@ -371,7 +376,11 @@ class ServiceController extends Controller
             ])
             ->first()
             ;
-
+            if(!$service) {
+                return response()->json([
+                    "message" => "no  service found"
+                ],404);
+            }
             return response()->json($service, 200);
         } catch(Exception $e){
 
@@ -971,7 +980,11 @@ class ServiceController extends Controller
                     // ->with("somthing")
 
                     ->first();
-
+                    if(!$service) {
+                        return response()->json([
+                            "message" => "no sub service found"
+                        ],404);
+                    }
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());

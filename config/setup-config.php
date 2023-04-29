@@ -86,7 +86,10 @@ return [
 "fuel_station_gallery_delete",
 
 
-
+"product_category_create",
+"product_category_update",
+"product_category_view",
+"product_category_delete",
 
             ],
         ],
@@ -202,13 +205,19 @@ return [
        "job_bids_view",
        "job_bids_delete",
 
-
+       "product_category_view",
 
 
             ],
         ],
 
+        [
+            "role" => "shop_owner",
+            "permissions" => [
 
+                "product_category_view",
+            ],
+        ],
 
     ],
     "roles" => [
@@ -358,6 +367,13 @@ return [
        "garage_automobile_update",
        "garage_automobile_view",
        "garage_automobile_delete",
+
+
+
+       "product_category_create",
+       "product_category_update",
+       "product_category_view",
+       "product_category_delete",
 
     ],
 

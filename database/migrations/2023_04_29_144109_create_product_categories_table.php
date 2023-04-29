@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateServicesTable extends Migration
+class CreateProductCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateServicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
             $table->string("name")->unique();
             $table->string("icon")->nullable();
             $table->text("description")->nullable();
             $table->text("image")->nullable();
-            $table->unsignedBigInteger("automobile_category_id");
-            $table->foreign('automobile_category_id')->references('id')->on('automobile_categories')->onDelete('cascade');
 
             $table->boolean("is_active")->default(1);
             $table->softDeletes();
@@ -35,6 +33,6 @@ class CreateServicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('product_categories');
     }
 }

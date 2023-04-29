@@ -24,12 +24,12 @@ class ServiceCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "name" => "required|string",
+            "name" => "required|string|unique:services,name",
             "icon"=> "nullable|string",
             "description" => "nullable|string",
             "image" => "nullable|string",
             "automobile_category_id" => "required|numeric",
-         
+
 
         ];
     }

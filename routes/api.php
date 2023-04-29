@@ -31,6 +31,7 @@ use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
@@ -677,8 +678,44 @@ Route::get('/v1.0/superadmin-dashboard', [DashboardManagementController::class, 
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// dashboard section
+// end dashboard section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// shop section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+Route::post('/v1.0/product-categories', [ProductCategoryController::class, "createProductCategory"]);
+Route::put('/v1.0/product-categories', [ProductCategoryController::class, "updateProductCategory"]);
+Route::get('/v1.0/product-categories/{perPage}', [ProductCategoryController::class, "getProductCategories"]);
+Route::delete('/v1.0/product-categories/{id}', [ProductCategoryController::class, "deleteProductCategoryById"]);
+Route::get('/v1.0/product-categories/single/get/{id}', [ProductCategoryController::class, "getProductCategoryById"]);
+
+Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class, "getAllProductCategory"]);
+
+
+
+
+
+
+
+
+
+
 
 
 
