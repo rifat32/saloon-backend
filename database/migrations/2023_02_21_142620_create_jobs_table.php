@@ -29,6 +29,8 @@ class CreateJobsTable extends Migration
 
             $table->unsignedBigInteger("automobile_make_id");
             $table->foreign('automobile_make_id')->references('id')->on('automobile_makes')->onDelete('restrict');
+
+
             $table->unsignedBigInteger("automobile_model_id");
             $table->foreign('automobile_model_id')->references('id')->on('automobile_models')->onDelete('restrict');
 

@@ -304,6 +304,32 @@ class FuelStationController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *
+     *      *
+     *   *              @OA\Parameter(
+     *         name="time",
+     *         in="query",
+     *         description="current time",
+     *         required=true,
+     *  example="10:10"
+     *      ),
+     *
+     *
+     *     * *  @OA\Parameter(
+* name="country",
+* in="query",
+* description="country",
+* required=true,
+* example="country"
+* ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
+     *
      *      * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -360,6 +386,11 @@ class FuelStationController extends Controller
 *      required=true,
 *      example="1,2"
 * ),
+
+  *      *  * *  @OA\Property(property="country", type="string", format="string",example="1"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="1"),
+     *
+     *
      *      summary="This method is to get fuel stations ",
      *      description="This method is to get fuel stations",
      *
@@ -449,16 +480,41 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
             }
 
+            if (!empty($request->time)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->time;
+                    $query->whereTime("fuel_stations.opening_time","<=", $term);
+                    $query->whereTime("fuel_stations.closing_time",">", $term);
+
+                });
+            }
+
+
+            if (!empty($request->country)) {
+                $fuelStationQuery =   $fuelStationQuery->where("country", "like", "%" . $request->country . "%");
+
+            }
+            if (!empty($request->city)) {
+                $fuelStationQuery =   $fuelStationQuery->where("city", "like", "%" . $request->city . "%");
+
+            }
+
+
             if(!empty($request->active_option_ids)) {
-                if(count($request->active_option_ids)) {
+
+                $null_filter = collect(array_filter($request->active_option_ids))->values();
+                $active_option_ids =  $null_filter->all();
+
+
+                if(count($active_option_ids)) {
                     $fuelStationQuery =   $fuelStationQuery
                     ->whereIn("fuel_station_options.option_id",
-                    $request->active_option_ids)
-                    ->where("fuel_station_options.is_active",1)
-                    ;
+                    $active_option_ids)
+                    ->where("fuel_station_options.is_active",1);
                 }
 
             }
+
 
             $fuelStations = $fuelStationQuery
             ->distinct("fuel_stations.id")
@@ -625,14 +681,6 @@ class FuelStationController extends Controller
             $fuelStationQuery = FuelStation::with("options.option")
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
 
-            if (!empty($request->time)) {
-                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
-                    $term = $request->time;
-                    $query->whereTime("fuel_stations.opening_time","<=", $term);
-                    $query->whereTime("fuel_stations.closing_time",">", $term);
-
-                });
-            }
 
             if (!empty($request->search_key)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
@@ -664,6 +712,14 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
             }
 
+            if (!empty($request->time)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->time;
+                    $query->whereTime("fuel_stations.opening_time","<=", $term);
+                    $query->whereTime("fuel_stations.closing_time",">", $term);
+
+                });
+            }
 
 
             if (!empty($request->country)) {

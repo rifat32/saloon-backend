@@ -17,7 +17,7 @@ class ProductCategoryController extends Controller
   * @OA\Post(
   *      path="/v1.0/product-categories",
   *      operationId="createProductCategory",
-  *      tags={"product_category_management"},
+  *      tags={"shop_section.product_category_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -98,7 +98,7 @@ class ProductCategoryController extends Controller
   * @OA\Put(
   *      path="/v1.0/product-categories",
   *      operationId="updateProductCategory",
-  *      tags={"product_category_management"},
+  *      tags={"shop_section.product_category_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -192,7 +192,7 @@ class ProductCategoryController extends Controller
   * @OA\Get(
   *      path="/v1.0/product-categories/{perPage}",
   *      operationId="getProductCategories",
-  *      tags={"product_category_management"},
+  *      tags={"shop_section.product_category_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -273,7 +273,7 @@ class ProductCategoryController extends Controller
              ],401);
         }
 
- 
+
 
          $productCategoriesQuery = new ProductCategory();
 
@@ -307,7 +307,7 @@ class ProductCategoryController extends Controller
   * @OA\Get(
   *      path="/v1.0/product-categories/single/get/{id}",
   *      operationId="getProductCategoryById",
-  *      tags={"product_category_management"},
+  *      tags={"shop_section.product_category_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -491,7 +491,7 @@ return response()->json([
      *     @OA\Delete(
      *      path="/v1.0/product-categories/{id}",
      *      operationId="deleteProductCategoryById",
-     *      tags={"product_category_management"},
+     *      tags={"shop_section.product_category_management"},
     *       security={
      *           {"bearerAuth": {}}
      *       },
