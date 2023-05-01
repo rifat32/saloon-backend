@@ -55,7 +55,7 @@ class AuthRegisterShopRequest extends FormRequest
             'shop.address_line_1' => 'required|string',
             'shop.address_line_2' => 'nullable|string',
 
-
+            'shop.sku_prefix' => 'nullable|string',
             'shop.logo' => 'nullable|string',
             'shop.is_mobile_shop' => 'required|boolean',
             'shop.wifi_available' => 'required|boolean',

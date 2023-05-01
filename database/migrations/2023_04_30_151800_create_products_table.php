@@ -17,11 +17,17 @@ class CreateProductsTable extends Migration
             $table->id();
 
             $table->string("name");
-            $table->string("description");
-            $table->string("image");
+            $table->string("sku")->nullable();
+            $table->enum("type",['single', 'variable']);
+
+
+            $table->string("description")->nullable();
+            $table->string("image")->nullable();
             $table->boolean("is_active")->default(true);
-            
+
             $table->boolean("is_default");
+
+
 
             $table->unsignedBigInteger("shop_id")->nullable();
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');

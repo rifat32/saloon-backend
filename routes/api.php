@@ -32,6 +32,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
@@ -81,7 +82,11 @@ Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesA
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
 
+Route::get('/v1.0/available-countries/for-shop', [ShopsController::class, "getAvailableCountriesForShop"]);
+
 Route::get('/v1.0/available-cities/{country_code}', [GaragesController::class, "getAvailableCities"]);
+
+Route::get('/v1.0/available-cities/for-shop/{country_code}', [ShopsController::class, "getAvailableCitiesForShop"]);
 
 
 
@@ -159,22 +164,7 @@ Route::get('/v1.0/garages/by-garage-owner/all', [GaragesController::class, "getA
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// shop management section
-// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-
-
-Route::post('/v1.0/auth/register-with-shop', [ShopsController::class, "registerUserWithShop"]);
-Route::put('/v1.0/shops', [GaragesController::class, "updateShop"]);
-Route::get('/v1.0/shops/{perPage}', [GaragesController::class, "getShops"]);
-Route::get('/v1.0/shops/single/{id}', [GaragesController::class, "getShopById"]);
-Route::delete('/v1.0/shops/{id}', [GaragesController::class, "deleteShopById"]);
-
-Route::get('/v1.0/shops/by-shop-owner/all', [GaragesController::class, "getAllShopsByGarageOwner"]);
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-// end shop management section
-// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
@@ -714,6 +704,27 @@ Route::get('/v1.0/superadmin-dashboard', [DashboardManagementController::class, 
 // shop section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// shop management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+Route::post('/v1.0/auth/register-with-shop', [ShopsController::class, "registerUserWithShop"]);
+Route::put('/v1.0/shops', [ShopsController::class, "updateShop"]);
+Route::get('/v1.0/shops/{perPage}', [ShopsController::class, "getShops"]);
+Route::get('/v1.0/shops/single/{id}', [ShopsController::class, "getShopById"]);
+Route::delete('/v1.0/shops/{id}', [ShopsController::class, "deleteShopById"]);
+
+Route::get('/v1.0/shops/by-shop-owner/all', [ShopsController::class, "getAllShopsByShopOwner"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end shop management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// product category management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/product-categories', [ProductCategoryController::class, "createProductCategory"]);
 Route::put('/v1.0/product-categories', [ProductCategoryController::class, "updateProductCategory"]);
@@ -724,6 +735,27 @@ Route::get('/v1.0/product-categories/single/get/{id}', [ProductCategoryControlle
 Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class, "getAllProductCategory"]);
 
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end product category management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// product  management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/products', [ProductController::class, "createProduct"]);
+Route::put('/v1.0/product-categories', [ProductCategoryController::class, "updateProductCategory"]);
+Route::get('/v1.0/product-categories/{perPage}', [ProductCategoryController::class, "getProductCategories"]);
+Route::delete('/v1.0/product-categories/{id}', [ProductCategoryController::class, "deleteProductCategoryById"]);
+Route::get('/v1.0/product-categories/single/get/{id}', [ProductCategoryController::class, "getProductCategoryById"]);
+
+Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class, "getAllProductCategory"]);
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end product  management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 

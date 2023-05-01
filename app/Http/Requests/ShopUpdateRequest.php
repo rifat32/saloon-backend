@@ -57,7 +57,9 @@ class ShopUpdateRequest extends FormRequest
             'shop.address_line_2' => 'nullable|string',
 
 
+            'shop.sku_prefix' => 'nullable|string',
             'shop.logo' => 'nullable|string',
+
             'shop.is_mobile_shop' => 'required|boolean',
             'shop.wifi_available' => 'required|boolean',
             'shop.labour_rate' => 'nullable|numeric',

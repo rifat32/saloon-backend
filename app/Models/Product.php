@@ -8,4 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        "name",
+        "sku",
+        "description",
+        "image",
+        // "is_active",
+        "is_default",
+        "shop_id"
+
+    ];
+    public function product_variations(){
+        return $this->hasMany(ProductVariation::class,'product_id', 'id');
+    }
+
 }

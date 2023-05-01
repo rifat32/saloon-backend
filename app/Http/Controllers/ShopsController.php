@@ -25,7 +25,7 @@ class ShopsController extends Controller
   * @OA\Post(
   *      path="/v1.0/shop-image",
   *      operationId="createShopImage",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
   *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -112,7 +112,7 @@ class ShopsController extends Controller
   * @OA\Post(
   *      path="/v1.0/auth/register-with-shop",
   *      operationId="registerUserWithShop",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -158,7 +158,7 @@ class ShopsController extends Controller
   *  "country":"Bangladesh",
   *  "city":"Dhaka",
   *  "postcode":"Dinajpur",
-  *
+  *  "sku_prefix":"bd shop",
   *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
   *  "is_mobile_shop":true,
   *  "wifi_available":true,
@@ -253,7 +253,7 @@ class ShopsController extends Controller
   * @OA\Put(
   *      path="/v1.0/shops",
   *      operationId="updateShop",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -299,7 +299,7 @@ class ShopsController extends Controller
   *  "country":"Bangladesh",
   *  "city":"Dhaka",
   *  "postcode":"Dinajpur",
-  *
+  * "sku_prefix":"bd shop",
   *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
   *  "is_mobile_shop":true,
   *  "wifi_available":true,
@@ -466,6 +466,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
              "city",
              "postcode",
              "logo",
+             "sku_prefix",
              "status",
              // "is_active",
              "is_mobile_shop",
@@ -504,7 +505,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   * @OA\Get(
   *      path="/v1.0/shops/{perPage}",
   *      operationId="getShops",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
   * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -695,7 +696,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   * @OA\Get(
   *      path="/v1.0/shops/single/{id}",
   *      operationId="getShopById",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -784,7 +785,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   * @OA\Delete(
   *      path="/v1.0/shops/{id}",
   *      operationId="deleteShopById",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -873,9 +874,9 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
 /**
      *
   * @OA\Get(
-  *      path="/v1.0/available-countries",
-  *      operationId="getAvailableCountries",
-  *      tags={"basics"},
+  *      path="/v1.0/available-countries/for-shop",
+  *      operationId="getAvailableCountriesForShop",
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -888,8 +889,8 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
 * example="search_key"
 * ),
 
-  *      summary="This method is to get available country list",
-  *      description="This method is to get available country list",
+  *      summary="This method is to get available country list for shop",
+  *      description="This method is to get available country list for shop",
   *
 
   *      @OA\Response(
@@ -926,7 +927,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   *     )
   */
 
- public function getAvailableCountries(Request $request) {
+ public function getAvailableCountriesForShop(Request $request) {
      try{
 
 
@@ -960,9 +961,9 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  /**
      *
   * @OA\Get(
-  *      path="/v1.0/available-cities/{country_code}",
-  *      operationId="getAvailableCities",
-  *      tags={"basics"},
+  *      path="/v1.0/available-cities/for-shop/{country_code}",
+  *      operationId="getAvailableCitiesForShop",
+  *      tags={"shop_section.shop_management"},
  *       security={
   *           {"bearerAuth": {}}
   *       },
@@ -1021,7 +1022,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   *     )
   */
 
- public function getAvailableCities($country_code,Request $request) {
+ public function getAvailableCitiesForShop($country_code,Request $request) {
      try{
 
 
@@ -1056,7 +1057,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
   * @OA\Get(
   *      path="/v1.0/shops/by-shop-owner/all",
   *      operationId="getAllShopsByShopOwner",
-  *      tags={"shop_management"},
+  *      tags={"shop_section.shop_management"},
 
  *       security={
   *           {"bearerAuth": {}}

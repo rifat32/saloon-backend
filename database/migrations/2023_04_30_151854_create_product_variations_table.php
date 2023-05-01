@@ -15,13 +15,19 @@ class CreateProductVariationsTable extends Migration
     {
         Schema::create('product_variations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("automobile_make_id");
+
+            $table->string("sub_sku");
+            $table->integer("quantity");
+            $table->double("price");
+
+
+            $table->unsignedBigInteger("automobile_make_id")->nullable();
             $table->foreign('automobile_make_id')->references('id')->on('automobile_makes')->onDelete('restrict');
 
             $table->unsignedBigInteger("product_id");
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
 
-            $table->double("price");
+
 
 
 

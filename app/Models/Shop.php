@@ -23,6 +23,7 @@ class Shop extends Model
         "country",
         "city",
         "postcode",
+        "sku_prefix",
         "logo",
         "status",
         // "is_active",

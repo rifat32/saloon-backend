@@ -160,9 +160,7 @@ trait GarageUtil
 
         if(!auth()->user()->hasRole("superadmin") && !auth()->user()->hasRole("data_collector") ) {
             $queryArray["owner_id"] =  auth()->user()->id;
-        }
-
-        if(auth()->user()->hasRole("data_collector")) {
+        } else if(!auth()->user()->hasRole("superadmin")) {
             $queryArray["created_by"] =  auth()->user()->id;
         }
 

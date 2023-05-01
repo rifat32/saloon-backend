@@ -29,6 +29,7 @@ class CreateShopsTable extends Migration
             $table->string("city");
             $table->string("postcode");
             $table->string("logo")->nullable();
+            $table->string("sku_prefix")->nullable();
             $table->string('status')->default("pending");
             // $table->enum('status', ['status1', 'status2',  'status3'])->default("status1");
             $table->boolean("is_active")->default(false);
