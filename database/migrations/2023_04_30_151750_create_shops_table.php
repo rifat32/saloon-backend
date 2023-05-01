@@ -32,7 +32,7 @@ class CreateShopsTable extends Migration
             $table->string('status')->default("pending");
             // $table->enum('status', ['status1', 'status2',  'status3'])->default("status1");
             $table->boolean("is_active")->default(false);
-            $table->boolean("is_mobile_garage")->default(false);
+            $table->boolean("is_mobile_shop")->default(false);
             $table->boolean("wifi_available")->default(false);
             $table->unsignedBigInteger("labour_rate")->nullable();
             $table->unsignedBigInteger("owner_id");

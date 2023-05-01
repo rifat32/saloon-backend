@@ -35,6 +35,7 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ShopsController;
 use App\Http\Controllers\UserManagementController;
 use App\Models\GaragePackage;
 use App\Models\JobBid;
@@ -90,6 +91,7 @@ Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController:
 Route::post('/v1.0/user-image', [UserManagementController::class, "createUserImage"]);
 
 Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
+Route::post('/v1.0/shop-image', [ShopsController::class, "createShopImage"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes
@@ -151,13 +153,27 @@ Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageById"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
-
-
-
-
 Route::get('/v1.0/garages/by-garage-owner/all', [GaragesController::class, "getAllGaragesByGarageOwner"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// shop management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+Route::post('/v1.0/auth/register-with-shop', [ShopsController::class, "registerUserWithShop"]);
+Route::put('/v1.0/shops', [GaragesController::class, "updateShop"]);
+Route::get('/v1.0/shops/{perPage}', [GaragesController::class, "getShops"]);
+Route::get('/v1.0/shops/single/{id}', [GaragesController::class, "getShopById"]);
+Route::delete('/v1.0/shops/{id}', [GaragesController::class, "deleteShopById"]);
+
+Route::get('/v1.0/shops/by-shop-owner/all', [GaragesController::class, "getAllShopsByGarageOwner"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// end shop management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -789,6 +805,9 @@ Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 
 Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
+Route::get('/v1.0/client/fuel-station/get/single/{id}', [FuelStationController::class, "getFuelStationByIdClient"]);
+
+
 Route::get('/v1.0/client/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAllClient"]);
 
 

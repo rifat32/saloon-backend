@@ -759,6 +759,85 @@ class FuelStationController extends Controller
         }
     }
 
+          /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/fuel-station/get/single/{id}",
+     *      operationId="getFuelStationByIdClient",
+     *      tags={"client.fuel_station_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *    *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get fuel station by id client ",
+     *      description="This method is to get fuel station by id client",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getFuelStationByIdClient($id, Request $request)
+    {
+        try {
+
+
+            $fuelStation = FuelStation::with("options.option")
+            ->where([
+                "id" => $id
+            ])
+            ->first();
+
+            if(!$fuelStation) {
+    return response()->json([
+        "message" => "no fuel station found"
+    ],
+404);
+            }
+
+            return response()->json($fuelStation, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
+
     /**
      *
      *     @OA\Delete(

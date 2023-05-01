@@ -21,6 +21,11 @@ return [
        "garage_view",
        "garage_delete",
 
+       "shop_create",
+       "shop_update",
+       "shop_view",
+       "shop_delete",
+
        "automobile_create",
        "automobile_update",
        "automobile_view",
@@ -100,6 +105,11 @@ return [
                 "garage_update",
                 "garage_view",
                 "garage_delete",
+
+                "shop_create",
+                "shop_update",
+                "shop_view",
+                "shop_delete",
 
 
                 "fuel_station_create",
@@ -245,6 +255,11 @@ return [
        "garage_view",
        "garage_delete",
 
+       "shop_create",
+       "shop_update",
+       "shop_view",
+       "shop_delete",
+
        "automobile_create",
        "automobile_update",
        "automobile_view",
@@ -379,6 +394,7 @@ return [
 
     "user_image_location" => "user_image",
     "garage_gallery_location" => "garage_gallery",
+    "shop_gallery_location" => "shop_gallery",
     "fuel_station_gallery_location" => "fuel_station_gallery",
 
     "affiliation_logo_location" => "affiliation_logo"

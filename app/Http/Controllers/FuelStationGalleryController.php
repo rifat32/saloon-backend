@@ -283,11 +283,7 @@ class FuelStationGalleryController extends Controller
 
     public function getFuelStationGalleriesClient($fuel_station_id,Request $request) {
         try{
-            if(!$request->user()->hasPermissionTo('fuel_station_gallery_view')){
-                return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+
 
 
             $data["fuel_station_galleries"] = FuelStationGallery::where([
