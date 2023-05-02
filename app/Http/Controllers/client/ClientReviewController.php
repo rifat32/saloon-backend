@@ -72,15 +72,8 @@ class ClientReviewController extends Controller
             if(!$garage){
                 return response("no garage found", 404);
             }
-            // if ($garage->enable_question == true) {
-            //     $query =  Question::where(["is_default" => 1]);
-            // }
-            // else {
-                $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => 0]);
-            // }
 
-
-
+                $query =  Question::where(["is_default" => 1]);
 
 
         $questions =  $query->get();
@@ -194,7 +187,7 @@ foreach($questions as $key1=>$question){
             "review_news.garage_id" => $garage->id,
             "question_id" => $question->id,
             "star_id" => $questionStar->star->id,
-            "review_news.guest_id" => NULL
+   
 
             ]
         )
@@ -228,7 +221,7 @@ foreach($questions as $key1=>$question){
             "review_news.garage_id" => $garage->id,
             "question_id" => $question->id,
             "tag_id" => $starTag->tag->id,
-            "review_news.guest_id" => NULL
+
             ]
         )->get()->count();
 
@@ -275,7 +268,7 @@ $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('r
 ->where([
     "review_news.garage_id" => $garage->id,
     "star_id" => $star->id,
-    "review_news.guest_id" => NULL
+
 ])
 ->distinct("review_value_news.review_id","review_value_news.question_id")
 ->count();
@@ -296,7 +289,7 @@ $data2["total_rating"] = 0;
 
 $data2["total_comment"] = ReviewNew::where([
 "garage_id" => $garage->id,
-"guest_id" => NULL,
+
 ])
 ->whereNotNull("comment")
 ->count();
@@ -310,327 +303,9 @@ return response([
 
 
 
- /**
-        *
-     * @OA\Get(
-     *      path="/client/review-new/get/questions-all-report/guest",
-     *      operationId="getQuestionAllReportGuestUnauthorized",
-     *      tags={"review.setting.question"},
 
-     *      summary="This method is to get all question report guest unauthorized",
-     *      description="This method is to get all question report guest unauthorized",
 
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *           @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
 
-    public function getQuestionAllReportGuestUnauthorized(Request $request) {
-
-
-        $garage =    Garage::where(["id" => $request->garage_id])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
-
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
-
-    $questions =  $query->get();
-
-    $questionsCount = $query->get()->count();
-
-$data =  json_decode(json_encode($questions), true);
-foreach($questions as $key1=>$question){
-
-    $tags_rating = [];
-   $starCountTotal = 0;
-   $starCountTotalTimes = 0;
-    foreach($question->question_stars as $key2=>$questionStar){
-
-
-        $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-        $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
-            "review_news.user_id" => NULL
-
-            ]
-        )
-        ->get()
-        ->count();
-
-        $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
-
-        $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
-
-        if($starCountTotalTimes > 0) {
-            $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
-        }
-
-
-
-
-        foreach($questionStar->star->star_tags as $key3=>$starTag){
-
-
-
-
-
-     if($starTag->question_id == $question->id) {
-
-
-
-
-        $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "tag_id" => $starTag->tag->id,
-            "review_news.user_id" => NULL
-            ]
-        )->get()->count();
-
-
-        if($starTag->tag->count > 0) {
-                array_push($tags_rating,json_decode(json_encode($starTag->tag)));
-        }
-
-
-
-      }
-
-
-        }
-
-    }
-
-
-    $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
-}
-
-
-
-
-
-$totalCount = 0;
-$ttotalRating = 0;
-
-foreach(Star::get() as $star) {
-
-$data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-->where([
-    "review_news.garage_id" => $garage->id,
-    "star_id" => $star->id,
-    "review_news.user_id" => NULL
-])
-->distinct("review_value_news.review_id","review_value_news.question_id")
-->count();
-
-$totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-$ttotalRating += $data2["star_" . $star->value . "_selected_count"];
-
-}
-if($totalCount > 0) {
-$data2["total_rating"] = $totalCount / $ttotalRating;
-
-}
-else {
-$data2["total_rating"] = 0;
-}
-
-
-
-
-
-
-
-$data2["total_comment"] = ReviewNew::where([
-    "garage_id" => $garage->id,
-    "user_id" => NULL,
-])
-->whereNotNull("comment")
-->count();
-
-
-
-
-
-
-return response([
-    "part1" =>  $data2,
-    "part2" =>  $data
-], 200);
-}
-
-
-
-
-
- /**
-        *
-     * @OA\Post(
-     *      path="/client/review-new-guest/{garageId}",
-     *      operationId="storeReviewByGuest",
-     *      tags={"client.review"},
-     *    *  @OA\Parameter(
-* name="garageId",
-* in="path",
-* description="garageId",
-* required=true,
-* example="1"
-* ),
-*
-  *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *      summary="This method is to store review by guest user",
-     *      description="This method is to store review by guest user",
-     *  @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *            required={"guest_full_name","guest_phone","description","rate","comment","values"},
-     *
-     * *             @OA\Property(property="guest_full_name", type="string", format="string",example="Rifat"),
-     * *             @OA\Property(property="guest_phone", type="string", format="string",example="0177"),
-     *             @OA\Property(property="description", type="string", format="string",example="test"),
-     *            @OA\Property(property="rate", type="string", format="string",example="2.5"),
-     *              @OA\Property(property="comment", type="string", format="string",example="not good"),
-     *
-     *
-     *    *  @OA\Property(property="values", type="string", format="array",example={
-
-     *  {"question_id":1,"tag_id":2,"star_id":1},
-    *  {"question_id":2,"tag_id":1,"star_id":4},
-
-     * }
-     *
-     * ),
-     *
-     *
-     *
-
-     *         ),
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-
-    public function storeReviewByGuest($garageId,  Request $request)
-    {
-
-            $guestData = [
-                'full_name' => $request["guest_full_name"],
-                'phone' => $request["guest_phone"],
-            ];
-
-            $guest = GuestUser::create($guestData);
-            $review = [
-                'description' => $request["description"],
-                'garage_id' => $garageId,
-                'rate' => $request["rate"],
-                'guest_id' => $guest->id,
-                'comment' => $request["comment"],
-
-            ];
-            $createdReview =   ReviewNew::create($review);
-
-            $rate = 0;
-            $questionCount = 0;
-            $previousQuestionId = NULL;
-            foreach ($request["values"] as $value) {
-               if(!$previousQuestionId) {
-                $previousQuestionId = $value["question_id"];
-                $rate += $value["star_id"];
-               }else {
-
-                if($value["question_id"] != $previousQuestionId) {
-                    $rate += $value["star_id"];
-                    $previousQuestionId = $value["question_id"];
-                    $questionCount += 1;
-                }
-
-               }
-
-               $createdReview->rate =  $rate;
-               $createdReview->save();
-                $value["review_id"] = $createdReview->id;
-                // $value["question_id"] = $createdReview->question_id;
-                // $value["tag_id"] = $createdReview->tag_id;
-                // $value["star_id"] = $createdReview->star_id;
-                ReviewValueNew::create($value);
-            }
-
-
-        return response(["message" => "created successfully"], 201);
-    }
 
 
 

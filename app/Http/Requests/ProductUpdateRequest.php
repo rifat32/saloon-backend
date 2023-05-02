@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
-class ProductCreateRequest extends FormRequest
+class ProductUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,14 @@ class ProductCreateRequest extends FormRequest
      *
      * @return array
      */
+
+
     public function rules()
     {
         $shopIdRequired = (!$this->request->user()->hasRole("superadmin") && !$this->request->user()->hasRole("data_collector"));
              return [
-                "type" => "required|in:single,variable",
+                "id" => "required|numeric",
+
                 "name" => "required|string",
                 "description" => "nullable|string",
                 "product_category_id" => "required|numeric",
@@ -39,7 +42,7 @@ class ProductCreateRequest extends FormRequest
                 "images" =>"nullable|array",
                 "images.*"  => "string",
 
-                "sku" => "nullable|unique:products,sku",
+                'sku' => 'nullable|string|unique:products,sku,' . $this->id . ',id',
 
             "price" => "required_if:type,single",
             "quantity" => "required_if:type,single",
@@ -48,12 +51,10 @@ class ProductCreateRequest extends FormRequest
 
 
             "product_variations" => "required_if:type,variable|array",
+            "product_variations.*.id"  => "nullable|numeric",
             "product_variations.*.automobile_make_id"  => "required_if:type,variable|numeric",
             "product_variations.*.price"  => "required_if:type,variable|not_in:0,0",
             "product_variations.*.quantity"  => "required_if:type,variable|numeric",
-
-
-
         ];
     }
 }

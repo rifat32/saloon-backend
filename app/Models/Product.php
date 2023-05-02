@@ -11,12 +11,14 @@ class Product extends Model
 
     protected $fillable = [
         "name",
+        "type",
         "sku",
         "description",
         "image",
         // "is_active",
         "is_default",
-        "shop_id"
+        "shop_id",
+        "product_category_id"
 
     ];
     public function product_variations(){

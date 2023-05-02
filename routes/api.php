@@ -339,9 +339,8 @@ Route::delete('/review-new/delete/questions/{id}', [ReviewController::class, "de
 
 
 
-Route::get('/review-new/get/questions-all-report/guest', [ReviewController::class, "getQuestionAllReportGuest"]);
 
-Route::get('/review-new/get/questions-all-report/guest/quantum', [ReviewController::class, "getQuestionAllReportGuestQuantum"]);
+
 
 
 Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::class, "getQuestionAllReportQuantum"]);
@@ -745,12 +744,12 @@ Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/products', [ProductController::class, "createProduct"]);
-Route::put('/v1.0/product-categories', [ProductCategoryController::class, "updateProductCategory"]);
-Route::get('/v1.0/product-categories/{perPage}', [ProductCategoryController::class, "getProductCategories"]);
-Route::delete('/v1.0/product-categories/{id}', [ProductCategoryController::class, "deleteProductCategoryById"]);
-Route::get('/v1.0/product-categories/single/get/{id}', [ProductCategoryController::class, "getProductCategoryById"]);
+Route::put('/v1.0/products', [ProductController::class, "updateProduct"]);
+Route::get('/v1.0/products/{perPage}', [ProductController::class, "getProducts"]);
+Route::get('/v1.0/products/single/get/{id}', [ProductController::class, "getProductById"]);
+Route::delete('/v1.0/products/{id}', [ProductController::class, "deleteProductById"]);
 
-Route::get('/v1.0/product-categories/get/all', [ProductCategoryController::class, "getAllProductCategory"]);
+
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -862,8 +861,16 @@ Route::get('/v1.0/client/garage-affiliations/get/all/{garage_id}', [ClientBasicC
 Route::get('/client/review-new/get/questions-all', [ClientReviewController::class, "getQuestionAllUnauthorized"]);
 
 Route::get('/client/review-new/get/questions-all-report', [ClientReviewController::class, "getQuestionAllReportUnauthorized"]);
-Route::get('/client/review-new/get/questions-all-report/guest', [ClientReviewController::class, "getQuestionAllReportGuestUnauthorized"]);
-Route::post('/client/review-new-guest/{garageId}', [ClientReviewController::class, "storeReviewByGuest"]);
+
+
+
+
+
+
+
+
+
+
 
 
 

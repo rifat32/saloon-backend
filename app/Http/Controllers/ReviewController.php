@@ -554,7 +554,7 @@ foreach($questions as $key1=>$question){
             "review_news.garage_id" => $garage->id,
             "question_id" => $question->id,
             "star_id" => $questionStar->star->id,
-            "review_news.guest_id" => NULL
+
 
             ]
         );
@@ -588,7 +588,7 @@ foreach($questions as $key1=>$question){
             "review_news.garage_id" => $garage->id,
             "question_id" => $question->id,
             "tag_id" => $starTag->tag->id,
-            "review_news.guest_id" => NULL
+
             ]
         );
         if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -612,7 +612,7 @@ foreach($questions as $key1=>$question){
             "question_id" => $question->id,
             "star_id" => $questionStar->star->id,
             "tag_id" => $starTag->tag->id,
-            "review_news.guest_id" => NULL
+
             ]
         );
         if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -656,7 +656,7 @@ $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('r
 ->where([
     "review_news.garage_id" => $garage->id,
     "star_id" => $star->id,
-    "review_news.guest_id" => NULL
+
 ])
 ->distinct("review_value_news.review_id","review_value_news.question_id");
 if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -685,7 +685,7 @@ $data2["total_rating"] = 0;
 
 $data2["total_comment"] = ReviewNew::where([
 "garage_id" => $garage->id,
-"guest_id" => NULL,
+
 ])
 ->whereNotNull("comment");
 if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -880,413 +880,9 @@ return response([
         return response(["message" => "ok"], 200);
     }
 
- /**
-        *
-     * @OA\Get(
-     *      path="/review-new/get/questions-all-report/guest",
-     *      operationId="getQuestionAllReportGuest",
-     *      tags={"review.setting.question"},
 
-     *      summary="This method is to get all question report guest",
-     *      description="This method is to get all question report guest",
-     *       security={
-     *           {"bearerAuth": {}}
-     *       },
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
-         *    @OA\Parameter(
-     *         name="start_date",
-     *         in="query",
-     *         description="start_date",
-     *         required=false,
-     * * example="2023-06-29"
-     *      ),
-     *    @OA\Parameter(
-     *         name="end_date",
-     *         in="query",
-     *         description="end_date",
-     *         required=false,
-     * * example="2023-06-29"
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *           @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
 
-    public function getQuestionAllReportGuest(Request $request) {
 
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-
-        $garage =    Garage::where(["id" => $request->garage_id])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
-
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => true]);
-
-    $questions =  $query->get();
-
-    $questionsCount = $query->get()->count();
-
-$data =  json_decode(json_encode($questions), true);
-foreach($questions as $key1=>$question){
-
-    $tags_rating = [];
-   $starCountTotal = 0;
-   $starCountTotalTimes = 0;
-    foreach($question->question_stars as $key2=>$questionStar){
-
-
-        $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-        $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
-            "review_news.user_id" => NULL,
-
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-
-            $data[$key1]["stars"][$key2]["stars_count"]  = $data[$key1]["stars"][$key2]["stars_count"]->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-        $data[$key1]["stars"][$key2]["stars_count"] = $data[$key1]["stars"][$key2]["stars_count"]
-        ->get()
-        ->count();
-
-        $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
-
-        $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
-        $data[$key1]["stars"][$key2]["tag_ratings"] = [];
-        if($starCountTotalTimes > 0) {
-            $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
-        }
-
-
-
-        foreach($questionStar->star->star_tags as $key3=>$starTag){
-
-
-
-
-
-     if($starTag->question_id == $question->id) {
-
-
-
-
-        $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "tag_id" => $starTag->tag->id,
-            "review_news.user_id" => NULL
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-
-            $starTag->tag->count  = $starTag->tag->count->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-        $starTag->tag->count = $starTag->tag->count->get()->count();
-
-        if($starTag->tag->count > 0) {
-                array_push($tags_rating,json_decode(json_encode($starTag->tag)));
-        }
-
-        $starTag->tag->total =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
-            "tag_id" => $starTag->tag->id,
-            "review_news.user_id" => NULL
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-
-            $starTag->tag->total = $starTag->tag->total->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-        $starTag->tag->total = $starTag->tag->total->get()->count();
-        if($starTag->tag->total > 0) {
-            unset($starTag->tag->count);
-            array_push($data[$key1]["stars"][$key2]["tag_ratings"],json_decode(json_encode($starTag->tag)));
-        }
-
-
-
-
-      }
-
-
-        }
-
-    }
-
-
-    $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
-}
-
-
-
-
-
-$totalCount = 0;
-$ttotalRating = 0;
-
-foreach(Star::get() as $star) {
-
-$data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-->where([
-    "review_news.garage_id" => $garage->id,
-    "star_id" => $star->id,
-    "review_news.user_id" => NULL
-])
-->distinct("review_value_news.review_id","review_value_news.question_id");
-if(!empty($request->start_date) && !empty($request->end_date)) {
-
-    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
-        $request->start_date,
-        $request->end_date
-    ]);
-
-}
-$data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
-
-$totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-$ttotalRating += $data2["star_" . $star->value . "_selected_count"];
-
-}
-if($totalCount > 0) {
-$data2["total_rating"] = $totalCount / $ttotalRating;
-
-}
-else {
-$data2["total_rating"] = 0;
-}
-
-
-
-
-
-
-
-$data2["total_comment"] = ReviewNew::where([
-    "garage_id" => $garage->id,
-    "user_id" => NULL,
-])
-->whereNotNull("comment");
-if(!empty($request->start_date) && !empty($request->end_date)) {
-
-    $data2["total_comment"] = $data2["total_comment"]->whereBetween('review_news.created_at', [
-        $request->start_date,
-        $request->end_date
-    ]);
-
-}
-$data2["total_comment"] = $data2["total_comment"]->count();
-
-
-
-
-
-
-return response([
-    "part1" =>  $data2,
-    "part2" =>  $data
-], 200);
-}
-
-
- /**
-        *
-     * @OA\Get(
-     *      path="/review-new/get/questions-all-report/guest/quantum",
-     *      operationId="getQuestionAllReportGuestQuantum",
-     *      tags={"review.setting.question"},
-     *   *       security={
-     *           {"bearerAuth": {}}
-     *       },
-     *      summary="This method is to get all question report guest and only garage owner of the garage can view this ",
-     *      description="This method is to get all question report guest and only garage owner of the garage can view this ",
-
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
-     *     @OA\Parameter(
-     *         name="quantum",
-     *         in="query",
-     *         description="quantum",
-     *         required=false,
-     *      ),
-     *      @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         description="period",
-     *         required=false,
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *           @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-
-    public function getQuestionAllReportGuestQuantum(Request $request) {
-
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-
-        $garage =    Garage::where(["id" => $request->garage_id,
-        "owner_id" => $request->user()->id
-        ])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
-$data = [];
-
-$period=0;
-        for($i=0;$i<$request->quantum;$i++ ) {
-            $totalCount = 0;
-            $ttotalRating = 0;
-
-            foreach(Star::get() as $star) {
-
-            $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-            ->where([
-                "review_news.garage_id" => $garage->id,
-                "star_id" => $star->id,
-                "review_news.user_id" => NULL
-            ])
-            ->whereBetween(
-                'review_news.created_at',
-                [now()->subDays(($request->period + $period))->startOfDay(), now()->subDays($period)->endOfDay()]
-            )
-            ->distinct("review_value_news.review_id","review_value_news.question_id")
-            ->count();
-
-            $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-            $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
-
-            }
-            if($totalCount > 0) {
-            $data2["total_rating"] = $totalCount / $ttotalRating;
-
-            }
-            else {
-            $data2["total_rating"] = 0;
-            }
-
-            // $data2["total_comment"] = ReviewNew::where([
-            //     "garage_id" => $garage->id,
-            //     "user_id" => NULL,
-            // ])
-            // ->whereNotNull("comment")
-            // ->count();
-        array_push($data,$data2);
-        $period +=  $request->period + $period;
-        }
-
-
-
-
-
-
-
-return response([
-    "data" =>  $data,
-
-], 200);
-}
 
 /**
         *
@@ -1380,7 +976,7 @@ $period=0;
             ->where([
                 "review_news.garage_id" => $garage->id,
                 "star_id" => $star->id,
-                "review_news.guest_id" => NULL
+               
             ])
             ->whereBetween(
                 'review_news.created_at',

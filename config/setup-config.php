@@ -96,6 +96,11 @@ return [
 "product_category_view",
 "product_category_delete",
 
+"product_create",
+"product_update",
+"product_view",
+"product_delete",
+
             ],
         ],
         [
@@ -226,6 +231,11 @@ return [
             "permissions" => [
 
                 "product_category_view",
+
+                "product_create",
+                "product_update",
+                "product_view",
+                "product_delete",
             ],
         ],
 
@@ -389,6 +399,11 @@ return [
        "product_category_update",
        "product_category_view",
        "product_category_delete",
+
+       "product_create",
+       "product_update",
+       "product_view",
+       "product_delete",
 
     ],
 
