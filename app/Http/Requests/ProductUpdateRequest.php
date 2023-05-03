@@ -32,7 +32,8 @@ class ProductUpdateRequest extends FormRequest
     {
         $shopIdRequired = (!$this->request->user()->hasRole("superadmin") && !$this->request->user()->hasRole("data_collector"));
              return [
-                "id" => "required|numeric",
+                "type" => "required|in:single,variable",
+            
 
                 "name" => "required|string",
                 "description" => "nullable|string",
@@ -47,11 +48,7 @@ class ProductUpdateRequest extends FormRequest
             "price" => "required_if:type,single",
             "quantity" => "required_if:type,single",
 
-
-
-
             "product_variations" => "required_if:type,variable|array",
-            "product_variations.*.id"  => "nullable|numeric",
             "product_variations.*.automobile_make_id"  => "required_if:type,variable|numeric",
             "product_variations.*.price"  => "required_if:type,variable|not_in:0,0",
             "product_variations.*.quantity"  => "required_if:type,variable|numeric",

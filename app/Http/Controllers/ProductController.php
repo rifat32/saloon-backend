@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductCreateRequest;
+use App\Http\Requests\ProductLinkRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\ShopUtil;
@@ -161,7 +162,7 @@ class ProductController extends Controller
               }
 
 
-  
+
 
            }
 
@@ -280,7 +281,33 @@ class ProductController extends Controller
 
 
 
-                $product  =  tap(Product::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
+        $product_prev = Product::where(
+            [
+"id" => $updatableData["id"],
+            ]
+        )
+        ->first();
+        if(!$product_prev) {
+            return response()->json([
+                "message" => "no product found"
+            ],404);
+        }
+
+        if(!empty($product_prev->shop_id)) {
+            $shop =   $this->shopOwnerCheck($product_prev->shop_id);
+            if (!$shop) {
+                return response()->json([
+                    "message" => "you are not the owner of the shop or the requested shop does not exist."
+                ], 401);
+            }
+        }
+
+                $product  =  tap(Product::where(
+                    [
+                        "id" => $product_prev->id,
+                        "shop_id" => $product_prev->shop_id
+                                    ]
+                ))->update(collect($updatableData)->only([
                   "name",
                   "sku",
                   "description",
@@ -288,7 +315,7 @@ class ProductController extends Controller
                   // "is_active",
                   "is_default",
                   "product_category_id",
-                  "shop_id"
+                //   "shop_id"
 
                 ])->toArray()
                 )
@@ -352,6 +379,184 @@ class ProductController extends Controller
               }
 
             return response($product, 201);
+        });
+
+
+      } catch(Exception $e){
+          error_log($e->getMessage());
+      return $this->sendError($e,500);
+      }
+  }
+
+
+  /**
+     *
+  * @OA\Patch(
+  *      path="/v1.0/products/link-product-to-shop",
+  *      operationId="linkProductToShop",
+  *      tags={"shop_section.product_management"},
+ *       security={
+  *           {"bearerAuth": {}}
+  *       },
+  *      summary="This method is to link Product To Shop ",
+  *      description="This method is to link Product To Shop",
+  *
+  *  @OA\RequestBody(
+ *         required=true,
+  *         @OA\JsonContent(
+  *            required={"name","description","shop_id","sku","image","images","sku","price","quantity","product_variations","product_category_id"},
+
+  *  *    @OA\Property(property="name", type="string", format="string",example="gear"),
+  *    @OA\Property(property="description", type="string", format="string",example="car description"),
+   *    @OA\Property(property="shop_id", type="number", format="number",example="1"),
+   * *   *    @OA\Property(property="product_category_id", type="number", format="number",example="1"),
+
+   *  *    @OA\Property(property="image", type="string", format="string",example="/abcd/efgh"),
+   *  *    @OA\Property(property="images", type="string", format="array",example={"/f.png","/g.jpeg"}),
+   *  *    @OA\Property(property="price", type="number", format="number",example="10"),
+   *  *    @OA\Property(property="quantity", type="number", format="number",example="20"),
+   *
+   *    *  *    @OA\Property(property="product_variations", type="string", format="array",example={
+   *
+   * {
+   *
+   * "automobile_make_id":1,
+   * "price":10,
+   * "quantity":30
+   * },
+   *  * {
+   * *
+   * "automobile_make_id":2,
+   * "price":20,
+   * "quantity":30
+   * },
+   **  * {
+   * *
+   * "automobile_make_id":3,
+   * "price":30,
+   * "quantity":30
+   * }
+   *
+   *
+   * }),
+
+
+  *
+  *         ),
+  *      ),
+  *      @OA\Response(
+  *          response=200,
+  *          description="Successful operation",
+  *       @OA\JsonContent(),
+  *       ),
+  *      @OA\Response(
+  *          response=401,
+  *          description="Unauthenticated",
+  * @OA\JsonContent(),
+  *      ),
+  *        @OA\Response(
+  *          response=422,
+  *          description="Unprocesseble Content",
+  *    @OA\JsonContent(),
+  *      ),
+  *      @OA\Response(
+  *          response=403,
+  *          description="Forbidden",
+  *   @OA\JsonContent()
+  * ),
+  *  * @OA\Response(
+  *      response=400,
+  *      description="Bad Request",
+  *   *@OA\JsonContent()
+  *   ),
+  * @OA\Response(
+  *      response=404,
+  *      description="not found",
+  *   *@OA\JsonContent()
+  *   )
+  *      )
+  *     )
+  */
+
+  public function linkProductToShop(ProductLinkRequest $request)
+  {
+
+      try{
+
+        return DB::transaction(function () use ($request) {
+            if(!$request->user()->hasPermissionTo('product_update')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+            $updatableData = $request->validated();
+
+            if (!$this->shopOwnerCheck($updatableData["shop_id"])) {
+                return response()->json([
+                    "message" => "you are not the owner of the shop or the requested shop does not exist."
+                ], 401);
+            }
+            $shop =   $this->shopOwnerCheck($updatableData["shop_id"]);
+            if (!$shop) {
+                return response()->json([
+                    "message" => "you are not the owner of the shop or the requested shop does not exist."
+                ], 401);
+            }
+
+            $sku_prefix = $shop->sku_prefix;
+            $updatableData["is_default"] = false;
+
+
+                     $product =  Product::create($updatableData);
+
+                     if(empty($product->sku)){
+                        $product->sku = $sku_prefix .  str_pad($product->id, 4, '0', STR_PAD_LEFT);
+                    }
+                    $product->save();
+
+                     if($product->type == "single"){
+
+                        $product->product_variations()->create([
+
+                                "sub_sku" => $product->sku,
+                                "quantity" => $updatableData["quantity"],
+                                "price" => $updatableData["price"],
+                                "automobile_make_id" => NULL,
+
+
+                        ]);
+                     } else {
+                        foreach($updatableData["product_variations"] as $product_variation) {
+                            $c = ProductVariation::withTrashed()
+                            ->where('product_id', $product->id)
+                            ->count() + 1;
+
+                            $product->product_variations()->create([
+
+                                "sub_sku" => $product->sku . "-" . $c,
+                                "quantity" => $product_variation["quantity"],
+                                "price" => $product_variation["price"],
+                                "automobile_make_id" => $product_variation["automobile_make_id"],
+
+
+                        ]);
+
+                        }
+
+
+
+
+                     }
+
+
+
+                     return response($product, 201);
+
+
+
+
+
+
         });
 
 

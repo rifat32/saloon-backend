@@ -32,7 +32,6 @@ class User extends Authenticatable
         'email',
         'password',
         "created_by",
-
          'is_active'
     ];
 

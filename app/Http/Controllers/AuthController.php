@@ -217,10 +217,18 @@ $datediff = $now - $user_created_date;
                 return response(['message' => 'please activate your email first'], 409);
             }
 
+            $site_redirect_token_data["created_at"] = $now;
+            $site_redirect_token_data["token"] = Str::random(30);
+            $user->site_redirect_token = json_encode($site_redirect_token_data);
+            $user->save();
+
 
             $user->token = auth()->user()->createToken('authToken')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
             $user->roles = $user->roles->pluck('name');
+
+
+
 
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
@@ -229,6 +237,113 @@ $datediff = $now - $user_created_date;
         }
     }
 
+    /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/token-regenerate/{user_id}/{site_redirect_token}",
+     *      operationId="regenerateToken",
+     *      tags={"auth"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *   *    @OA\Parameter(
+     *         name="user_id",
+     *         in="path",
+     *         description="user_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *    @OA\Parameter(
+     *         name="site_redirect_token",
+     *         in="path",
+     *         description="site_redirect_token",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *
+     *      summary="This method is to generate new  token",
+     *      description="This method is to generate new token",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+    public function regenerateToken($user_id,$site_redirect_token,Request $request)
+    {
+
+        try {
+
+            $user = User::where([
+                "id" => $user_id,
+            ])
+            ->first();
+
+
+
+            $site_redirect_token_db = (json_decode($user->site_redirect_token,true));
+
+            if($site_redirect_token_db["token"] !== $site_redirect_token) {
+               return response()
+               ->json([
+                  "message" => "invalid token"
+               ],409);
+            }
+
+            $now = time(); // or your date as well
+
+            $timediff = $now - $site_redirect_token_db["created_at"];
+
+            if ($timediff > 20){
+                return response(['message' => 'token expired'], 409);
+            }
+
+
+
+            $user->tokens()->delete();
+            $user->token = $user->createToken('authToken')->accessToken;
+            $user->permissions = $user->getAllPermissions()->pluck('name');
+            $user->roles = $user->roles->pluck('name');
+            $user->a = ($timediff);
+
+
+
+
+            return response()->json(['data' => $user,   "ok" => true], 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500);
+        }
+    }
    /**
         *
      * @OA\Post(
