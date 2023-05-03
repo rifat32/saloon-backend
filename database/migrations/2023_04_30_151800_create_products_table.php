@@ -32,7 +32,7 @@ class CreateProductsTable extends Migration
 
             $table->unsignedBigInteger("shop_id")->nullable();
             $table->foreign('shop_id')->references('id')->on('shops')->onDelete('cascade');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

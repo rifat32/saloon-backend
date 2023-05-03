@@ -706,6 +706,97 @@
                 ]
             }
         },
+        "/v1.0/token-regenerate": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "This method is to regenerate Token",
+                "description": "This method is to regenerate Token",
+                "operationId": "regenerateToken",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "site_redirect_token"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "site_redirect_token": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "12345678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/forgetpassword": {
             "post": {
                 "tags": [
@@ -14621,13 +14712,19 @@
                                     "sku",
                                     "price",
                                     "quantity",
-                                    "product_variations"
+                                    "product_variations",
+                                    "product_category_id"
                                 ],
                                 "properties": {
                                     "id": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "single"
                                     },
                                     "name": {
                                         "type": "string",
@@ -14640,6 +14737,11 @@
                                         "example": "car description"
                                     },
                                     "shop_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "product_category_id": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
@@ -14765,6 +14867,7 @@
                 "description": "This method is to store product",
                 "operationId": "createProduct",
                 "requestBody": {
+                    "description": " product type be single or variable",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -14780,7 +14883,8 @@
                                     "sku",
                                     "price",
                                     "quantity",
-                                    "product_variations"
+                                    "product_variations",
+                                    "product_category_id"
                                 ],
                                 "properties": {
                                     "type": {
@@ -14799,6 +14903,11 @@
                                         "example": "car description"
                                     },
                                     "shop_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "product_category_id": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
@@ -14910,6 +15019,165 @@
                 ]
             }
         },
+        "/v1.0/products/link-product-to-shop": {
+            "patch": {
+                "tags": [
+                    "shop_section.product_management"
+                ],
+                "summary": "This method is to link Product To Shop ",
+                "description": "This method is to link Product To Shop",
+                "operationId": "linkProductToShop",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description",
+                                    "shop_id",
+                                    "sku",
+                                    "image",
+                                    "images",
+                                    "sku",
+                                    "price",
+                                    "quantity",
+                                    "product_variations",
+                                    "product_category_id"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "single"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "gear"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "car description"
+                                    },
+                                    "shop_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "product_category_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "/abcd/efgh"
+                                    },
+                                    "images": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            "/f.png",
+                                            "/g.jpeg"
+                                        ]
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
+                                    },
+                                    "quantity": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "20"
+                                    },
+                                    "product_variations": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "automobile_make_id": 1,
+                                                "price": 10,
+                                                "quantity": 30
+                                            },
+                                            {
+                                                "automobile_make_id": 2,
+                                                "price": 20,
+                                                "quantity": 30
+                                            },
+                                            {
+                                                "automobile_make_id": 3,
+                                                "price": 30,
+                                                "quantity": 30
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/products/{perPage}": {
             "get": {
                 "tags": [
@@ -14925,6 +15193,13 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "product_category_id",
+                        "in": "query",
+                        "description": "product_category_id",
+                        "required": true,
+                        "example": "1"
                     },
                     {
                         "name": "start_date",
@@ -15683,162 +15958,6 @@
                         "name": "id",
                         "in": "path",
                         "description": "question Id",
-                        "required": false
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/review-new/get/questions-all-report/guest": {
-            "get": {
-                "tags": [
-                    "review.setting.question"
-                ],
-                "summary": "This method is to get all question report guest",
-                "description": "This method is to get all question report guest",
-                "operationId": "getQuestionAllReportGuest",
-                "parameters": [
-                    {
-                        "name": "garage_id",
-                        "in": "query",
-                        "description": "garage Id",
-                        "required": false
-                    },
-                    {
-                        "name": "start_date",
-                        "in": "query",
-                        "description": "start_date",
-                        "required": false,
-                        "example": "2023-06-29"
-                    },
-                    {
-                        "name": "end_date",
-                        "in": "query",
-                        "description": "end_date",
-                        "required": false,
-                        "example": "2023-06-29"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/review-new/get/questions-all-report/guest/quantum": {
-            "get": {
-                "tags": [
-                    "review.setting.question"
-                ],
-                "summary": "This method is to get all question report guest and only garage owner of the garage can view this ",
-                "description": "This method is to get all question report guest and only garage owner of the garage can view this ",
-                "operationId": "getQuestionAllReportGuestQuantum",
-                "parameters": [
-                    {
-                        "name": "garage_id",
-                        "in": "query",
-                        "description": "garage Id",
-                        "required": false
-                    },
-                    {
-                        "name": "quantum",
-                        "in": "query",
-                        "description": "quantum",
-                        "required": false
-                    },
-                    {
-                        "name": "period",
-                        "in": "query",
-                        "description": "period",
                         "required": false
                     }
                 ],
@@ -22663,185 +22782,6 @@
                         }
                     }
                 }
-            }
-        },
-        "/client/review-new/get/questions-all-report/guest": {
-            "get": {
-                "tags": [
-                    "review.setting.question"
-                ],
-                "summary": "This method is to get all question report guest unauthorized",
-                "description": "This method is to get all question report guest unauthorized",
-                "operationId": "getQuestionAllReportGuestUnauthorized",
-                "parameters": [
-                    {
-                        "name": "garage_id",
-                        "in": "query",
-                        "description": "garage Id",
-                        "required": false
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "201": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/client/review-new-guest/{garageId}": {
-            "post": {
-                "tags": [
-                    "client.review"
-                ],
-                "summary": "This method is to store review by guest user",
-                "description": "This method is to store review by guest user",
-                "operationId": "storeReviewByGuest",
-                "parameters": [
-                    {
-                        "name": "garageId",
-                        "in": "path",
-                        "description": "garageId",
-                        "required": true,
-                        "example": "1"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "guest_full_name",
-                                    "guest_phone",
-                                    "description",
-                                    "rate",
-                                    "comment",
-                                    "values"
-                                ],
-                                "properties": {
-                                    "guest_full_name": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "Rifat"
-                                    },
-                                    "guest_phone": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "0177"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "test"
-                                    },
-                                    "rate": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "2.5"
-                                    },
-                                    "comment": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "not good"
-                                    },
-                                    "values": {
-                                        "type": "string",
-                                        "format": "array",
-                                        "example": [
-                                            {
-                                                "question_id": 1,
-                                                "tag_id": 2,
-                                                "star_id": 1
-                                            },
-                                            {
-                                                "question_id": 2,
-                                                "tag_id": 1,
-                                                "star_id": 4
-                                            }
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
             }
         }
     },

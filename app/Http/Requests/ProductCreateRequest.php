@@ -16,10 +16,6 @@ class ProductCreateRequest extends FormRequest
     {
         return true;
     }
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -28,7 +24,7 @@ class ProductCreateRequest extends FormRequest
      */
     public function rules()
     {
-        $shopIdRequired = (!$this->request->user()->hasRole("superadmin") && !$this->request->user()->hasRole("data_collector"));
+        $shopIdRequired = (!$this->user()->hasRole("superadmin") && !$this->user()->hasRole("data_collector"));
              return [
                 "type" => "required|in:single,variable",
                 "name" => "required|string",

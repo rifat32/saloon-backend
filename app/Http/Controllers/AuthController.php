@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AuthRegenerateTokenRequest;
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Requests\ChangePasswordRequest;
@@ -217,11 +218,13 @@ $datediff = $now - $user_created_date;
                 return response(['message' => 'please activate your email first'], 409);
             }
 
+            $site_redirect_token = Str::random(30);
             $site_redirect_token_data["created_at"] = $now;
-            $site_redirect_token_data["token"] = Str::random(30);
+            $site_redirect_token_data["token"] = $site_redirect_token;
             $user->site_redirect_token = json_encode($site_redirect_token_data);
             $user->save();
 
+            $user->site_redirect_token = $site_redirect_token;
 
             $user->token = auth()->user()->createToken('authToken')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
@@ -237,34 +240,28 @@ $datediff = $now - $user_created_date;
         }
     }
 
-    /**
+  /**
      *
-     * @OA\Get(
-     *      path="/v1.0/token-regenerate/{user_id}/{site_redirect_token}",
+     * @OA\Post(
+     *      path="/v1.0/token-regenerate",
      *      operationId="regenerateToken",
      *      tags={"auth"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
-     *   *    @OA\Parameter(
-     *         name="user_id",
-     *         in="path",
-     *         description="user_id",
-     *         required=true,
-     *  example="6"
-     *      ),
-     *    @OA\Parameter(
-     *         name="site_redirect_token",
-     *         in="path",
-     *         description="site_redirect_token",
-     *         required=true,
-     *  example="6"
-     *      ),
+     *      summary="This method is to regenerate Token",
+     *      description="This method is to regenerate Token",
      *
-     *      summary="This method is to generate new  token",
-     *      description="This method is to generate new token",
-     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"user_id","site_redirect_token"},
+     *            @OA\Property(property="user_id", type="number", format="number",example="1"),
 
+     * *  @OA\Property(property="site_redirect_token", type="string", format="string",example="12345678"),
+     *
+     *         ),
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -298,13 +295,13 @@ $datediff = $now - $user_created_date;
      *      )
      *     )
      */
-    public function regenerateToken($user_id,$site_redirect_token,Request $request)
+    public function regenerateToken(AuthRegenerateTokenRequest $request)
     {
 
         try {
-
+            $insertableData = $request->validated();
             $user = User::where([
-                "id" => $user_id,
+                "id" => $insertableData["user_id"],
             ])
             ->first();
 
@@ -312,7 +309,7 @@ $datediff = $now - $user_created_date;
 
             $site_redirect_token_db = (json_decode($user->site_redirect_token,true));
 
-            if($site_redirect_token_db["token"] !== $site_redirect_token) {
+            if($site_redirect_token_db["token"] !== $insertableData["site_redirect_token"]) {
                return response()
                ->json([
                   "message" => "invalid token"

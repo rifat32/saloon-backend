@@ -29,6 +29,7 @@ class ProductController extends Controller
   *      description="This method is to store product",
   *
   *  @OA\RequestBody(
+  *           description=" product type be single or variable",
   *         required=true,
   *         @OA\JsonContent(
   *            required={"type","name","description","shop_id","sku","image","images","sku","price","quantity","product_variations","product_category_id"},
@@ -195,6 +196,7 @@ class ProductController extends Controller
   *         @OA\JsonContent(
   *            required={"id","name","description","shop_id","sku","image","images","sku","price","quantity","product_variations","product_category_id"},
     *    @OA\Property(property="id", type="number", format="number",example="1"),
+    *    @OA\Property(property="type", type="string", format="string",example="single"),
   *  *    @OA\Property(property="name", type="string", format="string",example="gear"),
   *    @OA\Property(property="description", type="string", format="string",example="car description"),
    *    @OA\Property(property="shop_id", type="number", format="number",example="1"),
@@ -346,7 +348,7 @@ class ProductController extends Controller
            } else {
               foreach($updatableData["product_variations"] as $product_variation) {
 
-                  if(!$product_variation["id"]) {
+                  if(empty($product_variation["id"])) {
                       $c = ProductVariation::withTrashed()
                       ->where('product_id', $product->id)
                       ->count() + 1;
@@ -363,7 +365,8 @@ class ProductController extends Controller
                   } else {
                       $product->product_variations()
                       ->where([
-                          "product_vairations.id" => $product_variation["id"]
+
+                          "product_variations.id" => $product_variation["id"]
                       ])
                       ->update([
 
@@ -405,7 +408,7 @@ class ProductController extends Controller
  *         required=true,
   *         @OA\JsonContent(
   *            required={"name","description","shop_id","sku","image","images","sku","price","quantity","product_variations","product_category_id"},
-
+*    @OA\Property(property="type", type="string", format="string",example="single"),
   *  *    @OA\Property(property="name", type="string", format="string",example="gear"),
   *    @OA\Property(property="description", type="string", format="string",example="car description"),
    *    @OA\Property(property="shop_id", type="number", format="number",example="1"),

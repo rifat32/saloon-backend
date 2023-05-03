@@ -55,7 +55,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
-Route::get('/v1.0/token-regenerate/{user_id}/{site_redirect_token}', [AuthController::class, "regenerateToken"]);
+Route::post('/v1.0/token-regenerate', [AuthController::class, "regenerateToken"]);
 
 Route::post('/forgetpassword', [AuthController::class, "storeToken"]);
 Route::post('/resend-email-verify-mail', [AuthController::class, "resendEmailVerifyToken"]);
