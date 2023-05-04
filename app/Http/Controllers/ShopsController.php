@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterShopRequest;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Requests\ShopUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 
 use App\Models\Shop;
+use App\Models\ShopGallery;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -105,7 +107,106 @@ class ShopsController extends Controller
      }
  }
 
+ /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/shop-image-multiple",
+     *      operationId="createShopImageMultiple",
+     *      tags={"shop_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
 
+     *      summary="This method is to store shop gallery",
+     *      description="This method is to store shop gallery",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"images[]"},
+*         @OA\Property(
+*             description="array of images to upload",
+*             property="images[]",
+*             type="array",
+*             @OA\Items(
+*                 type="file"
+*             ),
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function createShopImageMultiple(MultipleImageUploadRequest $request)
+    {
+        try{
+
+
+            $insertableData = $request->validated();
+
+            $location =  config("setup-config.garage_shop_location");
+
+            $images = [];
+
+            foreach($insertableData["images"] as $image){
+                $new_file_name = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path($location), $new_file_name);
+
+                array_push($images,("/".$location."/".$new_file_name));
+
+
+                // GarageGallery::create([
+                //     "image" => ("/".$location."/".$new_file_name),
+                //     "garage_id" => $garage_id
+                // ]);
+
+            }
+
+            return response()->json(["images" => $images], 201);
+
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
 
   /**
      *
@@ -160,6 +261,8 @@ class ShopsController extends Controller
   *  "postcode":"Dinajpur",
   *  "sku_prefix":"bd shop",
   *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+       *  *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "images":{"/a","/b","/c"},
   *  "is_mobile_shop":true,
   *  "wifi_available":true,
   *  "labour_rate":500
@@ -230,6 +333,12 @@ class ShopsController extends Controller
      $insertableData['shop']['owner_id'] = $user->id;
      $insertableData['shop']['created_by'] = $request->user()->id;
      $shop =  Shop::create($insertableData['shop']);
+     foreach($insertableData["images"] as $shop_images){
+        ShopGallery::create([
+            "image" => $shop_images,
+            "shop_id" =>$shop->id,
+        ]);
+    }
 // end shop info ##############
 
 
@@ -301,6 +410,8 @@ class ShopsController extends Controller
   *  "postcode":"Dinajpur",
   * "sku_prefix":"bd shop",
   *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+       *  *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "images":{"/a","/b","/c"},
   *  "is_mobile_shop":true,
   *  "wifi_available":true,
   *  "labour_rate":500
@@ -466,6 +577,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
              "city",
              "postcode",
              "logo",
+             "image",
              "sku_prefix",
              "status",
              // "is_active",
@@ -478,6 +590,20 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          // ->with("somthing")
 
          ->first();
+
+         if(!$shop) {
+            return response()->json([
+                "massage" => "no shop found"
+            ],404);
+
+        }
+
+         foreach($updatableData["images"] as $shop_images){
+            ShopGallery::create([
+                "image" => $shop_images,
+                "shop_id" =>$shop->id,
+            ]);
+        }
 
 // end shop info ##############
 

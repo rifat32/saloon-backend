@@ -31,7 +31,7 @@ class AuthRegisterShopRequest extends FormRequest
             'user.email' => 'required|string|email|max:255|unique:users,email',
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
-            'user.image' => 'nullable',
+            'user.image' => 'nullable|string',
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
             'user.country' => 'nullable|string',
@@ -56,7 +56,16 @@ class AuthRegisterShopRequest extends FormRequest
             'shop.address_line_2' => 'nullable|string',
 
             'shop.sku_prefix' => 'nullable|string',
+
+
             'shop.logo' => 'nullable|string',
+
+            'shop.image' => 'nullable|string',
+
+            'shop.images' => 'nullable|array',
+            'shop.images.*' => 'nullable|string',
+            
+
             'shop.is_mobile_shop' => 'required|boolean',
             'shop.wifi_available' => 'required|boolean',
             'shop.labour_rate' => 'nullable|numeric',

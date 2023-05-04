@@ -98,7 +98,9 @@ Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController:
 Route::post('/v1.0/user-image', [UserManagementController::class, "createUserImage"]);
 
 Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
+Route::post('/v1.0/garage-image-multiple', [GaragesController::class, "createGarageImageMultiple"]);
 Route::post('/v1.0/shop-image', [ShopsController::class, "createShopImage"]);
+Route::post('/v1.0/shop-image-multiple', [ShopsController::class, "createShopImage"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // Protected Routes

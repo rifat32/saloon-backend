@@ -59,6 +59,11 @@ class GarageUpdateRequest extends FormRequest
 
 
             'garage.logo' => 'nullable|string',
+            'garage.image' => 'nullable|string',
+
+            'garage.images' => 'nullable|array',
+            'garage.images.*' => 'nullable|string',
+
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',

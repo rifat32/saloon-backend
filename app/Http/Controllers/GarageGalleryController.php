@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\GarageGalleryCreateRequest;
+
+use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Models\GarageGallery;
@@ -85,7 +86,7 @@ use ErrorUtil,GarageUtil;
      *     )
      */
 
-    public function createGarageGallery($garage_id,GarageGalleryCreateRequest $request)
+    public function createGarageGallery($garage_id,MultipleImageUploadRequest $request)
     {
         try{
             if(!$request->user()->hasPermissionTo('garage_gallery_create')){

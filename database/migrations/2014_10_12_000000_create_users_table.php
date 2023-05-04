@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('last_Name');
             $table->string('phone')->nullable();
             $table->string('image')->nullable();
-            $table->string('password_reset_token')->nullable();
+
             $table->string("address_line_1")->nullable();
             $table->string("address_line_2")->nullable();
             $table->string("country")->nullable();

@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\GarageUpdateRequest;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
+use App\Models\GarageGallery;
 use App\Models\GarageService;
 use App\Models\User;
 use Exception;
@@ -113,7 +115,106 @@ class GaragesController extends Controller
         }
     }
 
+  /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/garage-image-multiple",
+     *      operationId="createGarageImageMultiple",
+     *      tags={"garage_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
 
+     *      summary="This method is to store garage gallery",
+     *      description="This method is to store garage gallery",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"images[]"},
+*         @OA\Property(
+*             description="array of images to upload",
+*             property="images[]",
+*             type="array",
+*             @OA\Items(
+*                 type="file"
+*             ),
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function createGarageImageMultiple(MultipleImageUploadRequest $request)
+    {
+        try{
+
+
+            $insertableData = $request->validated();
+
+            $location =  config("setup-config.garage_gallery_location");
+
+            $images = [];
+
+            foreach($insertableData["images"] as $image){
+                $new_file_name = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path($location), $new_file_name);
+
+                array_push($images,("/".$location."/".$new_file_name));
+
+
+                // GarageGallery::create([
+                //     "image" => ("/".$location."/".$new_file_name),
+                //     "garage_id" => $garage_id
+                // ]);
+
+            }
+
+            return response()->json(["images" => $images], 201);
+
+
+        } catch(Exception $e){
+            error_log($e->getMessage());
+        return $this->sendError($e,500);
+        }
+    }
 
      /**
         *
@@ -168,6 +269,9 @@ class GaragesController extends Controller
      *  "postcode":"Dinajpur",
      *
      *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+
+     *  *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
      *  "labour_rate":500
@@ -263,6 +367,12 @@ class GaragesController extends Controller
         $insertableData['garage']['owner_id'] = $user->id;
         $insertableData['garage']['created_by'] = $request->user()->id;
         $garage =  Garage::create($insertableData['garage']);
+        foreach($insertableData["images"] as $garage_images){
+            GarageGallery::create([
+                "image" => $garage_images,
+                "garage_id" =>$garage->id,
+            ]);
+        }
   // end garage info ##############
 
   // create services
@@ -340,6 +450,8 @@ class GaragesController extends Controller
      *  "postcode":"Dinajpur",
      *
      *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *      *  *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
      *  "labour_rate":500
@@ -527,6 +639,7 @@ class GaragesController extends Controller
                 "city",
                 "postcode",
                 "logo",
+                "image",
                 "status",
                 // "is_active",
                 "is_mobile_garage",
@@ -538,7 +651,18 @@ class GaragesController extends Controller
             // ->with("somthing")
 
             ->first();
+            if(!$garage) {
+                return response()->json([
+                    "massage" => "no garage found"
+                ],404);
 
+            }
+            foreach($updatableData["images"] as $garage_images){
+                GarageGallery::create([
+                    "image" => $garage_images,
+                    "garage_id" =>$garage->id,
+                ]);
+            }
   // end garage info ##############
 
   GarageService::where([

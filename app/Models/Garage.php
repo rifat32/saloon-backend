@@ -24,6 +24,7 @@ class Garage extends Model
         "city",
         "postcode",
         "logo",
+        "image",
         "status",
         // "is_active",
         "is_mobile_garage",

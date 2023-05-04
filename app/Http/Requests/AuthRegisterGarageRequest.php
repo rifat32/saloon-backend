@@ -33,7 +33,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.email' => 'required|string|email|max:255|unique:users,email',
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
-            'user.image' => 'nullable',
+            'user.image' => 'nullable|string',
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
             'user.country' => 'nullable|string',
@@ -59,6 +59,12 @@ class AuthRegisterGarageRequest extends FormRequest
 
 
             'garage.logo' => 'nullable|string',
+
+            'garage.image' => 'nullable|string',
+
+            'garage.images' => 'nullable|array',
+            'garage.images.*' => 'nullable|string',
+
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',

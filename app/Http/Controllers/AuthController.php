@@ -20,6 +20,7 @@ use App\Models\AutomobileModel;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
+use App\Models\GarageGallery;
 use App\Models\GarageService;
 use App\Models\GarageSubService;
 use App\Models\Service;
@@ -224,7 +225,7 @@ $datediff = $now - $user_created_date;
             $user->site_redirect_token = json_encode($site_redirect_token_data);
             $user->save();
 
-            $user->site_redirect_token = $site_redirect_token;
+            $user->redirect_token = $site_redirect_token;
 
             $user->token = auth()->user()->createToken('authToken')->accessToken;
             $user->permissions = $user->getAllPermissions()->pluck('name');
@@ -657,6 +658,8 @@ $datediff = $now - $user_created_date;
      *  "postcode":"Dinajpur",
      *
      *  "logo":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
      *  "labour_rate":500
@@ -747,6 +750,14 @@ $datediff = $now - $user_created_date;
                 $insertableData['garage']['status'] = "pending";
                 $insertableData['garage']['owner_id'] = $user->id;
                 $garage =  Garage::create($insertableData['garage']);
+
+                foreach($insertableData["images"] as $garage_images){
+                    GarageGallery::create([
+                        "image" => $garage_images,
+                        "garage_id" =>$garage->id,
+                    ]);
+                }
+
                 // end garage info ##############
 
            // create services

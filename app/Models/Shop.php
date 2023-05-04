@@ -25,6 +25,7 @@ class Shop extends Model
         "postcode",
         "sku_prefix",
         "logo",
+        "image",
         "status",
         // "is_active",
         "is_mobile_shop",
