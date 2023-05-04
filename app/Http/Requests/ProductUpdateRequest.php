@@ -37,7 +37,7 @@ class ProductUpdateRequest extends FormRequest
                 "shop_id"  => $shopIdRequired ? "required|numeric" : "nullable|numeric",
                 "image"  => "nullable|string",
                 "images" =>"nullable|array",
-                "images.*"  => "string",
+                "images.*"  => "nullable|string",
 
                 'sku' => 'nullable|string|unique:products,sku,' . $this->id . ',id',
 

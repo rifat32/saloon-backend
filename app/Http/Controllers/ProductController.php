@@ -8,6 +8,7 @@ use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\ShopUtil;
 use App\Models\Product;
+use App\Models\ProductGallery;
 use App\Models\ProductVariation;
 use Exception;
 use Illuminate\Http\Request;
@@ -162,13 +163,15 @@ class ProductController extends Controller
 
               }
 
-
-
-
            }
 
 
-
+           foreach($insertableData["images"] as $product_image){
+            ProductGallery::create([
+                "image" => $product_image,
+                "product_id" =>$product->id,
+            ]);
+        }
            return response($product, 201);
         });
 
@@ -380,6 +383,21 @@ class ProductController extends Controller
 
               }
               }
+
+              if(!empty($updatableData["images"])) {
+                ProductGallery::where([
+                    "product_id" =>$product->id,
+                ])
+                ->delete();
+              }
+
+              foreach($updatableData["images"] as $product_image){
+                ProductGallery::create([
+                    "image" => $product_image,
+                    "product_id" =>$product->id,
+                ]);
+            }
+
 
             return response($product, 201);
         });

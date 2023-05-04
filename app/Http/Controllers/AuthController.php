@@ -31,6 +31,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -232,8 +233,8 @@ $datediff = $now - $user_created_date;
             $user->roles = $user->roles->pluck('name');
 
 
-
-
+            $log_message = "user logged in". $user->email . "";
+            Log::channel("garage")->info($log_message);
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
 

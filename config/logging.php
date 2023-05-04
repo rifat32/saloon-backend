@@ -48,6 +48,12 @@ return [
     */
 
     'channels' => [
+        'garage' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/garage.log'),
+            'level' => 'debug',
+            'days' => null,
+        ],
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],

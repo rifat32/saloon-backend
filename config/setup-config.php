@@ -86,6 +86,10 @@ return [
 "garage_gallery_view",
 "garage_gallery_delete",
 
+"shop_gallery_create",
+       "shop_gallery_view",
+       "shop_gallery_delete",
+
 "fuel_station_gallery_create",
 "fuel_station_gallery_view",
 "fuel_station_gallery_delete",
@@ -142,6 +146,10 @@ return [
 "garage_gallery_create",
 "garage_gallery_view",
 "garage_gallery_delete",
+
+"shop_gallery_create",
+       "shop_gallery_view",
+       "shop_gallery_delete",
 
 "fuel_station_gallery_create",
 "fuel_station_gallery_view",
@@ -236,6 +244,10 @@ return [
                 "product_update",
                 "product_view",
                 "product_delete",
+
+                "shop_gallery_create",
+       "shop_gallery_view",
+       "shop_gallery_delete",
             ],
         ],
 
@@ -309,6 +321,10 @@ return [
        "garage_gallery_create",
        "garage_gallery_view",
        "garage_gallery_delete",
+
+       "shop_gallery_create",
+       "shop_gallery_view",
+       "shop_gallery_delete",
 
 "fuel_station_gallery_create",
 "fuel_station_gallery_view",

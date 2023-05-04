@@ -33,7 +33,7 @@ class ProductCreateRequest extends FormRequest
                 "shop_id"  => $shopIdRequired ? "required|numeric" : "nullable|numeric",
                 "image"  => "nullable|string",
                 "images" =>"nullable|array",
-                "images.*"  => "string",
+                "images.*"  => "nullable|string",
 
                 "sku" => "nullable|unique:products,sku",
 

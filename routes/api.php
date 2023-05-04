@@ -36,6 +36,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ShopGalleryController;
 use App\Http\Controllers\ShopsController;
 use App\Http\Controllers\UserManagementController;
 use App\Models\GaragePackage;
@@ -467,6 +468,16 @@ Route::get('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class
 Route::delete('/v1.0/garage-galleries/{garage_id}/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end garage gallery management section
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// shop gallery management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::post('/v1.0/shop-galleries/{shop_id}', [ShopGalleryController::class, "createShopGallery"]);
+Route::get('/v1.0/shop-galleries/{shop_id}', [ShopGalleryController::class, "getShopGalleries"]);
+Route::delete('/v1.0/shop-galleries/{shop_id}/{id}', [ShopGalleryController::class, "deleteShopGalleryById"]);
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// shop garage gallery management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
