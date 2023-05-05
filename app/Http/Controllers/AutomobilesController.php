@@ -371,6 +371,7 @@ class AutomobilesController extends Controller
         //         ],401);
         //    }
 
+
             $automobilesQuery = AutomobileCategory::with("makes");
 
             if(!empty($request->search_key)) {

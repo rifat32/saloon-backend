@@ -28,17 +28,20 @@ trait ErrorUtil
         $data["line"] = $e->getLine();
         $data["file"] = $e->getFile();
         $data["api_url"] = $apiUrl;
+$user = auth()->user();
+$userJson = "";
+if($user) {
+    $userJson = json_encode($user);
+}
+        ErrorLog::create([
+            "api_url" => $data["api_url"],
+            "user"=> auth()->user(),
+            "message"=> $data["message"],
+            "status_code"=> $data["status_code"],
+            "line"=> $data["line"],
+            "file"=> $data["file"],
 
-
-        // ErrorLog::create([
-        //     "api_url" => $data["api_url"],
-        //     "user"=> auth()->user(),
-        //     "message"=> $data["message"],
-        //     "status_code"=> $data["status_code"],
-        //     "line"=> $data["line"],
-        //     "file"=> $data["file"],
-
-        // ]);
+        ]);
 return response()->json($data,$statusCode);
 
     }
