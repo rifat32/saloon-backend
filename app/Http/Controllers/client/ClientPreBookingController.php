@@ -128,7 +128,12 @@ class ClientPreBookingController extends Controller
                 ])
                     ->first();
                 if (!$automobile_make) {
-                    throw new Exception("invalid automobile make id");
+
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id"=>["invalid automobile make id"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
                 $automobile_model = AutomobileModel::where([
                     "id" => $insertableData["automobile_model_id"],
@@ -136,7 +141,11 @@ class ClientPreBookingController extends Controller
                 ])
                     ->first();
                 if (!$automobile_model) {
-                    throw new Exception("Invalid automobile model id");
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id"=>["invalid automobile model id"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
 
 
@@ -149,7 +158,7 @@ class ClientPreBookingController extends Controller
 
 
 
-                foreach ($insertableData["pre_booking_sub_service_ids"] as $sub_service_id) {
+                foreach ($insertableData["pre_booking_sub_service_ids"] as $index=>$sub_service_id) {
                     $sub_service =  SubService::where([
                             "id" => $sub_service_id,
 
@@ -158,7 +167,12 @@ class ClientPreBookingController extends Controller
                         ->first();
 
                     if (!$sub_service) {
-                        throw new Exception("invalid service");
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("pre_booking_sub_service_ids[".$index."]")=>["invalid service"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
 
 
@@ -181,7 +195,7 @@ class ClientPreBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -273,7 +287,11 @@ class ClientPreBookingController extends Controller
                 ])
                     ->first();
                 if (!$automobile_make) {
-                    throw new Exception("invalid automobile make id");
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id"=>["invalid automobile make id"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
                 $automobile_model = AutomobileModel::where([
                     "id" => $updatableData["automobile_model_id"],
@@ -281,7 +299,11 @@ class ClientPreBookingController extends Controller
                 ])
                     ->first();
                 if (!$automobile_model) {
-                    throw new Exception("Invalid automobile model id");
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id"=>["invalid automobile model id"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
 
 
@@ -331,7 +353,7 @@ class ClientPreBookingController extends Controller
 
 
 
-                foreach ($updatableData["pre_booking_sub_service_ids"] as $sub_service_id) {
+                foreach ($updatableData["pre_booking_sub_service_ids"] as $index=>$sub_service_id) {
                     $sub_service =  SubService::where([
                             "id" => $sub_service_id,
 
@@ -340,7 +362,11 @@ class ClientPreBookingController extends Controller
                         ->first();
 
                     if (!$sub_service) {
-                        throw new Exception("invalid service");
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("pre_booking_sub_service_ids[".$index."]")=>["invalid service"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
 
 
@@ -362,7 +388,7 @@ class ClientPreBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -477,7 +503,7 @@ class ClientPreBookingController extends Controller
             return response()->json($pre_bookings, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -561,7 +587,7 @@ class ClientPreBookingController extends Controller
             return response()->json($pre_booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -796,7 +822,7 @@ $job_bid->save();
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -871,7 +897,7 @@ $job_bid->save();
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 }

@@ -78,7 +78,7 @@ class GarageAutomobilesController extends Controller
         return response()->json($garage_automobile_makes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
     }

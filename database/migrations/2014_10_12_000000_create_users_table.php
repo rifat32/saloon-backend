@@ -38,6 +38,11 @@ class CreateUsersTable extends Migration
             $table->string('is_active')->default(false);
             $table->unsignedBigInteger("created_by")->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+
+            $table->integer('login_attempts')->default(0);
+            $table->dateTime('last_failed_login_attempt_at')->nullable();
+
+
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

@@ -134,7 +134,11 @@ class ClientBookingController extends Controller
                 ])
                     ->first();
                 if (!$garage_make) {
-                    throw new Exception("This garage does not support this make");
+                 $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id"=>["This garage does not support this make"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
                 $garage_model = GarageAutomobileModel::where([
                     "automobile_model_id" => $insertableData["automobile_model_id"],
@@ -142,7 +146,12 @@ class ClientBookingController extends Controller
                 ])
                     ->first();
                 if (!$garage_model) {
-                    throw new Exception("This garage does not support this model");
+
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id"=>["This garage does not support this model"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
 
 
@@ -152,7 +161,7 @@ class ClientBookingController extends Controller
 
                 $total_price = 0;
 
-                foreach ($insertableData["booking_sub_service_ids"] as $sub_service_id) {
+                foreach ($insertableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
                             "garage_services.garage_id" => $garage->id,
@@ -166,7 +175,12 @@ class ClientBookingController extends Controller
                         ->first();
 
                     if (!$garage_sub_service) {
-                        throw new Exception("invalid service");
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_sub_service_ids[" . $index . "]")=>["invalid service"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
 
                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $insertableData["automobile_make_id"]);
@@ -180,7 +194,7 @@ class ClientBookingController extends Controller
                     ]);
                 }
 
-                foreach ($insertableData["booking_garage_package_ids"] as $garage_package_id) {
+                foreach ($insertableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
                     $garage_package =  GaragePackage::where([
                             "garage_id" => $garage->id,
                             "id" => $garage_package_id
@@ -189,7 +203,12 @@ class ClientBookingController extends Controller
                         ->first();
 
                     if (!$garage_package) {
-                        throw new Exception("invalid package");
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_garage_package_ids[" . $index . "]")=>["invalid package"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
 
 
@@ -249,8 +268,12 @@ class ClientBookingController extends Controller
                 return response($booking, 201);
             });
         } catch (Exception $e) {
-            error_log($e->getMessage());
-            return $this->sendError($e, 500);
+
+            return response()->json([
+                "message" => "The given data was invalid.",
+                "errors" => ["user.password"=>["email already taken"]]
+             ],422);
+             return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -461,7 +484,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -562,7 +585,12 @@ class ClientBookingController extends Controller
                 ])
                     ->first();
                 if (!$garage_make) {
-                    throw new Exception("This garage does not support this make");
+
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id"=>["This garage does not support this make"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
                 $garage_model = GarageAutomobileModel::where([
                     "automobile_model_id" => $updatableData["automobile_model_id"],
@@ -570,7 +598,11 @@ class ClientBookingController extends Controller
                 ])
                     ->first();
                 if (!$garage_model) {
-                    throw new Exception("This garage does not support this model");
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id"=>["This garage does not support this model"]]
+                 ];
+                    throw new Exception(json_encode($error),422);
                 }
 
 
@@ -604,7 +636,7 @@ class ClientBookingController extends Controller
                 ])->delete();
 
                 $total_price = 0;
-                foreach ($updatableData["booking_sub_service_ids"] as $sub_service_id) {
+                foreach ($updatableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
                             "garage_services.garage_id" => $garage->id,
@@ -618,7 +650,12 @@ class ClientBookingController extends Controller
                         ->first();
 
                     if (!$garage_sub_service) {
-                        throw new Exception("invalid service");
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_sub_service_ids[".$index."]")=>["invalid service"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
 
@@ -632,7 +669,7 @@ class ClientBookingController extends Controller
                     ]);
                 }
 
-                foreach ($updatableData["booking_garage_package_ids"] as $garage_package_id) {
+                foreach ($updatableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
                     $garage_package =  GaragePackage::where([
                             "garage_id" => $garage->id,
                              "id" => $garage_package_id
@@ -641,7 +678,12 @@ class ClientBookingController extends Controller
                         ->first();
 
                     if (!$garage_package) {
-                        throw new Exception("invalid package");
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_garage_package_ids[".$index."]")=>["invalid package"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
 
 
@@ -698,7 +740,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -812,7 +854,7 @@ class ClientBookingController extends Controller
             return response()->json($bookings, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -896,7 +938,7 @@ class ClientBookingController extends Controller
             return response()->json($booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -996,7 +1038,7 @@ class ClientBookingController extends Controller
             }
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 

@@ -48,9 +48,9 @@ return [
     */
 
     'channels' => [
-        'garage' => [
+        'user_activity' => [
             'driver' => 'single',
-            'path' => storage_path('logs/garage.log'),
+            'path' => storage_path('logs/user_activity.log'),
             'level' => 'debug',
             'days' => null,
         ],

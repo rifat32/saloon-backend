@@ -136,7 +136,7 @@ class AuthController extends Controller
             return response($user, 201);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -207,10 +207,47 @@ class AuthController extends Controller
                 'email' => 'email|required',
                 'password' => 'required'
             ]);
+            $user = User::where('email', $loginData['email'])->first();
+
+            if ($user && $user->login_attempts >= 3) {
+                $now = Carbon::now();
+                $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
+                $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
+
+                if ($diffInMinutes < 60) {
+                    return response(['message' => 'User is temporarily blocked. Please try again later.'], 403);
+                } else {
+                    $user->login_attempts = 0;
+                    $user->last_failed_login_attempt_at = null;
+                    $user->save();
+                }
+            }
+
 
             if (!auth()->attempt($loginData)) {
+                if ($user) {
+                    $user->login_attempts++;
+                    $user->last_failed_login_attempt_at = Carbon::now();
+                    $user->save();
+
+                    if ($user->login_attempts >= 3) {
+                        $now = Carbon::now();
+                        $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
+                        $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
+
+                        if ($diffInMinutes < 60) {
+                            return response(['message' => 'User is temporarily blocked. Please try again later.'], 403);
+                        } else {
+                            $user->login_attempts = 0;
+                            $user->last_failed_login_attempt_at = null;
+                            $user->save();
+                        }
+                    }
+                }
+
                 return response(['message' => 'Invalid Credentials'], 401);
             }
+
             $user = auth()->user();
             $now = time(); // or your date as well
 $user_created_date = strtotime($user->created_at);
@@ -219,6 +256,11 @@ $datediff = $now - $user_created_date;
             if(!$user->email_verified_at && (($datediff / (60 * 60 * 24))>1)){
                 return response(['message' => 'please activate your email first'], 409);
             }
+
+
+            $user->login_attempts = 0;
+            $user->last_failed_login_attempt_at = null;
+
 
             $site_redirect_token = Str::random(30);
             $site_redirect_token_data["created_at"] = $now;
@@ -233,12 +275,12 @@ $datediff = $now - $user_created_date;
             $user->roles = $user->roles->pluck('name');
 
 
-            $log_message = "user logged in". $user->email . "";
-            Log::channel("garage")->info($log_message);
+
+
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -340,7 +382,7 @@ $datediff = $now - $user_created_date;
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
    /**
@@ -420,7 +462,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
 
     }
@@ -507,7 +549,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
 
     }
@@ -603,7 +645,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
 
     }
@@ -792,7 +834,7 @@ $user->roles = $user->roles->pluck('name');
             });
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -1128,7 +1170,7 @@ return response()->json(["data" => true],200);
             return response($user, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 

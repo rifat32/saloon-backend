@@ -129,7 +129,7 @@ class ClientCouponController extends Controller
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -242,7 +242,7 @@ class ClientCouponController extends Controller
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -327,7 +327,7 @@ class ClientCouponController extends Controller
             return response()->json($coupon, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -422,7 +422,7 @@ class ClientCouponController extends Controller
             return response()->json($discount, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e,500,$request->fullUrl());
         }
     }
 

@@ -127,7 +127,7 @@ class GarageServicePriceController extends Controller
         ->first();
 
 
-                    foreach($insertableData["garage_sub_service_prices"] as $price_details){
+                    foreach($insertableData["garage_sub_service_prices"] as $index=>$price_details){
 
 
 
@@ -148,7 +148,12 @@ class GarageServicePriceController extends Controller
                               ->first();
 
                           if(!$garage_make) {
-                              throw new Exception("invalid automobile make id");
+
+                              $error =  [
+                                "message" => "The given data was invalid.",
+                                "errors" => [("garage_sub_service_prices[".$index."]".".automobile_make_id")=>["invalid automobile make id"]]
+                         ];
+                            throw new Exception(json_encode($error),422);
 
                           }
 
@@ -173,7 +178,7 @@ GarageSubServicePrice::create([
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -286,7 +291,7 @@ GarageSubServicePrice::create([
                 }
 
 
-                            foreach($updatableData["garage_sub_service_prices"] as $price_details){
+                            foreach($updatableData["garage_sub_service_prices"] as $index=>$price_details){
 
 
                                 $garage_make = NULL;
@@ -305,7 +310,12 @@ GarageSubServicePrice::create([
                                       ->first();
 
                                       if(!$garage_make) {
-                                        throw new Exception("invalid automobile make id");
+
+                                        $error =  [
+                                            "message" => "The given data was invalid.",
+                                            "errors" => [("garage_sub_service_prices[".$index."]".".automobile_make_id")=>["invalid automobile make id"]]
+                                     ];
+                                        throw new Exception(json_encode($error),422);
 
                                     }
                                 }
@@ -340,7 +350,13 @@ GarageSubServicePrice::create([
                 ->first();
 
                 if(!$garage_sub_service_price) {
-     throw new Exception("price id not found");
+
+
+     $error =  [
+        "message" => "The given data was invalid.",
+        "errors" => [("garage_sub_service_prices[".$index."]".".automobile_make_id")=>["price id not found"]]
+ ];
+    throw new Exception(json_encode($error),422);
                 }
         }
         else {
@@ -366,7 +382,7 @@ GarageSubServicePrice::create([
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -472,7 +488,7 @@ GarageSubServicePrice::create([
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -575,7 +591,7 @@ GarageSubServicePrice::create([
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 }

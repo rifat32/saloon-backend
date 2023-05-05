@@ -42,6 +42,7 @@ use App\Http\Controllers\UserManagementController;
 use App\Models\GaragePackage;
 use App\Models\JobBid;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -54,6 +55,8 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
 Route::post('/v1.0/token-regenerate', [AuthController::class, "regenerateToken"]);
@@ -71,6 +74,7 @@ Route::post('/v1.0/auth/user-register-with-garage', [AuthController::class, "reg
 
 
 Route::get('/v1.0/automobile-categories/get/all', [AutomobilesController::class, "getAllAutomobileCategories"]);
+
 Route::get('/v1.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAll"]);
 Route::get('/v2.0/automobile-makes-all/{categoryId}', [AutomobilesController::class, "getAutomobileMakesAllV2"]);
 Route::get('/v1.0/automobile-models-all', [AutomobilesController::class, "getAutomobileModelsAll"]);

@@ -109,7 +109,7 @@ class CouponController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -221,7 +221,7 @@ class CouponController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -347,7 +347,7 @@ class CouponController extends Controller
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -442,7 +442,7 @@ class CouponController extends Controller
             return response()->json($coupon, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -548,7 +548,7 @@ class CouponController extends Controller
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 }

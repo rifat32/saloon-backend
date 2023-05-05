@@ -124,7 +124,7 @@ class GarageServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -250,7 +250,7 @@ class GarageServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 }

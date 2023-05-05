@@ -109,7 +109,7 @@ class GaragePackageController extends Controller
                     $garage_package = GaragePackage::create($insertableData);
 
 
-                    foreach ($insertableData["sub_service_ids"] as $sub_service_id) {
+                    foreach ($insertableData["sub_service_ids"] as $index=>$sub_service_id) {
                         $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                             ->where([
                                 "garage_sub_services.sub_service_id" => $sub_service_id,
@@ -124,7 +124,11 @@ class GaragePackageController extends Controller
                             ->first();
 
                         if (!$garage_sub_service) {
-                            throw new Exception("invalid service");
+                            $error =  [
+                                "message" => "The given data was invalid.",
+                                "errors" => [("sub_service_ids[".$index."]")=>["invalid service"]]
+                         ];
+                            throw new Exception(json_encode($error),422);
                         }
 
                         GaragePackageSubService::create([
@@ -149,7 +153,7 @@ class GaragePackageController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -302,7 +306,7 @@ class GaragePackageController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -422,7 +426,7 @@ class GaragePackageController extends Controller
             return response()->json($garages, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -517,7 +521,7 @@ class GaragePackageController extends Controller
             return response()->json($garage_package, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -618,7 +622,7 @@ class GaragePackageController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 

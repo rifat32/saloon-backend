@@ -103,7 +103,7 @@ class ShopsController extends Controller
 
      } catch(Exception $e){
          error_log($e->getMessage());
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
  }
 
@@ -204,7 +204,7 @@ class ShopsController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 
@@ -350,7 +350,7 @@ class ShopsController extends Controller
      });
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -619,7 +619,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
      });
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -812,7 +812,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($shops, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -901,7 +901,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
      return response()->json($data, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -987,7 +987,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json(["ok" => true], 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
 
@@ -1077,7 +1077,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($countries, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -1172,7 +1172,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($countries, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }
@@ -1246,7 +1246,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($shops, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
 
  }

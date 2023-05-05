@@ -134,7 +134,7 @@ class GarageRuleController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500);
+            return $this->sendError($e, 500,$request->fullUrl());
         }
     }
 
@@ -218,7 +218,7 @@ class GarageRuleController extends Controller
             return response()->json($garage_rules, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
     }
 }

@@ -87,7 +87,7 @@ class RolesController extends Controller
            ], 201);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
 
@@ -178,7 +178,7 @@ class RolesController extends Controller
         ], 201);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
 
@@ -282,7 +282,7 @@ class RolesController extends Controller
             return response()->json($roles, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
 
@@ -351,7 +351,7 @@ class RolesController extends Controller
             ], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
     }
@@ -417,7 +417,7 @@ class RolesController extends Controller
             return response()->json($role, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
     }
@@ -503,7 +503,7 @@ class RolesController extends Controller
              return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
 
@@ -573,7 +573,7 @@ class RolesController extends Controller
            return response()->json($role_permissions,200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
 

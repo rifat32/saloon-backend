@@ -178,7 +178,7 @@ class ProductController extends Controller
 
      } catch(Exception $e){
          error_log($e->getMessage());
-     return $this->sendError($e,500);
+     return $this->sendError($e,500,$request->fullUrl());
      }
  }
 
@@ -405,7 +405,7 @@ class ProductController extends Controller
 
       } catch(Exception $e){
           error_log($e->getMessage());
-      return $this->sendError($e,500);
+      return $this->sendError($e,500,$request->fullUrl());
       }
   }
 
@@ -583,7 +583,7 @@ class ProductController extends Controller
 
       } catch(Exception $e){
           error_log($e->getMessage());
-      return $this->sendError($e,500);
+      return $this->sendError($e,500,$request->fullUrl());
       }
   }
 /**
@@ -709,7 +709,7 @@ class ProductController extends Controller
         return response()->json($products, 200);
     } catch(Exception $e){
 
-    return $this->sendError($e,500);
+    return $this->sendError($e,500,$request->fullUrl());
     }
 }
 
@@ -790,7 +790,7 @@ return response()->json([
         return response()->json($product, 200);
     } catch(Exception $e){
 
-    return $this->sendError($e,500);
+    return $this->sendError($e,500,$request->fullUrl());
     }
 }
 
@@ -866,7 +866,7 @@ return response()->json([
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500);
+        return $this->sendError($e,500,$request->fullUrl());
         }
 
     }
