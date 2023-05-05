@@ -165,13 +165,15 @@ class ProductController extends Controller
 
            }
 
+           if(!empty($insertableData["images"])) {
+            foreach($insertableData["images"] as $product_image){
+                ProductGallery::create([
+                    "image" => $product_image,
+                    "product_id" =>$product->id,
+                ]);
+            }
+           }
 
-           foreach($insertableData["images"] as $product_image){
-            ProductGallery::create([
-                "image" => $product_image,
-                "product_id" =>$product->id,
-            ]);
-        }
            return response($product, 201);
         });
 
@@ -390,13 +392,15 @@ class ProductController extends Controller
                 ])
                 ->delete();
               }
+              if(!empty($updatableData["images"])) {
+                foreach($updatableData["images"] as $product_image){
+                    ProductGallery::create([
+                        "image" => $product_image,
+                        "product_id" =>$product->id,
+                    ]);
+                }
 
-              foreach($updatableData["images"] as $product_image){
-                ProductGallery::create([
-                    "image" => $product_image,
-                    "product_id" =>$product->id,
-                ]);
-            }
+              }
 
 
             return response($product, 201);

@@ -102,18 +102,20 @@ class ShopGalleryController extends Controller
           $insertableData = $request->validated();
 
           $location =  config("setup-config.shop_gallery_location");
+          if(!empty($insertableData["images"])) {
+            foreach($insertableData["images"] as $image){
+                $new_file_name = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path($location), $new_file_name);
 
-          foreach($insertableData["images"] as $image){
-              $new_file_name = time() . '_' . $image->getClientOriginalName();
-              $image->move(public_path($location), $new_file_name);
 
+                ShopGallery::create([
+                    "image" => ("/".$location."/".$new_file_name),
+                    "shop_id" => $shop_id
+                ]);
 
-              ShopGallery::create([
-                  "image" => ("/".$location."/".$new_file_name),
-                  "shop_id" => $shop_id
-              ]);
-
+            }
           }
+
 
           return response()->json(["ok" => true], 201);
 

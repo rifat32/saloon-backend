@@ -184,20 +184,22 @@ class ShopsController extends Controller
             $location =  config("setup-config.garage_shop_location");
 
             $images = [];
+            if(!empty($insertableData["images"])) {
+                foreach($insertableData["images"] as $image){
+                    $new_file_name = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path($location), $new_file_name);
 
-            foreach($insertableData["images"] as $image){
-                $new_file_name = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path($location), $new_file_name);
-
-                array_push($images,("/".$location."/".$new_file_name));
+                    array_push($images,("/".$location."/".$new_file_name));
 
 
-                // GarageGallery::create([
-                //     "image" => ("/".$location."/".$new_file_name),
-                //     "garage_id" => $garage_id
-                // ]);
+                    // GarageGallery::create([
+                    //     "image" => ("/".$location."/".$new_file_name),
+                    //     "garage_id" => $garage_id
+                    // ]);
 
+                }
             }
+
 
             return response()->json(["images" => $images], 201);
 
@@ -333,12 +335,15 @@ class ShopsController extends Controller
      $insertableData['shop']['owner_id'] = $user->id;
      $insertableData['shop']['created_by'] = $request->user()->id;
      $shop =  Shop::create($insertableData['shop']);
-     foreach($insertableData["images"] as $shop_images){
-        ShopGallery::create([
-            "image" => $shop_images,
-            "shop_id" =>$shop->id,
-        ]);
-    }
+     if(!empty($insertableData["images"])) {
+        foreach($insertableData["images"] as $shop_images){
+            ShopGallery::create([
+                "image" => $shop_images,
+                "shop_id" =>$shop->id,
+            ]);
+        }
+     }
+
 // end shop info ##############
 
 
@@ -597,13 +602,15 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
             ],404);
 
         }
-
-         foreach($updatableData["images"] as $shop_images){
-            ShopGallery::create([
-                "image" => $shop_images,
-                "shop_id" =>$shop->id,
-            ]);
+        if(!empty($updatableData["images"])) {
+            foreach($updatableData["images"] as $shop_images){
+                ShopGallery::create([
+                    "image" => $shop_images,
+                    "shop_id" =>$shop->id,
+                ]);
+            }
         }
+
 
 // end shop info ##############
 

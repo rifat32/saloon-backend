@@ -103,18 +103,20 @@ use ErrorUtil,GarageUtil;
             $insertableData = $request->validated();
 
             $location =  config("setup-config.garage_gallery_location");
+            if(!empty($insertableData["images"])) {
+                foreach($insertableData["images"] as $image){
+                    $new_file_name = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path($location), $new_file_name);
 
-            foreach($insertableData["images"] as $image){
-                $new_file_name = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path($location), $new_file_name);
 
+                    GarageGallery::create([
+                        "image" => ("/".$location."/".$new_file_name),
+                        "garage_id" => $garage_id
+                    ]);
 
-                GarageGallery::create([
-                    "image" => ("/".$location."/".$new_file_name),
-                    "garage_id" => $garage_id
-                ]);
-
+                }
             }
+
 
             return response()->json(["ok" => true], 201);
 

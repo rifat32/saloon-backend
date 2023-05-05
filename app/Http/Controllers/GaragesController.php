@@ -192,20 +192,22 @@ class GaragesController extends Controller
             $location =  config("setup-config.garage_gallery_location");
 
             $images = [];
+            if(!empty($insertableData["images"])) {
+                foreach($insertableData["images"] as $image){
+                    $new_file_name = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path($location), $new_file_name);
 
-            foreach($insertableData["images"] as $image){
-                $new_file_name = time() . '_' . $image->getClientOriginalName();
-                $image->move(public_path($location), $new_file_name);
-
-                array_push($images,("/".$location."/".$new_file_name));
+                    array_push($images,("/".$location."/".$new_file_name));
 
 
-                // GarageGallery::create([
-                //     "image" => ("/".$location."/".$new_file_name),
-                //     "garage_id" => $garage_id
-                // ]);
+                    // GarageGallery::create([
+                    //     "image" => ("/".$location."/".$new_file_name),
+                    //     "garage_id" => $garage_id
+                    // ]);
 
+                }
             }
+
 
             return response()->json(["images" => $images], 201);
 
@@ -367,12 +369,17 @@ class GaragesController extends Controller
         $insertableData['garage']['owner_id'] = $user->id;
         $insertableData['garage']['created_by'] = $request->user()->id;
         $garage =  Garage::create($insertableData['garage']);
-        foreach($insertableData["images"] as $garage_images){
-            GarageGallery::create([
-                "image" => $garage_images,
-                "garage_id" =>$garage->id,
-            ]);
+
+        if(!empty($insertableData["images"])) {
+            foreach($insertableData["images"] as $garage_images){
+                GarageGallery::create([
+                    "image" => $garage_images,
+                    "garage_id" =>$garage->id,
+                ]);
+            }
         }
+
+
   // end garage info ##############
 
   // create services
@@ -657,12 +664,16 @@ class GaragesController extends Controller
                 ],404);
 
             }
-            foreach($updatableData["images"] as $garage_images){
-                GarageGallery::create([
-                    "image" => $garage_images,
-                    "garage_id" =>$garage->id,
-                ]);
+            if(!empty($updatableData["images"])) {
+                foreach($updatableData["images"] as $garage_images){
+                    GarageGallery::create([
+                        "image" => $garage_images,
+                        "garage_id" =>$garage->id,
+                    ]);
+                }
             }
+
+
   // end garage info ##############
 
   GarageService::where([

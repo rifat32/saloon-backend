@@ -794,12 +794,15 @@ $datediff = $now - $user_created_date;
                 $insertableData['garage']['owner_id'] = $user->id;
                 $garage =  Garage::create($insertableData['garage']);
 
-                foreach($insertableData["images"] as $garage_images){
-                    GarageGallery::create([
-                        "image" => $garage_images,
-                        "garage_id" =>$garage->id,
-                    ]);
+                if(!empty($insertableData["images"])) {
+                    foreach($insertableData["images"] as $garage_images){
+                        GarageGallery::create([
+                            "image" => $garage_images,
+                            "garage_id" =>$garage->id,
+                        ]);
+                    }
                 }
+
 
                 // end garage info ##############
 
