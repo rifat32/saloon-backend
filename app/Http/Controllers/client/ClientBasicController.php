@@ -4,6 +4,7 @@ namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Garage;
 use App\Models\GarageAffiliation;
 use App\Models\GarageAutomobileMake;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientBasicController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil, UserActivityUtil;
 
 
     /**
@@ -180,6 +181,7 @@ class ClientBasicController extends Controller
     public function getGaragesClient($perPage,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $garagesQuery = Garage::with("owner",
             // "garageAutomobileMakes.automobileMake",
             // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
@@ -308,10 +310,13 @@ class ClientBasicController extends Controller
             ->select("garages.*")
 
             ->paginate($perPage);
+
+
+
             return response()->json($garages, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
 
     }
@@ -374,6 +379,7 @@ class ClientBasicController extends Controller
     public function getGarageByIdClient($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $garagesQuery = Garage::with(
                 "owner",
                 "garageAutomobileMakes.automobileMake",
@@ -412,10 +418,13 @@ class ClientBasicController extends Controller
         $data["garage"] = $garage;
         $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
         $data["garage_service_ids"] = $garage_service_ids;
+
+
+
         return response()->json($data, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
 
     }
@@ -476,6 +485,7 @@ class ClientBasicController extends Controller
     public function getGarageServiceModelDetailsByIdClient($garage_id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id
             ])->first();
@@ -527,7 +537,7 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
         return response()->json($data, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
 
     }
@@ -595,6 +605,7 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
     public function getGarageAutomobileModelsByAutomobileMakeId($garage_id,$automobile_make_id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id
             ])->first();
@@ -624,7 +635,7 @@ $data = GarageAutomobileModel::with("automobileModel")
         return response()->json($data, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
 
     }
@@ -712,7 +723,7 @@ $data = GarageAutomobileModel::with("automobileModel")
     public function getGarageAffiliationsAllByGarageIdClient($garage_id, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
 
 
 
@@ -746,10 +757,12 @@ $data = GarageAutomobileModel::with("automobileModel")
             }
 
             $affiliations = $affiliationQuery->orderByDesc("garage_affiliations.id")->get();
+
+
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -818,6 +831,7 @@ $data = GarageAutomobileModel::with("automobileModel")
     public function getFavouriteSubServices($perPage,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $user = $request->user();
             $data = SubService::
             select("sub_services.*",
@@ -851,7 +865,7 @@ $data = GarageAutomobileModel::with("automobileModel")
         return response()->json($data, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
 
     }

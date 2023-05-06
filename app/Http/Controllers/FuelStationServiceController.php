@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FuelStationServiceCreateRequest;
 use App\Http\Requests\FuelStationServiceUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStationService;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class FuelStationServiceController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
     /**
      *
@@ -74,7 +75,7 @@ class FuelStationServiceController extends Controller
     public function createFuelStationService(FuelStationServiceCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('fuel_station_service_create')) {
                     return response()->json([
@@ -93,7 +94,7 @@ class FuelStationServiceController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -159,6 +160,7 @@ class FuelStationServiceController extends Controller
     public function updateFuelStationService(FuelStationServiceUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('fuel_station_service_update')) {
                     return response()->json([
@@ -198,7 +200,7 @@ class FuelStationServiceController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -282,6 +284,7 @@ class FuelStationServiceController extends Controller
     public function getFuelStationServices($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('fuel_station_service_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -315,7 +318,7 @@ class FuelStationServiceController extends Controller
             return response()->json($fuelStationServices, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -391,7 +394,7 @@ class FuelStationServiceController extends Controller
     public function getFuelStationServicesAll( Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('fuel_station_service_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -425,7 +428,7 @@ class FuelStationServiceController extends Controller
             return response()->json($fuelStationServices, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
       /**
@@ -500,7 +503,7 @@ class FuelStationServiceController extends Controller
     public function getFuelStationServicesAllClient( Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             // if (!$request->user()->hasPermissionTo('fuel_station_service_view')) {
             //     return response()->json([
             //         "message" => "You can not perform this action"
@@ -534,7 +537,7 @@ class FuelStationServiceController extends Controller
             return response()->json($fuelStationServices, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -598,6 +601,7 @@ class FuelStationServiceController extends Controller
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('fuel_station_service_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -611,7 +615,7 @@ class FuelStationServiceController extends Controller
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 

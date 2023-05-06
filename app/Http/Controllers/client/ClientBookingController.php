@@ -9,6 +9,7 @@ use App\Http\Requests\BookingUpdateRequestClient;
 use App\Http\Utils\CouponUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
@@ -28,7 +29,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ClientBookingController extends Controller
 {
-    use ErrorUtil, CouponUtil, PriceUtil;
+    use ErrorUtil, CouponUtil, PriceUtil,UserActivityUtil;
     /**
      *
      * @OA\Post(
@@ -104,7 +105,7 @@ class ClientBookingController extends Controller
     public function createBookingClient(BookingCreateRequestClient $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 $insertableData = $request->validated();
 
@@ -273,7 +274,7 @@ class ClientBookingController extends Controller
                 "message" => "The given data was invalid.",
                 "errors" => ["user.password"=>["email already taken"]]
              ],422);
-             return $this->sendError($e,500,$request->fullUrl());
+             return $this->sendError($e,500,$request);
         }
     }
 
@@ -336,6 +337,7 @@ class ClientBookingController extends Controller
     public function changeBookingStatusClient(BookingStatusChangeRequestClient $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
 
                 $updatableData = $request->validated();
@@ -484,7 +486,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -560,6 +562,7 @@ class ClientBookingController extends Controller
     public function updateBookingClient(BookingUpdateRequestClient $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
 
                 $updatableData = $request->validated();
@@ -740,7 +743,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -825,7 +828,7 @@ class ClientBookingController extends Controller
     public function getBookingsClient($perPage, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
                 ->where([
                     "customer_id" => $request->user()->id
@@ -851,10 +854,12 @@ class ClientBookingController extends Controller
 
 
             $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
+
+
             return response()->json($bookings, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -920,7 +925,7 @@ class ClientBookingController extends Controller
     public function getBookingByIdClient($id, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             $booking = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
                 ->where([
                     "id" => $id,
@@ -938,7 +943,7 @@ class ClientBookingController extends Controller
             return response()->json($booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -1005,6 +1010,7 @@ class ClientBookingController extends Controller
     {
 
         try {
+            $this->storeActivity($request,"");
             $booking =  Booking::where([
                 "id" => $id,
                 "customer_id" => $request->user()->id
@@ -1036,9 +1042,10 @@ class ClientBookingController extends Controller
                     "booking_deleted_by_client"
                 ));
             }
+
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 

@@ -6,6 +6,7 @@ use App\Http\Requests\GarageAffiliationCreateRequest;
 use App\Http\Requests\GarageAffiliationUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GarageAffiliation;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class GarageAffiliationController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
 
 
 
@@ -81,7 +82,7 @@ class GarageAffiliationController extends Controller
     public function createGarageAffiliation(GarageAffiliationCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_affiliation_create')) {
                     return response()->json([
@@ -112,7 +113,7 @@ class GarageAffiliationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -178,6 +179,7 @@ class GarageAffiliationController extends Controller
     public function updateGarageAffiliation(GarageAffiliationUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_affiliation_update')) {
                     return response()->json([
@@ -208,7 +210,7 @@ class GarageAffiliationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
     /**
@@ -290,6 +292,7 @@ class GarageAffiliationController extends Controller
     public function getGarageAffiliations($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_affiliation_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -319,7 +322,7 @@ class GarageAffiliationController extends Controller
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -410,6 +413,7 @@ class GarageAffiliationController extends Controller
     public function getGarageAffiliationsByGarageId($garage_id,$perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_affiliation_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -456,7 +460,7 @@ class GarageAffiliationController extends Controller
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -546,6 +550,7 @@ class GarageAffiliationController extends Controller
     public function getGarageAffiliationsAllByGarageId($garage_id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_affiliation_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -592,7 +597,7 @@ class GarageAffiliationController extends Controller
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -663,6 +668,7 @@ class GarageAffiliationController extends Controller
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_affiliation_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -687,7 +693,7 @@ class GarageAffiliationController extends Controller
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

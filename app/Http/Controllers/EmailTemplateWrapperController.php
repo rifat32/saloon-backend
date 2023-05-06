@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EmailTemplateWrapperUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\EmailTemplateWrapper;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class EmailTemplateWrapperController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
 
 
@@ -77,7 +78,7 @@ class EmailTemplateWrapperController extends Controller
     public function updateEmailTemplateWrapper(EmailTemplateWrapperUpdateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return    DB::transaction(function () use (&$request) {
                 if (!$request->user()->hasPermissionTo('template_update')) {
                     return response()->json([
@@ -110,7 +111,7 @@ class EmailTemplateWrapperController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
     /**
@@ -192,6 +193,7 @@ class EmailTemplateWrapperController extends Controller
     public function getEmailTemplateWrappers($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('template_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -220,7 +222,7 @@ class EmailTemplateWrapperController extends Controller
             return response()->json($templates, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -283,6 +285,7 @@ class EmailTemplateWrapperController extends Controller
     public function getEmailTemplateWrapperById($id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('template_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -302,7 +305,7 @@ class EmailTemplateWrapperController extends Controller
             return response()->json($template, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 

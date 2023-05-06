@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FuelStationGalleryCreateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStation;
 use App\Models\FuelStationGallery;
 use Exception;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 
 class FuelStationGalleryController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
     /**
         *
@@ -89,6 +90,7 @@ class FuelStationGalleryController extends Controller
     public function createFuelStationGallery($fuel_station_id,FuelStationGalleryCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('fuel_station_gallery_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -134,7 +136,7 @@ class FuelStationGalleryController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -195,6 +197,7 @@ class FuelStationGalleryController extends Controller
 
     public function getFuelStationGalleries($fuel_station_id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('fuel_station_gallery_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -225,7 +228,7 @@ class FuelStationGalleryController extends Controller
             return response()->json($data, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
      /**
@@ -286,7 +289,7 @@ class FuelStationGalleryController extends Controller
     public function getFuelStationGalleriesClient($fuel_station_id,Request $request) {
         try{
 
-
+            $this->storeActivity($request,"");
 
             $data["fuel_station_galleries"] = FuelStationGallery::where([
                "fuel_station_id" => $fuel_station_id
@@ -296,7 +299,7 @@ class FuelStationGalleryController extends Controller
             return response()->json($data, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -366,6 +369,7 @@ class FuelStationGalleryController extends Controller
     public function deleteFuelStationGalleryById($fuel_station_id,$id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('fuel_station_gallery_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -415,7 +419,7 @@ if (file_exists($file_path)) {
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

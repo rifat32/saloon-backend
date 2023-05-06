@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\ShopUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\ShopGallery;
 use Exception;
 use Illuminate\Http\Request;
 
 class ShopGalleryController extends Controller
 {
-    use ErrorUtil,ShopUtil;
+    use ErrorUtil,ShopUtil,UserActivityUtil;
     /**
       *
    * @OA\Post(
@@ -88,6 +89,7 @@ class ShopGalleryController extends Controller
   public function createShopGallery($shop_id,MultipleImageUploadRequest $request)
   {
       try{
+        $this->storeActivity($request,"");
           if(!$request->user()->hasPermissionTo('shop_gallery_create')){
                return response()->json([
                   "message" => "You can not perform this action"
@@ -122,7 +124,7 @@ class ShopGalleryController extends Controller
 
       } catch(Exception $e){
           error_log($e->getMessage());
-      return $this->sendError($e,500,$request->fullUrl());
+      return $this->sendError($e,500,$request);
       }
   }
 /**
@@ -182,6 +184,7 @@ class ShopGalleryController extends Controller
 
   public function getShopGalleries($shop_id,Request $request) {
       try{
+        $this->storeActivity($request,"");
           if(!$request->user()->hasPermissionTo('shop_gallery_view')){
               return response()->json([
                  "message" => "You can not perform this action"
@@ -202,7 +205,7 @@ class ShopGalleryController extends Controller
           return response()->json($data, 200);
       } catch(Exception $e){
 
-      return $this->sendError($e,500,$request->fullUrl());
+      return $this->sendError($e,500,$request);
       }
   }
 
@@ -270,7 +273,7 @@ class ShopGalleryController extends Controller
    */
 
   public function deleteShopGalleryById($shop_id,$id,Request $request) {
-
+    $this->storeActivity($request,"");
       try{
           if(!$request->user()->hasPermissionTo('shop_gallery_delete')){
               return response()->json([
@@ -310,7 +313,7 @@ if (file_exists($file_path)) {
           return response()->json(["ok" => true], 200);
       } catch(Exception $e){
 
-      return $this->sendError($e,500,$request->fullUrl());
+      return $this->sendError($e,500,$request);
       }
 
   }

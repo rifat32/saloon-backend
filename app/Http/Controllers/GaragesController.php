@@ -8,6 +8,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageGallery;
@@ -22,7 +23,7 @@ use Spatie\Permission\Models\Role;
 
 class GaragesController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
 
 
        /**
@@ -91,6 +92,7 @@ class GaragesController extends Controller
     public function createGarageImage(ImageUploadRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             // if(!$request->user()->hasPermissionTo('garage_create')){
             //      return response()->json([
             //         "message" => "You can not perform this action"
@@ -111,7 +113,7 @@ class GaragesController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -185,7 +187,7 @@ class GaragesController extends Controller
     public function createGarageImageMultiple(MultipleImageUploadRequest $request)
     {
         try{
-
+            $this->storeActivity($request,"");
 
             $insertableData = $request->validated();
 
@@ -214,7 +216,7 @@ class GaragesController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -345,8 +347,9 @@ class GaragesController extends Controller
     public function registerUserWithGarage(AuthRegisterGarageRequest $request) {
 
         try{
-
+            $this->storeActivity($request,"");
      return  DB::transaction(function ()use (&$request) {
+
         if(!$request->user()->hasPermissionTo('garage_create')){
             return response()->json([
                "message" => "You can not perform this action"
@@ -397,7 +400,7 @@ class GaragesController extends Controller
         });
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -530,7 +533,7 @@ class GaragesController extends Controller
     public function updateGarage(GarageUpdateRequest $request) {
 
         try{
-
+            $this->storeActivity($request,"");
      return  DB::transaction(function ()use (&$request) {
         if(!$request->user()->hasPermissionTo('garage_update')){
             return response()->json([
@@ -696,7 +699,7 @@ class GaragesController extends Controller
         });
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -823,6 +826,7 @@ class GaragesController extends Controller
     public function getGarages($perPage,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -890,7 +894,7 @@ class GaragesController extends Controller
             return response()->json($garages, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -952,6 +956,7 @@ class GaragesController extends Controller
     public function getGarageById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -990,7 +995,7 @@ class GaragesController extends Controller
         return response()->json($data, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1052,6 +1057,7 @@ class GaragesController extends Controller
     public function deleteGarageById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1076,7 +1082,7 @@ class GaragesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 
@@ -1144,7 +1150,7 @@ class GaragesController extends Controller
 
     public function getAvailableCountries(Request $request) {
         try{
-
+            $this->storeActivity($request,"");
 
             $countryQuery = new Garage();
 
@@ -1166,7 +1172,7 @@ class GaragesController extends Controller
             return response()->json($countries, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1240,7 +1246,7 @@ class GaragesController extends Controller
     public function getAvailableCities($country_code,Request $request) {
         try{
 
-
+            $this->storeActivity($request,"");
             $countryQuery =  Garage::where("country",$country_code);
 
             if(!empty($request->search_key)) {
@@ -1261,7 +1267,7 @@ class GaragesController extends Controller
             return response()->json($countries, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1319,6 +1325,7 @@ class GaragesController extends Controller
     public function getAllGaragesByGarageOwner(Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasRole('garage_owner')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1335,7 +1342,7 @@ class GaragesController extends Controller
             return response()->json($garages, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

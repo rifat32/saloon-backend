@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Booking;
 use App\Models\Garage;
 use App\Models\GuestUser;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
       /**
         *
      * @OA\Post(
@@ -82,6 +83,7 @@ class ReviewController extends Controller
     public function storeQuestion(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -105,7 +107,7 @@ class ReviewController extends Controller
 
             return response($createdQuestion, 201);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -177,6 +179,7 @@ class ReviewController extends Controller
     public function updateQuestion(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_update')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -199,7 +202,7 @@ class ReviewController extends Controller
 
             return response($updatedQuestion, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -264,6 +267,7 @@ class ReviewController extends Controller
     public function updateQuestionActiveState(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_update')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -283,7 +287,7 @@ class ReviewController extends Controller
 
             return response($updatedQuestion, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -339,6 +343,7 @@ class ReviewController extends Controller
     public function   getQuestion(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -356,7 +361,7 @@ class ReviewController extends Controller
         return response($questions, 200);
 
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -431,6 +436,7 @@ class ReviewController extends Controller
     public function   getQuestionAll(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -472,7 +478,7 @@ class ReviewController extends Controller
         return response($data, 200);
 
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -549,6 +555,7 @@ class ReviewController extends Controller
     public function getQuestionAllReport(Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -731,7 +738,7 @@ class ReviewController extends Controller
         "part2" =>  $data
     ], 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 }
@@ -798,6 +805,7 @@ class ReviewController extends Controller
     public function   getQuestionById($id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -835,7 +843,7 @@ class ReviewController extends Controller
                 }
             return response($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -906,6 +914,7 @@ class ReviewController extends Controller
     public function   deleteQuestionById($id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -917,7 +926,7 @@ class ReviewController extends Controller
 
             return response(["message" => "ok"], 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -995,6 +1004,7 @@ class ReviewController extends Controller
     public function getQuestionAllReportQuantum(Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1062,7 +1072,7 @@ class ReviewController extends Controller
 
     ], 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 }
@@ -1124,6 +1134,7 @@ class ReviewController extends Controller
     public function storeTag(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1141,7 +1152,7 @@ class ReviewController extends Controller
 
             return response($createdQuestion, 201);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1207,6 +1218,7 @@ class ReviewController extends Controller
     public function storeTagMultiple(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1289,7 +1301,7 @@ class ReviewController extends Controller
 
             return response(["message" => "data inserted"], 201);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1353,6 +1365,7 @@ class ReviewController extends Controller
     public function updateTag(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_update')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1372,7 +1385,7 @@ class ReviewController extends Controller
 
             return response($updatedQuestion, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1428,6 +1441,7 @@ class ReviewController extends Controller
     public function   getTag(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1440,7 +1454,7 @@ class ReviewController extends Controller
 
             return response($questions, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1500,6 +1514,7 @@ class ReviewController extends Controller
     public function   getTagById($id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1515,7 +1530,7 @@ class ReviewController extends Controller
                 }
             return response($questions, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -1573,6 +1588,7 @@ class ReviewController extends Controller
     public function   deleteTagById($id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1586,7 +1602,7 @@ class ReviewController extends Controller
 
             return response(["message" => "ok"], 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -1665,6 +1681,7 @@ class ReviewController extends Controller
     public function storeOwnerQuestion(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1696,7 +1713,7 @@ class ReviewController extends Controller
           return response(["message" => "ok"], 201);
             });
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1779,6 +1796,7 @@ class ReviewController extends Controller
     public function updateOwnerQuestion(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_update')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1820,7 +1838,7 @@ class ReviewController extends Controller
           return response(["message" => "ok"], 201);
             });
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -1897,6 +1915,7 @@ class ReviewController extends Controller
     public function  getAverage($garageId, $start, $end, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('review_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1939,7 +1958,7 @@ class ReviewController extends Controller
 
             return response($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -2019,6 +2038,7 @@ class ReviewController extends Controller
     public function  filterReview($garageId, $rate, $start, $end, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('review_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -2036,7 +2056,7 @@ class ReviewController extends Controller
 
             return response($reviewValues, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -2094,6 +2114,7 @@ class ReviewController extends Controller
     public function  getReviewByGarageId($garageId, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('review_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -2108,7 +2129,7 @@ class ReviewController extends Controller
 
             return response($reviewValue, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -2186,6 +2207,7 @@ class ReviewController extends Controller
     public function  getCustommerReview($garageId, $start, $end, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('review_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -2225,7 +2247,7 @@ class ReviewController extends Controller
 
             return response($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -2308,6 +2330,7 @@ class ReviewController extends Controller
 
     public function storeReview($jobId,  Request $request)
     {
+        $this->storeActivity($request,"");
         try{
             if (!$request->user()->hasPermissionTo('review_create')) {
                 return response()->json([
@@ -2369,7 +2392,7 @@ class ReviewController extends Controller
 
             return response(["message" => "created successfully"], 201);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }

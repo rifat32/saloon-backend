@@ -6,6 +6,7 @@ use App\Http\Requests\CouponCreateRequest;
 use App\Http\Requests\CouponUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Coupon;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class CouponController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
 
     /**
      *
@@ -83,7 +84,7 @@ class CouponController extends Controller
     public function createCoupon(CouponCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('coupon_create')) {
                     return response()->json([
@@ -109,7 +110,7 @@ class CouponController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -182,6 +183,7 @@ class CouponController extends Controller
     public function updateCoupon(CouponUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('coupon_update')) {
                     return response()->json([
@@ -221,7 +223,7 @@ class CouponController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -313,6 +315,7 @@ class CouponController extends Controller
     public function getCoupons($garage_id,$perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('coupon_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -347,7 +350,7 @@ class CouponController extends Controller
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -415,6 +418,7 @@ class CouponController extends Controller
     public function getCouponById($garage_id,$id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('coupon_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -442,7 +446,7 @@ class CouponController extends Controller
             return response()->json($coupon, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -514,7 +518,7 @@ class CouponController extends Controller
 
         try {
 
-
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('coupon_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -548,7 +552,7 @@ class CouponController extends Controller
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

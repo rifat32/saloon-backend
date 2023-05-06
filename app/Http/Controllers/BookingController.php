@@ -9,6 +9,7 @@ use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    use ErrorUtil,GarageUtil,PriceUtil;
+    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil;
 
 
        /**
@@ -116,6 +117,7 @@ class BookingController extends Controller
     public function updateBooking(BookingUpdateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('booking_update')){
         return response()->json([
@@ -297,7 +299,7 @@ class BookingController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -360,6 +362,7 @@ class BookingController extends Controller
     public function changeBookingStatus(BookingStatusChangeRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('booking_update')){
         return response()->json([
@@ -414,7 +417,7 @@ class BookingController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -492,6 +495,7 @@ class BookingController extends Controller
     public function confirmBooking(BookingConfirmRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('booking_update')){
         return response()->json([
@@ -551,7 +555,7 @@ class BookingController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -642,6 +646,7 @@ class BookingController extends Controller
 
     public function getBookings($garage_id,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('booking_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -677,7 +682,7 @@ class BookingController extends Controller
             return response()->json($bookings, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -744,6 +749,7 @@ class BookingController extends Controller
 
     public function getBookingById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('booking_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -772,7 +778,7 @@ class BookingController extends Controller
             return response()->json($booking, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -839,6 +845,7 @@ class BookingController extends Controller
 
     public function deleteBookingById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('booking_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -886,7 +893,7 @@ class BookingController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 

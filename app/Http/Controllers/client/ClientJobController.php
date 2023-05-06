@@ -4,13 +4,14 @@ namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Job;
 use Exception;
 use Illuminate\Http\Request;
 
 class ClientJobController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
    /**
     *
      * @OA\Get(
@@ -89,7 +90,7 @@ class ClientJobController extends Controller
 
     public function getJobsClient($perPage,Request $request) {
         try{
-
+            $this->storeActivity($request,"");
             $jobsQuery = Job::with("job_sub_services.sub_service")
             ->where([
                 "customer_id" => $request->user()->id
@@ -111,10 +112,11 @@ class ClientJobController extends Controller
             }
 
             $jobs = $jobsQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($jobs, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -178,7 +180,7 @@ class ClientJobController extends Controller
 
     public function getJobByIdClient($id,Request $request) {
         try{
-
+            $this->storeActivity($request,"");
             $job = Job::with("job_sub_services.sub_service")
             ->where([
                 "id" => $id,
@@ -196,7 +198,7 @@ class ClientJobController extends Controller
             return response()->json($job, 200);
         } catch(Exception $e){
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ErrorLog extends Model
+class ActivityLog extends Model
 {
     use HasFactory;
 
@@ -14,13 +14,8 @@ class ErrorLog extends Model
         "api_url",
         "user",
         "user_id",
-        "message",
-        "status_code",
-        "line",
-        "file",
+        "activity",
         "ip_address",
         "request_method"
-
-
     ];
 }

@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductCategoryCreateRequest;
 use App\Http\Requests\ProductCategoryUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\ProductCategory;
 use Exception;
 use Illuminate\Http\Request;
 
 class ProductCategoryController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
     /**
      *
   * @OA\Post(
@@ -74,6 +75,7 @@ class ProductCategoryController extends Controller
  {
      try{
 
+        $this->storeActivity($request,"");
 
          if(!$request->user()->hasPermissionTo('product_category_create')){
               return response()->json([
@@ -90,7 +92,7 @@ class ProductCategoryController extends Controller
          return response($product_category, 201);
      } catch(Exception $e){
          error_log($e->getMessage());
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
  }
 /**
@@ -155,6 +157,7 @@ class ProductCategoryController extends Controller
  {
 
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('product_category_update')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -184,7 +187,7 @@ class ProductCategoryController extends Controller
          return response($product_category, 201);
      } catch(Exception $e){
          error_log($e->getMessage());
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
  }
 /**
@@ -267,6 +270,7 @@ class ProductCategoryController extends Controller
 
  public function getProductCategories($perPage,Request $request) {
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('product_category_view')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -299,7 +303,7 @@ class ProductCategoryController extends Controller
          return response()->json($product_categories, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
  }
   /**
@@ -359,6 +363,7 @@ class ProductCategoryController extends Controller
 
  public function getProductCategoryById($id,Request $request) {
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('product_category_view')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -379,7 +384,7 @@ return response()->json([
          return response()->json($product_category, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
  }
 
@@ -459,7 +464,7 @@ return response()->json([
  public function getAllProductCategory(Request $request) {
      try{
 
-
+        $this->storeActivity($request,"");
          $productCategoriesQuery = new ProductCategory();
 
          if(!empty($request->search_key)) {
@@ -481,7 +486,7 @@ return response()->json([
          return response()->json($product_categories, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -543,6 +548,7 @@ return response()->json([
     public function deleteProductCategoryById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('product_category_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -556,7 +562,7 @@ return response()->json([
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

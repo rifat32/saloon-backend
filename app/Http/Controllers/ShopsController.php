@@ -7,7 +7,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Requests\ShopUpdateRequest;
 use App\Http\Utils\ErrorUtil;
-
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Shop;
 use App\Models\ShopGallery;
 use App\Models\User;
@@ -19,7 +19,7 @@ use Illuminate\Support\Str;
 
 class ShopsController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
 
     /**
@@ -88,7 +88,7 @@ class ShopsController extends Controller
  public function createShopImage(ImageUploadRequest $request)
  {
      try{
-
+        $this->storeActivity($request,"");
          $insertableData = $request->validated();
 
          $location =  config("setup-config.shop_gallery_location");
@@ -103,7 +103,7 @@ class ShopsController extends Controller
 
      } catch(Exception $e){
          error_log($e->getMessage());
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
  }
 
@@ -178,7 +178,7 @@ class ShopsController extends Controller
     {
         try{
 
-
+            $this->storeActivity($request,"");
             $insertableData = $request->validated();
 
             $location =  config("setup-config.garage_shop_location");
@@ -200,7 +200,7 @@ class ShopsController extends Controller
                     // ]);
 
 
-                    
+
 
                 }
             }
@@ -211,7 +211,7 @@ class ShopsController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -316,7 +316,7 @@ class ShopsController extends Controller
  public function registerUserWithShop(AuthRegisterShopRequest $request) {
 
      try{
-
+        $this->storeActivity($request,"");
   return  DB::transaction(function ()use (&$request) {
      if(!$request->user()->hasPermissionTo('shop_create')){
          return response()->json([
@@ -360,7 +360,7 @@ class ShopsController extends Controller
      });
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -471,7 +471,7 @@ class ShopsController extends Controller
  public function updateShop(ShopUpdateRequest $request) {
 
      try{
-
+        $this->storeActivity($request,"");
   return  DB::transaction(function ()use (&$request) {
      if(!$request->user()->hasPermissionTo('shop_update')){
          return response()->json([
@@ -631,7 +631,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
      });
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -758,6 +758,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function getShops($perPage,Request $request) {
 
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('shop_view')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -824,7 +825,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($shops, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -886,6 +887,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function getShopById($id,Request $request) {
 
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('shop_view')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -913,7 +915,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
      return response()->json($data, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -975,6 +977,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function deleteShopById($id,Request $request) {
 
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasPermissionTo('shop_delete')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -999,7 +1002,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json(["ok" => true], 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
 
@@ -1068,7 +1071,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function getAvailableCountriesForShop(Request $request) {
      try{
 
-
+        $this->storeActivity($request,"");
          $countryQuery = new Shop();
 
          if(!empty($request->search_key)) {
@@ -1089,7 +1092,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($countries, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -1163,7 +1166,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function getAvailableCitiesForShop($country_code,Request $request) {
      try{
 
-
+        $this->storeActivity($request,"");
          $countryQuery =  Shop::where("country",$country_code);
 
          if(!empty($request->search_key)) {
@@ -1184,7 +1187,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($countries, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }
@@ -1242,6 +1245,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
  public function getAllShopsByShopOwner(Request $request) {
 
      try{
+        $this->storeActivity($request,"");
          if(!$request->user()->hasRole('shop_owner')){
              return response()->json([
                 "message" => "You can not perform this action"
@@ -1258,7 +1262,7 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          return response()->json($shops, 200);
      } catch(Exception $e){
 
-     return $this->sendError($e,500,$request->fullUrl());
+     return $this->sendError($e,500,$request);
      }
 
  }

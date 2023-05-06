@@ -4,11 +4,12 @@ namespace App\Http\Utils;
 
 use App\Models\ErrorLog;
 use Exception;
+use Illuminate\Http\Request;
 
 trait ErrorUtil
 {
     // this function do all the task and returns transaction id or -1
-    public function sendError(Exception $e,$statusCode,$apiUrl = "")
+    public function sendError(Exception $e,$statusCode,Request $request)
     {
 
         // first return 422 custom error
@@ -24,22 +25,24 @@ trait ErrorUtil
             $data["message"] = $e->getMessage();
         }
 
-        $data["status_code"] = $statusCode;
-        $data["line"] = $e->getLine();
-        $data["file"] = $e->getFile();
-        $data["api_url"] = $apiUrl;
+
+
 $user = auth()->user();
+$errorLog = [
+    "api_url" => $request->fullUrl(),
+    "user"=> !empty($user)?(json_encode($user)):"",
+    "user_id"=> !empty($user)?$user->id:"",
+    "message"=> $data["message"],
+    "status_code"=> $statusCode,
+    "line"=> $e->getLine(),
+    "file"=> $e->getFile(),
+    "ip_address" => $request->getClientIp(),
 
-        ErrorLog::create([
-            "api_url" => $data["api_url"],
-            "user"=> !empty($user)?(json_encode($user)):"",
-            "user_id"=> !empty($user)?$user->id:"",
-            "message"=> $data["message"],
-            "status_code"=> $data["status_code"],
-            "line"=> $data["line"],
-            "file"=> $data["file"],
+    "request_method"=>$request->method()
 
-        ]);
+];
+
+         ErrorLog::create($errorLog);
 return response()->json($data,$statusCode);
 
     }

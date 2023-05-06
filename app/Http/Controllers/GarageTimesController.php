@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GarageTimesUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Garage;
 use App\Models\GarageTime;
 use Exception;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class GarageTimesController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
     /**
      *
      * @OA\Patch(
@@ -83,6 +84,7 @@ class GarageTimesController extends Controller
     public function updateGarageTimes(GarageTimesUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_times_update')) {
                     return response()->json([
@@ -118,7 +120,7 @@ class GarageTimesController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -180,6 +182,7 @@ class GarageTimesController extends Controller
 
     public function getGarageTimes($garage_id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_times_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -197,7 +200,7 @@ class GarageTimesController extends Controller
             return response()->json($garageTimes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 }

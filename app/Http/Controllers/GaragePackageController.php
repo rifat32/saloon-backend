@@ -7,6 +7,7 @@ use App\Http\Requests\GaragePackageRequest;
 use App\Http\Requests\GaragePackageUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GaragePackage;
 use App\Models\GaragePackageSubService;
 use App\Models\GarageSubService;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class GaragePackageController extends Controller
 {
-     use ErrorUtil,GarageUtil;
+     use ErrorUtil,GarageUtil,UserActivityUtil;
 
 
 
@@ -87,6 +88,7 @@ class GaragePackageController extends Controller
 
 
         try {
+            $this->storeActivity($request,"");
 
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_package_create')) {
@@ -153,7 +155,7 @@ class GaragePackageController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -228,6 +230,7 @@ class GaragePackageController extends Controller
     public function updateGaragePackage(GaragePackageUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
 
 
@@ -306,7 +309,7 @@ class GaragePackageController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -391,6 +394,7 @@ class GaragePackageController extends Controller
 
     public function getGaragePackages($garage_id,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_package_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -426,7 +430,7 @@ class GaragePackageController extends Controller
             return response()->json($garages, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -493,6 +497,7 @@ class GaragePackageController extends Controller
 
     public function getGaragePackageById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_package_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -521,7 +526,7 @@ class GaragePackageController extends Controller
             return response()->json($garage_package, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -588,6 +593,7 @@ class GaragePackageController extends Controller
 
     public function deleteGaragePackageById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_package_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -622,7 +628,7 @@ class GaragePackageController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 

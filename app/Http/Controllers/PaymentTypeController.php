@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PaymentTypeCreateRequest;
 use App\Http\Requests\PaymentTypeUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\PaymentType;
 use Exception;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentTypeController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
     /**
      *
@@ -73,7 +74,7 @@ class PaymentTypeController extends Controller
     public function createPaymentType(PaymentTypeCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('payment_type_create')) {
                     return response()->json([
@@ -90,7 +91,7 @@ class PaymentTypeController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -154,6 +155,7 @@ class PaymentTypeController extends Controller
     public function updatePaymentType(PaymentTypeUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('payment_type_update')) {
                     return response()->json([
@@ -179,7 +181,7 @@ class PaymentTypeController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
     /**
@@ -261,7 +263,7 @@ class PaymentTypeController extends Controller
     public function getPaymentTypes($perPage, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('payment_type_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -289,7 +291,7 @@ class PaymentTypeController extends Controller
             return response()->json($payment_types, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -351,7 +353,7 @@ class PaymentTypeController extends Controller
     {
 
         try {
-
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('payment_type_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -366,7 +368,7 @@ class PaymentTypeController extends Controller
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

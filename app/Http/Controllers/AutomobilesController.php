@@ -13,6 +13,7 @@ use App\Http\Requests\AutomobileModelUpdateRequest;
 use App\Http\Requests\AutomobileModelVariantCreateRequest;
 use App\Http\Requests\AutomobileModelVariantUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileFuelType;
 use App\Models\AutomobileMake;
@@ -25,7 +26,7 @@ use Illuminate\Http\Request;
 
 class AutomobilesController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
    /**
         *
      * @OA\Post(
@@ -84,6 +85,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -99,7 +101,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -162,6 +164,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -182,7 +185,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
      /**
@@ -263,6 +266,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileCategories($perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -287,10 +291,11 @@ class AutomobilesController extends Controller
             }
 
             $users = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($users, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -365,6 +370,7 @@ class AutomobilesController extends Controller
 
     public function getAllAutomobileCategories(Request $request) {
         try{
+            $this->storeActivity($request,"");
         //     if(!$request->user()->hasPermissionTo('automobile_view') && !$request->user()->hasPermissionTo('service_view')){
         //         return response()->json([
         //            "message" => "You can not perform this action"
@@ -390,10 +396,11 @@ class AutomobilesController extends Controller
             }
 
             $users = $automobilesQuery->orderByDesc("id")->get();
+
             return response()->json($users, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -453,6 +460,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileCategoryById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -469,7 +477,7 @@ class AutomobilesController extends Controller
             return response()->json($automobileCategory, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -532,6 +540,7 @@ class AutomobilesController extends Controller
     public function deleteAutomobileCategoryById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -545,7 +554,7 @@ class AutomobilesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -610,6 +619,7 @@ class AutomobilesController extends Controller
     public function createAutomobileMake(AutomobileMakeCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -625,7 +635,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -688,6 +698,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -709,7 +720,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -796,6 +807,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakes($categoryId,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -828,7 +840,7 @@ class AutomobilesController extends Controller
             return response()->json($makes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -911,7 +923,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakesAll($categoryId,Request $request) {
         try{
-
+            $this->storeActivity($request,"");
 
             $automobilesQuery = AutomobileMake::with("models")
             ->where([
@@ -937,7 +949,7 @@ class AutomobilesController extends Controller
             return response()->json($makes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1020,7 +1032,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakesAllV2($categoryId,Request $request) {
         try{
-
+            $this->storeActivity($request,"");
 
             $automobilesQuery = AutomobileMake::where([
                 "automobile_category_id" => $categoryId
@@ -1045,7 +1057,7 @@ class AutomobilesController extends Controller
             return response()->json($makes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1130,7 +1142,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileModelsAll(Request $request) {
         try{
-
+            $this->storeActivity($request,"");
 
             $automobilesQuery = new AutomobileModel();
 
@@ -1159,7 +1171,7 @@ class AutomobilesController extends Controller
             return response()->json($models, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1230,6 +1242,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileMakeById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1246,7 +1259,7 @@ class AutomobilesController extends Controller
             return response()->json($automobileCategory, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1308,6 +1321,7 @@ class AutomobilesController extends Controller
     public function deleteAutomobileMakeById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1321,7 +1335,7 @@ class AutomobilesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1385,6 +1399,7 @@ class AutomobilesController extends Controller
     public function createAutomobileModel(AutomobileModelCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -1400,7 +1415,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -1463,6 +1478,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1484,7 +1500,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -1571,6 +1587,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileModel($makeId,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1603,7 +1620,7 @@ class AutomobilesController extends Controller
             return response()->json($models, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1663,6 +1680,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileModelById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1678,7 +1696,7 @@ class AutomobilesController extends Controller
             return response()->json($automobileModel, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1740,6 +1758,7 @@ class AutomobilesController extends Controller
     public function deleteAutomobileModelById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1753,7 +1772,7 @@ class AutomobilesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1818,6 +1837,7 @@ class AutomobilesController extends Controller
     public function createAutomobileModelVariant(AutomobileModelVariantCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -1833,7 +1853,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -1896,6 +1916,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1917,7 +1938,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -2004,6 +2025,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileModelVariant($modelId,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2036,7 +2058,7 @@ class AutomobilesController extends Controller
             return response()->json($models, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -2097,6 +2119,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileModelVariantById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2112,7 +2135,7 @@ class AutomobilesController extends Controller
             return response()->json($automobileModelVariant, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -2174,6 +2197,7 @@ class AutomobilesController extends Controller
     public function deleteAutomobileModelVariantById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2187,7 +2211,7 @@ class AutomobilesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -2533,6 +2557,7 @@ class AutomobilesController extends Controller
     public function createAutomobileFuelType(AutomobileFuelTypeCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -2547,7 +2572,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -2610,6 +2635,7 @@ class AutomobilesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2631,7 +2657,7 @@ class AutomobilesController extends Controller
             return response($automobile, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -2718,6 +2744,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileFuelType($modelId,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2750,7 +2777,7 @@ class AutomobilesController extends Controller
             return response()->json($models, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -2811,6 +2838,7 @@ class AutomobilesController extends Controller
 
     public function getAutomobileFuelTypeById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2826,7 +2854,7 @@ class AutomobilesController extends Controller
             return response()->json($automobileFuelType, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -2888,6 +2916,7 @@ class AutomobilesController extends Controller
     public function deleteAutomobileFuelTypeById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('automobile_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -2901,7 +2930,7 @@ class AutomobilesController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

@@ -34,6 +34,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable|string',
+            
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
             'user.country' => 'nullable|string',

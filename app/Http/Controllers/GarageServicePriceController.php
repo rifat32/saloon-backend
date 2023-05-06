@@ -6,6 +6,7 @@ use App\Http\Requests\GarageSubServicePriceCreateRequest;
 use App\Http\Requests\GarageSubServicePriceUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileMake;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageSubService;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 
 class GarageServicePriceController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
 
 
 
@@ -94,7 +95,7 @@ class GarageServicePriceController extends Controller
     public function createGarageSubServicePrice(GarageSubServicePriceCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_service_price_create')) {
                     return response()->json([
@@ -178,7 +179,7 @@ GarageSubServicePrice::create([
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -254,6 +255,7 @@ GarageSubServicePrice::create([
     public function updateGarageSubServicePrice(GarageSubServicePriceUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('garage_service_price_update')) {
                     return response()->json([
@@ -382,7 +384,7 @@ GarageSubServicePrice::create([
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -455,6 +457,7 @@ GarageSubServicePrice::create([
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_service_price_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -488,7 +491,7 @@ GarageSubServicePrice::create([
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -553,6 +556,7 @@ GarageSubServicePrice::create([
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('garage_service_price_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -591,7 +595,7 @@ GarageSubServicePrice::create([
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

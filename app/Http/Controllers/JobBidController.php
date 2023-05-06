@@ -7,6 +7,7 @@ use App\Http\Requests\JobBidUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 
 class JobBidController extends Controller
 {
-    use ErrorUtil, GarageUtil, PriceUtil;
+    use ErrorUtil, GarageUtil, PriceUtil,UserActivityUtil;
     /**
      *
      * @OA\Get(
@@ -157,6 +158,7 @@ class JobBidController extends Controller
     public function getPreBookings($garage_id, $perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('job_bids_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -265,7 +267,7 @@ class JobBidController extends Controller
             return response()->json($pre_bookings, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -334,6 +336,7 @@ class JobBidController extends Controller
     public function getPreBookingById($garage_id, $id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('job_bids_create')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -387,7 +390,7 @@ class JobBidController extends Controller
             return response()->json($pre_booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -456,7 +459,7 @@ class JobBidController extends Controller
     public function createJobBid(JobBidCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
 
                 if (!$request->user()->hasPermissionTo('job_bids_create')) {
@@ -602,7 +605,7 @@ class JobBidController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -672,6 +675,7 @@ class JobBidController extends Controller
     public function updateJobBid(JobBidUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('fuel_station_update')) {
                     return response()->json([
@@ -801,7 +805,7 @@ class JobBidController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -890,6 +894,7 @@ class JobBidController extends Controller
     public function getJobBids($garage_id, $perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('job_bids_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -925,7 +930,7 @@ class JobBidController extends Controller
             return response()->json($job_bids, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -996,6 +1001,7 @@ class JobBidController extends Controller
     public function getJobBidById($garage_id, $id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('job_bids_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1033,7 +1039,7 @@ class JobBidController extends Controller
             return response()->json($job_bid, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -1101,6 +1107,7 @@ class JobBidController extends Controller
     public function deleteJobBidById($garage_id, $id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('job_bids_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -1129,7 +1136,7 @@ class JobBidController extends Controller
             return response()->json($job_bid, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

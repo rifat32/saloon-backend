@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RoleRequest;
 use App\Http\Requests\RoleUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use Exception;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
      /**
         *
      * @OA\Post(
@@ -70,6 +71,7 @@ class RolesController extends Controller
     public function createRole(RoleRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if( !$request->user()->hasPermissionTo('role_create'))
             {
 
@@ -87,7 +89,7 @@ class RolesController extends Controller
            ], 201);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 
@@ -152,7 +154,7 @@ class RolesController extends Controller
      */
     public function updateRole(RoleUpdateRequest $request) {
         try{
-
+            $this->storeActivity($request,"");
         if( !$request->user()->hasPermissionTo('role_update') )
         {
 
@@ -178,7 +180,7 @@ class RolesController extends Controller
         ], 201);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 
@@ -260,6 +262,7 @@ class RolesController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('role_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -282,7 +285,7 @@ class RolesController extends Controller
             return response()->json($roles, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 
@@ -337,7 +340,7 @@ class RolesController extends Controller
     {
 
         try{
-
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('role_view') && !$request->user()->hasPermissionTo('user_view') ){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -351,7 +354,7 @@ class RolesController extends Controller
             ], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -410,14 +413,14 @@ class RolesController extends Controller
     public function getRoleById($id,Request $request) {
 
         try{
-
+            $this->storeActivity($request,"");
             $role = Role::with('permissions:name,id')
             ->where(["id" => $id])
             ->select("name", "id")->get();
             return response()->json($role, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -477,6 +480,7 @@ class RolesController extends Controller
     public function deleteRoleById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $initial_roles = config("setup-config.roles");
 
             $role = Role::where([
@@ -503,7 +507,7 @@ class RolesController extends Controller
              return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 
@@ -562,6 +566,7 @@ class RolesController extends Controller
     public function getInitialRolePermissions (Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('role_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -573,7 +578,7 @@ class RolesController extends Controller
            return response()->json($role_permissions,200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
 

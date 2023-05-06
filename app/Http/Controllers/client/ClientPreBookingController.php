@@ -7,6 +7,7 @@ use App\Http\Requests\PreBookingConfirmRequestClient;
 use App\Http\Requests\PreBookingCreateRequestClient;
 use App\Http\Requests\PreBookingUpdateRequestClient;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
 use App\Models\Booking;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientPreBookingController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
     /**
      *
      * @OA\Post(
@@ -116,6 +117,8 @@ class ClientPreBookingController extends Controller
         try {
 
             return DB::transaction(function () use ($request) {
+                $this->storeActivity($request,"");
+
                 $insertableData = $request->validated();
 
                 $insertableData["customer_id"] = auth()->user()->id;
@@ -195,7 +198,7 @@ class ClientPreBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -278,6 +281,7 @@ class ClientPreBookingController extends Controller
     {
         try {
             return  DB::transaction(function () use ($request) {
+                $this->storeActivity($request,"");
 
                 $updatableData = $request->validated();
 
@@ -388,7 +392,7 @@ class ClientPreBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -474,7 +478,7 @@ class ClientPreBookingController extends Controller
     public function getPreBookingsClient($perPage, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
                 ->where([
                     "customer_id" => $request->user()->id
@@ -500,10 +504,11 @@ class ClientPreBookingController extends Controller
 
 
             $pre_bookings = $preBookingQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($pre_bookings, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -569,7 +574,7 @@ class ClientPreBookingController extends Controller
     public function getPreBookingByIdClient($id, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
                 ->where([
                     "id" => $id,
@@ -587,7 +592,7 @@ class ClientPreBookingController extends Controller
             return response()->json($pre_booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -659,7 +664,7 @@ class ClientPreBookingController extends Controller
     public function confirmPreBookingClient(PreBookingConfirmRequestClient $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
 
                 $insertableData = $request->validated();
@@ -822,7 +827,7 @@ $job_bid->save();
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -888,7 +893,7 @@ $job_bid->save();
     {
 
         try {
-
+            $this->storeActivity($request,"");
             PreBooking::where([
                 "id" => $id,
                 "customer_id" => $request->user()->id
@@ -897,7 +902,7 @@ $job_bid->save();
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 }

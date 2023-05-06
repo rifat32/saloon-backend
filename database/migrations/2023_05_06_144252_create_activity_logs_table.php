@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateErrorLogsTable extends Migration
+class CreateActivityLogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,16 @@ class CreateErrorLogsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('logs')->create('error_logs', function (Blueprint $table) {
+        Schema::connection('logs')->create('activity_logs', function (Blueprint $table) {
             $table->id();
 
             $table->string("api_url")->nullable();
 
             $table->text("user")->nullable();
             $table->unsignedBigInteger("user_id")->nullable();
-
-
-            $table->text("message")->nullable();
-            $table->integer("status_code")->nullable();
-            $table->string("line")->nullable();
-            $table->string("file")->nullable();
+            $table->text("activity")->nullable();
             $table->string("ip_address")->nullable();
+            $table->string("request_method")->nullable();
 
 
             $table->timestamps();
@@ -40,6 +36,6 @@ class CreateErrorLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('error_logs');
+        Schema::dropIfExists('activity_logs');
     }
 }

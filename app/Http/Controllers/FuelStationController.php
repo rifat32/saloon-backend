@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FuelStationCreateRequest;
 use App\Http\Requests\FuelStationUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStation;
 use App\Models\FuelStationOption;
 use Exception;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class FuelStationController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
     /**
      *
@@ -91,7 +92,7 @@ class FuelStationController extends Controller
     public function createFuelStation(FuelStationCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('fuel_station_create')) {
                     return response()->json([
@@ -123,7 +124,7 @@ class FuelStationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -203,6 +204,7 @@ class FuelStationController extends Controller
     public function updateFuelStation(FuelStationUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('fuel_station_update')) {
                     return response()->json([
@@ -283,7 +285,7 @@ class FuelStationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -432,6 +434,7 @@ class FuelStationController extends Controller
     public function getFuelStations($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('fuel_station_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -524,7 +527,7 @@ class FuelStationController extends Controller
             return response()->json($fuelStations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -676,7 +679,7 @@ class FuelStationController extends Controller
     public function getFuelStationsClient($perPage, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
 
             $fuelStationQuery = FuelStation::with("options.option")
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
@@ -755,7 +758,7 @@ class FuelStationController extends Controller
             return response()->json($fuelStations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -816,7 +819,7 @@ class FuelStationController extends Controller
     public function getFuelStationByIdClient($id, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
 
             $fuelStation = FuelStation::with("options.option")
             ->where([
@@ -834,7 +837,7 @@ class FuelStationController extends Controller
             return response()->json($fuelStation, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -896,6 +899,7 @@ class FuelStationController extends Controller
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('fuel_station_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -919,7 +923,7 @@ class FuelStationController extends Controller
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Requests\AffiliationCreateRequest;
 use App\Http\Requests\AffiliationUpdateRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Affiliation;
 use Exception;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 class AffiliationController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
 
        /**
@@ -82,6 +83,7 @@ class AffiliationController extends Controller
     public function createAffiliationLogo(ImageUploadRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('affiliation_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -102,7 +104,7 @@ class AffiliationController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -177,7 +179,7 @@ class AffiliationController extends Controller
     public function createAffiliation(AffiliationCreateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('affiliation_create')) {
                     return response()->json([
@@ -194,7 +196,7 @@ class AffiliationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -258,6 +260,7 @@ class AffiliationController extends Controller
     public function updateAffiliation(AffiliationUpdateRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
                 if (!$request->user()->hasPermissionTo('affiliation_update')) {
                     return response()->json([
@@ -300,7 +303,7 @@ class AffiliationController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
     /**
@@ -382,6 +385,7 @@ class AffiliationController extends Controller
     public function getAffiliations($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('affiliation_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -407,10 +411,11 @@ class AffiliationController extends Controller
             }
 
             $affiliations = $affiliationQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -472,6 +477,7 @@ class AffiliationController extends Controller
     {
 
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('affiliation_delete')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -495,7 +501,7 @@ class AffiliationController extends Controller
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

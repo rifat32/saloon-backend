@@ -9,6 +9,7 @@ use App\Http\Requests\JobUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
@@ -28,7 +29,7 @@ use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
-    use ErrorUtil,GarageUtil,PriceUtil;
+    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil;
 
       /**
         *
@@ -105,6 +106,7 @@ class JobController extends Controller
     public function bookingToJob(BookingToJobRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('job_create')){
         return response()->json([
@@ -263,7 +265,7 @@ class JobController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -358,6 +360,7 @@ class JobController extends Controller
     public function updateJob(JobUpdateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('job_update')){
         return response()->json([
@@ -537,7 +540,7 @@ class JobController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -600,6 +603,7 @@ class JobController extends Controller
     public function changeJobStatus(JobStatusChangeRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
     if(!$request->user()->hasPermissionTo('job_update')){
         return response()->json([
@@ -652,7 +656,7 @@ class JobController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -744,6 +748,7 @@ class JobController extends Controller
 
     public function getJobs($garage_id,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('job_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -779,7 +784,7 @@ class JobController extends Controller
             return response()->json($jobs, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -846,6 +851,7 @@ class JobController extends Controller
 
     public function getJobById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('job_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -874,7 +880,7 @@ class JobController extends Controller
             return response()->json($job, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -943,6 +949,7 @@ class JobController extends Controller
 
     public function deleteJobById($garage_id,$id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('job_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -989,7 +996,7 @@ class JobController extends Controller
             return response()->json($job, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -1066,7 +1073,7 @@ class JobController extends Controller
     public function addPayment(JobPaymentCreateRequest $request)
     {
         try{
-
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use($request) {
 
     if(!$request->user()->hasPermissionTo('job_update')){
@@ -1156,7 +1163,7 @@ class JobController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -1226,7 +1233,7 @@ class JobController extends Controller
     public function deletePaymentById($garage_id,$id,Request $request)
     {
         try{
-
+            $this->storeActivity($request,"");
    return  DB::transaction(function () use(&$id,&$garage_id,&$request) {
 
     if(!$request->user()->hasPermissionTo('job_update')){
@@ -1270,7 +1277,7 @@ class JobController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 

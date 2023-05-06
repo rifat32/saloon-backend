@@ -6,13 +6,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GarageGallery;
 use Exception;
 use Illuminate\Http\Request;
 
 class GarageGalleryController extends Controller
 {
-use ErrorUtil,GarageUtil;
+use ErrorUtil,GarageUtil,UserActivityUtil;
       /**
         *
      * @OA\Post(
@@ -89,6 +90,7 @@ use ErrorUtil,GarageUtil;
     public function createGarageGallery($garage_id,MultipleImageUploadRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_gallery_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -123,7 +125,7 @@ use ErrorUtil,GarageUtil;
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -183,6 +185,7 @@ use ErrorUtil,GarageUtil;
 
     public function getGarageGalleries($garage_id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_gallery_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -203,7 +206,7 @@ use ErrorUtil,GarageUtil;
             return response()->json($data, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -265,7 +268,7 @@ use ErrorUtil,GarageUtil;
     public function getGarageGalleriesClient($garage_id,Request $request) {
         try{
 
-
+            $this->storeActivity($request,"");
 
 
             $data["garage_galleries"] = GarageGallery::where([
@@ -276,7 +279,7 @@ use ErrorUtil,GarageUtil;
             return response()->json($data, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -345,6 +348,7 @@ use ErrorUtil,GarageUtil;
     public function deleteGarageGalleryById($garage_id,$id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_gallery_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -383,7 +387,7 @@ if (file_exists($file_path)) {
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

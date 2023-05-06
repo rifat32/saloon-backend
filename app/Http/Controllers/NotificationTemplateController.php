@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NotificationTemplateUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\NotificationTemplate;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class NotificationTemplateController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
      /**
      *
      * @OA\Put(
@@ -76,7 +77,7 @@ class NotificationTemplateController extends Controller
     public function updateNotificationTemplate(NotificationTemplateUpdateRequest $request)
     {
         try {
-
+            $this->storeActivity($request,"");
             return    DB::transaction(function () use (&$request) {
                 if (!$request->user()->hasPermissionTo('template_update')) {
                     return response()->json([
@@ -110,7 +111,7 @@ class NotificationTemplateController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -194,6 +195,7 @@ class NotificationTemplateController extends Controller
     public function getNotificationTemplates($perPage, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('template_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -222,7 +224,7 @@ class NotificationTemplateController extends Controller
             return response()->json($templates, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -285,6 +287,7 @@ class NotificationTemplateController extends Controller
     public function getNotificationTemplateById($id, Request $request)
     {
         try {
+            $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('template_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -304,7 +307,7 @@ class NotificationTemplateController extends Controller
             return response()->json($template, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -360,6 +363,7 @@ class NotificationTemplateController extends Controller
     public function getNotificationTemplateTypes(Request $request)
     {
         try {
+            $this->storeActivity($request,"");
              if (!$request->user()->hasPermissionTo('template_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
@@ -395,7 +399,7 @@ $types = [
 return response()->json($types, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 

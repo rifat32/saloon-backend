@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Http\Utils\CouponUtil;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use Exception;
@@ -13,7 +14,7 @@ use Illuminate\Http\Request;
 class ClientCouponController extends Controller
 {
 
-    use ErrorUtil,CouponUtil;
+    use ErrorUtil,CouponUtil,UserActivityUtil;
      /**
      *
      * @OA\Get(
@@ -100,7 +101,7 @@ class ClientCouponController extends Controller
     {
         try {
 
-
+            $this->storeActivity($request,"");
 
             $couponQuery = Coupon::where([
                 "garage_id" => $garage_id,
@@ -126,10 +127,11 @@ class ClientCouponController extends Controller
             }
 
             $coupons = $couponQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -212,7 +214,7 @@ class ClientCouponController extends Controller
     public function getCouponsClient($perPage, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
 
 
             $couponQuery =  Coupon::where([
@@ -239,10 +241,11 @@ class ClientCouponController extends Controller
 
 
             $coupons = $couponQuery->orderByDesc("id")->paginate($perPage);
+
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -306,7 +309,7 @@ class ClientCouponController extends Controller
     {
         try {
 
-
+            $this->storeActivity($request,"");
 
             $coupon = Coupon::where([
                 "id" => $id,
@@ -327,7 +330,7 @@ class ClientCouponController extends Controller
             return response()->json($coupon, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 
@@ -405,7 +408,7 @@ class ClientCouponController extends Controller
     public function getCouponDiscountClient($garage_id,$code,$amount, Request $request)
     {
         try {
-
+            $this->storeActivity($request,"");
 
             $discount = $this->getDiscount($garage_id,$code,$amount);
 
@@ -422,7 +425,7 @@ class ClientCouponController extends Controller
             return response()->json($discount, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request->fullUrl());
+            return $this->sendError($e,500,$request);
         }
     }
 

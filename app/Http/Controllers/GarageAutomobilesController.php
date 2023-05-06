@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GarageAutomobileMake;
 use Exception;
 use Illuminate\Http\Request;
 
 class GarageAutomobilesController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
     /**
         *
      * @OA\Get(
@@ -67,7 +68,7 @@ class GarageAutomobilesController extends Controller
     public function getGarageAutomobileMakesAll($garage_id,Request $request) {
 
         try{
-
+            $this->storeActivity($request,"");
 
 
        $garage_automobile_makes=  GarageAutomobileMake::with("automobileMake")
@@ -78,7 +79,7 @@ class GarageAutomobilesController extends Controller
         return response()->json($garage_automobile_makes, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

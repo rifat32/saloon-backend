@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Notification;
 use Exception;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    use ErrorUtil, GarageUtil;
+    use ErrorUtil, GarageUtil,UserActivityUtil;
 
     /**
      *
@@ -71,6 +72,7 @@ class NotificationController extends Controller
     {
         try {
 
+            $this->storeActivity($request,"");
 
             $notificationsQuery = Notification::where([
                 "receiver_id" => $request->user()->id
@@ -152,7 +154,7 @@ class NotificationController extends Controller
             return response()->json($notifications, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -215,7 +217,7 @@ class NotificationController extends Controller
     public function getNotificationsByGarageId($garage_id,$perPage, Request $request)
     {
         try {
-
+     $this->storeActivity($request,"");
             if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -313,7 +315,7 @@ class NotificationController extends Controller
             return response()->json($notifications, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 }

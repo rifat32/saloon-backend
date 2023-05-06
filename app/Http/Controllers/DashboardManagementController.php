@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Affiliation;
 use App\Models\Booking;
 use App\Models\FuelStation;
@@ -20,7 +21,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardManagementController extends Controller
 {
-    use ErrorUtil, GarageUtil;
+    use ErrorUtil, GarageUtil,UserActivityUtil;
 
     /**
      *
@@ -93,6 +94,7 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardDataJobList($garage_id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id,
                 "owner_id" => $request->user()->id
@@ -137,7 +139,7 @@ class DashboardManagementController extends Controller
                 ->get();
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -199,7 +201,9 @@ class DashboardManagementController extends Controller
      */
 
     public function getGarageOwnerDashboardDataJobApplications($garage_id, Request $request)
-    { try{
+    {
+        try{
+        $this->storeActivity($request,"");
         $garage = Garage::where([
             "id" => $garage_id,
             "owner_id" => $request->user()->id
@@ -273,7 +277,7 @@ class DashboardManagementController extends Controller
 
         return response()->json($data, 200);
     }catch(Exception $e) {
-  return $this->sendError($e, 500,$request->fullUrl());
+  return $this->sendError($e, 500,$request);
     }
 
     }
@@ -335,6 +339,7 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardDataWinnedJobApplications($garage_id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id,
                 "owner_id" => $request->user()->id
@@ -377,7 +382,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -441,6 +446,7 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardDataCompletedBookings($garage_id, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id,
                 "owner_id" => $request->user()->id
@@ -478,7 +484,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -550,6 +556,7 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardDataUpcomingJobs($garage_id, $duration, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id,
                 "owner_id" => $request->user()->id
@@ -580,7 +587,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -649,6 +656,7 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardDataExpiringAffiliations($garage_id, $duration, Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $garage = Garage::where([
                 "id" => $garage_id,
                 "owner_id" => $request->user()->id
@@ -671,7 +679,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -1161,6 +1169,7 @@ class DashboardManagementController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasRole('garage_owner')) {
                 return response()->json([
                     "message" => "You are not a garage owner"
@@ -1207,7 +1216,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }
@@ -1561,6 +1570,7 @@ class DashboardManagementController extends Controller
     public function getSuperAdminDashboardData( Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             if (!$request->user()->hasRole('superadmin')) {
                 return response()->json([
                     "message" => "You are not a superadmin"
@@ -1590,7 +1600,7 @@ class DashboardManagementController extends Controller
 
             return response()->json($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
     }

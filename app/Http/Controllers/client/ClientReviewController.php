@@ -4,6 +4,7 @@ namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Garage;
 use App\Models\GuestUser;
 use App\Models\Question;
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
 
 class ClientReviewController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
      /**
         *
      * @OA\Get(
@@ -70,6 +71,7 @@ class ClientReviewController extends Controller
     public function   getQuestionAllUnauthorized(Request $request)
     {
         try{
+            $this->storeActivity($request,"");
             $is_dafault = false;
 
             $garage =    Garage::where(["id" => $request->garage_id])->first();
@@ -105,9 +107,10 @@ if($starTag->question_id == $question->id) {
         }
 
     }
+
     return response($data, 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 
@@ -168,6 +171,7 @@ if($starTag->question_id == $question->id) {
     public function getQuestionAllReportUnauthorized(Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             $garage =    Garage::where(["id" => $request->garage_id])->first();
             if(!$garage){
                 return response("no garage found", 404);
@@ -307,7 +311,7 @@ if($starTag->question_id == $question->id) {
         // "part2" =>  $data
     ], 200);
         }catch(Exception $e) {
-      return $this->sendError($e, 500,$request->fullUrl());
+      return $this->sendError($e, 500,$request);
         }
 
 }

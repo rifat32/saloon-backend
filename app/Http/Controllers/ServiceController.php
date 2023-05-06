@@ -8,6 +8,7 @@ use App\Http\Requests\ServiceUpdateRequest;
 use App\Http\Requests\SubServiceCreateRequest;
 use App\Http\Requests\SubServiceUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\Service;
 use App\Models\SubService;
 use Exception;
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
 
 class ServiceController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
        /**
         *
      * @OA\Post(
@@ -77,6 +78,7 @@ class ServiceController extends Controller
     public function createService(ServiceCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -91,7 +93,7 @@ class ServiceController extends Controller
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -156,6 +158,7 @@ class ServiceController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -184,7 +187,7 @@ class ServiceController extends Controller
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -267,6 +270,7 @@ class ServiceController extends Controller
 
     public function getServices($perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -304,7 +308,7 @@ class ServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
      /**
@@ -364,6 +368,7 @@ class ServiceController extends Controller
 
     public function getServiceById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -384,7 +389,7 @@ class ServiceController extends Controller
             return response()->json($service, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -467,6 +472,7 @@ class ServiceController extends Controller
 
     public function getAllServicesByCategoryId($categoryId,Request $request) {
         try{
+            $this->storeActivity($request,"");
         //     if(!$request->user()->hasPermissionTo('service_view')){
         //         return response()->json([
         //            "message" => "You can not perform this action"
@@ -500,7 +506,7 @@ class ServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -584,7 +590,7 @@ class ServiceController extends Controller
     public function getAllServicesByCategoryIdV2($categoryId,Request $request) {
         try{
 
-
+            $this->storeActivity($request,"");
             $servicesQuery = Service::where([
                 "automobile_category_id" => $categoryId
             ]);
@@ -608,7 +614,7 @@ class ServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -700,7 +706,7 @@ class ServiceController extends Controller
 
     public function getSubServicesAll(Request $request) {
         try{
-
+            $this->storeActivity($request,"");
 
             $subServiceQuery = new SubService();
 
@@ -735,7 +741,7 @@ class ServiceController extends Controller
             return response()->json($sub_services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -799,6 +805,7 @@ class ServiceController extends Controller
     public function deleteServiceById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -812,7 +819,7 @@ class ServiceController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -881,6 +888,7 @@ class ServiceController extends Controller
     public function createSubService(SubServiceCreateRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -895,7 +903,7 @@ class ServiceController extends Controller
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -960,6 +968,7 @@ class ServiceController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -988,7 +997,7 @@ class ServiceController extends Controller
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -1085,6 +1094,7 @@ class ServiceController extends Controller
 
     public function getSubServicesByServiceId($serviceId,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1114,7 +1124,7 @@ class ServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -1203,6 +1213,7 @@ class ServiceController extends Controller
 
     public function getAllSubServicesByServiceId($serviceId,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1239,7 +1250,7 @@ class ServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -1305,6 +1316,7 @@ class ServiceController extends Controller
     public function deleteSubServiceById($id,Request $request) {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('service_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -1318,7 +1330,7 @@ class ServiceController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }

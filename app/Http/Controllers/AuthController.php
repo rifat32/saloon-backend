@@ -12,6 +12,7 @@ use App\Http\Requests\PasswordChangeRequest;
 use App\Http\Requests\UserInfoUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Mail\ForgetPasswordMail;
 use App\Mail\VerifyMail;
 use App\Models\AutomobileCategory;
@@ -38,7 +39,7 @@ use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    use ErrorUtil, GarageUtil;
+    use ErrorUtil, GarageUtil, UserActivityUtil;
     /**
      *
      * @OA\Post(
@@ -107,6 +108,7 @@ class AuthController extends Controller
     public function register(AuthRegisterRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             $insertableData = $request->validated();
 
             $insertableData['password'] = Hash::make($request['password']);
@@ -136,7 +138,7 @@ class AuthController extends Controller
             return response($user, 201);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -203,6 +205,7 @@ class AuthController extends Controller
 
 
         try {
+            $this->storeActivity($request,"");
             $loginData = $request->validate([
                 'email' => 'email|required',
                 'password' => 'required'
@@ -280,7 +283,7 @@ $datediff = $now - $user_created_date;
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -343,6 +346,7 @@ $datediff = $now - $user_created_date;
     {
 
         try {
+            $this->storeActivity($request,"");
             $insertableData = $request->validated();
             $user = User::where([
                 "id" => $insertableData["user_id"],
@@ -382,7 +386,7 @@ $datediff = $now - $user_created_date;
             return response()->json(['data' => $user,   "ok" => true], 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
    /**
@@ -437,6 +441,7 @@ $datediff = $now - $user_created_date;
     public function storeToken(ForgetPasswordRequest $request) {
 
         try {
+            $this->storeActivity($request,"");
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
 
@@ -452,6 +457,8 @@ $datediff = $now - $user_created_date;
             $user->save();
 
             Mail::to($insertableData["email"])->send(new ForgetPasswordMail($user));
+
+
             return response()->json([
                 "message" => "please check email"
             ]);
@@ -462,7 +469,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
 
     }
@@ -519,6 +526,7 @@ $datediff = $now - $user_created_date;
     public function resendEmailVerifyToken(EmailVerifyTokenRequest $request) {
 
         try {
+            $this->storeActivity($request,"");
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
 
@@ -549,7 +557,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
 
     }
@@ -618,6 +626,7 @@ $datediff = $now - $user_created_date;
     public function changePasswordByToken($token, ChangePasswordRequest $request)
     {
         try {
+            $this->storeActivity($request,"");
             return DB::transaction(function () use (&$request,&$token) {
                 $insertableData = $request->validated();
                 $user = User::where([
@@ -640,6 +649,7 @@ $datediff = $now - $user_created_date;
 
                 $user->save();
 
+
                 return response()->json([
                     "message" => "password changed"
                 ], 200);
@@ -650,7 +660,7 @@ $datediff = $now - $user_created_date;
 
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
 
     }
@@ -781,7 +791,7 @@ $datediff = $now - $user_created_date;
     {
 
         try {
-
+            $this->storeActivity($request,"");
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
                 // user info starts ##############
@@ -834,6 +844,9 @@ $datediff = $now - $user_created_date;
 $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 $user->permissions = $user->getAllPermissions()->pluck('name');
 $user->roles = $user->roles->pluck('name');
+
+
+
                 return response([
                      "user" => $user,
                      "garage" => $garage,
@@ -842,7 +855,7 @@ $user->roles = $user->roles->pluck('name');
             });
         } catch (Exception $e) {
 
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
     }
 
@@ -901,17 +914,20 @@ $user->roles = $user->roles->pluck('name');
 
 public function getUser (Request $request) {
     try{
+        $this->storeActivity($request,"");
         $user = $request->user();
         $user->token = auth()->user()->createToken('authToken')->accessToken;
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
+
+
 
         return response()->json(
             $user,
             200
         );
     }catch(Exception $e) {
-        return $this->sendError($e, 500,$request->fullUrl());
+        return $this->sendError($e, 500,$request);
     }
 
 }
@@ -974,6 +990,7 @@ public function getUser (Request $request) {
 
     public function checkEmail(Request $request) {
         try{
+            $this->storeActivity($request,"");
             $user = User::where([
                 "email" => $request->email
                ])->first();
@@ -982,7 +999,7 @@ public function getUser (Request $request) {
                }
                return response()->json(["data" => false],200);
         }catch(Exception $e) {
-            return $this->sendError($e, 500,$request->fullUrl());
+            return $this->sendError($e, 500,$request);
         }
 
  }
@@ -1052,6 +1069,7 @@ public function getUser (Request $request) {
     public function changePassword(PasswordChangeRequest $request)
     {
 try{
+    $this->storeActivity($request,"");
     $client_request = $request->validated();
 
     $user = $request->user();
@@ -1079,7 +1097,7 @@ try{
         "message" => "password changed"
     ], 200);
 }catch(Exception $e) {
-    return $this->sendError($e,500,$request->fullUrl());
+    return $this->sendError($e,500,$request);
 }
 
     }
@@ -1159,7 +1177,7 @@ try{
     {
 
         try{
-
+            $this->storeActivity($request,"");
             $updatableData = $request->validated();
 
 
@@ -1195,7 +1213,7 @@ try{
             return response($user, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 

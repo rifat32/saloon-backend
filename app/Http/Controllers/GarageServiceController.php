@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\GarageService;
 use App\Models\GarageSubService;
 use Exception;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 
 class GarageServiceController extends Controller
 {
-    use ErrorUtil,GarageUtil;
+    use ErrorUtil,GarageUtil,UserActivityUtil;
    /**
         *
      * @OA\Get(
@@ -86,6 +87,7 @@ class GarageServiceController extends Controller
 
     public function getGarageServices($garage_id,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_services_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -124,7 +126,7 @@ class GarageServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -213,6 +215,7 @@ class GarageServiceController extends Controller
 
     public function getGarageSubServices($garage_id,$garage_service_id,$perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('garage_services_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -250,7 +253,7 @@ class GarageServiceController extends Controller
             return response()->json($services, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 }

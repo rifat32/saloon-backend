@@ -6,6 +6,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\UserActivityUtil;
 use App\Models\User;
 use DateTime;
 use Exception;
@@ -16,7 +17,7 @@ use Illuminate\Support\Str;
 // eeeeee
 class UserManagementController extends Controller
 {
-    use ErrorUtil;
+    use ErrorUtil,UserActivityUtil;
 
 
 
@@ -86,6 +87,7 @@ class UserManagementController extends Controller
     public function createUserImage(ImageUploadRequest $request)
     {
         try{
+            $this->storeActivity($request,"");
             // if(!$request->user()->hasPermissionTo('user_create')){
             //      return response()->json([
             //         "message" => "You can not perform this action"
@@ -106,7 +108,7 @@ class UserManagementController extends Controller
 
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -184,6 +186,7 @@ class UserManagementController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('user_create')){
                  return response()->json([
                     "message" => "You can not perform this action"
@@ -213,7 +216,7 @@ class UserManagementController extends Controller
             return response($user, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
  /**
@@ -287,6 +290,7 @@ class UserManagementController extends Controller
     {
 
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('user_update')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -344,7 +348,7 @@ class UserManagementController extends Controller
             return response($user, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
     }
 
@@ -427,6 +431,7 @@ class UserManagementController extends Controller
 
     public function getUsers($perPage,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('user_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -460,7 +465,7 @@ class UserManagementController extends Controller
             return response()->json($users, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -521,6 +526,7 @@ class UserManagementController extends Controller
 
     public function getUserById($id,Request $request) {
         try{
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('user_view')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -540,7 +546,7 @@ class UserManagementController extends Controller
             return response()->json($user, 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
@@ -601,7 +607,7 @@ class UserManagementController extends Controller
     public function deleteUserById($id,Request $request) {
 
         try{
-
+            $this->storeActivity($request,"");
             if(!$request->user()->hasPermissionTo('user_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
@@ -622,7 +628,7 @@ class UserManagementController extends Controller
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
-        return $this->sendError($e,500,$request->fullUrl());
+        return $this->sendError($e,500,$request);
         }
 
     }
