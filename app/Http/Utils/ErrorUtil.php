@@ -29,13 +29,11 @@ trait ErrorUtil
         $data["file"] = $e->getFile();
         $data["api_url"] = $apiUrl;
 $user = auth()->user();
-$userJson = "";
-if($user) {
-    $userJson = json_encode($user);
-}
+
         ErrorLog::create([
             "api_url" => $data["api_url"],
-            "user"=> auth()->user(),
+            "user"=> !empty($user)?(json_encode($user)):"",
+            "user_id"=> !empty($user)?$user->id:"",
             "message"=> $data["message"],
             "status_code"=> $data["status_code"],
             "line"=> $data["line"],

@@ -19,6 +19,7 @@ class CreateErrorLogsTable extends Migration
             $table->string("api_url")->nullable();
 
             $table->text("user")->nullable();
+            $table->unsignedBigInteger("user_id")->nullable();
 
 
             $table->text("message")->nullable();
