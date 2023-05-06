@@ -900,15 +900,20 @@ $user->roles = $user->roles->pluck('name');
 
 
 public function getUser (Request $request) {
-    $user = $request->user();
-    $user->token = auth()->user()->createToken('authToken')->accessToken;
-    $user->permissions = $user->getAllPermissions()->pluck('name');
-    $user->roles = $user->roles->pluck('name');
+    try{
+        $user = $request->user();
+        $user->token = auth()->user()->createToken('authToken')->accessToken;
+        $user->permissions = $user->getAllPermissions()->pluck('name');
+        $user->roles = $user->roles->pluck('name');
 
-    return response()->json(
-        $user,
-        200
-    );
+        return response()->json(
+            $user,
+            200
+        );
+    }catch(Exception $e) {
+        return $this->sendError($e, 500,$request->fullUrl());
+    }
+
 }
 
 
@@ -968,13 +973,18 @@ public function getUser (Request $request) {
 
 
     public function checkEmail(Request $request) {
-        $user = User::where([
-         "email" => $request->email
-        ])->first();
-        if($user) {
-return response()->json(["data" => true],200);
+        try{
+            $user = User::where([
+                "email" => $request->email
+               ])->first();
+               if($user) {
+       return response()->json(["data" => true],200);
+               }
+               return response()->json(["data" => false],200);
+        }catch(Exception $e) {
+            return $this->sendError($e, 500,$request->fullUrl());
         }
-        return response()->json(["data" => false],200);
+
  }
 
 
@@ -1041,33 +1051,37 @@ return response()->json(["data" => true],200);
 
     public function changePassword(PasswordChangeRequest $request)
     {
+try{
+    $client_request = $request->validated();
 
-        $client_request = $request->validated();
-
-        $user = $request->user();
-
-
-
-        if (!Hash::check($client_request["current_password"],$user->password)) {
-            return response()->json([
-                "message" => "Invalid password"
-            ], 400);
-        }
-
-        $password = Hash::make($client_request["password"]);
-        $user->password = $password;
+    $user = $request->user();
 
 
 
-        $user->login_attempts = 0;
-        $user->last_failed_login_attempt_at = null;
-        $user->save();
-
-
-
+    if (!Hash::check($client_request["current_password"],$user->password)) {
         return response()->json([
-            "message" => "password changed"
-        ], 200);;
+            "message" => "Invalid password"
+        ], 400);
+    }
+
+    $password = Hash::make($client_request["password"]);
+    $user->password = $password;
+
+
+
+    $user->login_attempts = 0;
+    $user->last_failed_login_attempt_at = null;
+    $user->save();
+
+
+
+    return response()->json([
+        "message" => "password changed"
+    ], 200);
+}catch(Exception $e) {
+    return $this->sendError($e,500,$request->fullUrl());
+}
+
     }
 
 
@@ -1145,10 +1159,6 @@ return response()->json(["data" => true],200);
     {
 
         try{
-
-
-
-
 
             $updatableData = $request->validated();
 

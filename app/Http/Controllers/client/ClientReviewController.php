@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Utils\ErrorUtil;
 use App\Models\Garage;
 use App\Models\GuestUser;
 use App\Models\Question;
 use App\Models\ReviewNew;
 use App\Models\ReviewValueNew;
 use App\Models\Star;
+use Exception;
 use Illuminate\Http\Request;
 
 class ClientReviewController extends Controller
 {
+    use ErrorUtil;
      /**
         *
      * @OA\Get(
@@ -66,7 +69,8 @@ class ClientReviewController extends Controller
      */
     public function   getQuestionAllUnauthorized(Request $request)
     {
-        $is_dafault = false;
+        try{
+            $is_dafault = false;
 
             $garage =    Garage::where(["id" => $request->garage_id])->first();
             if(!$garage){
@@ -102,6 +106,10 @@ if($starTag->question_id == $question->id) {
 
     }
     return response($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
+
 
 
     }
@@ -159,83 +167,79 @@ if($starTag->question_id == $question->id) {
 
     public function getQuestionAllReportUnauthorized(Request $request) {
 
+        try{
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage){
+                return response("no garage found", 404);
+            }
 
-        $garage =    Garage::where(["id" => $request->garage_id])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
+        $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
 
-    $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
+        $questions =  $query->get();
 
-    $questions =  $query->get();
+        $questionsCount = $query->get()->count();
 
-    $questionsCount = $query->get()->count();
+    $data =  json_decode(json_encode($questions), true);
+    foreach($questions as $key1=>$question){
 
-$data =  json_decode(json_encode($questions), true);
-foreach($questions as $key1=>$question){
-
-    $tags_rating = [];
-   $starCountTotal = 0;
-   $starCountTotalTimes = 0;
-    foreach($question->question_stars as $key2=>$questionStar){
-
-
-        $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-        $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
-   
-
-            ]
-        )
-        ->get()
-        ->count();
-
-        $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
-
-        $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
-
-        if($starCountTotalTimes > 0) {
-            $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
-        }
+        $tags_rating = [];
+       $starCountTotal = 0;
+       $starCountTotalTimes = 0;
+        foreach($question->question_stars as $key2=>$questionStar){
 
 
+            $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
+
+            $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+            ->where([
+                "review_news.garage_id" => $garage->id,
+                "question_id" => $question->id,
+                "star_id" => $questionStar->star->id,
 
 
-        foreach($questionStar->star->star_tags as $key3=>$starTag){
+                ]
+            )
+            ->get()
+            ->count();
 
+            $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
 
+            $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
 
-
-
-     if($starTag->question_id == $question->id) {
-
-
-
-
-        $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "tag_id" => $starTag->tag->id,
-
-            ]
-        )->get()->count();
-
-
-
-
-
-            if($starTag->tag->count > 0) {
- array_push($tags_rating,json_decode(json_encode($starTag->tag)));
+            if($starCountTotalTimes > 0) {
+                $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
             }
 
 
 
 
+            foreach($questionStar->star->star_tags as $key3=>$starTag){
+
+
+
+
+
+         if($starTag->question_id == $question->id) {
+
+
+
+
+            $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+            ->where([
+                "review_news.garage_id" => $garage->id,
+                "question_id" => $question->id,
+                "tag_id" => $starTag->tag->id,
+
+                ]
+            )->get()->count();
+
+
+
+
+
+                if($starTag->tag->count > 0) {
+     array_push($tags_rating,json_decode(json_encode($starTag->tag)));
+                }
 
 
 
@@ -243,61 +247,69 @@ foreach($questions as $key1=>$question){
 
 
 
-      }
 
 
+
+
+          }
+
+
+
+            }
 
         }
 
+
+        $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
     }
 
 
-    $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
-}
 
 
 
+    $totalCount = 0;
+    $ttotalRating = 0;
 
+    foreach(Star::get() as $star) {
 
-$totalCount = 0;
-$ttotalRating = 0;
+    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+    ->where([
+        "review_news.garage_id" => $garage->id,
+        "star_id" => $star->id,
 
-foreach(Star::get() as $star) {
+    ])
+    ->distinct("review_value_news.review_id","review_value_news.question_id")
+    ->count();
 
-$data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-->where([
-    "review_news.garage_id" => $garage->id,
-    "star_id" => $star->id,
+    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
 
-])
-->distinct("review_value_news.review_id","review_value_news.question_id")
-->count();
+    $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
 
-$totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+    }
+    if($totalCount > 0) {
+    $data2["total_rating"] = $totalCount / $ttotalRating;
 
-$ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+    }
+    else {
+    $data2["total_rating"] = 0;
 
-}
-if($totalCount > 0) {
-$data2["total_rating"] = $totalCount / $ttotalRating;
+    }
 
-}
-else {
-$data2["total_rating"] = 0;
+    $data2["total_comment"] = ReviewNew::where([
+    "garage_id" => $garage->id,
 
-}
+    ])
+    ->whereNotNull("comment")
+    ->count();
 
-$data2["total_comment"] = ReviewNew::where([
-"garage_id" => $garage->id,
+    return response([
+        "part1" =>  $data2,
+        // "part2" =>  $data
+    ], 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-])
-->whereNotNull("comment")
-->count();
-
-return response([
-    "part1" =>  $data2,
-    // "part2" =>  $data
-], 200);
 }
 
 

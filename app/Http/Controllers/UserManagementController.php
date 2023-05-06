@@ -599,16 +599,17 @@ class UserManagementController extends Controller
      */
 
     public function deleteUserById($id,Request $request) {
-       $userQuery = User::where([
-            "id" => $id
-       ]);
 
         try{
+
             if(!$request->user()->hasPermissionTo('user_delete')){
                 return response()->json([
                    "message" => "You can not perform this action"
                 ],401);
            }
+           $userQuery = User::where([
+            "id" => $id
+       ]);
            if($userQuery->first()->hasRole("superadmin")){
             return response()->json([
                "message" => "superadmin can not be deleted"

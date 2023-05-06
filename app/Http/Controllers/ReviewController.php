@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Utils\ErrorUtil;
 use App\Models\Booking;
 use App\Models\Garage;
 use App\Models\GuestUser;
@@ -13,11 +14,13 @@ use App\Models\ReviewValueNew;
 use App\Models\Star;
 use App\Models\StarTag;
 use App\Models\Tag;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReviewController extends Controller
 {
+    use ErrorUtil;
       /**
         *
      * @OA\Post(
@@ -78,28 +81,33 @@ class ReviewController extends Controller
 
     public function storeQuestion(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_create')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $question = [
+                'question' => $request->question,
+                'is_active' => $request->is_active,
+                'type' => !empty($request->type)?$request->type:"star",
+                "is_default" => true
+            ];
+
+
+
+
+
+
+
+            $createdQuestion =    Question::create($question);
+            $createdQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
+
+            return response($createdQuestion, 201);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $question = [
-            'question' => $request->question,
-            'is_active' => $request->is_active,
-            'type' => !empty($request->type)?$request->type:"star",
-            "is_default" => true
-        ];
 
-
-
-
-
-
-
-        $createdQuestion =    Question::create($question);
-        $createdQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
-
-        return response($createdQuestion, 201);
     }
 
 
@@ -168,27 +176,32 @@ class ReviewController extends Controller
 
     public function updateQuestion(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_update')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_update')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $question = [
+                'type' => $request->type,
+                'question' => $request->question,
+                "is_active"=>$request->is_active,
+            ];
+
+
+            $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
+                $question
+            )
+                // ->with("somthing")
+
+                ->first();
+                $updatedQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
+
+            return response($updatedQuestion, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $question = [
-            'type' => $request->type,
-            'question' => $request->question,
-            "is_active"=>$request->is_active,
-        ];
 
-
-        $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
-            $question
-        )
-            // ->with("somthing")
-
-            ->first();
-            $updatedQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
-
-        return response($updatedQuestion, 200);
     }
 
 /**
@@ -250,24 +263,29 @@ class ReviewController extends Controller
      */
     public function updateQuestionActiveState(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_update')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_update')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $question = [
+                "is_active"=>$request->is_active,
+            ];
+
+            $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
+                $question
+            )
+                // ->with("somthing")
+
+                ->first();
+
+
+            return response($updatedQuestion, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $question = [
-            "is_active"=>$request->is_active,
-        ];
 
-        $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
-            $question
-        )
-            // ->with("somthing")
-
-            ->first();
-
-
-        return response($updatedQuestion, 200);
     }
 
     /**
@@ -320,21 +338,26 @@ class ReviewController extends Controller
      */
     public function   getQuestion(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $is_dafault = true;
+
+
+            $query =  Question::where(["is_default" => $is_dafault]);
+
+
+            $questions =  $query->get();
+
+
+        return response($questions, 200);
+
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $is_dafault = true;
-
-
-        $query =  Question::where(["is_default" => $is_dafault]);
-
-
-        $questions =  $query->get();
-
-
-    return response($questions, 200);
 
 
 
@@ -407,46 +430,50 @@ class ReviewController extends Controller
      */
     public function   getQuestionAll(Request $request)
     {
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-
-            $is_dafault = true;
-
-
-
-        $query =  Question::where(["is_default" => $is_dafault]);
+                $is_dafault = true;
 
 
-        $questions =  $query->get();
 
-    $data =  json_decode(json_encode($questions), true);
-    foreach($questions as $key1=>$question){
-
-        foreach($question->question_stars as $key2=>$questionStar){
-            $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
+            $query =  Question::where(["is_default" => $is_dafault]);
 
 
-            $data[$key1]["stars"][$key2]["tags"] = [];
-            foreach($questionStar->star->star_tags as $key3=>$starTag){
-if($starTag->question_id == $question->id) {
+            $questions =  $query->get();
 
-    array_push($data[$key1]["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
+        $data =  json_decode(json_encode($questions), true);
+        foreach($questions as $key1=>$question){
+
+            foreach($question->question_stars as $key2=>$questionStar){
+                $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
 
 
-}
+                $data[$key1]["stars"][$key2]["tags"] = [];
+                foreach($questionStar->star->star_tags as $key3=>$starTag){
+    if($starTag->question_id == $question->id) {
+
+        array_push($data[$key1]["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
 
 
+    }
+
+
+
+                }
 
             }
 
         }
+        return response($data, 200);
 
-    }
-    return response($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
 
     }
@@ -521,187 +548,192 @@ if($starTag->question_id == $question->id) {
 
     public function getQuestionAllReport(Request $request) {
 
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
-        $garage =    Garage::where(["id" => $request->garage_id])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage){
+                return response("no garage found", 404);
+            }
 
-    $query =  Question::where(["is_active" => true]);
+        $query =  Question::where(["is_active" => true]);
 
-    $questions =  $query->get();
+        $questions =  $query->get();
 
-    $questionsCount = $query->get()->count();
+        $questionsCount = $query->get()->count();
 
-$data =  json_decode(json_encode($questions), true);
-foreach($questions as $key1=>$question){
+    $data =  json_decode(json_encode($questions), true);
+    foreach($questions as $key1=>$question){
 
-    $tags_rating = [];
-   $starCountTotal = 0;
-   $starCountTotalTimes = 0;
-    foreach($question->question_stars as $key2=>$questionStar){
-
-
-        $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-        $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
+        $tags_rating = [];
+       $starCountTotal = 0;
+       $starCountTotalTimes = 0;
+        foreach($question->question_stars as $key2=>$questionStar){
 
 
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
+            $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
 
-            $data[$key1]["stars"][$key2]["stars_count"] = $data[$key1]["stars"][$key2]["stars_count"]->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-        $data[$key1]["stars"][$key2]["stars_count"] = $data[$key1]["stars"][$key2]["stars_count"]->get()
-        ->count();
-
-        $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
-
-        $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
-        $data[$key1]["stars"][$key2]["tag_ratings"] = [];
-        if($starCountTotalTimes > 0) {
-            $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
-        }
+            $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+            ->where([
+                "review_news.garage_id" => $garage->id,
+                "question_id" => $question->id,
+                "star_id" => $questionStar->star->id,
 
 
-        foreach($questionStar->star->star_tags as $key3=>$starTag){
+                ]
+            );
+            if(!empty($request->start_date) && !empty($request->end_date)) {
 
+                $data[$key1]["stars"][$key2]["stars_count"] = $data[$key1]["stars"][$key2]["stars_count"]->whereBetween('review_news.created_at', [
+                    $request->start_date,
+                    $request->end_date
+                ]);
 
-     if($starTag->question_id == $question->id) {
+            }
+            $data[$key1]["stars"][$key2]["stars_count"] = $data[$key1]["stars"][$key2]["stars_count"]->get()
+            ->count();
 
-        $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "tag_id" => $starTag->tag->id,
+            $starCountTotal += $data[$key1]["stars"][$key2]["stars_count"] * $questionStar->star->value;
 
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-
-            $starTag->tag->count = $starTag->tag->count->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-
-        $starTag->tag->count = $starTag->tag->count->get()->count();
-        if($starTag->tag->count > 0) {
-            array_push($tags_rating,json_decode(json_encode($starTag->tag)));
-                       }
-
-
-        $starTag->tag->total =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-        ->where([
-            "review_news.garage_id" => $garage->id,
-            "question_id" => $question->id,
-            "star_id" => $questionStar->star->id,
-            "tag_id" => $starTag->tag->id,
-
-            ]
-        );
-        if(!empty($request->start_date) && !empty($request->end_date)) {
-
-            $starTag->tag->total = $starTag->tag->total->whereBetween('review_news.created_at', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-        $starTag->tag->total = $starTag->tag->total->get()->count();
-
-            if($starTag->tag->total > 0) {
-                unset($starTag->tag->count);
-                array_push($data[$key1]["stars"][$key2]["tag_ratings"],json_decode(json_encode($starTag->tag)));
+            $starCountTotalTimes += $data[$key1]["stars"][$key2]["stars_count"];
+            $data[$key1]["stars"][$key2]["tag_ratings"] = [];
+            if($starCountTotalTimes > 0) {
+                $data[$key1]["rating"] = $starCountTotal / $starCountTotalTimes;
             }
 
 
-      }
+            foreach($questionStar->star->star_tags as $key3=>$starTag){
 
 
+         if($starTag->question_id == $question->id) {
+
+            $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+            ->where([
+                "review_news.garage_id" => $garage->id,
+                "question_id" => $question->id,
+                "tag_id" => $starTag->tag->id,
+
+                ]
+            );
+            if(!empty($request->start_date) && !empty($request->end_date)) {
+
+                $starTag->tag->count = $starTag->tag->count->whereBetween('review_news.created_at', [
+                    $request->start_date,
+                    $request->end_date
+                ]);
+
+            }
+
+            $starTag->tag->count = $starTag->tag->count->get()->count();
+            if($starTag->tag->count > 0) {
+                array_push($tags_rating,json_decode(json_encode($starTag->tag)));
+                           }
+
+
+            $starTag->tag->total =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+            ->where([
+                "review_news.garage_id" => $garage->id,
+                "question_id" => $question->id,
+                "star_id" => $questionStar->star->id,
+                "tag_id" => $starTag->tag->id,
+
+                ]
+            );
+            if(!empty($request->start_date) && !empty($request->end_date)) {
+
+                $starTag->tag->total = $starTag->tag->total->whereBetween('review_news.created_at', [
+                    $request->start_date,
+                    $request->end_date
+                ]);
+
+            }
+            $starTag->tag->total = $starTag->tag->total->get()->count();
+
+                if($starTag->tag->total > 0) {
+                    unset($starTag->tag->count);
+                    array_push($data[$key1]["stars"][$key2]["tag_ratings"],json_decode(json_encode($starTag->tag)));
+                }
+
+
+          }
+
+
+
+            }
 
         }
 
+
+        $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
     }
 
 
-    $data[$key1]["tags_rating"] = array_values(collect($tags_rating)->unique()->toArray());
-}
 
 
 
+    $totalCount = 0;
+    $ttotalRating = 0;
 
+    foreach(Star::get() as $star) {
 
-$totalCount = 0;
-$ttotalRating = 0;
+    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+    ->where([
+        "review_news.garage_id" => $garage->id,
+        "star_id" => $star->id,
 
-foreach(Star::get() as $star) {
+    ])
+    ->distinct("review_value_news.review_id","review_value_news.question_id");
+    if(!empty($request->start_date) && !empty($request->end_date)) {
 
-$data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-->where([
-    "review_news.garage_id" => $garage->id,
-    "star_id" => $star->id,
+        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+            $request->start_date,
+            $request->end_date
+        ]);
 
-])
-->distinct("review_value_news.review_id","review_value_news.question_id");
-if(!empty($request->start_date) && !empty($request->end_date)) {
+    }
+    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
 
-    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+    $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+
+    }
+    if($totalCount > 0) {
+    $data2["total_rating"] = $totalCount / $ttotalRating;
+
+    }
+    else {
+    $data2["total_rating"] = 0;
+
+    }
+
+    $data2["total_comment"] = ReviewNew::where([
+    "garage_id" => $garage->id,
+
+    ])
+    ->whereNotNull("comment");
+    if(!empty($request->start_date) && !empty($request->end_date)) {
+
+    $data2["total_comment"] = $data2["total_comment"]->whereBetween('review_news.created_at', [
         $request->start_date,
         $request->end_date
     ]);
 
-}
-$data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+    }
+    $data2["total_comment"] = $data2["total_comment"]->count();
 
-$totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+    return response([
+        "part1" =>  $data2,
+        "part2" =>  $data
+    ], 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-$ttotalRating += $data2["star_" . $star->value . "_selected_count"];
-
-}
-if($totalCount > 0) {
-$data2["total_rating"] = $totalCount / $ttotalRating;
-
-}
-else {
-$data2["total_rating"] = 0;
-
-}
-
-$data2["total_comment"] = ReviewNew::where([
-"garage_id" => $garage->id,
-
-])
-->whereNotNull("comment");
-if(!empty($request->start_date) && !empty($request->end_date)) {
-
-$data2["total_comment"] = $data2["total_comment"]->whereBetween('review_news.created_at', [
-    $request->start_date,
-    $request->end_date
-]);
-
-}
-$data2["total_comment"] = $data2["total_comment"]->count();
-
-return response([
-    "part1" =>  $data2,
-    "part2" =>  $data
-], 200);
 }
 
 
@@ -765,42 +797,47 @@ return response([
 
     public function   getQuestionById($id, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+            $questions =    Question::where(["id" => $id])
+                ->first();
+
+
+                if(!$questions) {
+                    return response([
+                        "message" => "No question found"
+                    ], 404);
+                }
+                $data =  json_decode(json_encode($questions), true);
+
+                foreach($questions->question_stars as $key2=>$questionStar){
+                    $data["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
+
+
+                    $data["stars"][$key2]["tags"] = [];
+                    foreach($questionStar->star->star_tags as $key3=>$starTag){
+
+        if($starTag->question_id == $questions->id) {
+
+            array_push($data["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
+
         }
 
-        $questions =    Question::where(["id" => $id])
-            ->first();
 
 
-            if(!$questions) {
-                return response([
-                    "message" => "No question found"
-                ], 404);
-            }
-            $data =  json_decode(json_encode($questions), true);
-
-            foreach($questions->question_stars as $key2=>$questionStar){
-                $data["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-
-                $data["stars"][$key2]["tags"] = [];
-                foreach($questionStar->star->star_tags as $key3=>$starTag){
-
-    if($starTag->question_id == $questions->id) {
-
-        array_push($data["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
-
-    }
-
-
+                    }
 
                 }
+            return response($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-            }
-        return response($data, 200);
     }
 
 
@@ -868,16 +905,21 @@ return response([
      */
     public function   deleteQuestionById($id, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_delete')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_delete')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+            $questions =    Question::where(["id" => $id])
+                ->delete();
+
+            return response(["message" => "ok"], 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        $questions =    Question::where(["id" => $id])
-            ->delete();
-
-        return response(["message" => "ok"], 200);
     }
 
 
@@ -952,72 +994,77 @@ return response([
 
     public function getQuestionAllReportQuantum(Request $request) {
 
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-        $garage =    Garage::where(["id" => $request->garage_id,
-        "owner_id" => $request->user()->id
-        ])->first();
-        if(!$garage){
-            return response("no garage found", 404);
-        }
-$data = [];
-
-$period=0;
-        for($i=0;$i<$request->quantum;$i++ ) {
-            $totalCount = 0;
-            $ttotalRating = 0;
-
-            foreach(Star::get() as $star) {
-
-            $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-            ->where([
-                "review_news.garage_id" => $garage->id,
-                "star_id" => $star->id,
-               
-            ])
-            ->whereBetween(
-                'review_news.created_at',
-                [now()->subDays(($request->period + $period))->startOfDay(), now()->subDays($period)->endOfDay()]
-            )
-            ->distinct("review_value_news.review_id","review_value_news.question_id")
-            ->count();
-
-            $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-            $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
-
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
             }
-            if($totalCount > 0) {
-            $data2["total_rating"] = $totalCount / $ttotalRating;
-
+            $garage =    Garage::where(["id" => $request->garage_id,
+            "owner_id" => $request->user()->id
+            ])->first();
+            if(!$garage){
+                return response("no garage found", 404);
             }
-            else {
-            $data2["total_rating"] = 0;
+    $data = [];
+
+    $period=0;
+            for($i=0;$i<$request->quantum;$i++ ) {
+                $totalCount = 0;
+                $ttotalRating = 0;
+
+                foreach(Star::get() as $star) {
+
+                $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                ->where([
+                    "review_news.garage_id" => $garage->id,
+                    "star_id" => $star->id,
+
+                ])
+                ->whereBetween(
+                    'review_news.created_at',
+                    [now()->subDays(($request->period + $period))->startOfDay(), now()->subDays($period)->endOfDay()]
+                )
+                ->distinct("review_value_news.review_id","review_value_news.question_id")
+                ->count();
+
+                $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+
+                }
+                if($totalCount > 0) {
+                $data2["total_rating"] = $totalCount / $ttotalRating;
+
+                }
+                else {
+                $data2["total_rating"] = 0;
+                }
+
+                // $data2["total_comment"] = ReviewNew::where([
+                //     "garage_id" => $garage->id,
+                //     "user_id" => NULL,
+                // ])
+                // ->whereNotNull("comment")
+                // ->count();
+            array_push($data,$data2);
+            $period +=  $request->period + $period;
             }
 
-            // $data2["total_comment"] = ReviewNew::where([
-            //     "garage_id" => $garage->id,
-            //     "user_id" => NULL,
-            // ])
-            // ->whereNotNull("comment")
-            // ->count();
-        array_push($data,$data2);
-        $period +=  $request->period + $period;
+
+
+
+
+
+
+    return response([
+        "data" =>  $data,
+
+    ], 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-
-
-
-
-
-
-return response([
-    "data" =>  $data,
-
-], 200);
 }
 
 
@@ -1076,22 +1123,27 @@ return response([
      */
     public function storeTag(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_create')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $question = [
+                'tag' => $request->tag,
+            ];
+            $question["is_default"] = true;
+
+
+
+            $createdQuestion =    Tag::create($question);
+
+
+            return response($createdQuestion, 201);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $question = [
-            'tag' => $request->tag,
-        ];
-        $question["is_default"] = true;
 
-
-
-        $createdQuestion =    Tag::create($question);
-
-
-        return response($createdQuestion, 201);
 
 
 
@@ -1154,88 +1206,92 @@ return response([
      */
     public function storeTagMultiple(Request $request)
     {
+        try{
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
-        if (!$request->user()->hasPermissionTo('questions_create')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
+            $duplicate_indexes_array = [];
 
-        $duplicate_indexes_array = [];
+            $uniqueTags = collect($request->tags)->unique("tag");
 
-        $uniqueTags = collect($request->tags)->unique("tag");
+            $uniqueTags->values()->all();
 
-        $uniqueTags->values()->all();
+            foreach($uniqueTags as $index=>$tag) {
+                $question = [
+                    'tag' => $tag,
 
-        foreach($uniqueTags as $index=>$tag) {
-            $question = [
-                'tag' => $tag,
-
-            ];
-
-
-
-
-
-            $tag_found =    Tag::where([
-                    "garage_id" => NULL,
-                    "tag" => $question["tag"],
-                    "is_default" => 1
-                ])
-                ->first();
-
-         if($tag_found) {
-
-            array_push($duplicate_indexes_array,$index);
-        }
+                ];
 
 
 
 
 
+                $tag_found =    Tag::where([
+                        "garage_id" => NULL,
+                        "tag" => $question["tag"],
+                        "is_default" => 1
+                    ])
+                    ->first();
 
+             if($tag_found) {
 
-        }
-
-
-
-        if(count($duplicate_indexes_array)) {
-
-            return response([
-                "message" => "duplicate data",
-                "duplicate_indexes_array"=> $duplicate_indexes_array
-        ], 409);
-
-        } else {
- foreach($uniqueTags as $index=>$tag) {
-            $question = [
-                'tag' => $tag
-            ];
-
-
-
-                $question["is_default"] = true;
-
-
-
-
-
-
-            if(!count($duplicate_indexes_array)) {
-                Tag::create($question);
+                array_push($duplicate_indexes_array,$index);
             }
 
 
 
+
+
+
+
+            }
+
+
+
+            if(count($duplicate_indexes_array)) {
+
+                return response([
+                    "message" => "duplicate data",
+                    "duplicate_indexes_array"=> $duplicate_indexes_array
+            ], 409);
+
+            } else {
+     foreach($uniqueTags as $index=>$tag) {
+                $question = [
+                    'tag' => $tag
+                ];
+
+
+
+                    $question["is_default"] = true;
+
+
+
+
+
+
+                if(!count($duplicate_indexes_array)) {
+                    Tag::create($question);
+                }
+
+
+
+            }
+            }
+
+
+
+
+
+
+            return response(["message" => "data inserted"], 201);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        }
 
-
-
-
-
-
-        return response(["message" => "data inserted"], 201);
 
 
     }
@@ -1296,24 +1352,29 @@ return response([
      */
     public function updateTag(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_update')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_update')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $question = [
+                'tag' => $request->tag
+            ];
+
+            $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
+                $question
+            )
+                // ->with("somthing")
+
+                ->first();
+
+
+            return response($updatedQuestion, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $question = [
-            'tag' => $request->tag
-        ];
 
-        $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
-            $question
-        )
-            // ->with("somthing")
-
-            ->first();
-
-
-        return response($updatedQuestion, 200);
 
     }
 
@@ -1366,17 +1427,22 @@ return response([
      */
     public function   getTag(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+                $query =  Tag::where(["is_default" => true]);
+            $questions =  $query->get();
+
+
+            return response($questions, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-            $query =  Tag::where(["is_default" => true]);
-        $questions =  $query->get();
-
-
-        return response($questions, 200);
 
 
 
@@ -1433,20 +1499,25 @@ return response([
      */
     public function   getTagById($id, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+            $questions =    Tag::where(["id" => $id])
+                ->first();
+                if(!$questions) {
+                    return response([
+                        "message" => "No Tag Found"
+                    ], 404);
+                }
+            return response($questions, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        $questions =    Tag::where(["id" => $id])
-            ->first();
-            if(!$questions) {
-                return response([
-                    "message" => "No Tag Found"
-                ], 404);
-            }
-        return response($questions, 200);
     }
 
 
@@ -1501,18 +1572,23 @@ return response([
      */
     public function   deleteTagById($id, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_delete')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('questions_delete')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $tag =    Tag::where(["id" => $id])
+            ->first();
+
+            $tag->delete();
+
+
+            return response(["message" => "ok"], 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $tag =    Tag::where(["id" => $id])
-        ->first();
 
-        $tag->delete();
-
-
-        return response(["message" => "ok"], 200);
     }
 
 
@@ -1588,36 +1664,41 @@ return response([
 
     public function storeOwnerQuestion(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_create')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-        return DB::transaction(function ()use($request) {
-            $question_id = $request->question_id;
-            foreach($request->stars as $requestStar){
+        try{
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            return DB::transaction(function ()use($request) {
+                $question_id = $request->question_id;
+                foreach($request->stars as $requestStar){
 
 
-                QusetionStar::create([
+                    QusetionStar::create([
+                        "question_id"=>$question_id,
+                        "star_id" => $requestStar["star_id"]
+                             ]);
+
+
+                   foreach($requestStar["tags"] as $tag){
+
+
+                   StarTag::create([
                     "question_id"=>$question_id,
+                    "tag_id"=>$tag["tag_id"],
                     "star_id" => $requestStar["star_id"]
                          ]);
 
+                   }
+                }
 
-               foreach($requestStar["tags"] as $tag){
+          return response(["message" => "ok"], 201);
+            });
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-
-               StarTag::create([
-                "question_id"=>$question_id,
-                "tag_id"=>$tag["tag_id"],
-                "star_id" => $requestStar["star_id"]
-                     ]);
-
-               }
-            }
-
-      return response(["message" => "ok"], 201);
-        });
 
     }
 
@@ -1697,46 +1778,51 @@ return response([
 
     public function updateOwnerQuestion(Request $request)
     {
-        if (!$request->user()->hasPermissionTo('questions_update')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-        return DB::transaction(function ()use($request) {
-            $question_id = $request->question_id;
-            QusetionStar::where([
-                "question_id"  => $question_id
-            ])
-            ->delete();
+        try{
+            if (!$request->user()->hasPermissionTo('questions_update')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            return DB::transaction(function ()use($request) {
+                $question_id = $request->question_id;
+                QusetionStar::where([
+                    "question_id"  => $question_id
+                ])
+                ->delete();
 
-            StarTag::where([
-                "question_id"  => $question_id
-            ])
-            ->delete();
-            foreach($request->stars as $requestStar){
+                StarTag::where([
+                    "question_id"  => $question_id
+                ])
+                ->delete();
+                foreach($request->stars as $requestStar){
 
 
-                QusetionStar::create([
+                    QusetionStar::create([
+                        "question_id"=>$question_id,
+                        "star_id" => $requestStar["star_id"]
+                             ]);
+
+
+                   foreach($requestStar["tags"] as $tag){
+
+
+
+                   StarTag::create([
                     "question_id"=>$question_id,
+                    "tag_id"=>$tag["tag_id"],
                     "star_id" => $requestStar["star_id"]
                          ]);
 
+                   }
+                }
 
-               foreach($requestStar["tags"] as $tag){
+          return response(["message" => "ok"], 201);
+            });
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-
-
-               StarTag::create([
-                "question_id"=>$question_id,
-                "tag_id"=>$tag["tag_id"],
-                "star_id" => $requestStar["star_id"]
-                     ]);
-
-               }
-            }
-
-      return response(["message" => "ok"], 201);
-        });
 
     }
 
@@ -1810,47 +1896,52 @@ return response([
      */
     public function  getAverage($garageId, $start, $end, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('review_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-        // with
-        $reviews = ReviewNew::where([
-            "garage_id" => $garageId
-        ])
-            ->whereBetween('created_at', [$start, $end])
-            ->with("question")
-            ->get();
-
-        $data["total"]   = $reviews->count();
-        $data["one"]   = 0;
-        $data["two"]   = 0;
-        $data["three"] = 0;
-        $data["four"]  = 0;
-        $data["five"]  = 0;
-        foreach ($reviews as $review) {
-            switch ($review->rate) {
-                case 1:
-                    $data[$review->question->name]["one"] += 1;
-                    break;
-                case 2:
-                    $data["two"] += 1;
-                    break;
-                case 3:
-                    $data["three"] += 1;
-                    break;
-                case 4:
-                    $data["four"] += 1;
-                    break;
-                case 5:
-                    $data[$review->question->question]["five"] += 1;
-                    break;
+        try{
+            if (!$request->user()->hasPermissionTo('review_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
             }
+            // with
+            $reviews = ReviewNew::where([
+                "garage_id" => $garageId
+            ])
+                ->whereBetween('created_at', [$start, $end])
+                ->with("question")
+                ->get();
+
+            $data["total"]   = $reviews->count();
+            $data["one"]   = 0;
+            $data["two"]   = 0;
+            $data["three"] = 0;
+            $data["four"]  = 0;
+            $data["five"]  = 0;
+            foreach ($reviews as $review) {
+                switch ($review->rate) {
+                    case 1:
+                        $data[$review->question->name]["one"] += 1;
+                        break;
+                    case 2:
+                        $data["two"] += 1;
+                        break;
+                    case 3:
+                        $data["three"] += 1;
+                        break;
+                    case 4:
+                        $data["four"] += 1;
+                        break;
+                    case 5:
+                        $data[$review->question->question]["five"] += 1;
+                        break;
+                }
+            }
+
+
+            return response($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-
-        return response($data, 200);
     }
 
 
@@ -1927,22 +2018,27 @@ return response([
 
     public function  filterReview($garageId, $rate, $start, $end, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('review_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('review_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            // with
+            $reviewValues = ReviewNew::where([
+                "garage_id" => $garageId,
+                "rate" => $rate
+            ])
+                ->with("garage","value")
+                ->whereBetween('created_at', [$start, $end])
+                ->get();
+
+
+            return response($reviewValues, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        // with
-        $reviewValues = ReviewNew::where([
-            "garage_id" => $garageId,
-            "rate" => $rate
-        ])
-            ->with("garage","value")
-            ->whereBetween('created_at', [$start, $end])
-            ->get();
 
-
-        return response($reviewValues, 200);
     }
 
      /**
@@ -1997,19 +2093,24 @@ return response([
 
     public function  getReviewByGarageId($garageId, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('review_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('review_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            // with
+            $reviewValue = ReviewNew::with("value")->where([
+                "garage_id" => $garageId,
+            ])
+                ->get();
+
+
+            return response($reviewValue, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        // with
-        $reviewValue = ReviewNew::with("value")->where([
-            "garage_id" => $garageId,
-        ])
-            ->get();
 
-
-        return response($reviewValue, 200);
     }
 
 
@@ -2084,44 +2185,49 @@ return response([
 
     public function  getCustommerReview($garageId, $start, $end, Request $request)
     {
-        if (!$request->user()->hasPermissionTo('review_view')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
-        }
-        // with
-        $data["reviews"] = ReviewNew::where([
-            "garage_id" => $garageId,
-        ])
-            ->whereBetween('created_at', [$start, $end])
-            ->get();
-        $data["total"]   = $data["reviews"]->count();
-        $data["one"]   = 0;
-        $data["two"]   = 0;
-        $data["three"] = 0;
-        $data["four"]  = 0;
-        $data["five"]  = 0;
-        foreach ($data["reviews"]  as $reviewValue) {
-            switch ($reviewValue->rate) {
-                case 1:
-                    $data["one"] += 1;
-                    break;
-                case 2:
-                    $data["two"] += 1;
-                    break;
-                case 3:
-                    $data["three"] += 1;
-                    break;
-                case 4:
-                    $data["four"] += 1;
-                    break;
-                case 5:
-                    $data["five"] += 1;
-                    break;
+        try{
+            if (!$request->user()->hasPermissionTo('review_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
             }
+            // with
+            $data["reviews"] = ReviewNew::where([
+                "garage_id" => $garageId,
+            ])
+                ->whereBetween('created_at', [$start, $end])
+                ->get();
+            $data["total"]   = $data["reviews"]->count();
+            $data["one"]   = 0;
+            $data["two"]   = 0;
+            $data["three"] = 0;
+            $data["four"]  = 0;
+            $data["five"]  = 0;
+            foreach ($data["reviews"]  as $reviewValue) {
+                switch ($reviewValue->rate) {
+                    case 1:
+                        $data["one"] += 1;
+                        break;
+                    case 2:
+                        $data["two"] += 1;
+                        break;
+                    case 3:
+                        $data["three"] += 1;
+                        break;
+                    case 4:
+                        $data["four"] += 1;
+                        break;
+                    case 5:
+                        $data["five"] += 1;
+                        break;
+                }
+            }
+
+            return response($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        return response($data, 200);
     }
 
 
@@ -2202,65 +2308,70 @@ return response([
 
     public function storeReview($jobId,  Request $request)
     {
-        if (!$request->user()->hasPermissionTo('review_create')) {
-            return response()->json([
-                "message" => "You can not perform this action"
-            ], 401);
+        try{
+            if (!$request->user()->hasPermissionTo('review_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+        $job =   Job::where([
+                "id" => $jobId,
+                "customer_id" => $request->user()->id,
+        ])
+        ->first();
+        if(!$job) {
+    return response()->json([
+        "message" => "job does not exists or you are not the owner of the job"
+    ],404);
+
         }
-    $job =   Job::where([
-            "id" => $jobId,
-            "customer_id" => $request->user()->id,
-    ])
-    ->first();
-    if(!$job) {
-return response()->json([
-    "message" => "job does not exists or you are not the owner of the job"
-],404);
 
-    }
+                $review = [
+                    'description' => $request["description"],
+                    'job_id' => $job->job_id,
+                    'garage_id' => $job->garage_id,
+                    'rate' => $request["rate"],
+                    'user_id' => $request->user()->id,
+                    'comment' => $request["comment"],
+                //     'question_id' => $singleReview["question_id"],
+                // 'tag_id' => $request->tag_id,
+                // 'star_id' => $request->star_id,
+                ];
 
-            $review = [
-                'description' => $request["description"],
-                'job_id' => $job->job_id,
-                'garage_id' => $job->garage_id,
-                'rate' => $request["rate"],
-                'user_id' => $request->user()->id,
-                'comment' => $request["comment"],
-            //     'question_id' => $singleReview["question_id"],
-            // 'tag_id' => $request->tag_id,
-            // 'star_id' => $request->star_id,
-            ];
+                $createdReview =   ReviewNew::create($review);
 
-            $createdReview =   ReviewNew::create($review);
-
-            $rate = 0;
-            $questionCount = 0;
-            $previousQuestionId = NULL;
-            foreach ($request["values"] as $value) {
-               if(!$previousQuestionId) {
-                $previousQuestionId = $value["question_id"];
-                $rate += $value["star_id"];
-               }else {
-
-                if($value["question_id"] != $previousQuestionId) {
-                    $rate += $value["star_id"];
+                $rate = 0;
+                $questionCount = 0;
+                $previousQuestionId = NULL;
+                foreach ($request["values"] as $value) {
+                   if(!$previousQuestionId) {
                     $previousQuestionId = $value["question_id"];
-                    $questionCount += 1;
+                    $rate += $value["star_id"];
+                   }else {
+
+                    if($value["question_id"] != $previousQuestionId) {
+                        $rate += $value["star_id"];
+                        $previousQuestionId = $value["question_id"];
+                        $questionCount += 1;
+                    }
+
+                   }
+
+                   $createdReview->rate =  $rate;
+                   $createdReview->save();
+                    $value["review_id"] = $createdReview->id;
+                    // $value["question_id"] = $createdReview->question_id;
+                    // $value["tag_id"] = $createdReview->tag_id;
+                    // $value["star_id"] = $createdReview->star_id;
+                    ReviewValueNew::create($value);
                 }
 
-               }
 
-               $createdReview->rate =  $rate;
-               $createdReview->save();
-                $value["review_id"] = $createdReview->id;
-                // $value["question_id"] = $createdReview->question_id;
-                // $value["tag_id"] = $createdReview->tag_id;
-                // $value["star_id"] = $createdReview->star_id;
-                ReviewValueNew::create($value);
-            }
+            return response(["message" => "created successfully"], 201);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
+        }
 
-
-        return response(["message" => "created successfully"], 201);
     }
 
 

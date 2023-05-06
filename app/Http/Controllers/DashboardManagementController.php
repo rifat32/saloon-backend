@@ -14,6 +14,7 @@ use App\Models\PreBooking;
 use App\Models\Service;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -91,49 +92,54 @@ class DashboardManagementController extends Controller
 
     public function getGarageOwnerDashboardDataJobList($garage_id, Request $request)
     {
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
-        }
-
-        $prebookingQuery = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
-            ->where([
-                "pre_bookings.city" => $garage->city
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
             ])
-            ->whereNotIn('job_bids.garage_id', [$garage->id])
-            ->where('pre_bookings.status', "pending");
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+
+            $prebookingQuery = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+                ->where([
+                    "pre_bookings.city" => $garage->city
+                ])
+                ->whereNotIn('job_bids.garage_id', [$garage->id])
+                ->where('pre_bookings.status', "pending");
 
 
-        if (!empty($request->start_date)) {
-            $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
+            if (!empty($request->start_date)) {
+                $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
+            }
+            $data = $prebookingQuery->groupBy("pre_bookings.id")
+                ->select(
+                    "pre_bookings.*",
+                    DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
+
+                    DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
+        WHERE
+        job_bids.pre_booking_id = pre_bookings.id
+        AND
+        job_bids.garage_id = ' . $garage->id . '
+
+        ) AS garage_applied')
+
+                )
+                ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
+
+                ->get();
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        if (!empty($request->end_date)) {
-            $prebookingQuery = $prebookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
-        }
-        $data = $prebookingQuery->groupBy("pre_bookings.id")
-            ->select(
-                "pre_bookings.*",
-                DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
 
-                DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
-    WHERE
-    job_bids.pre_booking_id = pre_bookings.id
-    AND
-    job_bids.garage_id = ' . $garage->id . '
-
-    ) AS garage_applied')
-
-            )
-            ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
-
-            ->get();
-        return response()->json($data, 200);
     }
 
 
@@ -193,7 +199,7 @@ class DashboardManagementController extends Controller
      */
 
     public function getGarageOwnerDashboardDataJobApplications($garage_id, Request $request)
-    {
+    { try{
         $garage = Garage::where([
             "id" => $garage_id,
             "owner_id" => $request->user()->id
@@ -266,6 +272,10 @@ class DashboardManagementController extends Controller
             ->count();
 
         return response()->json($data, 200);
+    }catch(Exception $e) {
+  return $this->sendError($e, 500,$request->fullUrl());
+    }
+
     }
 
     /**
@@ -324,47 +334,52 @@ class DashboardManagementController extends Controller
 
     public function getGarageOwnerDashboardDataWinnedJobApplications($garage_id, Request $request)
     {
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
+            ])
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+
+            $data["total"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+                ->where([
+                    "bookings.garage_id" => $garage->id
+                ])
+
+                ->where('pre_bookings.status', "booked")
+                ->groupBy("pre_bookings.id")
+                ->count();
+
+            $data["weekly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+                ->where([
+                    "bookings.garage_id" => $garage->id
+                ])
+                ->where('pre_bookings.status', "booked")
+                ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                ->groupBy("pre_bookings.id")
+                ->count();
+
+            $data["monthly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
+                ->where([
+                    "bookings.garage_id" => $garage->id
+                ])
+
+                ->where('pre_bookings.status', "booked")
+                ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+                ->groupBy("pre_bookings.id")
+                ->count();
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        $data["total"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
-            ->where([
-                "bookings.garage_id" => $garage->id
-            ])
-
-            ->where('pre_bookings.status', "booked")
-            ->groupBy("pre_bookings.id")
-            ->count();
-
-        $data["weekly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
-            ->where([
-                "bookings.garage_id" => $garage->id
-            ])
-            ->where('pre_bookings.status', "booked")
-            ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->groupBy("pre_bookings.id")
-            ->count();
-
-        $data["monthly"] = PreBooking::leftJoin('bookings', 'pre_bookings.id', '=', 'bookings.pre_booking_id')
-            ->where([
-                "bookings.garage_id" => $garage->id
-            ])
-
-            ->where('pre_bookings.status', "booked")
-            ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
-            ->groupBy("pre_bookings.id")
-            ->count();
-
-
-        return response()->json($data, 200);
     }
 
 
@@ -425,42 +440,47 @@ class DashboardManagementController extends Controller
 
     public function getGarageOwnerDashboardDataCompletedBookings($garage_id, Request $request)
     {
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
+            ])
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+
+            $data["total"] = Booking::where([
+                "bookings.status" => "converted_to_job",
+                "bookings.garage_id" => $garage->id
+
+            ])
+                ->count();
+            $data["weekly"] = Booking::where([
+                "bookings.status" => "converted_to_job",
+                "bookings.garage_id" => $garage->id
+
+            ])
+                ->whereBetween('bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+                ->count();
+            $data["monthly"] = Booking::where([
+                "bookings.status" => "converted_to_job",
+                "bookings.garage_id" => $garage->id
+
+            ])
+                ->whereBetween('bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+                ->count();
+
+
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        $data["total"] = Booking::where([
-            "bookings.status" => "converted_to_job",
-            "bookings.garage_id" => $garage->id
-
-        ])
-            ->count();
-        $data["weekly"] = Booking::where([
-            "bookings.status" => "converted_to_job",
-            "bookings.garage_id" => $garage->id
-
-        ])
-            ->whereBetween('bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->count();
-        $data["monthly"] = Booking::where([
-            "bookings.status" => "converted_to_job",
-            "bookings.garage_id" => $garage->id
-
-        ])
-            ->whereBetween('bookings.created_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
-            ->count();
-
-
-
-
-        return response()->json($data, 200);
     }
 
 
@@ -529,35 +549,40 @@ class DashboardManagementController extends Controller
 
     public function getGarageOwnerDashboardDataUpcomingJobs($garage_id, $duration, Request $request)
     {
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
+            ])
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+            $startDate = now();
+            $endDate = $startDate->copy()->addDays($duration);
+
+
+            $data = Job::where([
+                "jobs.status" => "pending",
+                "jobs.garage_id" => $garage->id
+
+            ])
+                ->whereBetween('jobs.job_start_date', [$startDate, $endDate])
+
+
+
+
+                ->count();
+
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $startDate = now();
-        $endDate = $startDate->copy()->addDays($duration);
 
-
-        $data = Job::where([
-            "jobs.status" => "pending",
-            "jobs.garage_id" => $garage->id
-
-        ])
-            ->whereBetween('jobs.job_start_date', [$startDate, $endDate])
-
-
-
-
-            ->count();
-
-
-
-        return response()->json($data, 200);
     }
 
     /**
@@ -623,27 +648,32 @@ class DashboardManagementController extends Controller
 
     public function getGarageOwnerDashboardDataExpiringAffiliations($garage_id, $duration, Request $request)
     {
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
+        try{
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
+            ])
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+            $startDate = now();
+            $endDate = $startDate->copy()->addDays($duration);
+
+
+            $data = GarageAffiliation::with("affiliation")
+                ->where('garage_affiliations.end_date', "<",  $endDate)
+                ->count();
+
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $startDate = now();
-        $endDate = $startDate->copy()->addDays($duration);
 
-
-        $data = GarageAffiliation::with("affiliation")
-            ->where('garage_affiliations.end_date', "<",  $endDate)
-            ->count();
-
-
-
-        return response()->json($data, 200);
     }
 
 
@@ -1130,51 +1160,56 @@ class DashboardManagementController extends Controller
     public function getGarageOwnerDashboardData($garage_id, Request $request)
     {
 
-        if (!$request->user()->hasRole('garage_owner')) {
-            return response()->json([
-                "message" => "You are not a garage owner"
-            ], 401);
+        try{
+            if (!$request->user()->hasRole('garage_owner')) {
+                return response()->json([
+                    "message" => "You are not a garage owner"
+                ], 401);
+            }
+            $garage = Garage::where([
+                "id" => $garage_id,
+                "owner_id" => $request->user()->id
+            ])
+                ->first();
+            if (!$garage) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the request garage does not exits"
+                ], 404);
+            }
+
+
+            // affiliation expiry
+            $data["affiliation_expirings"] = $this->affiliation_expirings($garage);
+
+            //    end affiliation expiry
+            //   upcoming_jobs
+            $data["upcoming_jobs"] = $this->upcoming_jobs($garage);
+
+            //  end  upcoming_jobs
+
+            // completed bookings
+            $data["completed_bookings"] = $this->completed_bookings($garage);
+            // end completed bookings
+
+            // winned jobs
+            $data["winned_jobs"] = $this->winned_jobs($garage);
+            // end winned jobs
+
+            //   jobs
+            $data["pre_bookings"] = $this->pre_bookings($garage);
+            // end jobs
+
+
+            // applied jobs
+            $data["applied_jobs"] = $this->applied_jobs($garage);
+            // end applied jobs
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
-        $garage = Garage::where([
-            "id" => $garage_id,
-            "owner_id" => $request->user()->id
-        ])
-            ->first();
-        if (!$garage) {
-            return response()->json([
-                "message" => "you are not the owner of the garage or the request garage does not exits"
-            ], 404);
-        }
 
-
-        // affiliation expiry
-        $data["affiliation_expirings"] = $this->affiliation_expirings($garage);
-
-        //    end affiliation expiry
-        //   upcoming_jobs
-        $data["upcoming_jobs"] = $this->upcoming_jobs($garage);
-
-        //  end  upcoming_jobs
-
-        // completed bookings
-        $data["completed_bookings"] = $this->completed_bookings($garage);
-        // end completed bookings
-
-        // winned jobs
-        $data["winned_jobs"] = $this->winned_jobs($garage);
-        // end winned jobs
-
-        //   jobs
-        $data["pre_bookings"] = $this->pre_bookings($garage);
-        // end jobs
-
-
-        // applied jobs
-        $data["applied_jobs"] = $this->applied_jobs($garage);
-        // end applied jobs
-
-
-        return response()->json($data, 200);
     }
     public function garages()
     {
@@ -1525,35 +1560,39 @@ class DashboardManagementController extends Controller
 
     public function getSuperAdminDashboardData( Request $request)
     {
+        try{
+            if (!$request->user()->hasRole('superadmin')) {
+                return response()->json([
+                    "message" => "You are not a superadmin"
+                ], 401);
+            }
 
-        if (!$request->user()->hasRole('superadmin')) {
-            return response()->json([
-                "message" => "You are not a superadmin"
-            ], 401);
+            $data["garages"] = $this->garages();
+
+            $data["fuel_stations"] = $this->fuel_stations();
+
+            $data["customers"] = $this->customers();
+
+            $data["overall_customer_jobs"] = $this->overall_customer_jobs();
+
+            $data["overall_bookings"] = $this->overall_bookings();
+
+            $data["overall_jobs"] = $this->overall_jobs();
+
+
+
+            $data["overall_services"] = $this->overall_services();
+
+
+
+
+
+
+            return response()->json($data, 200);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request->fullUrl());
         }
 
-        $data["garages"] = $this->garages();
-
-        $data["fuel_stations"] = $this->fuel_stations();
-
-        $data["customers"] = $this->customers();
-
-        $data["overall_customer_jobs"] = $this->overall_customer_jobs();
-
-        $data["overall_bookings"] = $this->overall_bookings();
-
-        $data["overall_jobs"] = $this->overall_jobs();
-
-
-
-        $data["overall_services"] = $this->overall_services();
-
-
-
-
-
-
-        return response()->json($data, 200);
     }
 
 
