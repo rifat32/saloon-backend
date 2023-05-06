@@ -192,10 +192,15 @@ class ShopsController extends Controller
                     array_push($images,("/".$location."/".$new_file_name));
 
 
+
+
                     // GarageGallery::create([
                     //     "image" => ("/".$location."/".$new_file_name),
                     //     "garage_id" => $garage_id
                     // ]);
+
+
+                    
 
                 }
             }

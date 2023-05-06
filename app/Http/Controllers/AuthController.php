@@ -214,8 +214,8 @@ class AuthController extends Controller
                 $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
                 $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
 
-                if ($diffInMinutes < 60) {
-                    return response(['message' => 'User is temporarily blocked. Please try again later.'], 403);
+                if ($diffInMinutes < 15) {
+                    return response(['message' => 'You have 3 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
                 } else {
                     $user->login_attempts = 0;
                     $user->last_failed_login_attempt_at = null;
@@ -235,8 +235,8 @@ class AuthController extends Controller
                         $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
                         $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
 
-                        if ($diffInMinutes < 60) {
-                            return response(['message' => 'User is temporarily blocked. Please try again later.'], 403);
+                        if ($diffInMinutes < 15) {
+                            return response(['message' => 'You have 3 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
                         } else {
                             $user->login_attempts = 0;
                             $user->last_failed_login_attempt_at = null;
@@ -632,9 +632,14 @@ $datediff = $now - $user_created_date;
                 }
 
                 $password = Hash::make($insertableData["password"]);
-                $user->update([
-                    "password" => $password
-                ]);
+                $user->password = $password;
+
+                $user->login_attempts = 0;
+                $user->last_failed_login_attempt_at = null;
+
+
+                $user->save();
+
                 return response()->json([
                     "message" => "password changed"
                 ], 200);
@@ -1050,9 +1055,16 @@ return response()->json(["data" => true],200);
         }
 
         $password = Hash::make($client_request["password"]);
-        $user->update([
-            "password" => $password
-        ]);
+        $user->password = $password;
+
+
+
+        $user->login_attempts = 0;
+        $user->last_failed_login_attempt_at = null;
+        $user->save();
+
+
+
         return response()->json([
             "message" => "password changed"
         ], 200);;
