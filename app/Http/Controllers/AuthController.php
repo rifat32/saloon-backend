@@ -405,6 +405,8 @@ $datediff = $now - $user_created_date;
      *            required={"email"},
      *
      *             @OA\Property(property="email", type="string", format="string",* example="test@g.c"),
+     *    *             @OA\Property(property="client_site", type="string", format="string",* example="client"),
+     *
      *         ),
      *      ),
      *      @OA\Response(
@@ -456,7 +458,7 @@ $datediff = $now - $user_created_date;
             $user->resetPasswordExpires = Carbon::now()->subDays(-1);
             $user->save();
 
-            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($user));
+            Mail::to($insertableData["email"])->send(new ForgetPasswordMail($user,$insertableData["client_site"]));
 
 
             return response()->json([

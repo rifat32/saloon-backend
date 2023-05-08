@@ -19,7 +19,7 @@ $activityLog = [
     "user"=> !empty($user)?(json_encode($user)):"",
     "user_id"=> !empty($user)?$user->id:"",
     "activity"=> $activity,
-    "ip_address" => $request->getClientIp(),
+    "ip_address" =>  $request->header('X-Forwarded-For'),
     "request_method"=>$request->method()
 ];
          ActivityLog::create($activityLog);

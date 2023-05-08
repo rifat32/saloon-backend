@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileFuelType;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
 use App\Models\AutomobileModelVariant;
+use App\Models\ErrorLog;
 use App\Models\Service;
 use App\Models\SubService;
 use App\Models\User;
@@ -19,6 +21,16 @@ use Spatie\Permission\Models\Role;
 
 class SetUpController extends Controller
 {
+
+    public function getErrorLogs() {
+        $error_logs = ErrorLog::orderbyDesc("id")->paginate(10);
+        return view("error-log",compact("error_logs"));
+    }
+    public function getActivityLogs() {
+        $activity_logs = ActivityLog::orderbyDesc("id")->paginate(10);
+        return view("user-activity-log",compact("activity_logs"));
+    }
+
 
     public function automobileRefresh() {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');

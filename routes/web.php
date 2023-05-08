@@ -23,6 +23,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/error-log', [SetUpController::class, "getErrorLogs"])->name("error-log");
+
+Route::get('/activity-log', [SetUpController::class, "getActivityLogs"])->name("activity-log");
+
+
 Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
 Route::get('/setup2', [SetUpController::class, "setUp2"])->name("setup2");
 

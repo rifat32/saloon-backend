@@ -36,7 +36,7 @@ $errorLog = [
     "status_code"=> $statusCode,
     "line"=> $e->getLine(),
     "file"=> $e->getFile(),
-    "ip_address" => $request->getClientIp(),
+    "ip_address" =>  $request->header('X-Forwarded-For'),
 
     "request_method"=>$request->method()
 
