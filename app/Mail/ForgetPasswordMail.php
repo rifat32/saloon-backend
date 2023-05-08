@@ -60,7 +60,7 @@ class ForgetPasswordMail extends Mailable
 
         $html_content =  str_replace("[AccountVerificationLink]", (env('APP_URL').'/activate/'.$this->user->email_verify_token), $html_content);
 
-        
+
         if($this->client_site == "client") {
                $front_end_url = env('FRONT_END_URL_CLIENT');
         } else if($this->client_site == "dashboard") {
@@ -71,7 +71,7 @@ class ForgetPasswordMail extends Mailable
 
 
 
-        $html_content =  str_replace("[ForgotPasswordLink]", ($front_end_url.'/fotget-password/'.$this->user->resetPasswordToken), $html_content );
+        $html_content =  str_replace("[ForgotPasswordLink]", ($front_end_url.'/forgot-password?token='.$this->user->resetPasswordToken), $html_content );
 
 
 
