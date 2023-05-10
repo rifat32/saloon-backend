@@ -231,6 +231,7 @@ return [
        "product_category_view",
 
 
+
             ],
         ],
 
@@ -250,6 +251,23 @@ return [
        "shop_gallery_delete",
             ],
         ],
+        [
+            "role" => "customer",
+            "permissions" => [
+
+                "review_create",
+                "review_update",
+                "review_view",
+                "review_delete",
+
+
+                "questions_view",
+
+
+            ],
+        ],
+
+
 
     ],
     "roles" => [

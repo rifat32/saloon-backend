@@ -2344,7 +2344,7 @@ class ReviewController extends Controller
         ->first();
         if(!$job) {
     return response()->json([
-        "message" => "job does not exists or you are not the owner of the job"
+        "message" => "job does not exist or you did not complete the job"
     ],404);
 
         }

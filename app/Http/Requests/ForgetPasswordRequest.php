@@ -28,4 +28,13 @@ class ForgetPasswordRequest extends FormRequest
             'client_site' => 'string|required|in:client,dashboard',
         ];
     }
+
+    public function messages()
+    {
+
+        return [
+            'client_site.in' => 'The client_site field must be either "client" or "dashboard".',
+        ];
+    }
+
 }
