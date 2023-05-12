@@ -212,13 +212,13 @@ class AuthController extends Controller
             ]);
             $user = User::where('email', $loginData['email'])->first();
 
-            if ($user && $user->login_attempts >= 3) {
+            if ($user && $user->login_attempts >= 5) {
                 $now = Carbon::now();
                 $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
                 $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
 
                 if ($diffInMinutes < 15) {
-                    return response(['message' => 'You have 3 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
+                    return response(['message' => 'You have 5 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
                 } else {
                     $user->login_attempts = 0;
                     $user->last_failed_login_attempt_at = null;
@@ -233,13 +233,13 @@ class AuthController extends Controller
                     $user->last_failed_login_attempt_at = Carbon::now();
                     $user->save();
 
-                    if ($user->login_attempts >= 3) {
+                    if ($user->login_attempts >= 5) {
                         $now = Carbon::now();
                         $lastFailedAttempt = Carbon::parse($user->last_failed_login_attempt_at);
                         $diffInMinutes = $now->diffInMinutes($lastFailedAttempt);
 
                         if ($diffInMinutes < 15) {
-                            return response(['message' => 'You have 3 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
+                            return response(['message' => 'You have 5 failed attempts. Reset your password or wait for 15 minutes to access your account.'], 403);
                         } else {
                             $user->login_attempts = 0;
                             $user->last_failed_login_attempt_at = null;
