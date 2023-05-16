@@ -100,7 +100,7 @@ Route::get('/v1.0/available-cities/for-shop/{country_code}', [ShopsController::c
 
 
 
-Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAll"]);
+
 
 Route::post('/v1.0/user-image', [UserManagementController::class, "createUserImage"]);
 
@@ -308,6 +308,8 @@ Route::post('/v1.0/fuel-station-services', [FuelStationServiceController::class,
 Route::put('/v1.0/fuel-station-services', [FuelStationServiceController::class, "updateFuelStationService"]);
 
 Route::get('/v1.0/fuel-station-services/{perPage}', [FuelStationServiceController::class, "getFuelStationServices"]);
+
+Route::get('/v1.0/fuel-station-services/get/all', [FuelStationServiceController::class, "getFuelStationServicesAll"]);
 
 Route::delete('/v1.0/fuel-station-services/{id}', [FuelStationServiceController::class, "deleteFuelStationServiceById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

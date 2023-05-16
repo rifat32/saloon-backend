@@ -195,7 +195,7 @@ class GarageTimesController extends Controller
         }
 
             $garageTimes = GarageTime::where([
-                "id" => $garage_id
+                "garage_id" => $garage_id
             ])->orderByDesc("id")->get();
             return response()->json($garageTimes, 200);
         } catch(Exception $e){
