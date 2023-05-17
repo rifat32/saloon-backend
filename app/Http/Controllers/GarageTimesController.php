@@ -34,13 +34,13 @@ class GarageTimesController extends Controller
      *    @OA\Property(property="garage_id", type="number", format="number", example="1"),
      *    @OA\Property(property="times", type="string", format="array",example={
      *
-    *{"day":0,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-    *{"day":1,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-    *{"day":2,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-     *{"day":3,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-    *{"day":4,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-    *{"day":5,"opening_time":"10:10","closing_time":"10:15","is_closed":true},
-    *{"day":6,"opening_time":"10:10","closing_time":"10:15","is_closed":true}
+    *{"day":0,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":1,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":2,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+     *{"day":3,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":4,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":5,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":6,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true}
      *
      * }),
 
