@@ -659,7 +659,11 @@ class BookingController extends Controller
             }
 
 
-            $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
+            $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make",
+            "automobile_model",
+            "customer"
+
+            )
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -762,7 +766,8 @@ class BookingController extends Controller
             }
 
 
-            $booking = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
+            $booking = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model",
+            "customer")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id
