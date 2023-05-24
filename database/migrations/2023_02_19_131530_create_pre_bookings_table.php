@@ -60,6 +60,7 @@ class CreatePreBookingsTable extends Migration
 
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

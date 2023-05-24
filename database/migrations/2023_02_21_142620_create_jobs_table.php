@@ -65,6 +65,7 @@ class CreateJobsTable extends Migration
             $table->enum("status",['pending','active','completed','cancelled'])->default("pending");
             $table->string("payment_status")->default("due");
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -58,6 +58,7 @@ class CreateBookingsTable extends Migration
 
             $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
