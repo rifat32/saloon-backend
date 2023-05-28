@@ -154,20 +154,16 @@ trait GarageUtil
 
     public function garageOwnerCheck($garage_id) {
 
-        $queryArray = [
-            "id" => $garage_id
-        ];
-
-        if(!auth()->user()->hasRole("superadmin") && !auth()->user()->hasRole("data_collector") ) {
-            $queryArray["owner_id"] =  auth()->user()->id;
-        } else if(!auth()->user()->hasRole("superadmin")) {
-            $queryArray["created_by"] =  auth()->user()->id;
+    
+        $garageQuery  = Garage::where(["id" => $garage_id]);
+        if(!auth()->user()->hasRole('superadmin')) {
+            $garageQuery = $garageQuery->where(function ($query) {
+                $query->where('created_by', auth()->user()->id)
+                      ->orWhere('owner_id', auth()->user()->id);
+            });
         }
 
-
-        $garage_id = $garage_id;
-        $garage = Garage::where($queryArray)
-        ->first();
+        $garage =  $garageQuery->first();
         if (!$garage) {
             return false;
         }
