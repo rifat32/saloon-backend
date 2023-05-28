@@ -841,9 +841,10 @@ class GaragesController extends Controller
 
 
             if(!$request->user()->hasRole('superadmin')) {
-                $garagesQuery =    $garagesQuery->where([
-                    "created_by" =>$request->user()->id
-                ]);
+                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
+                    $query->where('created_by', $request->user()->id)
+                          ->orWhere('owner_id', $request->user()->id);
+                });
             }
 
             if(!empty($request->search_key)) {
