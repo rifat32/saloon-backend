@@ -962,8 +962,13 @@ class GaragesController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
+           if (!$this->garageOwnerCheck($id)) {
+            return response()->json([
+                "message" => "you are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
 
-            $garagesQuery = Garage::with(
+            $garage = Garage::with(
                 "owner",
                 "garageAutomobileMakes.automobileMake",
                 "garageAutomobileMakes.garageAutomobileModels.automobileModel",
@@ -972,17 +977,9 @@ class GaragesController extends Controller
                 "garageServices.garageSubServices.subService",
                 "garage_times",
                 "garageGalleries",
-
-            );
-
-
-            if(!$request->user()->hasRole('superadmin')) {
-                $garagesQuery =    $garagesQuery->where([
-                    "created_by" =>$request->user()->id
-                ]);
-            }
-
-            $garage = $garagesQuery->where([
+                "garage_packages",
+                "garage_affiliations.affiliation"
+            )->where([
                 "id" => $id
             ])
             ->first();
