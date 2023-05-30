@@ -540,7 +540,11 @@ class GaragesController extends Controller
                "message" => "You can not perform this action"
             ],401);
        }
-
+       if (!$this->garageOwnerCheck($request["garage"]["id"])) {
+        return response()->json([
+            "message" => "you are not the owner of the garage or the requested garage does not exist."
+        ], 401);
+    }
 
        $updatableData = $request->validated();
     //    user email check
@@ -548,9 +552,10 @@ class GaragesController extends Controller
         "id" => $updatableData["user"]["id"]
        ]);
        if(!$request->user()->hasRole('superadmin')) {
-        $userPrev =    $userPrev->where([
-            "created_by" =>$request->user()->id
-        ]);
+        $userPrev =  $garageQuery = $userPrev->where(function ($query) {
+            $query->where('created_by', auth()->user()->id)
+                  ->orWhere('id', auth()->user()->id);
+        });
     }
     $userPrev = $userPrev->first();
      if(!$userPrev) {
@@ -573,11 +578,7 @@ class GaragesController extends Controller
      $garagePrev = Garage::where([
         "id" => $updatableData["garage"]["id"]
      ]);
-     if(!$request->user()->hasRole('superadmin')) {
-        $garagePrev =    $garagePrev->where([
-            "created_by" =>$request->user()->id
-        ]);
-    }
+
     $garagePrev = $garagePrev->first();
     if(!$garagePrev) {
         return response()->json([

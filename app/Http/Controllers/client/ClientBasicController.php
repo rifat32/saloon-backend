@@ -225,13 +225,18 @@ class ClientBasicController extends Controller
 
 
 
-            if (!empty($request->is_mobile_garage)) {
-                $garagesQuery =   $garagesQuery->where("garages.is_mobile_garage",$request->is_mobile_garage);
 
+            if (!empty($request->is_mobile_garage)) {
+
+                if ($request->is_mobile_garage === '1' || $request->is_mobile_garage === 'true') {
+                    $garagesQuery = $garagesQuery->where("garages.is_mobile_garage", true);
+                }
             }
             if (!empty($request->wifi_available)) {
-                $garagesQuery =   $garagesQuery->where("garages.wifi_available",$request->wifi_available);
 
+                if ($request->wifi_available === '1' || $request->wifi_available === 'true') {
+                    $garagesQuery = $garagesQuery->where("garages.wifi_available", true);
+                }
             }
 
 
