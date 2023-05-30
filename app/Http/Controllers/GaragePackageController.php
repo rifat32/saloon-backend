@@ -319,7 +319,7 @@ class GaragePackageController extends Controller
  /**
         *
      * @OA\Get(
-     *      path="/v1.0/garage-packages/{garage_id}",
+     *      path="/v1.0/garage-packages/{garage_id}/{perPage}",
      *      operationId="getGaragePackages",
      *      tags={"garage_package_management"},
     *       security={
@@ -329,6 +329,13 @@ class GaragePackageController extends Controller
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *  *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
      *         required=true,
      *  example="6"
      *      ),
@@ -427,6 +434,124 @@ class GaragePackageController extends Controller
                 $garagePackageQuery = $garagePackageQuery->where('created_at', "<=", $request->end_date);
             }
             $garages = $garagePackageQuery->orderByDesc("id")->paginate($perPage);
+            return response()->json($garages, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+    }
+ /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/garage-packages/get/all/{garage_id}",
+     *      operationId="getGaragePackagesAll",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get  garage packages all ",
+     *      description="This method is to get garage packages all",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGaragePackagesAll($garage_id,Request $request) {
+        try{
+            $this->storeActivity($request,"");
+        //     if(!$request->user()->hasPermissionTo('garage_package_view')){
+        //         return response()->json([
+        //            "message" => "You can not perform this action"
+        //         ],401);
+        //    }
+        //     if (!$this->garageOwnerCheck($garage_id)) {
+        //         return response()->json([
+        //             "message" => "you are not the owner of the garage or the requested garage does not exist."
+        //         ], 401);
+        //     }
+
+
+            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
+            ->where([
+                "garage_id" => $garage_id
+            ]);
+
+            if(!empty($request->search_key)) {
+                $garagePackageQuery = $garagePackageQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                });
+
+            }
+
+            if (!empty($request->start_date)) {
+                $garagePackageQuery = $garagePackageQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $garagePackageQuery = $garagePackageQuery->where('created_at', "<=", $request->end_date);
+            }
+            $garages = $garagePackageQuery->orderByDesc("id")->get();
             return response()->json($garages, 200);
         } catch(Exception $e){
 

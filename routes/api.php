@@ -87,6 +87,7 @@ Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAll
 Route::get('/v2.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryIdV2"]);
 Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesAll"]);
 
+Route::get('/v1.0/garage-packages/get/all/{garage_id}', [GaragePackageController::class, "getGaragePackagesAll"]);
 
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
@@ -665,7 +666,9 @@ Route::post('/v1.0/garage-packages', [GaragePackageController::class, "createGar
 
 Route::put('/v1.0/garage-packages', [GaragePackageController::class, "updateGaragePackage"]);
 
-Route::get('/v1.0/garage-packages/{garage_id}', [GaragePackageController::class, "getGaragePackages"]);
+Route::get('/v1.0/garage-packages/{garage_id}/{perPage}', [GaragePackageController::class, "getGaragePackages"]);
+
+
 
 Route::get('/v1.0/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageById"]);
 
