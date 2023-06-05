@@ -573,6 +573,7 @@ Route::put('/v1.0/jobs/change-status', [JobController::class, "changeJobStatus"]
 
 Route::get('/v1.0/jobs/{garage_id}/{perPage}', [JobController::class, "getJobs"]);
 Route::get('/v1.0/jobs/single/{garage_id}/{id}', [JobController::class, "getJobById"]);
+
 Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobById"]);
 
 

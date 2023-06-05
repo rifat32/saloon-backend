@@ -761,7 +761,12 @@ class JobController extends Controller
             }
 
 
-            $jobQuery = Job::with("job_sub_services.sub_service","automobile_make","automobile_model")
+            $jobQuery = Job::with(
+                "customer",
+                "job_sub_services.sub_service",
+                "automobile_make",
+                "automobile_model"
+                )
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -864,7 +869,11 @@ class JobController extends Controller
             }
 
 
-            $job = Job::with("job_sub_services.sub_service","automobile_make","automobile_model")
+            $job = Job::with(
+                "customer",
+                "job_sub_services.sub_service",
+                "automobile_make",
+                "automobile_model")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id
