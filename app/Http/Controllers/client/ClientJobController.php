@@ -91,7 +91,15 @@ class ClientJobController extends Controller
     public function getJobsClient($perPage,Request $request) {
         try{
             $this->storeActivity($request,"");
-            $jobsQuery = Job::with("job_sub_services.sub_service")
+            $jobsQuery = Job::with(
+                "garage",
+                "customer",
+                "job_sub_services.sub_service",
+                "job_packages.garage_package",
+                "automobile_make",
+                "automobile_model",
+                "job_payments"
+                )
             ->where([
                 "customer_id" => $request->user()->id
             ]);
@@ -181,7 +189,15 @@ class ClientJobController extends Controller
     public function getJobByIdClient($id,Request $request) {
         try{
             $this->storeActivity($request,"");
-            $job = Job::with("job_sub_services.sub_service")
+            $job = Job::with(
+                "garage",
+                "customer",
+                "job_sub_services.sub_service",
+                "job_packages.garage_package",
+                "automobile_make",
+                "automobile_model",
+                "job_payments"
+            )
             ->where([
                 "id" => $id,
                 "customer_id" => $request->user()->id

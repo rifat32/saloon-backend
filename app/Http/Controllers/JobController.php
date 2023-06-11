@@ -762,10 +762,13 @@ class JobController extends Controller
 
 
             $jobQuery = Job::with(
+                "garage",
                 "customer",
                 "job_sub_services.sub_service",
+                "job_packages.garage_package",
                 "automobile_make",
-                "automobile_model"
+                "automobile_model",
+                "job_payments"
                 )
             ->where([
                 "garage_id" => $garage_id
@@ -870,10 +873,14 @@ class JobController extends Controller
 
 
             $job = Job::with(
+                "garage",
                 "customer",
                 "job_sub_services.sub_service",
+                "job_packages.garage_package",
                 "automobile_make",
-                "automobile_model")
+                "automobile_model",
+                "job_payments"
+                )
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id
