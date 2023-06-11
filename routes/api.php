@@ -334,6 +334,9 @@ Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteF
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // review management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
 Route::post('/review-new/create/questions', [ReviewController::class, "storeQuestion"]);
 Route::put('/review-new/update/questions', [ReviewController::class, "updateQuestion"]);
 Route::put('/review-new/update/active_state/questions', [ReviewController::class, "updateQuestionActiveState"]);
@@ -357,6 +360,8 @@ Route::delete('/review-new/delete/questions/{id}', [ReviewController::class, "de
 
 
 
+
+
 Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::class, "getQuestionAllReportQuantum"]);
 
 
@@ -364,7 +369,7 @@ Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::cl
 
 
 Route::post('/review-new/create/tags', [ReviewController::class, "storeTag"]);
-Route::post('/review-new/create/tags/multiple', [ReviewController::class, "storeTagMultiple"]);
+Route::post('/review-new/create/tags/multiple/{garage_id}', [ReviewController::class, "storeTagMultiple"]);
 Route::put('/review-new/update/tags', [ReviewController::class, "updateTag"]);
 Route::get('/review-new/get/tags', [ReviewController::class, "getTag"]);
 Route::get('/review-new/get/tags/{id}', [ReviewController::class, "getTagById"]);

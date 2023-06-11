@@ -10,6 +10,7 @@ class Question extends Model
     use HasFactory;
     protected $fillable = [
         "question",
+        "restaurant_id",
         "is_default",
         "is_active",
         "type"

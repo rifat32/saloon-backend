@@ -14,6 +14,7 @@ class CreateQuestionsTable extends Migration
     public function up()
     {
         Schema::create('questions', function (Blueprint $table) {
+
             $table->id();
             $table->string("question");
             $table->enum('type', [
@@ -22,8 +23,8 @@ class CreateQuestionsTable extends Migration
              'numbers',
              'heart'
             ])->default("star")->nullable();
-
-            $table->boolean("is_default")->default(true);
+            $table->unsignedBigInteger("garage_id")->nullable();
+            $table->boolean("is_default")->default(false);
             $table->boolean("is_active")->default(false);
 
             $table->timestamps();

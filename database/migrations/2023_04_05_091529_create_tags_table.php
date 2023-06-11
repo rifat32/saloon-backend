@@ -18,6 +18,7 @@ class CreateTagsTable extends Migration
             $table->id();
             $table->string("tag")->nullable();
             $table->boolean("is_default")->default(true);
+            $table->unsignedBigInteger("garage_id")->nullable();
             $table->timestamps();
         });
         $defaultTags =  [

@@ -22,6 +22,125 @@ use Illuminate\Support\Facades\DB;
 class ReviewController extends Controller
 {
     use ErrorUtil,UserActivityUtil;
+
+     /**
+        *
+     * @OA\Get(
+     *      path="/review-new/get/questions-all/customer",
+     *      operationId="getQuestionAllUnauthorized",
+     *      tags={"review.setting.question"},
+
+     *      summary="This method is to get all question without pagination",
+     *      description="This method is to get all question without pagination",
+     *
+ *         @OA\Parameter(
+     *         name="garage_id",
+     *         in="query",
+     *         description="garage Id",
+     *         required=false,
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *           @OA\Response(
+     *          response=201,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+    public function   getQuestionAllUnauthorized(Request $request)
+    {
+
+
+    try{
+        $this->storeActivity($request,"");
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+            $is_dafault = false;
+
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage){
+                return response("no garage found", 404);
+            }
+            // if ($garage->enable_question == true) {
+            //     $query =  Question::where(["is_default" => 1]);
+            // }
+            // else {
+                $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => 0]);
+            // }
+
+
+
+
+
+        $questions =  $query->get();
+
+    $data =  json_decode(json_encode($questions), true);
+    foreach($questions as $key1=>$question){
+
+        foreach($question->question_stars as $key2=>$questionStar){
+            $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
+
+
+            $data[$key1]["stars"][$key2]["tags"] = [];
+            foreach($questionStar->star->star_tags as $key3=>$starTag){
+if($starTag->question_id == $question->id) {
+
+    array_push($data[$key1]["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
+
+
+}
+
+
+
+            }
+
+        }
+
+    }
+    return response($data, 200);
+    }catch(Exception $e) {
+  return $this->sendError($e, 500,$request);
+    }
+    }
+
+
+public function test (Request $request) {
+
+}
+
+
+
+
       /**
         *
      * @OA\Post(
@@ -40,7 +159,7 @@ class ReviewController extends Controller
      *         @OA\JsonContent(
      *            required={"question","is_active"},
      *            @OA\Property(property="question", type="string", format="string",example="How was this?"),
-
+ *  @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *  @OA\Property(property="is_active", type="boolean", format="boolean",example="1"),
      * * *  @OA\Property(property="type", type="string", format="string",example="star"),
      *
@@ -95,6 +214,20 @@ class ReviewController extends Controller
                 'type' => !empty($request->type)?$request->type:"star",
                 "is_default" => true
             ];
+            if ($request->user()->hasRole("superadmin")) {
+                $question["is_default"] = true;
+                $question["garage_id"] = NULL;
+            } else {
+
+                $garage =    Garage::where(["id" => $request->garage_id,"OwnerID" => $request->user()->id])->first();
+
+                if(!$garage){
+                    return response()->json(["message" => "No garage Found"],400);
+                }
+                if ($garage->enable_question == true) {
+                    return response()->json(["message" => "question is enabled"],400);
+                }
+            }
 
 
 
@@ -192,14 +325,17 @@ class ReviewController extends Controller
             ];
 
 
-            $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
-                $question
-            )
-                // ->with("somthing")
+            $checkQuestion =    Question::where(["id" => $request->id])->first();
+        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
+            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
+        }
+        $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
+            $question
+        )
+            // ->with("somthing")
 
-                ->first();
-                $updatedQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
-
+            ->first();
+            $updatedQuestion->info = "supported value is of type is 'star','emoji','numbers','heart'";
             return response($updatedQuestion, 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
@@ -276,16 +412,16 @@ class ReviewController extends Controller
             $question = [
                 "is_active"=>$request->is_active,
             ];
-
+            $checkQuestion =    Question::where(["id" => $request->id])->first();
+            if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
+                return response()->json(["message" => "you can not update the question. you are not a super admin"]);
+            }
             $updatedQuestion =    tap(Question::where(["id" => $request->id]))->update(
                 $question
             )
                 // ->with("somthing")
 
                 ->first();
-
-
-            return response($updatedQuestion, 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -304,7 +440,12 @@ class ReviewController extends Controller
      *      summary="This method is to get question",
      *      description="This method is to get question",
      *
-
+*         @OA\Parameter(
+     *         name="garage_id",
+     *         in="query",
+     *         description="garage Id",
+     *         required=false,
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -349,16 +490,33 @@ class ReviewController extends Controller
                     "message" => "You can not perform this action"
                 ], 401);
             }
+            $is_dafault = false;
+        $garageId = !empty($request->garage_id)?$request->garage_id:NULL;
+        if ($request->user()->hasRole("superadmin")) {
+
             $is_dafault = true;
+            $garageId = NULL;
+
+        }else{
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage && !$request->user()->hasRole("superadmin")){
+                return response("no garage found", 404);
+            }
+            // if ($garage->enable_question == true) {
+            //     $is_dafault = true;
+
+            // }
+        }
 
 
-            $query =  Question::where(["is_default" => $is_dafault]);
+        $query =  Question::where(["garage_id" => $garageId,"is_default" => $is_dafault]);
 
 
-            $questions =  $query->get();
+        $questions =  $query->get();
 
 
-        return response($questions, 200);
+    return response($questions, 200);
+
 
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
@@ -397,7 +555,12 @@ class ReviewController extends Controller
      *       security={
      *           {"bearerAuth": {}}
      *       },
-
+*         @OA\Parameter(
+     *         name="restaurant_id",
+     *         in="query",
+     *         description="restaurant Id",
+     *         required=false,
+     *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -443,11 +606,24 @@ class ReviewController extends Controller
                 ], 401);
             }
 
+            $is_dafault = false;
+            if ($request->user()->hasRole("superadmin")) {
+
                 $is_dafault = true;
 
+            }else{
+                $restaurant =    Garage::where(["id" => $request->restaurant_id])->first();
+                if(!$restaurant && !$request->user()->hasRole("superadmin")){
+                    return response("no restaurant found", 404);
+                }
+                // if ($restaurant->enable_question == true) {
+                //     $is_dafault = true;
+
+                // }
+            }
 
 
-            $query =  Question::where(["is_default" => $is_dafault]);
+            $query =  Question::where(["restaurant_id" => $request->restaurant_id,"is_default" => $is_dafault]);
 
 
             $questions =  $query->get();
@@ -476,6 +652,7 @@ class ReviewController extends Controller
 
         }
         return response($data, 200);
+
 
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
@@ -562,12 +739,12 @@ class ReviewController extends Controller
                 ], 401);
             }
 
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage){
-                return response("no garage found", 404);
+            $restaurant =    Garage::where(["id" => $request->restaurant_id])->first();
+            if(!$restaurant){
+                return response("no restaurant found", 404);
             }
 
-        $query =  Question::where(["is_active" => true]);
+        $query =  Question::where(["restaurant_id" => $request->restaurant_id,"is_default" => false]);
 
         $questions =  $query->get();
 
@@ -586,10 +763,10 @@ class ReviewController extends Controller
 
             $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.garage_id" => $garage->id,
+                "review_news.restaurant_id" => $restaurant->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
-
+                "review_news.guest_id" => NULL
 
                 ]
             );
@@ -620,10 +797,10 @@ class ReviewController extends Controller
 
             $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.garage_id" => $garage->id,
+                "review_news.restaurant_id" => $restaurant->id,
                 "question_id" => $question->id,
                 "tag_id" => $starTag->tag->id,
-
+                "review_news.guest_id" => NULL
                 ]
             );
             if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -643,11 +820,11 @@ class ReviewController extends Controller
 
             $starTag->tag->total =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.garage_id" => $garage->id,
+                "review_news.restaurant_id" => $restaurant->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
                 "tag_id" => $starTag->tag->id,
-
+                "review_news.guest_id" => NULL
                 ]
             );
             if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -682,16 +859,16 @@ class ReviewController extends Controller
 
 
 
-    $totalCount = 0;
-    $ttotalRating = 0;
+$totalCount = 0;
+$ttotalRating = 0;
 
-    foreach(Star::get() as $star) {
+foreach(Star::get() as $star) {
 
     $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
     ->where([
-        "review_news.garage_id" => $garage->id,
+        "review_news.restaurant_id" => $restaurant->id,
         "star_id" => $star->id,
-
+        "review_news.guest_id" => NULL
     ])
     ->distinct("review_value_news.review_id","review_value_news.question_id");
     if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -708,35 +885,36 @@ class ReviewController extends Controller
 
     $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
 
-    }
-    if($totalCount > 0) {
+}
+if($totalCount > 0) {
     $data2["total_rating"] = $totalCount / $ttotalRating;
 
-    }
-    else {
+}
+else {
     $data2["total_rating"] = 0;
 
-    }
+}
 
-    $data2["total_comment"] = ReviewNew::where([
-    "garage_id" => $garage->id,
-
-    ])
-    ->whereNotNull("comment");
-    if(!empty($request->start_date) && !empty($request->end_date)) {
+$data2["total_comment"] = ReviewNew::with("user","guest_user")->where([
+    "restaurant_id" => $restaurant->id,
+    "guest_id" => NULL,
+])
+->whereNotNull("comment")
+;
+if(!empty($request->start_date) && !empty($request->end_date)) {
 
     $data2["total_comment"] = $data2["total_comment"]->whereBetween('review_news.created_at', [
         $request->start_date,
         $request->end_date
     ]);
 
-    }
-    $data2["total_comment"] = $data2["total_comment"]->count();
+}
+$data2["total_comment"] = $data2["total_comment"]->get();
 
     return response([
         "part1" =>  $data2,
         "part2" =>  $data
-    ], 200);
+], 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -813,35 +991,35 @@ class ReviewController extends Controller
             }
 
             $questions =    Question::where(["id" => $id])
-                ->first();
+            ->first();
 
 
-                if(!$questions) {
-                    return response([
-                        "message" => "No question found"
-                    ], 404);
-                }
-                $data =  json_decode(json_encode($questions), true);
+            if(!$questions) {
+                return response([
+                    "message" => "No question found"
+                ], 404);
+            }
+            $data =  json_decode(json_encode($questions), true);
 
-                foreach($questions->question_stars as $key2=>$questionStar){
-                    $data["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-
-                    $data["stars"][$key2]["tags"] = [];
-                    foreach($questionStar->star->star_tags as $key3=>$starTag){
-
-        if($starTag->question_id == $questions->id) {
-
-            array_push($data["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
-
-        }
+            foreach($questions->question_stars as $key2=>$questionStar){
+                $data["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
 
 
+                $data["stars"][$key2]["tags"] = [];
+                foreach($questionStar->star->star_tags as $key3=>$starTag){
 
-                    }
+    if($starTag->question_id == $questions->id) {
+
+        array_push($data["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
+
+    }
+
+
 
                 }
-            return response($data, 200);
+
+            }
+        return response($data, 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -922,9 +1100,10 @@ class ReviewController extends Controller
             }
 
             $questions =    Question::where(["id" => $id])
-                ->delete();
+            ->delete();
 
-            return response(["message" => "ok"], 200);
+        return response(["message" => "ok"], 200);
+
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -1076,9 +1255,7 @@ class ReviewController extends Controller
         }
 
 }
-
-
- /**
+  /**
         *
      * @OA\Post(
      *      path="/review-new/create/tags",
@@ -1093,9 +1270,9 @@ class ReviewController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"tag"},
+     *            required={"tag","garage_id"},
      *            @OA\Property(property="tag", type="string", format="string",example="How was this?"),
-
+     *  @OA\Property(property="garage_id", type="number", format="number",example="1"),
 
      *
      *
@@ -1133,37 +1310,41 @@ class ReviewController extends Controller
      */
     public function storeTag(Request $request)
     {
-        try{
-            $this->storeActivity($request,"");
-            if (!$request->user()->hasPermissionTo('questions_create')) {
-                return response()->json([
-                    "message" => "You can not perform this action"
-                ], 401);
-            }
-            $question = [
-                'tag' => $request->tag,
-            ];
+        $this->storeActivity($request,"");
+        if (!$request->user()->hasPermissionTo('questions_create')) {
+            return response()->json([
+                "message" => "You can not perform this action"
+            ], 401);
+        }
+        $question = [
+            'tag' => $request->tag,
+            'garage_id' => $request->garage_id
+        ];
+        if ($request->user()->hasRole("superadmin")) {
             $question["is_default"] = true;
-
-
-
-            $createdQuestion =    Tag::create($question);
-
-
-            return response($createdQuestion, 201);
-        }catch(Exception $e) {
-      return $this->sendError($e, 500,$request);
+        } else {
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage){
+                return response()->json(["message" => "No Business Found"]);
+            }
+            if ($garage->enable_question == true) {
+                return response()->json(["message" => "question is enabled"]);
+            }
         }
 
 
 
+        $createdQuestion =    Tag::create($question);
+
+
+        return response($createdQuestion, 201);
+
 
     }
-
-   /**
+/**
         *
      * @OA\Post(
-     *      path="/review-new/create/tags/multiple",
+     *      path="/review-new/create/tags/multiple/{garage_id}",
      *      operationId="storeTagMultiple",
      *      tags={"review.setting.tag"},
     *       security={
@@ -1171,7 +1352,13 @@ class ReviewController extends Controller
      *       },
      *      summary="This method is to store tag",
      *      description="This method is to store tag",
-
+          *  @OA\Parameter(
+* name="garage_id",
+* in="path",
+* description="garage_id",
+* required=true,
+* example="1"
+* ),
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -1215,8 +1402,11 @@ class ReviewController extends Controller
      *      )
      *     )
      */
-    public function storeTagMultiple(Request $request)
+    public function storeTagMultiple($garage_id,Request $request)
     {
+
+
+
         try{
             $this->storeActivity($request,"");
             if (!$request->user()->hasPermissionTo('questions_create')) {
@@ -1225,81 +1415,117 @@ class ReviewController extends Controller
                 ], 401);
             }
 
-            $duplicate_indexes_array = [];
+            $dataArray = [];
+        $duplicate_indexes_array = [];
 
-            $uniqueTags = collect($request->tags)->unique("tag");
-
-            $uniqueTags->values()->all();
-
-            foreach($uniqueTags as $index=>$tag) {
-                $question = [
-                    'tag' => $tag,
-
-                ];
+        $uniqueTags = collect($request->tags)->unique()->values()->all();
 
 
 
 
 
-                $tag_found =    Tag::where([
-                        "garage_id" => NULL,
-                        "tag" => $question["tag"],
-                        "is_default" => 1
-                    ])
-                    ->first();
+        foreach($uniqueTags as $index=>$tag) {
+            $question = [
+                'tag' => $tag,
+                'garage_id' => $garage_id
+            ];
 
-             if($tag_found) {
+
+            if ($request->user()->hasRole("superadmin")) {
+
+
+            $tag_found =    Tag::where([
+                    "garage_id" => NULL,
+                    "tag" => $question["tag"],
+                    "is_default" => 1
+                ])
+                ->first();
+
+         if($tag_found) {
+
+            array_push($duplicate_indexes_array,$index);
+        }
+            } else {
+                $tag_found =    Tag::where(["garage_id" => $garage_id,"is_default" => 0,"tag" => $question["tag"]])
+
+                ->first();
+
+         if($tag_found) {
+
+            array_push($duplicate_indexes_array,$index);
+        } else {
+            $tag_found =    Tag::where(["garage_id" => NULL,"is_default" => 1,"tag" => $question["tag"]])
+            ->first();
+            if($tag_found) {
 
                 array_push($duplicate_indexes_array,$index);
             }
-
-
-
-
-
+        }
 
 
             }
 
 
 
-            if(count($duplicate_indexes_array)) {
 
-                return response([
-                    "message" => "duplicate data",
-                    "duplicate_indexes_array"=> $duplicate_indexes_array
-            ], 409);
+
+        }
+
+
+
+        if(count($duplicate_indexes_array)) {
+
+            return response([
+                "message" => "duplicate data",
+                "duplicate_indexes_array"=> $duplicate_indexes_array
+        ], 409);
+
+        }
+
+        else {
+
+ foreach($uniqueTags as $index=>$tag) {
+            $question = [
+                'tag' => $tag,
+                'garage_id' => $garage_id
+            ];
+
+
+            if ($request->user()->hasRole("superadmin")) {
+                $question["is_default"] = true;
+                $garage_id = NULL;
+                $question["garage_id"] = NULL;
+
+
 
             } else {
-     foreach($uniqueTags as $index=>$tag) {
-                $question = [
-                    'tag' => $tag
-                ];
 
+                $question["is_default"] = false;
 
-
-                    $question["is_default"] = true;
-
-
-
-
-
-
-                if(!count($duplicate_indexes_array)) {
-                    Tag::create($question);
+                $garage =    Garage::where(["id" => $garage_id])->first();
+                if(!$garage){
+                    return response()->json(["message" => "No Business Found"]);
                 }
-
-
-
-            }
             }
 
+            if(!count($duplicate_indexes_array)) {
+              $finalTag =  Tag::create($question);
+              array_push($dataArray,$finalTag);
+            }
+            else {
+                return response()->json($duplicate_indexes_array,200) ;
+            }
+
+
+
+        }
+        }
 
 
 
 
 
-            return response(["message" => "data inserted"], 201);
+        return response(["message" => "data inserted","data"=>$dataArray], 201);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -1307,6 +1533,8 @@ class ReviewController extends Controller
 
 
     }
+
+
 
 
  /**
@@ -1912,7 +2140,7 @@ class ReviewController extends Controller
      *      )
      *     )
      */
-    public function  getAverage($garageId, $start, $end, Request $request)
+    public function  getAverage($garage_id, $start, $end, Request $request)
     {
         try{
             $this->storeActivity($request,"");
@@ -1923,7 +2151,7 @@ class ReviewController extends Controller
             }
             // with
             $reviews = ReviewNew::where([
-                "garage_id" => $garageId
+                "garage_id" => $garage_id
             ])
                 ->whereBetween('created_at', [$start, $end])
                 ->with("question")
@@ -2035,7 +2263,7 @@ class ReviewController extends Controller
      */
 
 
-    public function  filterReview($garageId, $rate, $start, $end, Request $request)
+    public function  filterReview($garage_id, $rate, $start, $end, Request $request)
     {
         try{
             $this->storeActivity($request,"");
@@ -2046,7 +2274,7 @@ class ReviewController extends Controller
             }
             // with
             $reviewValues = ReviewNew::where([
-                "garage_id" => $garageId,
+                "garage_id" => $garage_id,
                 "rate" => $rate
             ])
                 ->with("garage","value")
@@ -2111,7 +2339,7 @@ class ReviewController extends Controller
      *     )
      */
 
-    public function  getReviewByGarageId($garageId, Request $request)
+    public function  getReviewByGarageId($garage_id, Request $request)
     {
         try{
             $this->storeActivity($request,"");
@@ -2122,7 +2350,7 @@ class ReviewController extends Controller
             }
             // with
             $reviewValue = ReviewNew::with("value")->where([
-                "garage_id" => $garageId,
+                "garage_id" => $garage_id,
             ])
                 ->get();
 
@@ -2204,7 +2432,7 @@ class ReviewController extends Controller
 
 
 
-    public function  getCustommerReview($garageId, $start, $end, Request $request)
+    public function  getCustommerReview($garage_id, $start, $end, Request $request)
     {
         try{
             $this->storeActivity($request,"");
@@ -2215,7 +2443,7 @@ class ReviewController extends Controller
             }
             // with
             $data["reviews"] = ReviewNew::where([
-                "garage_id" => $garageId,
+                "garage_id" => $garage_id,
             ])
                 ->whereBetween('created_at', [$start, $end])
                 ->get();

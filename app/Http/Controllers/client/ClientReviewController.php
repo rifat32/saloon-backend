@@ -72,14 +72,24 @@ class ClientReviewController extends Controller
     {
         try{
             $this->storeActivity($request,"");
+
+
+
             $is_dafault = false;
 
             $garage =    Garage::where(["id" => $request->garage_id])->first();
             if(!$garage){
                 return response("no garage found", 404);
             }
+            // if ($garage->enable_question == true) {
+            //     $query =  Question::where(["is_default" => 1]);
+            // }
+            // else {
+                $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => 0]);
+            // }
 
-                $query =  Question::where(["is_default" => 1]);
+
+
 
 
         $questions =  $query->get();
@@ -107,8 +117,12 @@ if($starTag->question_id == $question->id) {
         }
 
     }
-
     return response($data, 200);
+
+
+
+
+
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -199,7 +213,7 @@ if($starTag->question_id == $question->id) {
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
-
+                "review_news.guest_id" => NULL
 
                 ]
             )
@@ -227,13 +241,12 @@ if($starTag->question_id == $question->id) {
 
 
 
-
             $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "tag_id" => $starTag->tag->id,
-
+                "review_news.guest_id" => NULL
                 ]
             )->get()->count();
 
@@ -280,7 +293,7 @@ if($starTag->question_id == $question->id) {
     ->where([
         "review_news.garage_id" => $garage->id,
         "star_id" => $star->id,
-
+        "review_news.guest_id" => NULL
     ])
     ->distinct("review_value_news.review_id","review_value_news.question_id")
     ->count();
@@ -299,17 +312,18 @@ if($starTag->question_id == $question->id) {
 
     }
 
-    $data2["total_comment"] = ReviewNew::where([
+    $data2["total_comment"] = ReviewNew::with("user","guest_user")->where([
     "garage_id" => $garage->id,
-
+    "guest_id" => NULL,
     ])
     ->whereNotNull("comment")
-    ->count();
+    ->get();
 
     return response([
         "part1" =>  $data2,
         // "part2" =>  $data
     ], 200);
+
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
