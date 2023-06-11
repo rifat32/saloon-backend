@@ -104,6 +104,7 @@ class GarageServiceController extends Controller
             $servicesQuery = GarageService::with("service")
             ->leftJoin('services', 'garage_services.service_id', '=', 'services.id');
 
+
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
                     $term = $request->search_key;

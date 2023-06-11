@@ -34,8 +34,8 @@ class BookingConfirmRequest extends FormRequest
             "job_end_time" => ['required','date_format:H:i', new TimeValidation
         ],
 
-        "fuel" => "nullable|string",
-        "transmission" => "nullable|string",
+        "price" => "required|numeric",
+
 
         ];
     }

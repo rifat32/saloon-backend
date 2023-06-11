@@ -190,7 +190,7 @@ class ClientJobController extends Controller
         try{
             $this->storeActivity($request,"");
             $job = Job::with(
-                "garage",
+                     "garage",
                 "customer",
                 "job_sub_services.sub_service",
                 "job_packages.garage_package",

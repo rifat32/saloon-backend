@@ -45,11 +45,11 @@ class BookingController extends Controller
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *            required={"id","garage_id","coupon_code","total_price","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
+     *            required={"id","garage_id","coupon_code","price","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
-     *     * *   *    @OA\Property(property="total_price", type="number", format="number",example="30"),
+     *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
 
@@ -253,7 +253,7 @@ class BookingController extends Controller
 
                     }
 
-                $booking->price = (!empty($updatableData["total_price"]?$updatableData["total_price"]:$total_price));
+                $booking->price = (!empty($updatableData["price"]?$updatableData["price"]:$total_price));
 
 
                 if(!empty($updatableData["coupon_code"])){
@@ -447,14 +447,14 @@ class BookingController extends Controller
      *            required={"id","garage_id","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
  * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+ * *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
      *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *
      * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
 
      *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
 
-*     *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
-     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
+
 
      *         ),
      *      ),
@@ -518,13 +518,13 @@ class BookingController extends Controller
             "job_start_time",
             "job_end_time",
             "status",
-            "fuel",
-            "transmission",
+
         ])->toArray()
         )
             // ->with("somthing")
 
             ->first();
+            $booking->price  = $updatableData["price"];
             if(!$booking){
                 return response()->json([
             "message" => "booking not found"
