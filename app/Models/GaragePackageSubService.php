@@ -9,11 +9,11 @@ class GaragePackageSubService extends Model
 {
     use HasFactory;
     protected $fillable = [
-        "garage_sub_service_id",
+        "sub_service_id",
         "garage_package_id",
     ];
-   
-    public function garage_sub_service(){
-        return $this->belongsTo(GarageSubService::class,'garage_sub_service_id', 'id');
+
+    public function sub_service(){
+        return $this->belongsTo(SubService::class,'sub_service_id', 'id');
     }
 }

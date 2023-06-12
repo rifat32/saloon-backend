@@ -134,7 +134,7 @@ class GaragePackageController extends Controller
                         }
 
                         GaragePackageSubService::create([
-                            "garage_sub_service_id" => $garage_sub_service->id,
+                            "sub_service_id" => $garage_sub_service->sub_service_id,
                             "garage_package_id" => $garage_package->id,
                         ]);
 
@@ -297,7 +297,7 @@ class GaragePackageController extends Controller
 
                     GaragePackageSubService::create([
 
-                        "garage_sub_service_id" => $garage_sub_service->id,
+                        "garage_sub_service_id" => $garage_sub_service->sub_service_id,
                         "garage_package_id" => $garage_package->id,
 
                     ]);
@@ -414,7 +414,7 @@ class GaragePackageController extends Controller
             }
 
 
-            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
+            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -532,7 +532,7 @@ class GaragePackageController extends Controller
         //     }
 
 
-            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
+            $garagePackageQuery = GaragePackage::with("garage_package_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id
             ]);
@@ -635,7 +635,7 @@ class GaragePackageController extends Controller
             }
 
 
-            $garage_package = GaragePackage::with("garage_package_sub_services.garage_sub_service.subService")
+            $garage_package = GaragePackage::with("garage_package_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id,
                 "id" => $id

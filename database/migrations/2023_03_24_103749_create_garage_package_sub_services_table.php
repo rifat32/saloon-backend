@@ -15,11 +15,11 @@ class CreateGaragePackageSubServicesTable extends Migration
     {
         Schema::create('garage_package_sub_services', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger("garage_sub_service_id");
-            $table->foreign('garage_sub_service_id')->references('id')->on('garage_sub_services')->onDelete('cascade');
-
+            $table->unsignedBigInteger("sub_service_id");
+            $table->foreign('sub_service_id')->references('id')->on('sub_services')->onDelete('cascade');
             $table->unsignedBigInteger("garage_package_id");
             $table->foreign('garage_package_id')->references('id')->on('garage_packages')->onDelete('cascade');
+
 
 
             $table->timestamps();
