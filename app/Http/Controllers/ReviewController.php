@@ -209,6 +209,7 @@ public function test (Request $request) {
                 ], 401);
             }
             $question = [
+                'garage_id' => $request->garage_id,
                 'question' => $request->question,
                 'is_active' => $request->is_active,
                 'type' => !empty($request->type)?$request->type:"star",
@@ -556,9 +557,9 @@ public function test (Request $request) {
      *           {"bearerAuth": {}}
      *       },
 *         @OA\Parameter(
-     *         name="restaurant_id",
+     *         name="garage_id",
      *         in="query",
-     *         description="restaurant Id",
+     *         description="garage Id",
      *         required=false,
      *      ),
      *      @OA\Response(
@@ -612,18 +613,18 @@ public function test (Request $request) {
                 $is_dafault = true;
 
             }else{
-                $restaurant =    Garage::where(["id" => $request->restaurant_id])->first();
-                if(!$restaurant && !$request->user()->hasRole("superadmin")){
-                    return response("no restaurant found", 404);
+                $garage =    Garage::where(["id" => $request->garage_id])->first();
+                if(!$garage && !$request->user()->hasRole("superadmin")){
+                    return response("No Business Found", 404);
                 }
-                // if ($restaurant->enable_question == true) {
+                // if ($garage->enable_question == true) {
                 //     $is_dafault = true;
 
                 // }
             }
 
 
-            $query =  Question::where(["restaurant_id" => $request->restaurant_id,"is_default" => $is_dafault]);
+            $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => $is_dafault]);
 
 
             $questions =  $query->get();
@@ -739,12 +740,12 @@ public function test (Request $request) {
                 ], 401);
             }
 
-            $restaurant =    Garage::where(["id" => $request->restaurant_id])->first();
-            if(!$restaurant){
-                return response("no restaurant found", 404);
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage){
+                return response("no business found", 404);
             }
 
-        $query =  Question::where(["restaurant_id" => $request->restaurant_id,"is_default" => false]);
+        $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
 
         $questions =  $query->get();
 
@@ -763,7 +764,7 @@ public function test (Request $request) {
 
             $data[$key1]["stars"][$key2]["stars_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.restaurant_id" => $restaurant->id,
+                "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
                 "review_news.guest_id" => NULL
@@ -797,7 +798,7 @@ public function test (Request $request) {
 
             $starTag->tag->count =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.restaurant_id" => $restaurant->id,
+                "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "tag_id" => $starTag->tag->id,
                 "review_news.guest_id" => NULL
@@ -820,7 +821,7 @@ public function test (Request $request) {
 
             $starTag->tag->total =  ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
             ->where([
-                "review_news.restaurant_id" => $restaurant->id,
+                "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
                 "tag_id" => $starTag->tag->id,
@@ -866,7 +867,7 @@ foreach(Star::get() as $star) {
 
     $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
     ->where([
-        "review_news.restaurant_id" => $restaurant->id,
+        "review_news.garage_id" => $garage->id,
         "star_id" => $star->id,
         "review_news.guest_id" => NULL
     ])
@@ -896,7 +897,7 @@ else {
 }
 
 $data2["total_comment"] = ReviewNew::with("user","guest_user")->where([
-    "restaurant_id" => $restaurant->id,
+    "garage_id" => $garage->id,
     "guest_id" => NULL,
 ])
 ->whereNotNull("comment")
@@ -1599,19 +1600,23 @@ $data2["total_comment"] = $data2["total_comment"]->get();
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            $question = [
-                'tag' => $request->tag
-            ];
 
-            $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
-                $question
-            )
-                // ->with("somthing")
+           $question = [
+            'tag' => $request->tag
+        ];
+        $checkQuestion =    Tag::where(["id" => $request->id])->first();
+        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
+            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
+        }
+        $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
+            $question
+        )
+            // ->with("somthing")
 
-                ->first();
+            ->first();
 
 
-            return response($updatedQuestion, 200);
+        return response($updatedQuestion, 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -1634,6 +1639,12 @@ $data2["total_comment"] = $data2["total_comment"]->get();
      *       },
      *      summary="This method is to get tag",
      *      description="This method is to get tag",
+   *         @OA\Parameter(
+     *         name="garage_id",
+     *         in="query",
+     *         description="garage Id",
+     *         required=false,
+     *      ),
 
 
      *      @OA\Response(
@@ -1676,11 +1687,33 @@ $data2["total_comment"] = $data2["total_comment"]->get();
                 ], 401);
             }
 
-                $query =  Tag::where(["is_default" => true]);
-            $questions =  $query->get();
+
+        $is_dafault = false;
+        $garageId = $request->garage_id;
+
+        if ($request->user()->hasRole("superadmin")) {
+            $is_dafault = true;
+            $garageId = NULL;
+            $query =  Tag::where(["garage_id" => NULL,"is_default" => true]);
+        }
+        else{
+            $garage =    Garage::where(["id" => $request->garage_id])->first();
+            if(!$garage && !$request->user()->hasRole("superadmin")){
+                return response("No Business Found", 404);
+            }
+            // if ($garage->enable_question == true) {
+            //     $is_dafault = true;
+            // }
+            $query =  Tag::where(["garage_id" => $garageId,"is_default" => 0])
+            ->orWhere(["garage_id" => NULL,"is_default" => 1]);
+        }
 
 
-            return response($questions, 200);
+
+        $questions =  $query->get();
+
+
+        return response($questions, 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
@@ -1822,12 +1855,27 @@ $data2["total_comment"] = $data2["total_comment"]->get();
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            $tag =    Tag::where(["id" => $id])
-            ->first();
+         $tag =    Tag::where(["id" => $id])
+        ->first();
+        $tagId = $tag->id;
 
-            $tag->delete();
+            if ($request->user()->hasRole("superadmin") &&  $tag->is_default == 1) {
+                StarTag::where(["tag_id"=> $tagId])->delete();
+                $tag->delete();
+                ReviewValueNew::where([
+                    'tag_id'=>$tagId
+                ])
+                ->delete();
 
-
+            }
+            else  if(!$request->user()->hasRole("superadmin") &&  $tag->is_default == 0){
+                StarTag::where(["tag_id"=> $tagId])->delete();
+                $tag->delete();
+                ReviewValueNew::where([
+                    'tag_id'=>$tagId
+                ])
+                ->delete();
+            }
             return response(["message" => "ok"], 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
@@ -2032,34 +2080,52 @@ $data2["total_comment"] = $data2["total_comment"]->get();
             }
             return DB::transaction(function ()use($request) {
                 $question_id = $request->question_id;
-                QusetionStar::where([
-                    "question_id"  => $question_id
-                ])
-                ->delete();
 
-                StarTag::where([
-                    "question_id"  => $question_id
-                ])
-                ->delete();
+                $starIds = collect($request->stars)->pluck('star_id')->toArray();
+
+
+                QusetionStar::where([
+                        'question_id' => $question_id,
+                    ])
+                    ->whereNotIn('star_id', $starIds)
+                    ->delete();
+
+
+
                 foreach($request->stars as $requestStar){
 
+        if( !(QusetionStar::where([
+        "question_id"=>$question_id,
+        "star_id" => $requestStar["star_id"]
+             ])->exists())) {
+                QusetionStar::create([
+                    "question_id"=>$question_id,
+                    "star_id" => $requestStar["star_id"]
+                         ]);
+    }
 
-                    QusetionStar::create([
-                        "question_id"=>$question_id,
-                        "star_id" => $requestStar["star_id"]
-                             ]);
+    $starTagIds = collect($requestStar["tags"])->pluck('tag_id')->toArray();
 
+    StarTag::where([
+        "question_id"  => $question_id,
+        "star_id" => $requestStar["star_id"]
+    ])
+    ->whereNotIn('tag_id', $starTagIds)
+    ->delete();
 
                    foreach($requestStar["tags"] as $tag){
 
-
-
-                   StarTag::create([
-                    "question_id"=>$question_id,
+                    if( !(StarTag::where([
+                        "question_id"=>$question_id,
                     "tag_id"=>$tag["tag_id"],
                     "star_id" => $requestStar["star_id"]
-                         ]);
-
+                             ])->exists())) {
+                                StarTag::create([
+                                    "question_id"=>$question_id,
+                                    "tag_id"=>$tag["tag_id"],
+                                    "star_id" => $requestStar["star_id"]
+                                         ]);
+                    }
                    }
                 }
 

@@ -392,6 +392,8 @@ class GaragesController extends Controller
         throw new Exception($serviceUpdate["message"]);
      }
 
+     $this->storeQuestion($garage->id);
+
 
         return response([
             "user" => $user,

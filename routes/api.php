@@ -369,8 +369,14 @@ Route::get('/review-new/get/questions-all-report/quantum', [ReviewController::cl
 
 
 Route::post('/review-new/create/tags', [ReviewController::class, "storeTag"]);
+
 Route::post('/review-new/create/tags/multiple/{garage_id}', [ReviewController::class, "storeTagMultiple"]);
+
 Route::put('/review-new/update/tags', [ReviewController::class, "updateTag"]);
+
+
+
+
 Route::get('/review-new/get/tags', [ReviewController::class, "getTag"]);
 Route::get('/review-new/get/tags/{id}', [ReviewController::class, "getTagById"]);
 

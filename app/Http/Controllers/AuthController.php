@@ -847,7 +847,7 @@ $user->token = $user->createToken('Laravel Password Grant Client')->accessToken;
 $user->permissions = $user->getAllPermissions()->pluck('name');
 $user->roles = $user->roles->pluck('name');
 
-
+$this->storeQuestion($garage->id);
 
                 return response([
                      "user" => $user,

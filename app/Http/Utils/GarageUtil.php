@@ -10,6 +10,7 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
 use App\Models\GarageSubService;
+use App\Models\Question;
 use App\Models\Service;
 use App\Models\SubService;
 use Exception;
@@ -154,7 +155,7 @@ trait GarageUtil
 
     public function garageOwnerCheck($garage_id) {
 
-    
+
         $garageQuery  = Garage::where(["id" => $garage_id]);
         if(!auth()->user()->hasRole('superadmin')) {
             $garageQuery = $garageQuery->where(function ($query) {
@@ -168,6 +169,37 @@ trait GarageUtil
             return false;
         }
         return $garage;
+    }
+
+
+
+    public function storeQuestion($garage_id) {
+        $defaultQuestions = Question::where([
+            "garage_id" => NULL,
+            "is_default" => 1
+          ])->get();
+
+          foreach($defaultQuestions as $defaultQuestion) {
+              $questionData = [
+                  'question' => $defaultQuestion->question,
+                  'garage_id' => $garage_id,
+                  'is_active' => 0
+              ];
+           $question  = Question::create($questionData);
+
+
+
+
+
+
+
+
+
+
+
+
+
+          }
     }
 
 }
