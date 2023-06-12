@@ -23,120 +23,7 @@ class ReviewController extends Controller
 {
     use ErrorUtil,UserActivityUtil;
 
-     /**
-        *
-     * @OA\Get(
-     *      path="/review-new/get/questions-all/customer",
-     *      operationId="getQuestionAllUnauthorized",
-     *      tags={"review.setting.question"},
 
-     *      summary="This method is to get all question without pagination",
-     *      description="This method is to get all question without pagination",
-     *
- *         @OA\Parameter(
-     *         name="garage_id",
-     *         in="query",
-     *         description="garage Id",
-     *         required=false,
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *           @OA\Response(
-     *          response=201,
-     *          description="Successful operation",
-     *       @OA\JsonContent(),
-     *       ),
-     *      @OA\Response(
-     *          response=401,
-     *          description="Unauthenticated",
-     * @OA\JsonContent(),
-     *      ),
-     *        @OA\Response(
-     *          response=422,
-     *          description="Unprocesseble Content",
-     *    @OA\JsonContent(),
-     *      ),
-     *      @OA\Response(
-     *          response=403,
-     *          description="Forbidden",
-     *  * @OA\Response(
-     *      response=400,
-     *      description="Bad Request"
-     *   ),
-     * @OA\Response(
-     *      response=404,
-     *      description="not found"
-     *   ),
-     *@OA\JsonContent()
-     *      )
-     *     )
-     */
-    public function   getQuestionAllUnauthorized(Request $request)
-    {
-
-
-    try{
-        $this->storeActivity($request,"");
-            if (!$request->user()->hasPermissionTo('questions_create')) {
-                return response()->json([
-                    "message" => "You can not perform this action"
-                ], 401);
-            }
-            $is_dafault = false;
-
-            $garage =    Garage::where(["id" => $request->garage_id])->first();
-            if(!$garage){
-                return response("no garage found", 404);
-            }
-            // if ($garage->enable_question == true) {
-            //     $query =  Question::where(["is_default" => 1]);
-            // }
-            // else {
-                $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => 0]);
-            // }
-
-
-
-
-
-        $questions =  $query->get();
-
-    $data =  json_decode(json_encode($questions), true);
-    foreach($questions as $key1=>$question){
-
-        foreach($question->question_stars as $key2=>$questionStar){
-            $data[$key1]["stars"][$key2]= json_decode(json_encode($questionStar->star), true) ;
-
-
-            $data[$key1]["stars"][$key2]["tags"] = [];
-            foreach($questionStar->star->star_tags as $key3=>$starTag){
-if($starTag->question_id == $question->id) {
-
-    array_push($data[$key1]["stars"][$key2]["tags"],json_decode(json_encode($starTag->tag), true));
-
-
-}
-
-
-
-            }
-
-        }
-
-    }
-    return response($data, 200);
-    }catch(Exception $e) {
-  return $this->sendError($e, 500,$request);
-    }
-    }
-
-
-public function test (Request $request) {
-
-}
 
 
 
@@ -213,14 +100,14 @@ public function test (Request $request) {
                 'question' => $request->question,
                 'is_active' => $request->is_active,
                 'type' => !empty($request->type)?$request->type:"star",
-                "is_default" => true
+                "is_default" => false
             ];
             if ($request->user()->hasRole("superadmin")) {
                 $question["is_default"] = true;
                 $question["garage_id"] = NULL;
             } else {
 
-                $garage =    Garage::where(["id" => $request->garage_id,"OwnerID" => $request->user()->id])->first();
+                $garage =    Garage::where(["id" => $request->garage_id,"owner_id" => $request->user()->id])->first();
 
                 if(!$garage){
                     return response()->json(["message" => "No garage Found"],400);

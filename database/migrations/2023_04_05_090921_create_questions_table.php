@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
 class CreateQuestionsTable extends Migration
 {
     /**
@@ -29,6 +29,54 @@ class CreateQuestionsTable extends Migration
 
             $table->timestamps();
         });
+
+        DB::table('questions')
+        ->insert(    array(
+           [
+            "question" => "What was your overall experience like with our product/service?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ],
+           [
+            "question" => "How would you rate our customer service and support?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ],
+           [
+            "question" => "How likely are you to recommend our product/service to others?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ],
+           [
+            "question" => "Were the prices for the products or services offered reasonable?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ],
+           [
+            "question" => "How was the customer service you received?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ],
+           [
+            "question" => "Were the employees friendly and helpful?",
+            "type"=> "star",
+            "is_default" => 1,
+            "is_active" => 1
+
+           ]
+
+
+        ));
     }
 
     /**

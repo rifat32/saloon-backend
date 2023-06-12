@@ -79,7 +79,7 @@ class ClientReviewController extends Controller
 
             $garage =    Garage::where(["id" => $request->garage_id])->first();
             if(!$garage){
-                return response("no garage found", 404);
+                return response("No Business Found", 404);
             }
             // if ($garage->enable_question == true) {
             //     $query =  Question::where(["is_default" => 1]);
@@ -188,7 +188,7 @@ if($starTag->question_id == $question->id) {
             $this->storeActivity($request,"");
             $garage =    Garage::where(["id" => $request->garage_id])->first();
             if(!$garage){
-                return response("no garage found", 404);
+                return response("No Business Found", 404);
             }
 
         $query =  Question::where(["garage_id" => $request->garage_id,"is_default" => false]);
@@ -323,7 +323,6 @@ if($starTag->question_id == $question->id) {
         "part1" =>  $data2,
         // "part2" =>  $data
     ], 200);
-
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }

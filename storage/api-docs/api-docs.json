@@ -818,6 +818,11 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "test@g.c"
+                                    },
+                                    "client_site": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "client"
                                     }
                                 },
                                 "type": "object"
@@ -1053,6 +1058,12 @@
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
                                             "labour_rate": 500
@@ -4091,7 +4102,7 @@
                                     "id",
                                     "garage_id",
                                     "coupon_code",
-                                    "total_price",
+                                    "price",
                                     "automobile_make_id",
                                     "automobile_model_id",
                                     "car_registration_no",
@@ -4117,7 +4128,7 @@
                                         "format": "string",
                                         "example": "123456"
                                     },
-                                    "total_price": {
+                                    "price": {
                                         "type": "number",
                                         "format": "number",
                                         "example": "30"
@@ -4382,6 +4393,11 @@
                                         "format": "number",
                                         "example": "1"
                                     },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "30"
+                                    },
                                     "job_start_date": {
                                         "type": "string",
                                         "format": "string",
@@ -4396,16 +4412,6 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "10:10"
-                                    },
-                                    "transmission": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "transmission"
-                                    },
-                                    "fuel": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "Fuel"
                                     }
                                 },
                                 "type": "object"
@@ -9561,7 +9567,7 @@
                 ]
             }
         },
-        "/v1.0/garage-packages/{garage_id}": {
+        "/v1.0/garage-packages/{garage_id}/{perPage}": {
             "get": {
                 "tags": [
                     "garage_package_management"
@@ -9569,6 +9575,108 @@
                 "summary": "This method is to get  garage packages ",
                 "description": "This method is to get garage packages",
                 "operationId": "getGaragePackages",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garage-packages/get/all/{garage_id}": {
+            "get": {
+                "tags": [
+                    "basics"
+                ],
+                "summary": "This method is to get  garage packages all ",
+                "description": "This method is to get garage packages all",
+                "operationId": "getGaragePackagesAll",
                 "parameters": [
                     {
                         "name": "garage_id",
@@ -10576,44 +10684,44 @@
                                         "example": [
                                             {
                                                 "day": 0,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 1,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 2,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 3,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 4,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 5,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             },
                                             {
                                                 "day": 6,
-                                                "opening_time": "10:10",
-                                                "closing_time": "10:15",
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
                                                 "is_closed": true
                                             }
                                         ]
@@ -10981,6 +11089,12 @@
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
                                             "labour_rate": 500
@@ -11147,6 +11261,12 @@
                                             "city": "Dhaka",
                                             "postcode": "Dinajpur",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
                                             "labour_rate": 500
@@ -15539,6 +15659,11 @@
                                         "format": "string",
                                         "example": "How was this?"
                                     },
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
                                     "is_active": {
                                         "type": "boolean",
                                         "format": "boolean",
@@ -15782,6 +15907,14 @@
                 "summary": "This method is to get question",
                 "description": "This method is to get question",
                 "operationId": "getQuestion",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -15839,6 +15972,14 @@
                 "summary": "This method is to get all question without pagination",
                 "description": "This method is to get all question without pagination",
                 "operationId": "getQuestionAll",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -16188,13 +16329,19 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "tag"
+                                    "tag",
+                                    "garage_id"
                                 ],
                                 "properties": {
                                     "tag": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "How was this?"
+                                    },
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
                                     }
                                 },
                                 "type": "object"
@@ -16243,7 +16390,7 @@
                 ]
             }
         },
-        "/review-new/create/tags/multiple": {
+        "/review-new/create/tags/multiple/{garage_id}": {
             "post": {
                 "tags": [
                     "review.setting.tag"
@@ -16251,6 +16398,15 @@
                 "summary": "This method is to store tag",
                 "description": "This method is to store tag",
                 "operationId": "storeTagMultiple",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -16398,6 +16554,14 @@
                 "summary": "This method is to get tag",
                 "description": "This method is to get tag",
                 "operationId": "getTag",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -18909,6 +19073,255 @@
                 ]
             }
         },
+        "/v1.0/shop-galleries/{shop_id}": {
+            "get": {
+                "tags": [
+                    "shop_section.shop_gallery_management"
+                ],
+                "summary": "This method is to get shop galleries",
+                "description": "This method is to get shop galleries",
+                "operationId": "getShopGalleries",
+                "parameters": [
+                    {
+                        "name": "shop_id",
+                        "in": "path",
+                        "description": "shop_id",
+                        "required": true,
+                        "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "shop_section.shop_gallery_management"
+                ],
+                "summary": "This method is to store shop gallery",
+                "description": "This method is to store shop gallery",
+                "operationId": "createShopGallery",
+                "parameters": [
+                    {
+                        "name": "shop_id",
+                        "in": "path",
+                        "description": "shop_id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "images[]"
+                                ],
+                                "properties": {
+                                    "images[]": {
+                                        "description": "array of images to upload",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "file"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/shop-galleries/{shop_id}/{id}": {
+            "delete": {
+                "tags": [
+                    "shop_section.shop_gallery_management"
+                ],
+                "summary": "This method is to delete shop gallery by id",
+                "description": "This method is to delete shop gellery by id",
+                "operationId": "deleteShopGalleryById",
+                "parameters": [
+                    {
+                        "name": "shop_id",
+                        "in": "path",
+                        "description": "shop_id",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/shop-image": {
             "post": {
                 "tags": [
@@ -19135,6 +19548,12 @@
                                             "postcode": "Dinajpur",
                                             "sku_prefix": "bd shop",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
                                             "is_mobile_shop": true,
                                             "wifi_available": true,
                                             "labour_rate": 500
@@ -19260,6 +19679,12 @@
                                             "postcode": "Dinajpur",
                                             "sku_prefix": "bd shop",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
                                             "is_mobile_shop": true,
                                             "wifi_available": true,
                                             "labour_rate": 500
