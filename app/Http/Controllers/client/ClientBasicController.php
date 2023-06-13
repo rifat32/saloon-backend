@@ -54,6 +54,13 @@ class ClientBasicController extends Controller
 * example="country_code"
 * ),
      * *  @OA\Parameter(
+* name="address",
+* in="query",
+* description="address",
+* required=true,
+* example="address"
+* ),
+     * *  @OA\Parameter(
 * name="city",
 * in="query",
 * description="city",
@@ -212,6 +219,17 @@ class ClientBasicController extends Controller
                 });
 
             }
+
+            if (!empty($request->address)) {
+                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
+                    $term = $request->address;
+                    $query->where("country", "like", "%" . $term . "%");
+                    $query->orWhere("city", "like", "%" . $term . "%");
+
+
+                });
+            }
+
 
             if (!empty($request->country_code)) {
                 $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country_code . "%");

@@ -743,6 +743,13 @@ class GaragesController extends Controller
 * required=true,
 * example="country_code"
 * ),
+    * *  @OA\Parameter(
+* name="address",
+* in="query",
+* description="address",
+* required=true,
+* example="address"
+* ),
      * *  @OA\Parameter(
 * name="city",
 * in="query",
@@ -883,7 +890,15 @@ class GaragesController extends Controller
                 $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
             }
 
+            if (!empty($request->address)) {
+                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
+                    $term = $request->address;
+                    $query->where("country", "like", "%" . $term . "%");
+                    $query->orWhere("city", "like", "%" . $term . "%");
 
+
+                });
+            }
             if (!empty($request->country_code)) {
                 $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
 

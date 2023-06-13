@@ -666,6 +666,13 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
 * example="search_key"
 * ),
   * *  @OA\Parameter(
+* name="address",
+* in="query",
+* description="address",
+* required=true,
+* example="address"
+* ),
+  * *  @OA\Parameter(
 * name="country_code",
 * in="query",
 * description="country_code",
@@ -810,7 +817,15 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
              $shopsQuery = $shopsQuery->where('long', "<=", $request->end_long);
          }
 
+         if (!empty($request->address)) {
+            $shopsQuery = $shopsQuery->where(function ($query) use ($request) {
+                $term = $request->address;
+                $query->where("country", "like", "%" . $term . "%");
+                $query->orWhere("city", "like", "%" . $term . "%");
 
+
+            });
+        }
          if (!empty($request->country_code)) {
              $shopsQuery =   $shopsQuery->orWhere("country", "like", "%" . $request->country_code . "%");
 
