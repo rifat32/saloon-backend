@@ -22,6 +22,7 @@ class Garage extends Model
         "long",
         "country",
         "city",
+        "currency",
         "postcode",
         "logo",
         "image",

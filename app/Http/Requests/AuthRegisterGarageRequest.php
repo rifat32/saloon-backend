@@ -34,7 +34,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable|string',
-            
+
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
             'user.country' => 'nullable|string',
@@ -54,6 +54,9 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.long' => 'nullable|string',
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
+
+            'garage.currency' => 'nullable|string',
+
             'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
             'garage.address_line_2' => 'nullable|string',
