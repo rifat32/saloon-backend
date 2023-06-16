@@ -1213,7 +1213,7 @@ try{
             $user->roles = $user->roles->pluck('name');
 
 
-            return response($user, 201);
+            return response($user, 200);
         } catch(Exception $e){
             error_log($e->getMessage());
         return $this->sendError($e,500,$request);

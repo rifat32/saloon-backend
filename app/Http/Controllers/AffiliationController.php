@@ -299,7 +299,7 @@ class AffiliationController extends Controller
 
                     ->first();
 
-                return response($affiliation, 201);
+                return response($affiliation, 200);
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
