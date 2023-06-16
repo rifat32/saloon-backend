@@ -168,6 +168,13 @@ class NotificationController extends Controller
      *       security={
      *           {"bearerAuth": {}}
      *       },
+     *   *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
      *              @OA\Parameter(
      *         name="perPage",
      *         in="path",

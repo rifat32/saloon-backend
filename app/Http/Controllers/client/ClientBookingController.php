@@ -272,7 +272,7 @@ class ClientBookingController extends Controller
 
             return response()->json([
                 "message" => "The given data was invalid.",
-                "errors" => ["user.password"=>["email already taken"]]
+                "errors" => $e->getMessage()
              ],422);
              return $this->sendError($e,500,$request);
         }
