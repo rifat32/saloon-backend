@@ -8,6 +8,7 @@ use App\Http\Utils\UserActivityUtil;
 use App\Models\Notification;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
 {
@@ -92,7 +93,7 @@ class NotificationController extends Controller
 
 
 
-                if (!empty($notifications->items()->customer_id)) {
+                if (!empty($notifications->items()[$i]->customer_id)) {
                     $notifications->items()[$i]["template_string"] =  str_replace(
                         "[customer_name]",
 
@@ -249,8 +250,7 @@ class NotificationController extends Controller
                  error_log($notifications->items()[$i]["template_string"]);
 
 
-
-                if (!empty($notifications->items()->customer_id)) {
+                if (!empty($notifications->items()[$i]->customer_id)) {
                     $notifications->items()[$i]["template_string"] =  str_replace(
                         "[customer_name]",
 

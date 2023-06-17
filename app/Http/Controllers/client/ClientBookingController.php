@@ -270,10 +270,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
 
-            return response()->json([
-                "message" => "The given data was invalid.",
-                "errors" => $e->getMessage()
-             ],422);
+
              return $this->sendError($e,500,$request);
         }
     }
