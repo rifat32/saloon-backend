@@ -20,20 +20,12 @@ class PreBooking extends Model
         "status",
         "job_start_date",
         "job_start_time",
-
-
-        "address",
-        "country",
-        "city",
-        "postcode",
-
+        
         "fuel",
         "transmission",
 
 
 
-        "lat",
-        "long",
 
 
 

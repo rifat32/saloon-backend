@@ -252,6 +252,8 @@ class GaragesController extends Controller
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
+     *     *  "lat":"12",
+     *     *  "long":"12",
      *
      * }),
      *
@@ -441,6 +443,8 @@ class GaragesController extends Controller
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
+     * "lat":"12",
+     * "long":"12",
      *
      * }),
      *
@@ -622,7 +626,8 @@ class GaragesController extends Controller
             'postcode',
             'email',
             'password',
-
+            "lat",
+            "long",
         ])->toArray()
         )
             // ->with("somthing")

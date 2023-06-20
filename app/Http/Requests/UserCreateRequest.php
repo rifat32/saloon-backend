@@ -38,6 +38,8 @@ class UserCreateRequest extends FormRequest
         'country' => 'required|string',
         'city' => 'required|string',
         'postcode' => 'required|string',
+        'lat' => 'required|string',
+        'long' => 'required|string',
         'role' => 'required|string'
     ];
 

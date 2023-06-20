@@ -41,6 +41,8 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.city' => 'nullable|string',
             'user.postcode' => 'nullable|string',
 
+            'user.lat' => 'nullable|string',
+            'user.long' => 'nullable|string',
 
             'garage.name' => 'required|string|max:255',
             'garage.about' => 'nullable|string',

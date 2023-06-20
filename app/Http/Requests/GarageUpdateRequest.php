@@ -38,6 +38,8 @@ class GarageUpdateRequest extends FormRequest
             'user.country' => 'nullable|string',
             'user.city' => 'nullable|string',
             'user.postcode' => 'nullable|string',
+            'user.lat' => 'nullable|string',
+            'user.long' => 'nullable|string',
 
             'garage.id' => 'required|numeric',
             'garage.name' => 'required|string|max:255',

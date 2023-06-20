@@ -25,6 +25,9 @@ class CreateUsersTable extends Migration
             $table->string("country")->nullable();
             $table->string("city")->nullable();
             $table->string("postcode")->nullable();
+            $table->string("lat")->nullable();
+            $table->string("long")->nullable();
+
             $table->string('email')->unique();
             $table->string('email_verify_token')->nullable();
             $table->string('email_verify_token_expires')->nullable();
@@ -41,6 +44,8 @@ class CreateUsersTable extends Migration
 
             $table->integer('login_attempts')->default(0);
             $table->dateTime('last_failed_login_attempt_at')->nullable();
+
+
 
 
             $table->softDeletes();

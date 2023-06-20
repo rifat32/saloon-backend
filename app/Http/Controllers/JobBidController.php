@@ -185,9 +185,11 @@ class JobBidController extends Controller
 
                 )
 
-
+                ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
 
                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id');
+
+
 
             // ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids);
 
@@ -208,16 +210,16 @@ class JobBidController extends Controller
             }
 
             if (!empty($request->start_lat)) {
-                $preBookingQuery = $preBookingQuery->where('lat', ">=", $request->start_lat);
+                $preBookingQuery = $preBookingQuery->where('users.lat', ">=", $request->start_lat);
             }
             if (!empty($request->end_lat)) {
-                $preBookingQuery = $preBookingQuery->where('lat', "<=", $request->end_lat);
+                $preBookingQuery = $preBookingQuery->where('users.lat', "<=", $request->end_lat);
             }
             if (!empty($request->start_long)) {
-                $preBookingQuery = $preBookingQuery->where('long', ">=", $request->start_long);
+                $preBookingQuery = $preBookingQuery->where('users.long', ">=", $request->start_long);
             }
             if (!empty($request->end_long)) {
-                $preBookingQuery = $preBookingQuery->where('long', "<=", $request->end_long);
+                $preBookingQuery = $preBookingQuery->where('users.long', "<=", $request->end_long);
             }
 
 

@@ -68,6 +68,8 @@ class AuthController extends Controller
      *  * *  @OA\Property(property="country", type="string", format="string",example="bangladesh"),
      *  * *  @OA\Property(property="city", type="string", format="string",example="dhaka"),
      *  * *  @OA\Property(property="postcode", type="string", format="string",example="1207"),
+     *      *  * *  @OA\Property(property="lat", type="string", format="string",example="1207"),
+     *      *  * *  @OA\Property(property="long", type="string", format="string",example="1207"),
      *
      *         ),
      *      ),
@@ -696,6 +698,8 @@ $datediff = $now - $user_created_date;
      *  "country":"Bangladesh",
      *  "city":"Dhaka",
      *  "postcode":"Dinajpur",
+     *  "lat":"10",
+     *  "long":"Din10ajpur",
      *
      * }),
      *
@@ -1138,6 +1142,8 @@ try{
      *  * *  @OA\Property(property="country", type="string", format="string",example="1"),
      *  * *  @OA\Property(property="city", type="string", format="string",example="1"),
      *  * *  @OA\Property(property="postcode", type="string", format="string",example="1"),
+     *  *  * *  @OA\Property(property="lat", type="string", format="string",example="1"),
+     *  *  * *  @OA\Property(property="long", type="string", format="string",example="1"),
 
      *
      *         ),
@@ -1201,7 +1207,8 @@ try{
                 'country',
                 'city',
                 'postcode',
-
+                "lat",
+                "long",
             ])->toArray()
             )
                 // ->with("somthing")

@@ -144,6 +144,8 @@ class UserManagementController extends Controller
      *  * *  @OA\Property(property="country", type="string", format="boolean",example="Bangladesh"),
      *  * *  @OA\Property(property="city", type="string", format="boolean",example="Dhaka"),
      *  * *  @OA\Property(property="postcode", type="string", format="boolean",example="1207"),
+     *     *  * *  @OA\Property(property="lat", type="string", format="boolean",example="1207"),
+     *     *  * *  @OA\Property(property="long", type="string", format="boolean",example="1207"),
      *  *  * *  @OA\Property(property="role", type="string", format="boolean",example="customer"),
      *
      *         ),
@@ -248,6 +250,8 @@ class UserManagementController extends Controller
      *  * *  @OA\Property(property="country", type="boolean", format="boolean",example="1"),
      *  * *  @OA\Property(property="city", type="boolean", format="boolean",example="1"),
      *  * *  @OA\Property(property="postcode", type="boolean", format="boolean",example="1"),
+     *     *     *  * *  @OA\Property(property="lat", type="string", format="boolean",example="1207"),
+     *     *  * *  @OA\Property(property="long", type="string", format="boolean",example="1207"),
      *  *  * *  @OA\Property(property="role", type="boolean", format="boolean",example="customer"),
      *
      *         ),
@@ -329,6 +333,8 @@ class UserManagementController extends Controller
                 'country',
                 'city',
                 'postcode',
+                "lat",
+                "long",
                 "image"
 
             ])->toArray()

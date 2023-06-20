@@ -43,18 +43,17 @@ class PreBookingCreateRequestClient extends FormRequest
 
     'pre_booking_sub_service_ids' => 'required|array',
     'pre_booking_sub_service_ids.*' => 'required|numeric',
-
-    'country' => 'required|string',
-    'city' => 'required|string',
-    'postcode' => 'required|string',
-    'address' => 'required|string',
-
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
 
-    'lat' => 'nullable|string',
-    'long' => 'nullable|string',
+
+    // 'country' => 'required|string',
+    // 'city' => 'required|string',
+    // 'postcode' => 'required|string',
+    // 'address' => 'required|string',
+    // 'lat' => 'nullable|string',
+    // 'long' => 'nullable|string',
 
 
 

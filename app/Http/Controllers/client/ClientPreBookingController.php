@@ -65,14 +65,6 @@ class ClientPreBookingController extends Controller
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
      *
-     *  * @OA\Property(property="country", type="string", format="string",example="country"),
-     *  * @OA\Property(property="city", type="string", format="string",example="city"),
-     *  * @OA\Property(property="postcode", type="string", format="string",example="postcode"),
-     *  * @OA\Property(property="address", type="string", format="string",example="address"),
-     *
-     *   *  * @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
-     *  * @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
-     *
 
      *
      *
@@ -233,13 +225,6 @@ class ClientPreBookingController extends Controller
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
      *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *   *
-     *  * @OA\Property(property="country", type="string", format="string",example="country"),
-     *  * @OA\Property(property="city", type="string", format="string",example="city"),
-     *  * @OA\Property(property="postcode", type="string", format="string",example="postcode"),
-     *  * @OA\Property(property="address", type="string", format="string",example="address"),
-     *
-     *   *  * @OA\Property(property="lat", type="string", format="string",example="23.704263332849386"),
-     *  * @OA\Property(property="long", type="string", format="string",example="90.44707059805279"),
      *
      *
      *      ),
@@ -329,16 +314,11 @@ class ClientPreBookingController extends Controller
                         "coupon_code",
                         'pre_booking_sub_service_ids',
                         'pre_booking_sub_service_ids.*',
-                        'country',
-                        'city',
-                        'postcode',
-                        'address',
                         "fuel",
                         "transmission",
 
 
-                        'lat',
-                        'long',
+
 
 
                     ])->toArray()

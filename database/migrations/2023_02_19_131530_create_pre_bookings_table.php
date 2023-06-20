@@ -42,21 +42,15 @@ class CreatePreBookingsTable extends Migration
 
 
 
-
-            $table->string("address")->nullable();
-            $table->string("country");
-            $table->string("city");
-            $table->string("postcode");
-
-
-
-
             $table->enum("status",["pending","booked"])->nullable()->default("pending");
 
 
-
-            $table->string("lat")->nullable();
-            $table->string("long")->nullable();
+            // $table->string("address")->nullable();
+            // $table->string("country");
+            // $table->string("city");
+            // $table->string("postcode");
+            // $table->string("lat")->nullable();
+            // $table->string("long")->nullable();
 
 
             $table->timestamps();

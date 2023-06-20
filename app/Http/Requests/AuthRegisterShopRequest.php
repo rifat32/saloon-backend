@@ -37,6 +37,8 @@ class AuthRegisterShopRequest extends FormRequest
             'user.country' => 'nullable|string',
             'user.city' => 'nullable|string',
             'user.postcode' => 'nullable|string',
+            'user.lat' => 'nullable|string',
+            'user.long' => 'nullable|string',
 
 
             'shop.name' => 'required|string|max:255',
@@ -64,7 +66,7 @@ class AuthRegisterShopRequest extends FormRequest
 
             'shop.images' => 'nullable|array',
             'shop.images.*' => 'nullable|string',
-            
+
 
             'shop.is_mobile_shop' => 'required|boolean',
             'shop.wifi_available' => 'required|boolean',

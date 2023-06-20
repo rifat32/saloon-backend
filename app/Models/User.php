@@ -29,6 +29,8 @@ class User extends Authenticatable
         'country',
         'city',
         'postcode',
+        "lat",
+        "long",
         'email',
         'password',
         "created_by",
@@ -44,7 +46,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         "site_redirect_token",
-       
+
         "email_verify_token",
         "email_verify_token_expires",
         "resetPasswordToken",

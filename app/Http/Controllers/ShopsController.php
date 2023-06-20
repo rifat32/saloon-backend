@@ -247,6 +247,8 @@ class ShopsController extends Controller
   *  "country":"Bangladesh",
   *  "city":"Dhaka",
   *  "postcode":"Dinajpur",
+    *  "lat":"12",
+  *  "long":"12",
   *
   * }),
   *
@@ -398,7 +400,8 @@ class ShopsController extends Controller
   *  "country":"Bangladesh",
   *  "city":"Dhaka",
   *  "postcode":"Dinajpur",
-  *
+  *   *  "lat":"12",
+  *  "long":"12",
   * }),
   *
   *  @OA\Property(property="shop", type="string", format="array",example={
@@ -556,6 +559,8 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          'postcode',
          'email',
          'password',
+         "lat",
+         "long",
 
      ])->toArray()
      )
