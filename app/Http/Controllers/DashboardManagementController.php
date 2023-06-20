@@ -106,9 +106,10 @@ class DashboardManagementController extends Controller
                 ], 404);
             }
 
-            $prebookingQuery = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+            $prebookingQuery = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+            ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
                 ->where([
-                    "pre_bookings.city" => $garage->city
+                    "users.city" => $garage->city
                 ])
                 ->whereNotIn('job_bids.garage_id', [$garage->id])
                 ->where('pre_bookings.status', "pending");
@@ -215,8 +216,9 @@ class DashboardManagementController extends Controller
             ], 404);
         }
 
-        $data["total_jobs"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["total_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
             //  ->whereNotIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -225,16 +227,18 @@ class DashboardManagementController extends Controller
 
             ->count();
 
-        $data["weekly_jobs"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["weekly_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
             //  ->whereNotIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
             ->whereBetween('pre_bookings.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->groupBy("pre_bookings.id")
             ->count();
-        $data["monthly_jobs"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["monthly_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
             //  ->whereNotIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -245,18 +249,20 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["applied_total_jobs"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["applied_total_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
             ->groupBy("pre_bookings.id")
 
             ->count();
-        $data["applied_weekly_jobs"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["applied_weekly_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -264,9 +270,10 @@ class DashboardManagementController extends Controller
             ->groupBy("pre_bookings.id")
 
             ->count();
-        $data["applied_monthly_jobs"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["applied_monthly_jobs"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -699,9 +706,10 @@ class DashboardManagementController extends Controller
         $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
 
-        $data["total_count"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["total_count"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -712,9 +720,10 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["this_week_data"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["this_week_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -724,9 +733,10 @@ class DashboardManagementController extends Controller
             ->select("job_bids.id","job_bids.created_at","job_bids.updated_at")
             ->get();
 
-        $data["previous_week_data"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["previous_week_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -738,9 +748,10 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["this_month_data"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["this_month_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -749,9 +760,10 @@ class DashboardManagementController extends Controller
             ->select("job_bids.id","job_bids.created_at","job_bids.updated_at")
             ->get();
 
-        $data["previous_month_data"] = PreBooking::leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
+        $data["previous_month_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->leftJoin('job_bids', 'pre_bookings.id', '=', 'job_bids.pre_booking_id')
             ->where([
-                "pre_bookings.city" => $garage->city
+                "users.city" => $garage->city
             ])
             ->whereIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -778,8 +790,11 @@ class DashboardManagementController extends Controller
         $endDateOfThisWeek = Carbon::now()->endOfWeek();
         $startDateOfPreviousWeek = Carbon::now()->startOfWeek()->subWeek(1);
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
-        $data["total_count"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+
+        $data["total_count"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+
+        ->where([
+            "users.city" => $garage->city
         ])
             //  ->whereNotIn('job_bids.garage_id', [$garage->id])
             ->where('pre_bookings.status', "pending")
@@ -787,8 +802,10 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["this_week_data"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["this_week_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+
+        ->where([
+            "users.city" => $garage->city
         ])
 
             ->where('pre_bookings.status', "pending")
@@ -796,8 +813,9 @@ class DashboardManagementController extends Controller
             ->select("pre_bookings.id","pre_bookings.created_at","pre_bookings.updated_at")
             ->get();
 
-        $data["previous_week_data"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["previous_week_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
 
             ->where('pre_bookings.status', "pending")
@@ -807,8 +825,9 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["this_month_data"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["this_month_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
 
             ->where('pre_bookings.status', "pending")
@@ -816,8 +835,9 @@ class DashboardManagementController extends Controller
             ->select("pre_bookings.id","pre_bookings.created_at","pre_bookings.updated_at")
             ->get();
 
-        $data["previous_month_data"] = PreBooking::where([
-            "pre_bookings.city" => $garage->city
+        $data["previous_month_data"] = PreBooking::leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+        ->where([
+            "users.city" => $garage->city
         ])
 
             ->where('pre_bookings.status', "pending")
