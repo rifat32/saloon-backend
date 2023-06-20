@@ -415,5 +415,85 @@ class NotificationController extends Controller
     }
 
 
+/**
+        *
+     * @OA\Delete(
+     *      path="/v1.0/notifications/{id}",
+     *      operationId="deleteNotificationById",
+     *      tags={"notification_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to delete notification by id",
+     *      description="This method is to delete notification by id",
+     *
 
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function deleteNotificationById($id,Request $request) {
+
+        try{
+            $this->storeActivity($request,"");
+
+            $notification = Notification::where([
+                "id" => $id,
+                'receiver_id' => $request->user()->id
+            ])->first();
+
+            if(!$notification) {
+                return response(["message" => "Notification not found"], 404);
+            }
+
+            $notification->delete();
+            return response(["message" => "Notification deleted"], 200);
+
+
+
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+
+
+        }
+
+    }
 }

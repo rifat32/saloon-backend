@@ -120,11 +120,20 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/v1.0/update-user-info', [AuthController::class, "updateUserInfo"]);
 
 
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// notification management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     Route::get('/v1.0/notifications/{perPage}', [NotificationController::class, "getNotifications"]);
 
     Route::get('/v1.0/notifications/{garage_id}/{perPage}', [NotificationController::class, "getNotificationsByGarageId"]);
 
     Route::put('/v1.0/notifications/change-status', [NotificationController::class, "updateNotificationStatus"]);
+
+    Route::delete('/v1.0/notifications/{id}', [NotificationController::class, "deleteNotificationById"]);
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// notification management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
