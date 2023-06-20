@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class NotificationTemplateController extends Controller
 {
     use ErrorUtil,UserActivityUtil;
+
      /**
      *
      * @OA\Put(

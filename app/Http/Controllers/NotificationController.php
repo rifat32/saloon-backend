@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\NotificationStatusUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\Notification;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class NotificationController extends Controller
@@ -325,4 +327,93 @@ class NotificationController extends Controller
             return $this->sendError($e, 500,$request);
         }
     }
+
+
+
+
+
+
+     /**
+     *
+     * @OA\Put(
+     *      path="/v1.0/notifications/change-status",
+     *      operationId="updateNotificationStatus",
+     *      tags={"notification_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update notification status",
+     *      description="This method is to update notification status",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"notification_ids"},
+     *    @OA\Property(property="notification_ids", type="string", format="array", example={1,2,3,4,5,6}),
+
+*
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function updateNotificationStatus(NotificationStatusUpdateRequest $request)
+    {
+        try {
+            $this->storeActivity($request,"");
+            return    DB::transaction(function () use (&$request) {
+
+                $updatableData = $request->validated();
+
+
+     Notification::whereIn('id', $updatableData["notification_ids"])
+    ->where('receiver_id', $request->user()->id)
+    ->update([
+        "status" => "read"
+    ]);
+
+
+
+                return response(["ok" => true], 201);
+            });
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return $this->sendError($e, 500,$request);
+        }
+    }
+
+
+
 }
