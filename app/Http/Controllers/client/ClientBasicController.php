@@ -22,6 +22,136 @@ class ClientBasicController extends Controller
     use ErrorUtil, UserActivityUtil;
 
 
+    public function getGarageSearchQuery(Request $request) {
+        $garagesQuery = Garage::with("owner"
+        // "garageAutomobileMakes.automobileMake",
+        // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+        // "garageServices.service",
+        // "garageServices.garageSubServices.garage_sub_service_prices",
+        // "garageServices.garageSubServices.subService",
+        // "garage_times",
+        // "garageGalleries",
+        // "garage_packages",
+)
+        ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
+        ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+
+        ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
+        ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+
+->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
+        ;
+
+        if(!empty($request->search_key)) {
+            $garagesQuery = $garagesQuery->where(function($query) use ($request){
+                $term = $request->search_key;
+                $query->where("garages.name", "like", "%" . $term . "%");
+                $query->orWhere("garages.phone", "like", "%" . $term . "%");
+                $query->orWhere("garages.email", "like", "%" . $term . "%");
+                $query->orWhere("garages.city", "like", "%" . $term . "%");
+                $query->orWhere("garages.postcode", "like", "%" . $term . "%");
+            });
+
+        }
+
+
+
+
+
+
+
+        if (!empty($request->country_code)) {
+            $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country_code . "%");
+
+        }
+        if (!empty($request->city)) {
+            $garagesQuery =   $garagesQuery->where("city", "like", "%" . $request->city . "%");
+
+        }
+
+
+
+        if (!empty($request->is_mobile_garage)) {
+
+            if ($request->is_mobile_garage === '1' || $request->is_mobile_garage === 'true') {
+                $garagesQuery = $garagesQuery->where("garages.is_mobile_garage", true);
+            }
+        }
+        if (!empty($request->wifi_available)) {
+
+            if ($request->wifi_available === '1' || $request->wifi_available === 'true') {
+                $garagesQuery = $garagesQuery->where("garages.wifi_available", true);
+            }
+        }
+
+
+
+        if(!empty($request->automobile_make_ids)) {
+            $null_filter = collect(array_filter($request->automobile_make_ids))->values();
+            $automobile_make_ids =  $null_filter->all();
+            if(count($automobile_make_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_makes.automobile_make_id",$automobile_make_ids);
+            }
+
+        }
+        if(!empty($request->automobile_model_ids)) {
+
+            $null_filter = collect(array_filter($request->automobile_model_ids))->values();
+            $automobile_model_ids =  $null_filter->all();
+            if(count($automobile_model_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_models.automobile_model_id",$automobile_model_ids);
+            }
+
+        }
+
+        if(!empty($request->service_ids)) {
+
+            $null_filter = collect(array_filter($request->service_ids))->values();
+        $service_ids =  $null_filter->all();
+
+            if(count($service_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$service_ids);
+            }
+
+        }
+
+
+        if(!empty($request->sub_service_ids)) {
+            $null_filter = collect(array_filter($request->sub_service_ids))->values();
+        $sub_service_ids =  $null_filter->all();
+            if(count($sub_service_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$sub_service_ids);
+            }
+
+        }
+
+        if (!empty($request->start_lat)) {
+            $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_lat);
+        }
+        if (!empty($request->end_lat)) {
+            $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
+        }
+        if (!empty($request->start_long)) {
+            $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
+        }
+        if (!empty($request->end_long)) {
+            $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
+        }
+        if (!empty($request->date_time)) {
+            $date = Carbon::createFromFormat('Y-m-d H:i', $request->date_time);
+            $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
+            $time = $date->format('H:i');
+            $garagesQuery = $garagesQuery->where('garage_times.day', "=", $dayOfWeek)
+            ->whereTime('garage_times.opening_time', "<=", $time)
+            ->whereTime('garage_times.closing_time', ">", $time);
+        }
+
+        return $garagesQuery;
+
+    }
+
+
+
     /**
         *
      * @OA\Get(
@@ -189,154 +319,62 @@ class ClientBasicController extends Controller
 
         try{
             $this->storeActivity($request,"");
-            $garagesQuery = Garage::with("owner",
-            // "garageAutomobileMakes.automobileMake",
-            // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
-            // "garageServices.service",
-            // "garageServices.garageSubServices.garage_sub_service_prices",
-            // "garageServices.garageSubServices.subService",
-            // "garage_times",
-            // "garageGalleries",
-            // "garage_packages",
-)
-            ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
-            ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 
-            ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
-            ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-
-->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
-            ;
-
-            if(!empty($request->search_key)) {
-                $garagesQuery = $garagesQuery->where(function($query) use ($request){
-                    $term = $request->search_key;
-                    $query->where("garages.name", "like", "%" . $term . "%");
-                    $query->orWhere("garages.phone", "like", "%" . $term . "%");
-                    $query->orWhere("garages.email", "like", "%" . $term . "%");
-                    $query->orWhere("garages.city", "like", "%" . $term . "%");
-                    $query->orWhere("garages.postcode", "like", "%" . $term . "%");
-                });
-
-            }
-
-            if (!empty($request->address)) {
-                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
-                    $term = $request->address;
-                    $query->where("country", "like", "%" . $term . "%");
-                    $query->orWhere("city", "like", "%" . $term . "%");
+            $info=[];
 
 
-                });
-            }
+            if(!empty($request->address)) {
+                $garages = $this->getGarageSearchQuery($request)
+                ->where("garages.city",$request->address)
+                ->groupBy("garages.id")
 
+                ->orderByDesc("garages.id")
+                ->select("garages.*")
+                ->paginate($perPage);
 
-            if (!empty($request->country_code)) {
-                $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country_code . "%");
+                $info["is_result_by_city"] = true;
+                $info["is_result_by_country"] = false;
 
-            }
-            if (!empty($request->city)) {
-                $garagesQuery =   $garagesQuery->where("city", "like", "%" . $request->city . "%");
+                if (count($garages->items()) == 0) {
+                    $info["is_result_by_city"] = false;
+                    $info["is_result_by_country"] = true;
 
-            }
+                    $garages = $this->getGarageSearchQuery($request)
+                    ->where("garages.country",$request->address)
+                    ->groupBy("garages.id")
 
-
-
-
-
-            if (!empty($request->is_mobile_garage)) {
-
-                if ($request->is_mobile_garage === '1' || $request->is_mobile_garage === 'true') {
-                    $garagesQuery = $garagesQuery->where("garages.is_mobile_garage", true);
+                    ->orderByDesc("garages.id")
+                    ->select("garages.*")
+                    ->paginate($perPage);
                 }
-            }
-            if (!empty($request->wifi_available)) {
-
-                if ($request->wifi_available === '1' || $request->wifi_available === 'true') {
-                    $garagesQuery = $garagesQuery->where("garages.wifi_available", true);
-                }
-            }
-
-
-
-            if(!empty($request->automobile_make_ids)) {
-                $null_filter = collect(array_filter($request->automobile_make_ids))->values();
-                $automobile_make_ids =  $null_filter->all();
-                if(count($automobile_make_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_automobile_makes.automobile_make_id",$automobile_make_ids);
+                if (count($garages->items()) == 0) {
+                    $info["is_result_by_city"] = false;
+                    $info["is_result_by_country"] = false;
                 }
 
             }
-            if(!empty($request->automobile_model_ids)) {
+            else {
 
-                $null_filter = collect(array_filter($request->automobile_model_ids))->values();
-                $automobile_model_ids =  $null_filter->all();
-                if(count($automobile_model_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_automobile_models.automobile_model_id",$automobile_model_ids);
+                array_splice($info, 0);
+
+                    $garages = $this->getGarageSearchQuery($request)
+                    ->groupBy("garages.id")
+
+                    ->orderByDesc("garages.id")
+                    ->select("garages.*")
+                    ->paginate($perPage);
+
                 }
 
-            }
-
-
-            if(!empty($request->service_ids)) {
-
-                $null_filter = collect(array_filter($request->service_ids))->values();
-            $service_ids =  $null_filter->all();
-
-                if(count($service_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$service_ids);
-                }
-
-            }
 
 
 
 
-            if(!empty($request->sub_service_ids)) {
-                $null_filter = collect(array_filter($request->sub_service_ids))->values();
-            $sub_service_ids =  $null_filter->all();
-                if(count($sub_service_ids)) {
-                    $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$sub_service_ids);
-                }
 
-            }
+            return response()->json([
+                "info"=>$info,
 
-            if (!empty($request->start_lat)) {
-                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_lat);
-            }
-            if (!empty($request->end_lat)) {
-                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
-            }
-            if (!empty($request->start_long)) {
-                $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
-            }
-            if (!empty($request->end_long)) {
-                $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
-            }
-            if (!empty($request->date_time)) {
-
-                $date = Carbon::createFromFormat('Y-m-d H:i', $request->date_time);
-                $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
-                $time = $date->format('H:i');
-                $garagesQuery = $garagesQuery->where('garage_times.day', "=", $dayOfWeek)
-                ->whereTime('garage_times.opening_time', "<=", $time)
-                ->whereTime('garage_times.closing_time', ">", $time);
-            }
-
-
-
-            $garages = $garagesQuery
-
-            ->groupBy("garages.id")
-
-            ->orderByDesc("garages.id")
-            ->select("garages.*")
-
-            ->paginate($perPage);
-
-
-
-            return response()->json($garages, 200);
+                "data"=>$garages], 200);
         } catch(Exception $e){
 
             return $this->sendError($e,500,$request);
