@@ -34,8 +34,8 @@ class FuelStationUpdateRequest extends FormRequest
         ],
             "description" => "nullable|string",
 
-            'lat' => 'nullable|string',
-            'long' => 'nullable|string',
+            'lat' => 'required|string',
+            'long' => 'required|string',
 
             "options" => "nullable|array",
             "options.*.option_id" => "required_if:options,!=,null|numeric",

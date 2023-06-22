@@ -572,16 +572,8 @@ class GaragesController extends Controller
      }
 
 
-   if($userPrev->email !== $updatableData['user']['email']) {
-        if(User::where(["email" => $updatableData['user']['email']])->exists()) {
-              return response()->json([
-                 "message" => "The given data was invalid.",
-                 "errors" => ["user.password"=>["email already taken"]]
-              ],422);
-        }
-    }
-    // user email check
-     // garage email check + authorization check
+
+
      $garagePrev = Garage::where([
         "id" => $updatableData["garage"]["id"]
      ]);
@@ -592,18 +584,6 @@ class GaragesController extends Controller
            "message" => "no garage found with this id"
         ],404);
       }
-
-   if($garagePrev->email !== $updatableData['garage']['email']) {
-        if(Garage::where(["email" => $updatableData['garage']['email']])->exists()) {
-              return response()->json([
-                 "message" => "The given data was invalid.",
-                 "errors" => ["garage.password"=>["email already taken"]]
-              ],422);
-        }
-    }
-    // garage email check + authorization check
-
-
 
         if(!empty($updatableData['user']['password'])) {
             $updatableData['user']['password'] = Hash::make($updatableData['user']['password']);

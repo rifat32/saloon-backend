@@ -29,7 +29,9 @@ class GarageUpdateRequest extends FormRequest
             'user.first_Name' => 'required|string|max:255',
             'user.last_Name' => 'required|string|max:255',
             // 'user.email' => 'required|string|email|indisposable|max:255',
-            'user.email' => 'required|string|email|max:255',
+            // 'user.email' => 'required|string|email|max:255',
+            'user.email' => 'required|string|unique:users,email,' . $this->user["id"] . ',id',
+
             'user.password' => 'nullable|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable',
@@ -47,12 +49,12 @@ class GarageUpdateRequest extends FormRequest
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
             // 'garage.email' => 'required|string|email|indisposable|max:255',
-            'garage.email' => 'required|string|email|max:255',
+            'garage.email' => 'required|string|unique:garages,email,' . $this->garage["id"] . ',id',
             'garage.additional_information' => 'nullable|string',
 
 
-            'garage.lat' => 'nullable|string',
-            'garage.long' => 'nullable|string',
+            'garage.lat' => 'required|string',
+            'garage.long' => 'required|string',
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
             'garage.postcode' => 'required|string',

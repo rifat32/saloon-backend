@@ -29,16 +29,18 @@ class UserUpdateRequest extends FormRequest
             'first_Name' => 'required|string|max:255',
             'last_Name' => 'required|string|max:255',
             // 'email' => 'required|string|email|indisposable|max:255|unique:users',
+            'email' => 'required|string|unique:users,email,' . $this->id . ',id',
+
             'password' => 'nullable|confirmed|string|min:6',
             'phone' => 'required|string',
             'image' => 'nullable',
             'address_line_1' => 'nullable',
             'address_line_2' => 'nullable',
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'postcode' => 'required|string',
-            'lat' => 'required|string',
-            'long' => 'required|string',
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
+            'postcode' => 'nullable|string',
+            'lat' => 'nullable|string',
+            'long' => 'nullable|string',
             'role' => 'required|string'
         ];
     }

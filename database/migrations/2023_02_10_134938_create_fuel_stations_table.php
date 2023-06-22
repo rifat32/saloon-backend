@@ -21,8 +21,8 @@ class CreateFuelStationsTable extends Migration
             $table->time("opening_time");
             $table->time("closing_time");
 
-            $table->string("lat")->nullable();
-            $table->string("long")->nullable();
+            $table->string("lat");
+            $table->string("long");
 
             $table->string("country");
             $table->string("city");
