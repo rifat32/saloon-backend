@@ -365,12 +365,27 @@ class GaragesController extends Controller
     $insertableData['user']['remember_token'] = Str::random(10);
     $insertableData['user']['is_active'] = true;
     $insertableData['user']['created_by'] = $request->user()->id;
+
+    $insertableData['user']['address_line_1'] = $insertableData['garage']['address_line_1'];
+    $insertableData['user']['address_line_2'] = $insertableData['garage']['address_line_2'];
+    $insertableData['user']['country'] = $insertableData['garage']['country'];
+    $insertableData['user']['city'] = $insertableData['garage']['city'];
+    $insertableData['user']['postcode'] = $insertableData['garage']['postcode'];
+    $insertableData['user']['lat'] = $insertableData['garage']['lat'];
+    $insertableData['user']['long'] = $insertableData['garage']['long'];
+
+
+
+
+
     $user =  User::create($insertableData['user']);
     $user->assignRole('garage_owner');
    // end user info ##############
 
 
   //  garage info ##############
+
+
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
         $insertableData['garage']['created_by'] = $request->user()->id;
@@ -592,6 +607,13 @@ class GaragesController extends Controller
         }
         $updatableData['user']['is_active'] = true;
         $updatableData['user']['remember_token'] = Str::random(10);
+        $updatableData['user']['address_line_1'] = $updatableData['garage']['address_line_1'];
+    $updatableData['user']['address_line_2'] = $updatableData['garage']['address_line_2'];
+    $updatableData['user']['country'] = $updatableData['garage']['country'];
+    $updatableData['user']['city'] = $updatableData['garage']['city'];
+    $updatableData['user']['postcode'] = $updatableData['garage']['postcode'];
+    $updatableData['user']['lat'] = $updatableData['garage']['lat'];
+    $updatableData['user']['long'] = $updatableData['garage']['long'];
         $user  =  tap(User::where([
             "id" => $updatableData['user']["id"]
             ]))->update(collect($updatableData['user'])->only([
