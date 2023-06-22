@@ -785,6 +785,12 @@ class JobBidController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$job_bid) {
+                        return response()->json([
+                            "message" => "no job bid found"
+                            ],404);
+
+                }
 
                 $notification_template = NotificationTemplate::where([
                     "type" => "bid_updated_by_garage_owner"

@@ -619,6 +619,12 @@ class GaragesController extends Controller
             // ->with("somthing")
 
             ->first();
+            if(!$user) {
+                return response()->json([
+                    "message" => "no user found"
+                    ],404);
+
+        }
 
         $user->syncRoles(["garage_owner"]);
 

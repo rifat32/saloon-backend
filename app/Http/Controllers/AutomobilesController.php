@@ -181,6 +181,13 @@ class AutomobilesController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$automobile) {
+                        return response()->json([
+                            "message" => "no automobile category found"
+                            ],404);
+
+                }
+
 
             return response($automobile, 200);
         } catch(Exception $e){
@@ -716,6 +723,12 @@ class AutomobilesController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$automobile) {
+                        return response()->json([
+                            "message" => "no automobile make found"
+                            ],404);
+
+                }
 
             return response($automobile, 200);
         } catch(Exception $e){
@@ -1385,6 +1398,12 @@ class AutomobilesController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$automobile) {
+                        return response()->json([
+                            "message" => "no automobile model found"
+                            ],404);
+
+                }
 
             return response($automobile, 200);
         } catch(Exception $e){
@@ -1936,6 +1955,12 @@ class AutomobilesController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$automobile) {
+                        return response()->json([
+                            "message" => "no automobile model variant found"
+                            ],404);
+
+                }
 
             return response($automobile, 200);
         } catch(Exception $e){
@@ -2402,6 +2427,12 @@ class AutomobilesController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$automobile) {
+                        return response()->json([
+                            "message" => "no automobile fuel type found"
+                            ],404);
+
+                }
 
             return response($automobile, 200);
         } catch(Exception $e){

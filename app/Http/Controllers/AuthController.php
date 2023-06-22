@@ -1214,7 +1214,12 @@ try{
                 // ->with("somthing")
 
                 ->first();
+                if(!$user) {
+                    return response()->json([
+                        "message" => "no user found"
+                        ]);
 
+            }
 
 
             $user->roles = $user->roles->pluck('name');

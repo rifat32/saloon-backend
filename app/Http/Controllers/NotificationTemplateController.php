@@ -97,6 +97,12 @@ class NotificationTemplateController extends Controller
 
 
                     ->first();
+                    if(!$template) {
+                        return response()->json([
+                            "message" => "no template found"
+                            ],404);
+
+                }
 
                 //    if the template is active then other templates of this type will deactive
                 if ($template->is_active) {

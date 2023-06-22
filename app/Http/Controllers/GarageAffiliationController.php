@@ -205,6 +205,12 @@ class GarageAffiliationController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$garage_affiliation) {
+                        return response()->json([
+                            "message" => "no garage affiliation found"
+                            ],404);
+
+                }
 
                 return response($garage_affiliation, 201);
             });

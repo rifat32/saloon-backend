@@ -166,7 +166,7 @@ class PaymentTypeController extends Controller
 
 
 
-                $fuel_station  =  tap(PaymentType::where(["id" => $updatableData["id"]]))->update(
+                $payment_type  =  tap(PaymentType::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
         "name",
         "description",
@@ -176,8 +176,14 @@ class PaymentTypeController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$payment_type) {
+                        return response()->json([
+                            "message" => "no payment type found"
+                            ],404);
 
-                return response($fuel_station, 201);
+                }
+
+                return response($payment_type, 201);
             });
         } catch (Exception $e) {
             error_log($e->getMessage());

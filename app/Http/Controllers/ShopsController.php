@@ -567,6 +567,12 @@ if($shopPrev->email !== $updatableData['shop']['email']) {
          // ->with("somthing")
 
          ->first();
+         if(!$user) {
+            return response()->json([
+                "message" => "no user found"
+                ],404);
+
+    }
 
      $user->syncRoles(["shop_owner"]);
 

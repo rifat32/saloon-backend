@@ -524,12 +524,15 @@ class BookingController extends Controller
             // ->with("somthing")
 
             ->first();
-            $booking->price  = $updatableData["price"];
             if(!$booking){
                 return response()->json([
             "message" => "booking not found"
                 ], 404);
             }
+            $booking->price  = $updatableData["price"];
+
+          
+
             $notification_template = NotificationTemplate::where([
                 "type" => "booking_confirmed_by_garage_owner"
             ])

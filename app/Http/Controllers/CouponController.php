@@ -219,6 +219,12 @@ class CouponController extends Controller
 
                     ->first();
 
+                    if(!$coupon) {
+                        return response()->json([
+                            "message" => "no coupon found"
+                            ],404);
+
+                }
                 return response($coupon, 201);
             });
         } catch (Exception $e) {

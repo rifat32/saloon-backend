@@ -298,6 +298,12 @@ class AffiliationController extends Controller
                     // ->with("somthing")
 
                     ->first();
+                    if(!$affiliation) {
+                            return response()->json([
+                                "message" => "no certification found"
+                                ],404);
+
+                    }
 
                 return response($affiliation, 200);
             });
