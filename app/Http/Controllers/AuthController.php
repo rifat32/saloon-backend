@@ -693,13 +693,6 @@ $datediff = $now - $user_created_date;
      *  "phone":"01771034383",
      *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
      *
-     *  "address_line_1":"Dhaka",
-     *  "address_line_2":"Dinajpur",
-     *  "country":"Bangladesh",
-     *  "city":"Dhaka",
-     *  "postcode":"Dinajpur",
-     *  "lat":"10",
-     *  "long":"Din10ajpur",
      *
      * }),
      *
