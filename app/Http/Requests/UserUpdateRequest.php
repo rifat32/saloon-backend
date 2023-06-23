@@ -36,11 +36,11 @@ class UserUpdateRequest extends FormRequest
             'image' => 'nullable',
             'address_line_1' => 'nullable',
             'address_line_2' => 'nullable',
-            'country' => 'nullable|string',
-            'city' => 'nullable|string',
-            'postcode' => 'nullable|string',
-            'lat' => 'nullable|string',
-            'long' => 'nullable|string',
+            'country' => 'required|string',
+            'city' => 'required|string',
+            'postcode' => 'required|string',
+            'lat' => 'required|string',
+            'long' => 'required|string',
             'role' => 'required|string'
         ];
     }
