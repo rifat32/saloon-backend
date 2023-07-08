@@ -558,7 +558,7 @@ class GaragesController extends Controller
         "id" => $updatableData["user"]["id"]
        ]);
        if(!$request->user()->hasRole('superadmin')) {
-        $userPrev =  $garageQuery = $userPrev->where(function ($query) {
+        $userPrev  = $userPrev->where(function ($query) {
             $query->where('created_by', auth()->user()->id)
                   ->orWhere('id', auth()->user()->id);
         });
@@ -573,16 +573,16 @@ class GaragesController extends Controller
 
 
 
-     $garagePrev = Garage::where([
-        "id" => $updatableData["garage"]["id"]
-     ]);
+    //  $garagePrev = Garage::where([
+    //     "id" => $updatableData["garage"]["id"]
+    //  ]);
 
-    $garagePrev = $garagePrev->first();
-    if(!$garagePrev) {
-        return response()->json([
-           "message" => "no garage found with this id"
-        ],404);
-      }
+    // $garagePrev = $garagePrev->first();
+    // if(!$garagePrev) {
+    //     return response()->json([
+    //        "message" => "no garage found with this id"
+    //     ],404);
+    //   }
 
         if(!empty($updatableData['user']['password'])) {
             $updatableData['user']['password'] = Hash::make($updatableData['user']['password']);

@@ -25,7 +25,7 @@ class GarageUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'user.id' => 'required|numeric',
+            'user.id' => 'required|numeric|exists:users,id',
             'user.first_Name' => 'required|string|max:255',
             'user.last_Name' => 'required|string|max:255',
             // 'user.email' => 'required|string|email|indisposable|max:255',
@@ -43,7 +43,7 @@ class GarageUpdateRequest extends FormRequest
             // 'user.lat' => 'nullable|string',
             // 'user.long' => 'nullable|string',
 
-            'garage.id' => 'required|numeric',
+            'garage.id' => 'required|numeric|required|exists:garages,id',
             'garage.name' => 'required|string|max:255',
             'garage.about' => 'nullable|string',
             'garage.web_page' => 'nullable|string',
