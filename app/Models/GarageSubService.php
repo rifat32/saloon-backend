@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class GarageSubService extends Model
 {
     use HasFactory;
+    protected $table = "garage_sub_services";
     protected $fillable = [
         "garage_service_id",
         "sub_service_id",

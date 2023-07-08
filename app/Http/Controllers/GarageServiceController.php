@@ -101,7 +101,7 @@ class GarageServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = GarageService::with("service")
+            $servicesQuery = GarageService::with("garage_sub_services_v2")
             ->leftJoin('services', 'garage_services.service_id', '=', 'services.id');
 
 

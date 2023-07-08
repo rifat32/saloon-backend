@@ -297,7 +297,7 @@ class GaragePackageController extends Controller
 
                     GaragePackageSubService::create([
 
-                        "garage_sub_service_id" => $garage_sub_service->sub_service_id,
+                        "sub_service_id" => $garage_sub_service->sub_service_id,
                         "garage_package_id" => $garage_package->id,
 
                     ]);

@@ -518,6 +518,7 @@ class BookingController extends Controller
             "job_start_time",
             "job_end_time",
             "status",
+            "price"
 
         ])->toArray()
         )
@@ -531,7 +532,7 @@ class BookingController extends Controller
             }
             $booking->price  = $updatableData["price"];
 
-          
+
 
             $notification_template = NotificationTemplate::where([
                 "type" => "booking_confirmed_by_garage_owner"
