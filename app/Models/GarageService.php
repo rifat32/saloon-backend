@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class GarageService extends Model
 {
     use HasFactory;
-    protected $table = "garage_services";
+
     protected $fillable = [
         "garage_id",
         "service_id",
@@ -21,12 +21,12 @@ class GarageService extends Model
         return $this->belongsTo(Service::class,'service_id', 'id');
     }
 
-    // public function garageSubServices(){
-    //     return $this->hasMany(GarageSubService::class,'garage_service_id', 'id');
-    // }
+    public function garageSubServices(){
+        return $this->hasMany(GarageSubService::class,'garage_service_id', 'id');
+    }
 
 
-    public function garage_sub_services_v2() {
-        return $this->belongsToMany(SubService::class, 'garage_sub_services', 'garage_service_id', 'sub_service_id');
+    public function sub_services() {
+        return $this->belongsToMany(SubService::class, 'garage_sub_services', 'garage_service_id', 'sub_service_id') ->withPivot([]);
     }
 }

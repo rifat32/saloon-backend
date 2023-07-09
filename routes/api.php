@@ -304,6 +304,7 @@ Route::delete('/v1.0/sub-services/{id}', [ServiceController::class, "deleteSubSe
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::get('/v1.0/garage-services/{garage_id}/{perPage}', [GarageServiceController::class, "getGarageServices"]);
 
+
 Route::get('/v1.0/garage-sub-services/{garage_id}/{garage_service_id}/{perPage}', [GarageServiceController::class, "getGarageSubServices"]);
 
 
@@ -886,6 +887,13 @@ Route::delete('/v1.0/products/{id}', [ProductController::class, "deleteProductBy
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // client routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
+
+
+
+Route::get('/v1.0/client/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageByIdClient"]);
+
+
+Route::get('/v1.0/client/garage-services/get/all/{garage_id}', [GarageServiceController::class, "getGarageServicesAll"]);
 
 Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
 Route::get('/v1.0/client/fuel-station/get/single/{id}', [FuelStationController::class, "getFuelStationByIdClient"]);

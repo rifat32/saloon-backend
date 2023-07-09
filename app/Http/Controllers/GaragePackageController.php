@@ -655,6 +655,93 @@ class GaragePackageController extends Controller
         }
     }
 
+      /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garage-packages/single/{garage_id}/{id}",
+     *      operationId="getGaragePackageByIdClient",
+     *      tags={"client.package"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+ *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to  get garage package by id",
+     *      description="This method is to get garage package by id",
+     *
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getGaragePackageByIdClient($garage_id,$id,Request $request) {
+        try{
+            $this->storeActivity($request,"");
+
+
+
+            $garage_package = GaragePackage::with("garage_package_sub_services.sub_service")
+            ->where([
+                "garage_id" => $garage_id,
+                "id" => $id
+            ])
+            ->first();
+             if(!$garage_package){
+                return response()->json([
+            "message" => "booking not found"
+                ], 404);
+            }
+
+
+            return response()->json($garage_package, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+    }
+
+
 
  /**
         *

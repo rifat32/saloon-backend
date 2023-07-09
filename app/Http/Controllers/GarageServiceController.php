@@ -101,8 +101,9 @@ class GarageServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = GarageService::with("garage_sub_services_v2")
-            ->leftJoin('services', 'garage_services.service_id', '=', 'services.id');
+            $servicesQuery = GarageService::with("service","sub_services")
+            ->leftJoin('services', 'garage_services.service_id', '=', 'services.id')
+            ->where(["garage_id" => $garage_id]);
 
 
             if(!empty($request->search_key)) {
@@ -112,13 +113,6 @@ class GarageServiceController extends Controller
                 });
 
             }
-
-
-
-
-
-
-
 
 
             $services = $servicesQuery
@@ -131,6 +125,94 @@ class GarageServiceController extends Controller
         }
     }
 
+ /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/client/garage-services/get/all/{garage_id}",
+     *      operationId="getGarageServicesAll",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+         *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+
+
+     *      summary="This method is to get automobile Services all  ",
+     *      description="This method is to get automobile Services all",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getGarageServicesAll($garage_id,Request $request) {
+        try{
+            $this->storeActivity($request,"");
+
+
+
+
+            $servicesQuery = GarageService::with(["service:id,name","sub_services:id,name"])
+            ->where(["garage_id" => $garage_id]);
+
+
+
+
+            $services = $servicesQuery
+
+            ->orderByDesc("garage_services.id")->get();
+            return response()->json($services, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+    }
 
 
 
