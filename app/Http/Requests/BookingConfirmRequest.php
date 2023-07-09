@@ -35,6 +35,8 @@ class BookingConfirmRequest extends FormRequest
         ],
 
         "price" => "required|numeric",
+        "discount_type" => "nullable|string|in:fixed,percentage",
+        "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
 
 
         ];

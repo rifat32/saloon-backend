@@ -6,6 +6,7 @@ use App\Http\Requests\BookingToJobRequest;
 use App\Http\Requests\JobPaymentCreateRequest;
 use App\Http\Requests\JobStatusChangeRequest;
 use App\Http\Requests\JobUpdateRequest;
+use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
-    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil;
+    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil,DiscountUtil;
 
       /**
         *
@@ -129,7 +130,7 @@ class JobController extends Controller
 
             // $coupon_discount = false;
             // if(!empty($insertableData["coupon_code"])){
-            //     $coupon_discount = $this->getDiscount(
+            //     $coupon_discount = $this->getCouponDiscount(
             //         $insertableData["garage_id"],
             //         $insertableData["coupon_code"],
             //         $insertableData["price"]
@@ -157,12 +158,18 @@ class JobController extends Controller
                     "additional_information" => $booking->additional_information,
 
 
+
+        // "discount_type"=> $booking->discount_type,
+        // "discount_amount"=> $booking->discount_amount,
+
+
+
                     // "coupon_discount_type" => ($coupon_discount?$coupon_discount["discount_type"]:0),
                     // "coupon_discount_amount" => ($coupon_discount?$coupon_discount["discount_amount"]:0),
 
 
 
-                    "coupon_code" => $updatableData["coupon_code"],
+
 
 
 
@@ -175,11 +182,16 @@ class JobController extends Controller
 
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount"=> $updatableData["discount_amount"],
+
+                    "coupon_code" => $booking->coupon_code,
+                    "coupon_discount_type"=> $booking->coupon_discount_type,
+                    "coupon_discount_amount"=> $booking->coupon_discount_amount,
                     "price"=>($updatableData["price"]?$updatableData["price"]:$booking->price),
                     "status" => $updatableData["status"],
                     "payment_status" => "due",
                 ]);
 
+                $total_price = 0;
                 foreach(
 
                 BookingSubService::where([
@@ -194,7 +206,7 @@ class JobController extends Controller
                     "sub_service_id" => $booking_sub_service->sub_service_id,
                     "price" => $booking_sub_service->price,
                  ]);
-
+ // $total_price += $booking_sub_service->price;
                 }
 
                 foreach(
@@ -212,25 +224,36 @@ class JobController extends Controller
                         "price" => $booking_package->price,
                      ]);
 
+                     $total_price += $booking_package->price;
                     }
 
-                if(!empty($updatableData["coupon_code"])){
-                    $coupon_discount = $this->getDiscount(
-                        $updatableData["garage_id"],
-                        $updatableData["coupon_code"],
-                        $job->price
+                // if(!empty($updatableData["coupon_code"])){
+                //     $coupon_discount = $this->getCouponDiscount(
+                //         $updatableData["garage_id"],
+                //         $updatableData["coupon_code"],
+                //         $job->price
 
-                    );
+                //     );
 
-                    if($coupon_discount) {
+                //     if($coupon_discount) {
 
-                        $job->coupon_discount_type = $coupon_discount["discount_type"];
-                        $job->coupon_discount_amount = $coupon_discount["discount_amount"];
+                //         $job->coupon_discount_type = $coupon_discount["discount_type"];
+                //         $job->coupon_discount_amount = $coupon_discount["discount_amount"];
 
 
-                    }
+                //     }
+                // }
+                $job->price = $total_price;
+
+                $discount_amount = 0;
+                if(!empty($job->discount_type) && !empty($job->discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$job->discount_amount,$job->discount_type);
+                }
+                if(!empty($job->coupon_discount_type) && !empty($job->coupon_discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$job->coupon_discount_amount,$job->coupon_discount_type);
                 }
 
+                $job->final_price = $job->price - $discount_amount;
                 $job->save();
 
                 $booking->status = "converted_to_job";
@@ -376,7 +399,7 @@ class JobController extends Controller
 
     // $coupon_discount = false;
     // if(!empty($updatableData["coupon_code"])){
-    //     $coupon_discount = $this->getDiscount(
+    //     $coupon_discount = $this->getCouponDiscount(
     //         $updatableData["garage_id"],
     //         $updatableData["coupon_code"],
     //         $updatableData["price"]
@@ -433,7 +456,7 @@ class JobController extends Controller
             JobPackage::where([
                 "job_id" => $job->id
              ])->delete();
-
+             $total_price = 0;
             foreach($updatableData["job_sub_service_ids"] as $index=>$sub_service_id) {
                 $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                     ->where([
@@ -459,7 +482,7 @@ class JobController extends Controller
                         $garage_sub_service->id,
                         $updatableData["automobile_make_id"]
                     );
-
+ // $total_price += $price;
                     JobSubService::create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "job_id" => $job->id,
@@ -486,30 +509,39 @@ class JobController extends Controller
                             "job_id" => $job->id,
                             "price" => $garage_package->price
                         ]);
+                        $total_price += $garage_package->price;
 
                     }
 
+                    $job->price = $total_price;
 
-
-
-
-
-                if(!empty($updatableData["coupon_code"])){
-                    $coupon_discount = $this->getDiscount(
-                        $updatableData["garage_id"],
-                        $updatableData["coupon_code"],
-                        $job->price
-
-                    );
-
-                    if($coupon_discount) {
-
-                        $job->coupon_discount_type = $coupon_discount["discount_type"];
-                        $job->coupon_discount_amount = $coupon_discount["discount_amount"];
-
-
+                    $discount_amount = 0;
+                    if(!empty($job->discount_type) && !empty($job->discount_amount)) {
+                        $discount_amount += $this->calculateDiscountPriceAmount($total_price,$job->discount_amount,$job->discount_type);
                     }
-                }
+                    if(!empty($job->coupon_discount_type) && !empty($job->coupon_discount_amount)) {
+                        $discount_amount += $this->calculateDiscountPriceAmount($total_price,$job->coupon_discount_amount,$job->coupon_discount_type);
+                    }
+
+                    $job->final_price = $job->price - $discount_amount;
+
+
+                // if(!empty($updatableData["coupon_code"])){
+                //     $coupon_discount = $this->getCouponDiscount(
+                //         $updatableData["garage_id"],
+                //         $updatableData["coupon_code"],
+                //         $job->price
+
+                //     );
+
+                //     if($coupon_discount) {
+
+                //         $job->coupon_discount_type = $coupon_discount["discount_type"];
+                //         $job->coupon_discount_amount = $coupon_discount["discount_amount"];
+
+
+                //     }
+                // }
 
                 $job->save();
 

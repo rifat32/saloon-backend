@@ -6,6 +6,7 @@ use App\Http\Requests\BookingConfirmRequest;
 use App\Http\Requests\BookingStatusChangeRequest;
 use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequest;
+use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
@@ -27,7 +28,7 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil;
+    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil,DiscountUtil;
 
 
        /**
@@ -48,7 +49,9 @@ class BookingController extends Controller
      *            required={"id","garage_id","coupon_code","price","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
-     * *   *    @OA\Property(property="coupon_code", type="string", format="string",example="123456"),
+ *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
+ * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+ *
      *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
@@ -147,6 +150,11 @@ class BookingController extends Controller
             "fuel",
             "transmission",
 
+            "discount_type",
+            "discount_amount",
+
+
+
         ])->toArray()
         )
             // ->with("somthing")
@@ -218,7 +226,7 @@ class BookingController extends Controller
                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
-                    $total_price += $price;
+                    // $total_price += $price;
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "price" => $price
@@ -242,8 +250,6 @@ class BookingController extends Controller
                 }
 
 
-
-
                 $total_price += $garage_package->price;
 
                 $booking->booking_packages()->create([
@@ -253,26 +259,43 @@ class BookingController extends Controller
 
                     }
 
-                $booking->price = (!empty($updatableData["price"]?$updatableData["price"]:$total_price));
+                // $booking->price = (!empty($updatableData["price"]?$updatableData["price"]:$total_price));
+                $booking->price = $total_price;
 
 
-                if(!empty($updatableData["coupon_code"])){
-                    $coupon_discount = $this->getDiscount(
-                        $updatableData["garage_id"],
-                        $updatableData["coupon_code"],
-                        $booking->price
-                    );
 
-                    if($coupon_discount) {
-
-                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
-                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-
-
-                    }
+                $discount_amount = 0;
+                if(!empty($booking->discount_type) && !empty($booking->discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$booking->discount_amount,$booking->discount_type);
+                }
+                if(!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$booking->coupon_discount_amount,$booking->coupon_discount_type);
                 }
 
+                $booking->final_price = $booking->price - $discount_amount;
+
+
+                // if(!empty($updatableData["coupon_code"])){
+                //     $coupon_discount = $this->getCouponDiscount(
+                //         $updatableData["garage_id"],
+                //         $updatableData["coupon_code"],
+                //         $booking->price
+                //     );
+
+                //     if($coupon_discount) {
+
+                //         $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                //         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+
+
+                //     }
+                // }
+
+
+
+
                 $booking->save();
+
                 $notification_template = NotificationTemplate::where([
                     "type" => "booking_updated_by_garage_owner"
                 ])
@@ -448,6 +471,8 @@ class BookingController extends Controller
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
  * @OA\Property(property="garage_id", type="number", format="number",example="1"),
  * *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
+ *  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
+ * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
      *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *
      * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
@@ -518,7 +543,9 @@ class BookingController extends Controller
             "job_start_time",
             "job_end_time",
             "status",
-            "price"
+            "price",
+            "discount_type",
+            "discount_amount",
 
         ])->toArray()
         )
@@ -530,7 +557,17 @@ class BookingController extends Controller
             "message" => "booking not found"
                 ], 404);
             }
-            $booking->price  = $updatableData["price"];
+            $discount_amount = 0;
+            if(!empty($booking->discount_type) && !empty($booking->discount_amount)) {
+                $discount_amount += $this->calculateDiscountPriceAmount($booking->price,$booking->discount_amount,$booking->discount_type);
+            }
+            if(!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
+                $discount_amount += $this->calculateDiscountPriceAmount($booking->price,$booking->coupon_discount_amount,$booking->coupon_discount_type);
+            }
+
+            $booking->final_price = $booking->price - $discount_amount;
+
+            $booking->save();
 
 
 

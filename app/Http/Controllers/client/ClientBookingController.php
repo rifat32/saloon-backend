@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingCreateRequestClient;
 use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequestClient;
-use App\Http\Utils\CouponUtil;
+use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
 use App\Http\Utils\UserActivityUtil;
@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ClientBookingController extends Controller
 {
-    use ErrorUtil, CouponUtil, PriceUtil,UserActivityUtil;
+    use ErrorUtil, DiscountUtil, PriceUtil,UserActivityUtil;
     /**
      *
      * @OA\Post(
@@ -229,7 +229,7 @@ class ClientBookingController extends Controller
                 $booking->save();
 
                 if (!empty($insertableData["coupon_code"])) {
-                    $coupon_discount = $this->getDiscount(
+                    $coupon_discount = $this->getCouponDiscount(
                         $insertableData["garage_id"],
                         $insertableData["coupon_code"],
                         $total_price
@@ -702,7 +702,7 @@ class ClientBookingController extends Controller
                 $booking->price = $total_price;
                 $booking->save();
                 if (!empty($insertableData["coupon_code"])) {
-                    $coupon_discount = $this->getDiscount(
+                    $coupon_discount = $this->getCouponDiscount(
                         $insertableData["garage_id"],
                         $insertableData["coupon_code"],
                         $total_price

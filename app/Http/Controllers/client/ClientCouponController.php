@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
-use App\Http\Utils\CouponUtil;
+use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\Coupon;
@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class ClientCouponController extends Controller
 {
 
-    use ErrorUtil,CouponUtil,UserActivityUtil;
+    use ErrorUtil,DiscountUtil,UserActivityUtil;
      /**
      *
      * @OA\Get(
@@ -410,7 +410,7 @@ class ClientCouponController extends Controller
         try {
             $this->storeActivity($request,"");
 
-            $discount = $this->getDiscount($garage_id,$code,$amount);
+            $discount = $this->getCouponDiscount($garage_id,$code,$amount);
 
             if(!$discount) {
                  return response()->json([

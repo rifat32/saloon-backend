@@ -33,7 +33,10 @@ class BookingUpdateRequest extends FormRequest
             "car_registration_no" => "required|string",
             "car_registration_year" => "nullable|date",
 
-            "coupon_code" => "nullable|string",
+            // "coupon_code" => "nullable|string",
+            "discount_type" => "nullable|string|in:fixed,percentage",
+            "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
+
             "total_price" => "nullable|numeric",
             "additional_information" => "nullable|string",
 

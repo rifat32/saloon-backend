@@ -135,7 +135,7 @@ return array(
     'App\\Http\\Requests\\UserCreateRequest' => $baseDir . '/app/Http/Requests/UserCreateRequest.php',
     'App\\Http\\Requests\\UserInfoUpdateRequest' => $baseDir . '/app/Http/Requests/UserInfoUpdateRequest.php',
     'App\\Http\\Requests\\UserUpdateRequest' => $baseDir . '/app/Http/Requests/UserUpdateRequest.php',
-    'App\\Http\\Utils\\CouponUtil' => $baseDir . '/app/Http/Utils/CouponUtil.php',
+    'App\\Http\\Utils\\DiscountUtil' => $baseDir . '/app/Http/Utils/DiscountUtil.php',
     'App\\Http\\Utils\\ErrorUtil' => $baseDir . '/app/Http/Utils/ErrorUtil.php',
     'App\\Http\\Utils\\GarageUtil' => $baseDir . '/app/Http/Utils/GarageUtil.php',
     'App\\Http\\Utils\\PriceUtil' => $baseDir . '/app/Http/Utils/PriceUtil.php',
