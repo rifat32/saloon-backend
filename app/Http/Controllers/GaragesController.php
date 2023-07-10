@@ -398,7 +398,12 @@ class GaragesController extends Controller
      $serviceUpdate = $this->createGarageServices($insertableData['service'],$garage->id);
 
      if(!$serviceUpdate["success"]){
-        throw new Exception($serviceUpdate["message"]);
+        $error =  [
+            "message" => "The given data was invalid.",
+            "errors" => ["service"=>[$serviceUpdate["message"]]]
+     ];
+        throw new Exception(json_encode($error),422);
+
      }
 
      $this->storeQuestion($garage->id);

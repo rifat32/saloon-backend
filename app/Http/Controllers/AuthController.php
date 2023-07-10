@@ -830,9 +830,16 @@ $datediff = $now - $user_created_date;
 
            // create services
              $serviceUpdate =  $this->createGarageServices($insertableData['service'],$garage->id,true);
-                if(!$serviceUpdate["success"]){
-                    throw new Exception($serviceUpdate["message"]);
-                 }
+
+                    if(!$serviceUpdate["success"]){
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["service"=>[$serviceUpdate["message"]]]
+                     ];
+                        throw new Exception(json_encode($error),422);
+
+                     }
+
 
                // verify email starts
                $email_token = Str::random(30);

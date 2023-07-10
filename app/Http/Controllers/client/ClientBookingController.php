@@ -187,7 +187,7 @@ class ClientBookingController extends Controller
                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $insertableData["automobile_make_id"]);
 
 
-                    $total_price += $price;
+                    // $total_price += $price;
 
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
@@ -235,14 +235,21 @@ class ClientBookingController extends Controller
                         $total_price
                     );
 
-                    if ($coupon_discount) {
+                    if ($coupon_discount["success"]) {
 
                         $booking->coupon_discount_type = $coupon_discount["discount_type"];
                         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
                         $booking->coupon_code = $insertableData["coupon_code"];
 
                         $booking->save();
+                    } else {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["coupon_code"=>[$coupon_discount["message"]]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
+
                 }
 
                 $notification_template = NotificationTemplate::where([
@@ -407,9 +414,10 @@ class ClientBookingController extends Controller
                         "coupon_discount_amount" => $booking->coupon_discount_amount,
 
 
-                        "discount_type" => "fixed",
-                        "discount_amount" => 0,
-                        "price" => 0,
+                        "discount_type" => $booking->discount_type,
+                        "discount_amount" => $booking->discount_amount,
+                        "price" => $booking->price,
+                        "final_price" => $booking->final_price,
                         "status" => "pending",
                         "payment_status" => "due",
 
@@ -660,7 +668,7 @@ class ClientBookingController extends Controller
                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
-                    $total_price += $price;
+                    // $total_price += $price;
 
 
                     $booking->booking_sub_services()->create([
@@ -714,6 +722,13 @@ class ClientBookingController extends Controller
                         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
                         $booking->coupon_code = $insertableData["coupon_code"];
                         $booking->save();
+                    }
+                    else {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["coupon_code"=>[$coupon_discount["message"]]]
+                     ];
+                        throw new Exception(json_encode($error),422);
                     }
                 }
                 $notification_template = NotificationTemplate::where([

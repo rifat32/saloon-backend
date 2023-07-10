@@ -19,29 +19,42 @@ trait DiscountUtil
 
         ])
 
-        ->where('coupon_start_date', '<=', Carbon::now()->subDay())
-        ->where('coupon_end_date', '>=', Carbon::now()->subDay())
+        // ->where('coupon_start_date', '<=', Carbon::now()->subDay())
+        // ->where('coupon_end_date', '>=', Carbon::now()->subDay())
         ->first();
 
         if(!$coupon){
-            return false;
+         return [
+                "success" =>false,
+                "message" => "no coupon is found",
+            ];
         }
 
 
-        if(!empty($coupon->min_total) && ($coupon->min_total > $amount )){
-           return false;
+        if(!empty($coupon->min_total) && ($coupon->min_total >= $amount )){
+            return [
+                "success" =>false,
+                "message" => "minimim limit is" . $coupon->min_total,
+            ];
         }
-        if(!empty($coupon->max_total) && ($coupon->max_total < $amount)){
-            return false;
+        if(!empty($coupon->max_total) && ($coupon->max_total <= $amount)){
+            return [
+                "success" =>false,
+                "message" => "maximum limit is" . $coupon->max_total,
+            ];
         }
 
-        if(!empty($coupon->redemptions) && $coupon->redemptions > $coupon->customer_redemptions){
-            return false;
+        if(!empty($coupon->redemptions) && $coupon->redemptions == $coupon->customer_redemptions){
+            return [
+                "success" =>false,
+                "message" => "maximum people reached",
+            ];
         }
 
 
 
         return [
+            "success" =>true,
             "discount_type" => $coupon->discount_type,
             "discount_amount" => $coupon->discount_amount
         ];
