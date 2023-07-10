@@ -14,6 +14,7 @@ use App\Mail\DynamicMail;
 use App\Models\Booking;
 use App\Models\BookingPackage;
 use App\Models\BookingSubService;
+use App\Models\Coupon;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
@@ -242,6 +243,13 @@ class ClientBookingController extends Controller
                         $booking->coupon_code = $insertableData["coupon_code"];
 
                         $booking->save();
+
+                        Coupon::where([
+                            "code" => $booking->coupon_code,
+                            "garage_id" => $booking->garage_id
+                        ])->update([
+                            "customer_redemptions" => DB::raw("customer_redemptions + 1")
+                        ]);
                     } else {
                         $error =  [
                             "message" => "The given data was invalid.",
@@ -722,6 +730,23 @@ class ClientBookingController extends Controller
                         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
                         $booking->coupon_code = $insertableData["coupon_code"];
                         $booking->save();
+
+//                     $coupon =  Coupon::where([
+//                           "code" =>   $booking->coupon_code,
+//                           "garage_id" => $booking->garage_id
+//                         ])
+//                         ->first();
+
+//                         $coupon->customer_redemptions += 1;
+
+// $coupon->save();
+Coupon::where([
+    "code" => $booking->coupon_code,
+    "garage_id" => $booking->garage_id
+])->update([
+    "customer_redemptions" => DB::raw("customer_redemptions + 1")
+]);
+
                     }
                     else {
                         $error =  [

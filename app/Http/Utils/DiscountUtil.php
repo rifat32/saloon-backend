@@ -31,16 +31,16 @@ trait DiscountUtil
         }
 
 
-        if(!empty($coupon->min_total) && ($coupon->min_total >= $amount )){
+        if(!empty($coupon->min_total) && ($coupon->min_total > $amount )){
             return [
                 "success" =>false,
-                "message" => "minimim limit is" . $coupon->min_total,
+                "message" => "minimim limit is " . $coupon->min_total,
             ];
         }
-        if(!empty($coupon->max_total) && ($coupon->max_total <= $amount)){
+        if(!empty($coupon->max_total) && ($coupon->max_total < $amount)){
             return [
                 "success" =>false,
-                "message" => "maximum limit is" . $coupon->max_total,
+                "message" => "maximum limit is " . $coupon->max_total,
             ];
         }
 

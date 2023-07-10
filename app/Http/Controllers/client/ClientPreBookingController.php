@@ -723,6 +723,7 @@ $job_bid->save();
                         "discount_type" => "fixed",
                         "discount_amount" => 0,
                         "price" => $job_bid->price,
+                        "final_price" => $job_bid->price,
                         "status" => "pending",
                         "payment_status" => "due",
 
