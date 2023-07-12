@@ -182,7 +182,7 @@ return [
        "garage_automobile_delete",
 
 
-    //    "booking_create",
+       "booking_create",
        "booking_update",
        "booking_view",
        "booking_delete",
@@ -364,7 +364,7 @@ return [
 
 
 
-    //    "booking_create",
+        "booking_create",
        "booking_update",
        "booking_view",
        "booking_delete",

@@ -546,6 +546,8 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+Route::post('/v1.0/bookings', [BookingController::class, "createBooking"]);
+
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
 Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);

@@ -383,7 +383,7 @@ $types = [
     "bid_accepted_by_client",
     "bid_rejected_by_client",
 
-
+    "booking_created_by_garage_owner",
     "booking_updated_by_garage_owner",
     "booking_status_changed_by_garage_owner",
     "booking_confirmed_by_garage_owner",

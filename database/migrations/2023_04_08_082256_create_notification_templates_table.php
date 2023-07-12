@@ -57,6 +57,14 @@ class CreateNotificationTemplatesTable extends Migration
                     "is_active" => 1
                 ],
 
+
+                [
+
+                    'type' => 'booking_created_by_garage_owner',
+                    "template"=> json_encode("hello [customer_name]! your booking is updated by the garage named[garage_owner_name],[garage_name] "),
+                    "link"=> json_encode("/[customer_id]/[booking_id]"),
+                    "is_active" => 1
+                ],
                 [
 
                     'type' => 'booking_updated_by_garage_owner',
@@ -169,7 +177,7 @@ class CreateNotificationTemplatesTable extends Migration
                 ],
 
 
-               
+
             )
         );
     }
