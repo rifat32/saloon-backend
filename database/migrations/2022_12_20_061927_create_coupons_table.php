@@ -18,7 +18,7 @@ class CreateCouponsTable extends Migration
             $table->unsignedBigInteger("garage_id");
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->string("name");
-            $table->string("code")->unique();
+            $table->string("code");
 
 
             $table->enum("discount_type",['fixed', 'percentage'])->default("fixed")->nullable();

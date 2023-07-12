@@ -103,6 +103,21 @@ class CouponController extends Controller
                 //     $insertableData["code"] =
                 // }
 
+                $code_exists = Coupon::where([
+                    "garage_id" =>$insertableData["garage_id"],
+                    "code" => $insertableData["code"]
+                ])->first();
+
+              if ($code_exists) {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["code"=>["This code is already taken"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
+
+                    }
+
+
                 $coupon =  Coupon::create($insertableData);
 
 
@@ -198,6 +213,21 @@ class CouponController extends Controller
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
                     ], 401);
                 }
+                $code_exists = Coupon::where([
+                    "garage_id" =>$updatableData["garage_id"],
+                    "code" => $updatableData["code"]
+                ])
+                ->where('id', '<>',$updatableData["id"])
+                ->first();
+
+              if ($code_exists) {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["code"=>["This code is already taken"]]
+                     ];
+                        throw new Exception(json_encode($error),422);
+
+                    }
 
                 $coupon  =  tap(Coupon::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([

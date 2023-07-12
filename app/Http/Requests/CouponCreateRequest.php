@@ -26,7 +26,7 @@ class CouponCreateRequest extends FormRequest
         return [
             "garage_id"=>"required|numeric",
             "name"=>"required|string",
-            "code"=>"required|string|unique:coupons,code",
+             'code' => 'required|string',
             "discount_type"=>"required|string",
             "discount_amount"=>"required|numeric",
             "min_total"=>"nullable|numeric",

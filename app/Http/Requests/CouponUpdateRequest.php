@@ -28,7 +28,7 @@ class CouponUpdateRequest extends FormRequest
             "id"=>"required|numeric",
             "garage_id"=>"required|numeric",
             "name"=>"required|string",
-            'code' => 'required|string|unique:coupons,code,' . $this->id . ',id',
+            'code' => 'required|string',
             "discount_type"=>"required|string",
             "discount_amount"=>"required|numeric",
             "min_total"=>"nullable|numeric",
