@@ -460,22 +460,23 @@ class ClientPreBookingController extends Controller
         try {
             $this->storeActivity($request,"");
             $preBookingQuery = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
-                ->where([
-                    "customer_id" => $request->user()->id
+            ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+            ->where([
+                    "pre_bookings.customer_id" => $request->user()->id
                 ]);
 
             if (!empty($request->search_key)) {
                 $preBookingQuery = $preBookingQuery->where(function ($query) use ($request) {
                     $term = $request->search_key;
-                    $query->where("car_registration_no", "like", "%" . $term . "%");
+                    $query->where("pre_bookings.car_registration_no", "like", "%" . $term . "%");
                 });
             }
 
             if (!empty($request->start_date)) {
-                $preBookingQuery = $preBookingQuery->where('created_at', ">=", $request->start_date);
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
             }
             if (!empty($request->end_date)) {
-                $preBookingQuery = $preBookingQuery->where('created_at', "<=", $request->end_date);
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
             }
 
 
@@ -483,7 +484,25 @@ class ClientPreBookingController extends Controller
 
 
 
-            $pre_bookings = $preBookingQuery->orderByDesc("id")->paginate($perPage);
+            $pre_bookings = $preBookingQuery
+            ->select(
+                "pre_bookings.*",
+
+
+
+                'users.address_line_1',
+                'users.address_line_2',
+                'users.country',
+                'users.city',
+                'users.postcode',
+                "users.lat",
+                "users.long",
+
+            )
+            ->groupBy("pre_bookings.id")
+            ->orderByDesc("pre_bookings.id")
+
+            ->paginate($perPage);
 
             return response()->json($pre_bookings, 200);
         } catch (Exception $e) {
@@ -556,10 +575,21 @@ class ClientPreBookingController extends Controller
         try {
             $this->storeActivity($request,"");
             $pre_booking = PreBooking::with("pre_booking_sub_services.sub_service", "job_bids.garage", "automobile_make", "automobile_model")
+            ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
                 ->where([
                     "id" => $id,
-                    "customer_id" => $request->user()->id
+                    "pre_bookings.customer_id" => $request->user()->id
                 ])
+                ->select("pre_bookings.*",
+
+                'users.address_line_1',
+                'users.address_line_2',
+                'users.country',
+                'users.city',
+                'users.postcode',
+                "users.lat",
+                "users.long",
+                )
                 ->first();
 
             if (!$pre_booking) {

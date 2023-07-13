@@ -344,8 +344,17 @@ class ClientBasicController extends Controller
                     ->groupBy("garages.id")
 
                     ->orderByDesc("garages.id")
-                    ->select("garages.*")
+                    ->select(
+                        "garages.*",
+                        DB::raw('CASE
+                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id) = 0 THEN 0
+                        ELSE 1
+                    END AS is_package_available')
+                        )
                     ->paginate($perPage);
+
+
+
                 }
                 if (count($garages->items()) == 0) {
                     $info["is_result_by_city"] = false;
@@ -361,7 +370,14 @@ class ClientBasicController extends Controller
                     ->groupBy("garages.id")
 
                     ->orderByDesc("garages.id")
-                    ->select("garages.*")
+                    ->select("garages.*",
+                    DB::raw('CASE
+                    WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id) = 0 THEN 0
+                    ELSE 1
+                END AS is_package_available')
+
+                    )
+
                     ->paginate($perPage);
 
                 }

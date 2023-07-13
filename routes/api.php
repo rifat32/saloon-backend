@@ -555,6 +555,7 @@ Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBoo
 Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
 
 Route::get('/v1.0/bookings/single/{garage_id}/{id}', [BookingController::class, "getBookingById"]);
+
 Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "deleteBookingById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // booking management section

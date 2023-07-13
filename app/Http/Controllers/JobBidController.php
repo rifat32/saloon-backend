@@ -258,7 +258,15 @@ class JobBidController extends Controller
                     AND
                     job_bids.garage_id = ' . $garage_id .'
 
-                    ) AS garage_applied')
+                    ) AS garage_applied'),
+
+                    'users.address_line_1',
+                    'users.address_line_2',
+                    'users.country',
+                    'users.city',
+                    'users.postcode',
+                    "users.lat",
+                    "users.long",
 
                 )
                 ->groupBy("pre_bookings.id")
@@ -363,18 +371,28 @@ class JobBidController extends Controller
                 "automobile_model"
                 )
                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
+                ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
                 // ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids)
                 ->where([
                     "pre_bookings.id" => $id
                 ])
-                ->select("pre_bookings.*",   DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
+                ->select("pre_bookings.*",
+                DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
                 DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
                 WHERE
                 job_bids.pre_booking_id = pre_bookings.id
                 AND
                 job_bids.garage_id = ' . $garage_id .'
 
-                ) AS garage_applied')
+                ) AS garage_applied'),
+
+                'users.address_line_1',
+                'users.address_line_2',
+                'users.country',
+                'users.city',
+                'users.postcode',
+                "users.lat",
+                "users.long",
                 )
                 ->first();
 
