@@ -112,6 +112,7 @@ class GarageTimesController extends Controller
                     "day"=> $garage_time["day"],
                     "opening_time"=> $garage_time["opening_time"],
                     "closing_time"=> $garage_time["closing_time"],
+                    "is_closed"=> $garage_time["is_closed"],
                 ]);
                }
 
