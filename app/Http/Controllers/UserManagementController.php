@@ -415,7 +415,7 @@ class UserManagementController extends Controller
                 })
             ->first();
 
-            if($user) {
+            if(!$user) {
                 return response()->json([
                     "message" => "no user found"
                 ],404);
