@@ -2,16 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GuestUserRegisterRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Mail\VerifyMail;
 use App\Models\User;
+use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 // eeeeee
@@ -220,6 +224,205 @@ class UserManagementController extends Controller
             error_log($e->getMessage());
         return $this->sendError($e,500,$request);
         }
+    }
+
+
+      /**
+     *
+     * @OA\Post(
+     *      path="/v1.0/customer-users",
+     *      operationId="createCustomerUser",
+     *      tags={"customer_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store customer user",
+     *      description="This method is to store customer user",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode"},
+     *             @OA\Property(property="first_Name", type="string", format="string",example="Rifat"),
+     *            @OA\Property(property="last_Name", type="string", format="string",example="Al"),
+     *            @OA\Property(property="email", type="string", format="string",example="rifat@g.c"),
+     *  * *  @OA\Property(property="phone", type="string", format="string",example="01771034383"),
+     *  * *  @OA\Property(property="address_line_1", type="string", format="string",example="dhaka"),
+     *  * *  @OA\Property(property="address_line_2", type="string", format="string",example="dinajpur"),
+     *  * *  @OA\Property(property="country", type="string", format="string",example="bangladesh"),
+     *  * *  @OA\Property(property="city", type="string", format="string",example="dhaka"),
+     *  * *  @OA\Property(property="postcode", type="string", format="string",example="1207"),
+     *      *  * *  @OA\Property(property="lat", type="string", format="string",example="1207"),
+     *      *  * *  @OA\Property(property="long", type="string", format="string",example="1207"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function createCustomerUser(GuestUserRegisterRequest $request)
+    {
+        try {
+            $this->storeActivity($request,"");
+            $insertableData = $request->validated();
+
+            $insertableData['password'] = Hash::make(Str::random(8));
+            $insertableData['remember_token'] = Str::random(10);
+
+            // if (empty($insertableData['email'])) {
+            //     $insertableData['email'] = "guest_" . '@example.com';
+            //     $counter = 1;
+
+            //     while (User::where('email', $insertableData['email'])->exists()) {
+            //         $insertableData['email'] = "guest_" . $counter . '@example.com';
+            //         $counter++;
+            //     }
+            // }
+            if (empty($insertableData['email'])) {
+                $maxCounterUser = User::where('email', 'LIKE', 'guest_%')->orderByRaw('SUBSTRING_INDEX(email, "_", -1) + 0 DESC')->first();
+
+                if ($maxCounterUser) {
+                    $counter = intval(substr($maxCounterUser->email, strpos($maxCounterUser->email, "_") + 1)) + 1;
+                } else {
+                    $counter = 1;
+                }
+
+                $insertableData['email'] = "guest_" . $counter . '@example.com';
+            }
+
+
+            $user =  User::create($insertableData);
+
+              // verify email starts
+              $email_token = Str::random(30);
+              $user->email_verify_token = $email_token;
+              $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+              $user->save();
+
+
+             $user->assignRole("customer");
+
+
+
+
+            if(env("SEND_EMAIL") == true) {
+                Mail::to($user->email)->send(new VerifyMail($user));
+            }
+
+// verify email ends
+
+            return response($user, 201);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500,$request);
+        }
+    }
+    /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/customer-users/get-by-phone/{phone}",
+     *      operationId="getCustomerUserByPhone",
+     *      tags={"customer_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="phone",
+     *         in="path",
+     *         description="phone",
+     *         required=true,
+     *  example="01771034383"
+     *      ),
+
+     *      summary="This method is to get customer user by phone",
+     *      description="This method is to get customer user by phone",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getCustomerUserByPhone($phone,Request $request) {
+        try{
+            $this->storeActivity($request,"");
+
+            $user = User::where([
+                "phone" => $phone
+            ])
+            ->whereHas('roles', function ($query) {
+             return $query->where('name','=', 'customer');
+                })
+            ->first();
+
+
+
+            return response()->json($user, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
     }
  /**
         *

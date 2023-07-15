@@ -149,6 +149,13 @@ Route::middleware(['auth:api'])->group(function () {
 
 
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
+
+Route::post('/v1.0/customer-users', [UserManagementController::class, "createCustomerUser"]);
+Route::get('/v1.0/customer-users/get-by-phone/{phone}', [UserManagementController::class, "getCustomerUserByPhone"]);
+
+
+Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getUserById"]);
+
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
 Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getUserById"]);

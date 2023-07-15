@@ -643,7 +643,7 @@ class GaragePackageController extends Controller
             ->first();
              if(!$garage_package){
                 return response()->json([
-            "message" => "booking not found"
+            "message" => "package not found"
                 ], 404);
             }
 
