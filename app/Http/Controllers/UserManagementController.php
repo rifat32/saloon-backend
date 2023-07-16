@@ -309,6 +309,24 @@ class UserManagementController extends Controller
             //         $counter++;
             //     }
             // }
+
+            $phone_exists =  User::where([
+                "phone" => $insertableData["phone"]
+            ])
+            ->whereHas('roles', function ($query) {
+             return $query->where('name','=', 'customer');
+                })
+            ->first();
+
+            if($phone_exists) {
+                    $error =  [
+                  "message" => "The given data was invalid.",
+                  "errors" => ["phone"=>["phone number already taken"]]
+                    ];
+                       throw new Exception(json_encode($error),422);
+
+            }
+
             if (empty($insertableData['email'])) {
                 $maxCounterUser = User::where('email', 'LIKE', 'guest_%')->orderByRaw('SUBSTRING_INDEX(email, "_", -1) + 0 DESC')->first();
 

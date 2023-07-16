@@ -28,7 +28,7 @@ class GuestUserRegisterRequest extends FormRequest
             'last_Name' => 'required|string|max:255',
 
             'email' => 'nullable|string|email|max:255|unique:users',
-            'phone' => 'required|string|unique:users,phone',
+            'phone' => 'required|string',
             'image' => 'nullable|string',
             'address_line_1' => 'nullable|string',
             'address_line_2' => 'nullable|string',
