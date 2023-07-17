@@ -9,6 +9,7 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Mail\VerifyMail;
+use App\Models\Booking;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -231,18 +232,19 @@ class UserManagementController extends Controller
      *
      * @OA\Post(
      *      path="/v1.0/customer-users",
-     *      operationId="createCustomerUser",
+     *      operationId="createOrUpdateCustomerUser",
      *      tags={"customer_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
-     *      summary="This method is to store customer user",
-     *      description="This method is to store customer user",
+     *      summary="This method is to upsert customer user",
+     *      description="This method is to upsert customer user",
      *
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
      *            required={"first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode"},
+     *    @OA\Property(property="id", type="number", format="number",example="1"),
      *             @OA\Property(property="first_Name", type="string", format="string",example="Rifat"),
      *            @OA\Property(property="last_Name", type="string", format="string",example="Al"),
      *            @OA\Property(property="email", type="string", format="string",example="rifat@g.c"),
@@ -291,7 +293,7 @@ class UserManagementController extends Controller
      *     )
      */
 
-    public function createCustomerUser(GuestUserRegisterRequest $request)
+    public function createOrUpdateCustomerUser(GuestUserRegisterRequest $request)
     {
         try {
             $this->storeActivity($request,"");
@@ -310,13 +312,19 @@ class UserManagementController extends Controller
             //     }
             // }
 
-            $phone_exists =  User::where([
+            $phone_existsQuery =  User::where([
                 "phone" => $insertableData["phone"]
             ])
+
             ->whereHas('roles', function ($query) {
              return $query->where('name','=', 'customer');
-                })
-            ->first();
+                });
+
+                if(!empty($insertableData["id"])) {
+                    $phone_existsQuery  =     $phone_existsQuery->where('id', '!=', $insertableData["id"]);
+                }
+
+                $phone_exists =   $phone_existsQuery->first();
 
             if($phone_exists) {
                     $error =  [
@@ -327,7 +335,7 @@ class UserManagementController extends Controller
 
             }
 
-            if (empty($insertableData['email'])) {
+            if (empty($insertableData['email']) && empty($insertableData['id'])) {
                 $maxCounterUser = User::where('email', 'LIKE', 'guest_%')->orderByRaw('SUBSTRING_INDEX(email, "_", -1) + 0 DESC')->first();
 
                 if ($maxCounterUser) {
@@ -340,23 +348,63 @@ class UserManagementController extends Controller
             }
 
 
-            $user =  User::create($insertableData);
+            if(!empty($insertableData["id"])) {
+             $user =  User::where([
+                    "id" => $insertableData["id"]
+                ])
+                ->whereHas('roles', function ($query) {
+                    return $query->where('name','=', 'customer');
+                       })
+                ->first();
 
-              // verify email starts
-              $email_token = Str::random(30);
-              $user->email_verify_token = $email_token;
-              $user->email_verify_token_expires = Carbon::now()->subDays(-1);
-              $user->save();
+                if(!$user) {
+                    return response()->json(["message" => "user not found",404]);
+                }
+                if(!$user->email_verified_at) {
+                    return response()->json(["message" => "you can not update an active user",404]);
+                }
+                $user->update(collect($insertableData)->only([
+                    'first_Name',
+                    'last_Name',
+                    'email',
+                    'phone',
+                    'image',
+                    'address_line_1',
+                    'address_line_2',
+                    'country',
+                    'city',
+                    'postcode',
+                    'lat',
+                    'long',
+                ])->toArray());
+
+                // Optional: If you need to retrieve the updated user with relationships
+                $user = $user->fresh();
 
 
-             $user->assignRole("customer");
-
-
-
-
-            if(env("SEND_EMAIL") == true) {
-                Mail::to($user->email)->send(new VerifyMail($user));
             }
+            else {
+                $user =  User::create($insertableData);
+
+                // verify email starts
+                $email_token = Str::random(30);
+                $user->email_verify_token = $email_token;
+                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
+                $user->save();
+
+
+               $user->assignRole("customer");
+
+
+
+
+              if(env("SEND_EMAIL") == true) {
+                  Mail::to($user->email)->send(new VerifyMail($user));
+              }
+            }
+
+
+
 
 // verify email ends
 
@@ -438,9 +486,20 @@ class UserManagementController extends Controller
                     "message" => "no user found"
                 ],404);
             }
+            $booking = Booking::with("automobile_make","automobile_model")->where([
+              "customer_id" => $user->id
+            ])
+            ->select(
+            "automobile_make_id",
+            "automobile_model_id",
+            "car_registration_no",
+            "car_registration_year",
+            "fuel",
+            "transmission",)
+            ->first();
+            $user->booking = $booking;
 
-
-            return response()->json($user, 200);
+            return response()->json([$user], 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500,$request);

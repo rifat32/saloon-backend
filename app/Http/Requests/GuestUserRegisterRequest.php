@@ -24,10 +24,12 @@ class GuestUserRegisterRequest extends FormRequest
     public function rules()
     {
         return [
+            "id" => "nullable|exists:users,id",
             'first_Name' => 'required|string|max:255',
             'last_Name' => 'required|string|max:255',
 
-            'email' => 'nullable|string|email|max:255|unique:users',
+            'email' => 'nullable|string|unique:users,email,' . $this->id . ',id',
+
             'phone' => 'required|string',
             'image' => 'nullable|string',
             'address_line_1' => 'nullable|string',
