@@ -230,7 +230,7 @@ class UserManagementController extends Controller
 
       /**
      *
-     * @OA\Post(
+     * @OA\Put(
      *      path="/v1.0/customer-users",
      *      operationId="createOrUpdateCustomerUser",
      *      tags={"customer_management"},
