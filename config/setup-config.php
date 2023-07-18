@@ -161,6 +161,15 @@ return [
             "role" => "garage_owner",
             "permissions" => [
 
+                "questions_create",
+                "questions_update",
+                "questions_view",
+                "questions_delete",
+
+                "garage_update",
+                "garage_view",
+
+
        "garage_times_update",
        "garage_times_view",
 
