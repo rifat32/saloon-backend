@@ -213,7 +213,7 @@ if($starTag->question_id == $question->id) {
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
-                "review_news.guest_id" => NULL
+                // "review_news.guest_id" => NULL
 
                 ]
             )
@@ -246,7 +246,7 @@ if($starTag->question_id == $question->id) {
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "tag_id" => $starTag->tag->id,
-                "review_news.guest_id" => NULL
+                // "review_news.guest_id" => NULL
                 ]
             )->get()->count();
 
@@ -293,7 +293,7 @@ if($starTag->question_id == $question->id) {
     ->where([
         "review_news.garage_id" => $garage->id,
         "star_id" => $star->id,
-        "review_news.guest_id" => NULL
+        // "review_news.guest_id" => NULL
     ])
     ->distinct("review_value_news.review_id","review_value_news.question_id")
     ->count();
@@ -314,7 +314,7 @@ if($starTag->question_id == $question->id) {
 
     $data2["total_comment"] = ReviewNew::with("user","guest_user")->where([
     "garage_id" => $garage->id,
-    "guest_id" => NULL,
+    // "guest_id" => NULL,
     ])
     ->whereNotNull("comment")
     ->get();

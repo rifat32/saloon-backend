@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PreBookingConfirmRequestClient;
 use App\Http\Requests\PreBookingCreateRequestClient;
 use App\Http\Requests\PreBookingUpdateRequestClient;
+use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
+use App\Http\Utils\PriceUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
@@ -25,7 +27,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientPreBookingController extends Controller
 {
-    use ErrorUtil,UserActivityUtil;
+    use ErrorUtil,UserActivityUtil,PriceUtil;
     /**
      *
      * @OA\Post(
@@ -396,6 +398,13 @@ class ClientPreBookingController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      *      *      * *  @OA\Parameter(
+* name="status",
+* in="query",
+* description="status",
+* required=true,
+* example="pending"
+* ),
      *      * *  @OA\Parameter(
      * name="start_date",
      * in="query",
@@ -479,6 +488,9 @@ class ClientPreBookingController extends Controller
                 $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
             }
 
+            if (!empty($request->status)) {
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.status', $request->status);
+            }
 
 
 
@@ -729,11 +741,13 @@ $job_bid->save();
 
 
                     $insertableData["customer_id"] = auth()->user()->id;
+                    $insertableData["created_by"] = $request->user()->id;
+                    $insertableData["created_from"] = "customer_side";
 
 
                     $booking = Booking::create([
                         "pre_booking_id" => $pre_booking->id,
-                        "garage_id" => $pre_booking->garage_id,
+                        "garage_id" => $job_bid->garage_id,
                         "customer_id" => $pre_booking->customer_id,
                         "automobile_make_id" => $pre_booking->automobile_make_id,
                         "automobile_model_id" => $pre_booking->automobile_model_id,

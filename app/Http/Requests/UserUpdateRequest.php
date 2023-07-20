@@ -38,7 +38,7 @@ class UserUpdateRequest extends FormRequest
             'address_line_2' => 'nullable',
             'country' => 'required|string',
             'city' => 'required|string',
-            'postcode' => 'required|string',
+            'postcode' => 'nullable|string',
             'lat' => 'required|string',
             'long' => 'required|string',
             'role' => 'required|string'

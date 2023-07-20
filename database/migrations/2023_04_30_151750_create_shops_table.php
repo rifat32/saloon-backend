@@ -27,7 +27,7 @@ class CreateShopsTable extends Migration
             $table->string("long");
             $table->string("country");
             $table->string("city");
-            $table->string("postcode");
+            $table->string("postcode")->nullable();
             $table->string("logo")->nullable();
             $table->string("image")->nullable();
             $table->string("sku_prefix")->nullable();

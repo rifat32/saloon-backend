@@ -654,7 +654,7 @@ class ReviewController extends Controller
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
-                "review_news.guest_id" => NULL
+                // "review_news.guest_id" => NULL
 
                 ]
             );
@@ -688,7 +688,7 @@ class ReviewController extends Controller
                 "review_news.garage_id" => $garage->id,
                 "question_id" => $question->id,
                 "tag_id" => $starTag->tag->id,
-                "review_news.guest_id" => NULL
+                // "review_news.guest_id" => NULL
                 ]
             );
             if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -712,7 +712,7 @@ class ReviewController extends Controller
                 "question_id" => $question->id,
                 "star_id" => $questionStar->star->id,
                 "tag_id" => $starTag->tag->id,
-                "review_news.guest_id" => NULL
+                // "review_news.guest_id" => NULL
                 ]
             );
             if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -756,7 +756,7 @@ foreach(Star::get() as $star) {
     ->where([
         "review_news.garage_id" => $garage->id,
         "star_id" => $star->id,
-        "review_news.guest_id" => NULL
+        // "review_news.guest_id" => NULL
     ])
     ->distinct("review_value_news.review_id","review_value_news.question_id");
     if(!empty($request->start_date) && !empty($request->end_date)) {
@@ -785,7 +785,7 @@ else {
 
 $data2["total_comment"] = ReviewNew::with("user","guest_user")->where([
     "garage_id" => $garage->id,
-    "guest_id" => NULL,
+    // "guest_id" => NULL,
 ])
 ->whereNotNull("comment")
 ;

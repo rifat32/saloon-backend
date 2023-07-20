@@ -26,6 +26,9 @@ class CreateBookingsTable extends Migration
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
 
 
+
+
+
             $table->unsignedBigInteger("automobile_make_id");
             $table->foreign('automobile_make_id')->references('id')->on('automobile_makes')->onDelete('restrict');
             $table->unsignedBigInteger("automobile_model_id");
@@ -63,6 +66,12 @@ class CreateBookingsTable extends Migration
             $table->time("job_end_time")->nullable();
 
             $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
+
+
+            $table->unsignedBigInteger("created_by");
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->enum("created_from",["customer_side","garage_owner_side"]);
+
             $table->timestamps();
             $table->softDeletes();
         });

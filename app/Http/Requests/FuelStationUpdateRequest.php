@@ -44,7 +44,7 @@ class FuelStationUpdateRequest extends FormRequest
 
             'country' => 'required|string',
             'city' => 'required|string',
-            'postcode' => 'required|string',
+            'postcode' => 'nullable|string',
             'address_line_1' => 'required|string',
             'address_line_2' => 'nullable|string',
             'additional_information' => 'nullable|string',

@@ -181,13 +181,14 @@ class JobBidController extends Controller
             $preBookingQuery = PreBooking::with(
                 "pre_booking_sub_services.sub_service",
                 "automobile_make",
-                "automobile_model"
-
+                "automobile_model",
+                "customer",
                 )
 
                 ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
 
-                ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id');
+                ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
+                ->where("status","pending");
 
 
 

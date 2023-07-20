@@ -27,7 +27,7 @@ class CreateGaragesTable extends Migration
             $table->string("long");
             $table->string("country");
             $table->string("city");
-            $table->string("postcode");
+            $table->string("postcode")->nullable();
             $table->string("currency")->nullable();
 
 

@@ -48,7 +48,7 @@ class CreatePreBookingsTable extends Migration
             // $table->string("address")->nullable();
             // $table->string("country");
             // $table->string("city");
-            // $table->string("postcode");
+            // $table->string("postcode")->nullable();
             // $table->string("lat")->nullable();
             // $table->string("long")->nullable();
 

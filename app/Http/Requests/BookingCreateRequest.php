@@ -49,6 +49,18 @@ class BookingCreateRequest extends FormRequest
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
+
+    "job_start_date" => "required|date",
+    "job_start_time" => ['required','date_format:H:i', new TimeValidation
+],
+    "job_end_time" => ['required','date_format:H:i', new TimeValidation
+],
+
+"price" => "required|numeric",
+"discount_type" => "nullable|string|in:fixed,percentage",
+"discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
+
+
         ];
     }
 }

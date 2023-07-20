@@ -59,7 +59,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
             'garage.currency' => 'nullable|string',
 
-            'garage.postcode' => 'required|string',
+            'garage.postcode' => 'nullable|string',
             'garage.address_line_1' => 'required|string',
             'garage.address_line_2' => 'nullable|string',
 
@@ -117,7 +117,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.email.required' => $this->customRequiredMessage("garage email"),
             'garage.country.required' => $this->customRequiredMessage("garage country"),
             'garage.city.required' => $this->customRequiredMessage("garage city"),
-            'garage.postcode.required' => $this->customRequiredMessage("garage postcode"),
+          
             'garage.address_line_1.required' => $this->customRequiredMessage("garage address line 1"),
 
         ];

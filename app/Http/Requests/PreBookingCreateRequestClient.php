@@ -50,7 +50,7 @@ class PreBookingCreateRequestClient extends FormRequest
 
     // 'country' => 'required|string',
     // 'city' => 'required|string',
-    // 'postcode' => 'required|string',
+    // 'postcode' => 'nullable|string',
     // 'address' => 'required|string',
     // 'lat' => 'nullable|string',
     // 'long' => 'nullable|string',

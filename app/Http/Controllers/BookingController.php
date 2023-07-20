@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookingConfirmRequest;
 use App\Http\Requests\BookingCreateRequest;
 use App\Http\Requests\BookingStatusChangeRequest;
-use App\Http\Requests\BookingStatusChangeRequestClient;
+
 use App\Http\Requests\BookingUpdateRequest;
 use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
@@ -22,8 +22,10 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
+use App\Models\Job;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
+use App\Models\PreBooking;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,9 +33,9 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    use ErrorUtil,GarageUtil,PriceUtil,UserActivityUtil,DiscountUtil;
+    use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil;
 
-      /**
+    /**
      *
      * @OA\Post(
      *      path="/v1.0/bookings",
@@ -66,11 +68,22 @@ class BookingController extends Controller
 
      *
      *
-     * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
 
 
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *  *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
+     * *  *
+     * *
+     * *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
+     *  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
+     * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+     *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
+     *
+     * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
+
+     *  * *    @OA\Property(property="job_end_time", type="string", format="string",example="10:10"),
+     *
+     *
      *         ),
      *      ),
      *      @OA\Response(
@@ -107,17 +120,17 @@ class BookingController extends Controller
      *     )
      */
 
-     public function createBooking(BookingCreateRequest $request)
-     {
-         try {
-             $this->storeActivity($request,"");
-             return DB::transaction(function () use ($request) {
-                if(!$request->user()->hasPermissionTo('booking_create')){
+    public function createBooking(BookingCreateRequest $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            return DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('booking_create')) {
                     return response()->json([
-                       "message" => "You can not perform this action"
-                    ],401);
-               }
-               $insertableData = $request->validated();
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+                $insertableData = $request->validated();
                 if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
                     return response()->json([
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -126,150 +139,149 @@ class BookingController extends Controller
 
 
 
-                 $insertableData["status"] = "pending";
+                $insertableData["status"] = "pending";
+                $insertableData["created_by"] = $request->user()->id;
+                $insertableData["created_from"] = "garage_owner_side";
 
 
 
 
-                 $garage_make = GarageAutomobileMake::where([
-                     "automobile_make_id" => $insertableData["automobile_make_id"],
-                     "garage_id"=>$insertableData["garage_id"]
-                 ])
-                     ->first();
-                 if (!$garage_make) {
-                  $error =  [
-                         "message" => "The given data was invalid.",
-                         "errors" => ["automobile_make_id"=>["This garage does not support this make"]]
-                  ];
-                     throw new Exception(json_encode($error),422);
-                 }
-                 $garage_model = GarageAutomobileModel::where([
-                     "automobile_model_id" => $insertableData["automobile_model_id"],
-                     "garage_automobile_make_id" => $garage_make->id
-                 ])
-                     ->first();
-                 if (!$garage_model) {
+                $garage_make = GarageAutomobileMake::where([
+                    "automobile_make_id" => $insertableData["automobile_make_id"],
+                    "garage_id" => $insertableData["garage_id"]
+                ])
+                    ->first();
+                if (!$garage_make) {
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id" => ["This garage does not support this make"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
+                $garage_model = GarageAutomobileModel::where([
+                    "automobile_model_id" => $insertableData["automobile_model_id"],
+                    "garage_automobile_make_id" => $garage_make->id
+                ])
+                    ->first();
+                if (!$garage_model) {
 
-                     $error =  [
-                         "message" => "The given data was invalid.",
-                         "errors" => ["automobile_model_id"=>["This garage does not support this model"]]
-                  ];
-                     throw new Exception(json_encode($error),422);
-                 }
-
-
-
-                 $booking =  Booking::create($insertableData);
-
-
-                 $total_price = 0;
-
-                 foreach ($insertableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
-                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-                         ->where([
-                             "garage_services.garage_id" => $insertableData["garage_id"],
-                             "garage_sub_services.sub_service_id" => $sub_service_id
-                         ])
-                         ->select(
-                             "garage_sub_services.id",
-                             "garage_sub_services.sub_service_id",
-                             "garage_sub_services.garage_service_id"
-                         )
-                         ->first();
-
-                     if (!$garage_sub_service) {
-
-                         $error =  [
-                             "message" => "The given data was invalid.",
-                             "errors" => [("booking_sub_service_ids[" . $index . "]")=>["invalid service"]]
-                      ];
-                         throw new Exception(json_encode($error),422);
-                     }
-
-                     $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $insertableData["automobile_make_id"]);
-
-
-                     // $total_price += $price;
-
-                     $booking->booking_sub_services()->create([
-                         "sub_service_id" => $garage_sub_service->sub_service_id,
-                         "price" => $price
-                     ]);
-                 }
-
-                 foreach ($insertableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
-                     $garage_package =  GaragePackage::where([
-                             "garage_id" => $insertableData["garage_id"],
-                             "id" => $garage_package_id
-                         ])
-
-                         ->first();
-
-                     if (!$garage_package) {
-
-                         $error =  [
-                             "message" => "The given data was invalid.",
-                             "errors" => [("booking_garage_package_ids[" . $index . "]")=>["invalid package"]]
-                      ];
-                         throw new Exception(json_encode($error),422);
-                     }
-
-
-                     $total_price += $garage_package->price;
-
-                     $booking->booking_packages()->create([
-                         "garage_package_id" => $garage_package->id,
-                         "price" => $garage_package->price
-                     ]);
-
-
-                 }
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id" => ["This garage does not support this model"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
 
 
 
-                 $booking->price = $total_price;
-                 $booking->save();
+                $booking =  Booking::create($insertableData);
 
-                 if (!empty($insertableData["coupon_code"])) {
-                     $coupon_discount = $this->getCouponDiscount(
-                         $insertableData["garage_id"],
-                         $insertableData["coupon_code"],
-                         $total_price
-                     );
 
-                     if ($coupon_discount["success"]) {
+                $total_price = 0;
 
-                         $booking->coupon_discount_type = $coupon_discount["discount_type"];
-                         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-                         $booking->coupon_code = $insertableData["coupon_code"];
+                foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
+                    $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                        ->where([
+                            "garage_services.garage_id" => $insertableData["garage_id"],
+                            "garage_sub_services.sub_service_id" => $sub_service_id
+                        ])
+                        ->select(
+                            "garage_sub_services.id",
+                            "garage_sub_services.sub_service_id",
+                            "garage_sub_services.garage_service_id"
+                        )
+                        ->first();
 
-                         $booking->save();
+                    if (!$garage_sub_service) {
 
-                         Coupon::where([
-                             "code" => $booking->coupon_code,
-                             "garage_id" => $booking->garage_id
-                         ])->update([
-                             "customer_redemptions" => DB::raw("customer_redemptions + 1")
-                         ]);
-                     } else {
-                         $error =  [
-                             "message" => "The given data was invalid.",
-                             "errors" => ["coupon_code"=>[$coupon_discount["message"]]]
-                      ];
-                         throw new Exception(json_encode($error),422);
-                     }
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
+                    }
 
-                 }
+                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $insertableData["automobile_make_id"]);
 
-                 $notification_template = NotificationTemplate::where([
-                     "type" => "booking_created_by_garage_owner"
-                 ])
-                     ->first();
-                     if(!$notification_template) {
-          throw new Exception("notification template error");
-                     }
 
-                 Notification::create([
+                    // $total_price += $price;
+
+                    $booking->booking_sub_services()->create([
+                        "sub_service_id" => $garage_sub_service->sub_service_id,
+                        "price" => $price
+                    ]);
+                }
+
+                foreach ($insertableData["booking_garage_package_ids"] as $index => $garage_package_id) {
+                    $garage_package =  GaragePackage::where([
+                        "garage_id" => $insertableData["garage_id"],
+                        "id" => $garage_package_id
+                    ])
+
+                        ->first();
+
+                    if (!$garage_package) {
+
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
+                    }
+
+
+                    $total_price += $garage_package->price;
+
+                    $booking->booking_packages()->create([
+                        "garage_package_id" => $garage_package->id,
+                        "price" => $garage_package->price
+                    ]);
+                }
+
+
+
+                $booking->price = $total_price;
+                $booking->save();
+
+                if (!empty($insertableData["coupon_code"])) {
+                    $coupon_discount = $this->getCouponDiscount(
+                        $insertableData["garage_id"],
+                        $insertableData["coupon_code"],
+                        $total_price
+                    );
+
+                    if ($coupon_discount["success"]) {
+
+                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+                        $booking->coupon_code = $insertableData["coupon_code"];
+
+                        $booking->save();
+
+                        Coupon::where([
+                            "code" => $booking->coupon_code,
+                            "garage_id" => $booking->garage_id
+                        ])->update([
+                            "customer_redemptions" => DB::raw("customer_redemptions + 1")
+                        ]);
+                    } else {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => ["coupon_code" => [$coupon_discount["message"]]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
+                    }
+                }
+
+                $notification_template = NotificationTemplate::where([
+                    "type" => "booking_created_by_garage_owner"
+                ])
+                    ->first();
+                if (!$notification_template) {
+                    throw new Exception("notification template error");
+                }
+
+                Notification::create([
                     "sender_id" =>  $booking->garage->owner_id,
                     "receiver_id" => $booking->customer_id,
                     "customer_id" => $booking->customer_id,
@@ -278,29 +290,29 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                 if(env("SEND_EMAIL") == true) {
-                     Mail::to($booking->customer->email)->send(new DynamicMail(
-                     $booking,
-                     "booking_created_by_garage_owner"
-                 ));
-                 }
+                if (env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                        $booking,
+                        "booking_created_by_garage_owner"
+                    ));
+                }
 
-                 return response($booking, 201);
-             });
-         } catch (Exception $e) {
+                return response($booking, 201);
+            });
+        } catch (Exception $e) {
 
 
-              return $this->sendError($e,500,$request);
-         }
-     }
+            return $this->sendError($e, 500, $request);
+        }
+    }
 
-       /**
-        *
+    /**
+     *
      * @OA\Put(
      *      path="/v1.0/bookings",
      *      operationId="updateBooking",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to update booking",
@@ -312,9 +324,9 @@ class BookingController extends Controller
      *            required={"id","garage_id","coupon_code","price","automobile_make_id","automobile_model_id","car_registration_no","car_registration_year","booking_sub_service_ids","booking_garage_package_ids","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
- *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
- * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
- *
+     *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
+     * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+     *
      *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
      *    @OA\Property(property="automobile_make_id", type="number", format="number",example="1"),
      *    @OA\Property(property="automobile_model_id", type="number", format="number",example="1"),
@@ -382,111 +394,111 @@ class BookingController extends Controller
 
     public function updateBooking(BookingUpdateRequest $request)
     {
-        try{
-            $this->storeActivity($request,"");
-   return  DB::transaction(function () use($request) {
-    if(!$request->user()->hasPermissionTo('booking_update')){
-        return response()->json([
-           "message" => "You can not perform this action"
-        ],401);
-   }
-    $updatableData = $request->validated();
-    if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
-        return response()->json([
-            "message" => "you are not the owner of the garage or the requested garage does not exist."
-        ], 401);
-    }
+        try {
+            $this->storeActivity($request, "");
+            return  DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('booking_update')) {
+                    return response()->json([
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+                $updatableData = $request->validated();
+                if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                    return response()->json([
+                        "message" => "you are not the owner of the garage or the requested garage does not exist."
+                    ], 401);
+                }
 
 
-        $booking  =  tap(Booking::where([
-            "id" => $updatableData["id"],
-            "garage_id" =>  $updatableData["garage_id"]
-            ]))->update(collect($updatableData)->only([
-            "automobile_make_id",
-            "automobile_model_id",
-            "car_registration_no",
-            "car_registration_year",
-            "status",
-            "job_start_date",
-             "job_start_time",
-            "job_end_time",
-            "fuel",
-            "transmission",
+                $booking  =  tap(Booking::where([
+                    "id" => $updatableData["id"],
+                    "garage_id" =>  $updatableData["garage_id"]
+                ]))->update(
+                    collect($updatableData)->only([
+                        "automobile_make_id",
+                        "automobile_model_id",
+                        "car_registration_no",
+                        "car_registration_year",
+                        "status",
+                        "job_start_date",
+                        "job_start_time",
+                        "job_end_time",
+                        "fuel",
+                        "transmission",
 
-            "discount_type",
-            "discount_amount",
-
-
-
-        ])->toArray()
-        )
-            // ->with("somthing")
-
-            ->first();
-            if(!$booking){
-                return response()->json([
-            "message" => "booking not found"
-                ], 404);
-            }
-
-            $garage_make = GarageAutomobileMake::where([
-                "automobile_make_id" => $updatableData["automobile_make_id"],
-                "garage_id"=>$updatableData["garage_id"]
-            ])
-                ->first();
-            if (!$garage_make) {
-                $error =  [
-                    "message" => "The given data was invalid.",
-                    "errors" => ["automobile_make_id"=>["This garage does not support this make"]]
-             ];
-                throw new Exception(json_encode($error),422);
-
-            }
-            $garage_model = GarageAutomobileModel::where([
-                "automobile_model_id" => $updatableData["automobile_model_id"],
-                "garage_automobile_make_id" => $garage_make->id
-            ])
-                ->first();
-            if (!$garage_model) {
-                $error =  [
-                    "message" => "The given data was invalid.",
-                    "errors" => ["automobile_model_id"=>["This garage does not support this model"]]
-             ];
-                throw new Exception(json_encode($error),422);
-            }
+                        "discount_type",
+                        "discount_amount",
 
 
 
-            BookingSubService::where([
-               "booking_id" => $booking->id
-            ])->delete();
-            BookingPackage::where([
-                "booking_id" => $booking->id
-             ])->delete();
+                    ])->toArray()
+                )
+                    // ->with("somthing")
 
-            $total_price = 0;
-            foreach($updatableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
-                $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-                    ->where([
-                        "garage_services.garage_id" => $booking->garage_id,
-                        "garage_sub_services.sub_service_id" => $sub_service_id
-                    ])
-                    ->select(
-                        "garage_sub_services.id",
-                        "garage_sub_services.sub_service_id",
-                        "garage_sub_services.garage_service_id"
-                    )
                     ->first();
+                if (!$booking) {
+                    return response()->json([
+                        "message" => "booking not found"
+                    ], 404);
+                }
 
-                    if(!$garage_sub_service ){
+                $garage_make = GarageAutomobileMake::where([
+                    "automobile_make_id" => $updatableData["automobile_make_id"],
+                    "garage_id" => $updatableData["garage_id"]
+                ])
+                    ->first();
+                if (!$garage_make) {
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_make_id" => ["This garage does not support this make"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
+                $garage_model = GarageAutomobileModel::where([
+                    "automobile_model_id" => $updatableData["automobile_model_id"],
+                    "garage_automobile_make_id" => $garage_make->id
+                ])
+                    ->first();
+                if (!$garage_model) {
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["automobile_model_id" => ["This garage does not support this model"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
+
+
+
+                BookingSubService::where([
+                    "booking_id" => $booking->id
+                ])->delete();
+                BookingPackage::where([
+                    "booking_id" => $booking->id
+                ])->delete();
+
+                $total_price = 0;
+                foreach ($updatableData["booking_sub_service_ids"] as $index => $sub_service_id) {
+                    $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                        ->where([
+                            "garage_services.garage_id" => $booking->garage_id,
+                            "garage_sub_services.sub_service_id" => $sub_service_id
+                        ])
+                        ->select(
+                            "garage_sub_services.id",
+                            "garage_sub_services.sub_service_id",
+                            "garage_sub_services.garage_service_id"
+                        )
+                        ->first();
+
+                    if (!$garage_sub_service) {
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => [("booking_sub_service_ids[".$index."]")=>["invalid service"]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
                     // $total_price += $price;
@@ -494,33 +506,31 @@ class BookingController extends Controller
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "price" => $price
                     ]);
-
                 }
-                foreach($updatableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
+                foreach ($updatableData["booking_garage_package_ids"] as $index => $garage_package_id) {
                     $garage_package =  GaragePackage::where([
                         "garage_id" => $booking->garage_id,
-                         "id" => $garage_package_id
+                        "id" => $garage_package_id
                     ])
 
-                    ->first();
+                        ->first();
 
-                if (!$garage_package) {
-                    $error =  [
-                        "message" => "The given data was invalid.",
-                        "errors" => [("booking_garage_package_ids[".$index."]")=>["invalid package"]]
-                 ];
-                    throw new Exception(json_encode($error),422);
-                }
-
-
-                $total_price += $garage_package->price;
-
-                $booking->booking_packages()->create([
-                    "garage_package_id" => $garage_package->id,
-                    "price" => $garage_package->price
-                ]);
-
+                    if (!$garage_package) {
+                        $error =  [
+                            "message" => "The given data was invalid.",
+                            "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
+
+
+                    $total_price += $garage_package->price;
+
+                    $booking->booking_packages()->create([
+                        "garage_package_id" => $garage_package->id,
+                        "price" => $garage_package->price
+                    ]);
+                }
 
                 // $booking->price = (!empty($updatableData["price"]?$updatableData["price"]:$total_price));
                 $booking->price = $total_price;
@@ -528,11 +538,11 @@ class BookingController extends Controller
 
 
                 $discount_amount = 0;
-                if(!empty($booking->discount_type) && !empty($booking->discount_amount)) {
-                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$booking->discount_amount,$booking->discount_type);
+                if (!empty($booking->discount_type) && !empty($booking->discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price, $booking->discount_amount, $booking->discount_type);
                 }
-                if(!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
-                    $discount_amount += $this->calculateDiscountPriceAmount($total_price,$booking->coupon_discount_amount,$booking->coupon_discount_type);
+                if (!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($total_price, $booking->coupon_discount_amount, $booking->coupon_discount_type);
                 }
 
                 $booking->final_price = $booking->price - $discount_amount;
@@ -572,30 +582,28 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if(env("SEND_EMAIL") == true) {
+                if (env("SEND_EMAIL") == true) {
                     Mail::to($booking->customer->email)->send(new DynamicMail(
-                    $booking,
-                    "booking_updated_by_garage_owner"
-                ));
+                        $booking,
+                        "booking_updated_by_garage_owner"
+                    ));
                 }
 
-    return response($booking, 201);
-});
-
-
-        } catch(Exception $e){
+                return response($booking, 201);
+            });
+        } catch (Exception $e) {
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
-     /**
-        *
+    /**
+     *
      * @OA\Put(
      *      path="/v1.0/bookings/change-status",
      *      operationId="changeBookingStatus",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to change booking status",
@@ -606,8 +614,8 @@ class BookingController extends Controller
      *         @OA\JsonContent(
      *            required={"id","garage_id","status"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
- * @OA\Property(property="garage_id", type="number", format="number",example="1"),
-       * @OA\Property(property="status", type="string", format="string",example="pending"),
+     * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     * @OA\Property(property="status", type="string", format="string",example="pending"),
 
      *         ),
      *      ),
@@ -647,63 +655,72 @@ class BookingController extends Controller
 
     public function changeBookingStatus(BookingStatusChangeRequest $request)
     {
-        try{
-            $this->storeActivity($request,"");
-   return  DB::transaction(function () use($request) {
-    if(!$request->user()->hasPermissionTo('booking_update')){
-        return response()->json([
-           "message" => "You can not perform this action"
-        ],401);
-   }
-   $updatableData = $request->validated();
-   if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
-    return response()->json([
-        "message" => "you are not the owner of the garage or the requested garage does not exist."
-    ], 401);
-}
+        try {
+            $this->storeActivity($request, "");
+            return  DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('booking_update')) {
+                    return response()->json([
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+                $updatableData = $request->validated();
+                if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                    return response()->json([
+                        "message" => "you are not the owner of the garage or the requested garage does not exist."
+                    ], 401);
+                }
 
 
-        $booking  =  tap(Booking::where([
-            "id" => $updatableData["id"],
-            "garage_id" =>  $updatableData["garage_id"]
-        ]))->update(collect($updatableData)->only([
-            "status",
-        ])->toArray()
-        )
-            // ->with("somthing")
+                $booking  =  tap(Booking::where([
+                    "id" => $updatableData["id"],
+                    "garage_id" =>  $updatableData["garage_id"]
+                ]))->update(
+                    collect($updatableData)->only([
+                        "status",
+                    ])->toArray()
+                )
+                    // ->with("somthing")
 
-            ->first();
-            if(!$booking){
-                return response()->json([
-            "message" => "booking not found"
-                ], 404);
-            }
+                    ->first();
+                if (!$booking) {
+                    return response()->json([
+                        "message" => "booking not found"
+                    ], 404);
+                }
+                if($booking->status == "rejected_by_garage_owner") {
+                    PreBooking::where([
+                        "id" => $booking->pre_booking_id
+                    ])
+                    ->update([
+                        "status" => "pending"
+                    ]);
 
-            $notification_template = NotificationTemplate::where([
-                "type" => "booking_status_changed_by_garage_owner"
-            ])
-                ->first();
-            Notification::create([
-                "sender_id" =>  $booking->garage->owner_id,
-                "receiver_id" => $booking->customer_id,
-                "customer_id" => $booking->customer_id,
-                "garage_id" => $booking->garage_id,
-                "booking_id" => $booking->id,
-                "notification_template_id" => $notification_template->id,
-                "status" => "unread",
-            ]);
-            if(env("SEND_EMAIL") == true) {
-                Mail::to($booking->customer->email)->send(new DynamicMail(
-                $booking,
-                "booking_status_changed_by_garage_owner"
-            ));
-            }
-    return response($booking, 201);
-});
+                }
 
-        } catch(Exception $e){
+                $notification_template = NotificationTemplate::where([
+                    "type" => "booking_status_changed_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $booking->garage->owner_id,
+                    "receiver_id" => $booking->customer_id,
+                    "customer_id" => $booking->customer_id,
+                    "garage_id" => $booking->garage_id,
+                    "booking_id" => $booking->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
+                if (env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                        $booking,
+                        "booking_status_changed_by_garage_owner"
+                    ));
+                }
+                return response($booking, 201);
+            });
+        } catch (Exception $e) {
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -716,12 +733,12 @@ class BookingController extends Controller
 
 
     /**
-        *
+     *
      * @OA\Put(
      *      path="/v1.0/bookings/confirm",
      *      operationId="confirmBooking",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *      summary="This method is to confirm booking",
@@ -732,10 +749,10 @@ class BookingController extends Controller
      *         @OA\JsonContent(
      *            required={"id","garage_id","job_start_time","job_end_time"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
- * @OA\Property(property="garage_id", type="number", format="number",example="1"),
- * *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
- *  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
- * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
+     * @OA\Property(property="garage_id", type="number", format="number",example="1"),
+     * *     * *   *    @OA\Property(property="price", type="number", format="number",example="30"),
+     *  *  * *    @OA\Property(property="discount_type", type="string", format="string",example="percentage"),
+     * *  * *    @OA\Property(property="discount_amount", type="number", format="number",example="10"),
      *  * @OA\Property(property="job_start_date", type="string", format="string",example="2019-06-29"),
      *
      * * @OA\Property(property="job_start_time", type="string", format="string",example="08:10"),
@@ -782,100 +799,180 @@ class BookingController extends Controller
 
     public function confirmBooking(BookingConfirmRequest $request)
     {
-        try{
-            $this->storeActivity($request,"");
-   return  DB::transaction(function () use($request) {
-    if(!$request->user()->hasPermissionTo('booking_update')){
-        return response()->json([
-           "message" => "You can not perform this action"
-        ],401);
-   }
-   $updatableData = $request->validated();
-   if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
-    return response()->json([
-        "message" => "you are not the owner of the garage or the requested garage does not exist."
-    ], 401);
-}
+        try {
+            $this->storeActivity($request, "");
+            return  DB::transaction(function () use ($request) {
+                if (!$request->user()->hasPermissionTo('booking_update')) {
+                    return response()->json([
+                        "message" => "You can not perform this action"
+                    ], 401);
+                }
+                $updatableData = $request->validated();
+                if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                    return response()->json([
+                        "message" => "you are not the owner of the garage or the requested garage does not exist."
+                    ], 401);
+                }
 
-    $updatableData["status"] = "confirmed";
-        $booking  =  tap(Booking::where([
-            "id" => $updatableData["id"],
-            "garage_id" =>  $updatableData["garage_id"]
-        ]))->update(collect($updatableData)->only([
-            "job_start_date",
-            "job_start_time",
-            "job_end_time",
-            "status",
-            "price",
-            "discount_type",
-            "discount_amount",
+                $updatableData["status"] = "confirmed";
+                $booking  =  tap(Booking::where([
+                    "id" => $updatableData["id"],
+                    "garage_id" =>  $updatableData["garage_id"]
+                ]))->update(
+                    collect($updatableData)->only([
+                        "job_start_date",
+                        "job_start_time",
+                        "job_end_time",
+                        "status",
+                        "price",
+                        "discount_type",
+                        "discount_amount",
 
-        ])->toArray()
-        )
-            // ->with("somthing")
+                    ])->toArray()
+                )
+                    // ->with("somthing")
 
-            ->first();
-            if(!$booking){
-                return response()->json([
-            "message" => "booking not found"
-                ], 404);
-            }
-            $discount_amount = 0;
-            if(!empty($booking->discount_type) && !empty($booking->discount_amount)) {
-                $discount_amount += $this->calculateDiscountPriceAmount($booking->price,$booking->discount_amount,$booking->discount_type);
-            }
-            if(!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
-                $discount_amount += $this->calculateDiscountPriceAmount($booking->price,$booking->coupon_discount_amount,$booking->coupon_discount_type);
-            }
+                    ->first();
+                if (!$booking) {
+                    return response()->json([
+                        "message" => "booking not found"
+                    ], 404);
+                }
+                $discount_amount = 0;
+                if (!empty($booking->discount_type) && !empty($booking->discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($booking->price, $booking->discount_amount, $booking->discount_type);
+                }
+                if (!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
+                    $discount_amount += $this->calculateDiscountPriceAmount($booking->price, $booking->coupon_discount_amount, $booking->coupon_discount_type);
+                }
 
-            $booking->final_price = $booking->price - $discount_amount;
+                $booking->final_price = $booking->price - $discount_amount;
 
-            $booking->save();
-
-
-
-            $notification_template = NotificationTemplate::where([
-                "type" => "booking_confirmed_by_garage_owner"
-            ])
-                ->first();
-            Notification::create([
-                "sender_id" =>  $booking->garage->owner_id,
-                "receiver_id" => $booking->customer_id,
-                "customer_id" => $booking->customer_id,
-                "garage_id" => $booking->garage_id,
-                "booking_id" => $booking->id,
-                "notification_template_id" => $notification_template->id,
-                "status" => "unread",
-            ]);
-            if(env("SEND_EMAIL") == true) {
-                Mail::to($booking->customer->email)->send(new DynamicMail(
-                $booking,
-                "booking_confirmed_by_garage_owner"
-            ));
-            }
-    return response($booking, 201);
-});
+                $booking->save();
 
 
-        } catch(Exception $e){
+                $notification_template = NotificationTemplate::where([
+                    "type" => "booking_confirmed_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $booking->garage->owner_id,
+                    "receiver_id" => $booking->customer_id,
+                    "customer_id" => $booking->customer_id,
+                    "garage_id" => $booking->garage_id,
+                    "booking_id" => $booking->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
+                if (env("SEND_EMAIL") == true) {
+                    Mail::to($booking->customer->email)->send(new DynamicMail(
+                        $booking,
+                        "booking_confirmed_by_garage_owner"
+                    ));
+                }
+
+
+
+                // if the booking was created by garage owner it will directly converted to job
+
+
+
+                 if ($booking->created_from == "garage_owner_side") {
+
+                    $job = Job::create([
+                        "booking_id" => $booking->id,
+                        "garage_id" => $booking->garage_id,
+                        "customer_id" => $booking->customer_id,
+                        "automobile_make_id" => $booking->automobile_make_id,
+                        "automobile_model_id" => $booking->automobile_model_id,
+                        "car_registration_no" => $booking->car_registration_no,
+                        "car_registration_year" => $booking->car_registration_year,
+                        "additional_information" => $booking->additional_information,
+                        "job_start_date" => $booking->job_start_date,
+
+                        "job_start_time" => $booking->job_start_time,
+                        "job_end_time" => $booking->job_end_time,
+
+                        "fuel" => $booking->fuel,
+                        "transmission" => $booking->transmission,
+
+
+
+                        "coupon_discount_type" => $booking->coupon_discount_type,
+                        "coupon_discount_amount" => $booking->coupon_discount_amount,
+
+
+                        "discount_type" => $booking->discount_type,
+                        "discount_amount" => $booking->discount_amount,
+                        "price" => $booking->price,
+                        "final_price" => $booking->final_price,
+                        "status" => "pending",
+                        "payment_status" => "due",
+
+
+
+                    ]);
+
+                //     $total_price = 0;
+
+                //     foreach (BookingSubService::where([
+                //             "booking_id" => $booking->id
+                //         ])->get()
+                //         as
+                //         $booking_sub_service) {
+                //         $job->job_sub_services()->create([
+                //             "sub_service_id" => $booking_sub_service->sub_service_id,
+                //             "price" => $booking_sub_service->price
+                //         ]);
+                //         $total_price += $booking_sub_service->price;
+
+                //     }
+
+                //     foreach (BookingPackage::where([
+                //         "booking_id" => $booking->id
+                //     ])->get()
+                //     as
+                //     $booking_package) {
+                //     $job->job_packages()->create([
+                //         "garage_package_id" => $booking_package->garage_package_id,
+                //         "price" => $booking_package->price
+                //     ]);
+                //     $total_price += $booking_package->price;
+
+                // }
+
+
+
+
+                    // $job->price = $total_price;
+                    // $job->save();
+                    $booking->status = "converted_to_job";
+                    $booking->save();
+                    // $booking->delete();
+
+
+                }
+                return response($booking, 201);
+            });
+        } catch (Exception $e) {
             error_log($e->getMessage());
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
 
 
 
- /**
-        *
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/bookings/{garage_id}/{perPage}",
      *      operationId="getBookings",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
- *              @OA\Parameter(
+     *              @OA\Parameter(
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
@@ -890,26 +987,26 @@ class BookingController extends Controller
      *  example="6"
      *      ),
      *      * *  @OA\Parameter(
-* name="start_date",
-* in="query",
-* description="start_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="end_date",
-* in="query",
-* description="end_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      *      summary="This method is to get  bookings ",
      *      description="This method is to get bookings",
      *
@@ -948,14 +1045,15 @@ class BookingController extends Controller
      *     )
      */
 
-    public function getBookings($garage_id,$perPage,Request $request) {
-        try{
-            $this->storeActivity($request,"");
-            if(!$request->user()->hasPermissionTo('booking_view')){
+    public function getBookings($garage_id, $perPage, Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            if (!$request->user()->hasPermissionTo('booking_view')) {
                 return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
             if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -963,21 +1061,27 @@ class BookingController extends Controller
             }
 
 
-            $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make",
-            "automobile_model",
-            "customer"
+            $bookingQuery = Booking::with(
+                "booking_sub_services.sub_service",
+                "booking_packages.garage_package",
+                "automobile_make",
+                "automobile_model",
+                "customer",
+                "garage",
+
+
+
 
             )
-            ->where([
-                "garage_id" => $garage_id
-            ]);
+                ->where([
+                    "garage_id" => $garage_id
+                ]);
 
-            if(!empty($request->search_key)) {
-                $bookingQuery = $bookingQuery->where(function($query) use ($request){
+            if (!empty($request->search_key)) {
+                $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
                     $term = $request->search_key;
                     $query->where("car_registration_no", "like", "%" . $term . "%");
                 });
-
             }
 
             if (!empty($request->start_date)) {
@@ -988,23 +1092,23 @@ class BookingController extends Controller
             }
             $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($bookings, 200);
-        } catch(Exception $e){
+        } catch (Exception $e) {
 
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
 
-     /**
-        *
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/bookings/single/{garage_id}/{id}",
      *      operationId="getBookingById",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
- *              @OA\Parameter(
+     *              @OA\Parameter(
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
@@ -1055,14 +1159,15 @@ class BookingController extends Controller
      *     )
      */
 
-    public function getBookingById($garage_id,$id,Request $request) {
-        try{
-            $this->storeActivity($request,"");
-            if(!$request->user()->hasPermissionTo('booking_view')){
+    public function getBookingById($garage_id, $id, Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            if (!$request->user()->hasPermissionTo('booking_view')) {
                 return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
             if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -1070,38 +1175,42 @@ class BookingController extends Controller
             }
 
 
-            $booking = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model",
-            "customer")
-            ->where([
-                "garage_id" => $garage_id,
-                "id" => $id
-            ])
-            ->first();
-             if(!$booking){
+            $booking = Booking::with(
+                "booking_sub_services.sub_service",
+                "automobile_make",
+                "automobile_model",
+                "customer"
+            )
+                ->where([
+                    "garage_id" => $garage_id,
+                    "id" => $id
+                ])
+                ->first();
+            if (!$booking) {
                 return response()->json([
-            "message" => "booking not found"
+                    "message" => "booking not found"
                 ], 404);
             }
 
 
             return response()->json($booking, 200);
-        } catch(Exception $e){
+        } catch (Exception $e) {
 
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
 
- /**
-        *
+    /**
+     *
      * @OA\Delete(
      *      path="/v1.0/bookings/{garage_id}/{id}",
      *      operationId="deleteBookingById",
      *      tags={"booking_management"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
- *              @OA\Parameter(
+     *              @OA\Parameter(
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
@@ -1152,14 +1261,15 @@ class BookingController extends Controller
      *     )
      */
 
-    public function deleteBookingById($garage_id,$id,Request $request) {
-        try{
-            $this->storeActivity($request,"");
-            if(!$request->user()->hasPermissionTo('booking_delete')){
+    public function deleteBookingById($garage_id, $id, Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            if (!$request->user()->hasPermissionTo('booking_delete')) {
                 return response()->json([
-                   "message" => "You can not perform this action"
-                ],401);
-           }
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
             if (!$this->garageOwnerCheck($garage_id)) {
                 return response()->json([
                     "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -1171,12 +1281,18 @@ class BookingController extends Controller
                 "garage_id" => $garage_id,
                 "id" => $id
             ])
-            ->first();
-             if(!$booking){
+                ->first();
+            if (!$booking) {
                 return response()->json([
-            "message" => "booking not found"
+                    "message" => "booking not found"
                 ], 404);
             }
+            PreBooking::where([
+                "id" => $booking->pre_booking_id
+            ])
+            ->update([
+                "status" => "pending"
+            ]);
             $booking->delete();
 
             $notification_template = NotificationTemplate::where([
@@ -1192,34 +1308,17 @@ class BookingController extends Controller
                 "notification_template_id" => $notification_template->id,
                 "status" => "unread",
             ]);
-            if(env("SEND_EMAIL") == true) {
+            if (env("SEND_EMAIL") == true) {
                 Mail::to($booking->customer->email)->send(new DynamicMail(
-                $booking,
-                "booking_deleted_by_garage_owner"
-            ));
+                    $booking,
+                    "booking_deleted_by_garage_owner"
+                ));
             }
 
             return response()->json(["ok" => true], 200);
-        } catch(Exception $e){
+        } catch (Exception $e) {
 
-        return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

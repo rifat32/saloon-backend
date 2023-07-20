@@ -23,6 +23,7 @@ use App\Models\GarageSubService;
 use App\Models\Job;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
+use App\Models\PreBooking;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -112,6 +113,8 @@ class ClientBookingController extends Controller
 
                 $insertableData["customer_id"] = auth()->user()->id;
                 $insertableData["status"] = "pending";
+                $insertableData["created_by"] = $request->user()->id;
+                $insertableData["created_from"] = "customer_side";
 
                 $garage = Garage::where([
                     "id" => $insertableData["garage_id"]
@@ -377,6 +380,12 @@ class ClientBookingController extends Controller
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
                     $booking->save();
+                    PreBooking::where([
+                        "id" => $booking->pre_booking_id
+                    ])
+                    ->update([
+                        "status" => "pending"
+                    ]);
                     $notification_template = NotificationTemplate::where([
                         "type" => "booking_rejected_by_client"
                     ])
@@ -803,6 +812,13 @@ Coupon::where([
      *         required=true,
      *  example="6"
      *      ),
+     *      *      * *  @OA\Parameter(
+* name="status",
+* in="query",
+* description="status",
+* required=true,
+* example="pending"
+* ),
      *      * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -866,10 +882,26 @@ Coupon::where([
     {
         try {
             $this->storeActivity($request,"");
-            $bookingQuery = Booking::with("booking_sub_services.sub_service","automobile_make","automobile_model")
+            $bookingQuery = Booking::with(
+                "booking_sub_services.sub_service",
+                "booking_packages.garage_package",
+                "automobile_make",
+                "automobile_model",
+                "customer",
+                "garage",
+                )
                 ->where([
                     "customer_id" => $request->user()->id
-                ]);
+                ])
+                ->where(function ($query) use ($request) {
+                    // Exclude bookings with "converted_to_job" status
+                    $query->whereNotIn("status", ["converted_to_job"]);
+
+                    // Apply the existing status filter if provided in the request
+                    if (!empty($request->status)) {
+                        $query->orWhere("status", $request->status);
+                    }
+                });;
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
@@ -884,6 +916,8 @@ Coupon::where([
             if (!empty($request->end_date)) {
                 $bookingQuery = $bookingQuery->where('created_at', "<=", $request->end_date);
             }
+
+
 
 
 
@@ -1058,6 +1092,12 @@ Coupon::where([
                 ],
             404);
             }
+            PreBooking::where([
+                "id" => $booking->pre_booking_id
+            ])
+            ->update([
+                "status" => "pending"
+            ]);
             $booking->delete();
 
             $notification_template = NotificationTemplate::where([

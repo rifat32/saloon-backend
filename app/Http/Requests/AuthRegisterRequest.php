@@ -35,7 +35,7 @@ class AuthRegisterRequest extends FormRequest
             'address_line_2' => 'nullable|string',
             'country' => 'required|string',
             'city' => 'required|string',
-            'postcode' => 'required|string',
+            'postcode' => 'nullable|string',
             'lat' => 'required|string',
             'long' => 'required|string',
         ];

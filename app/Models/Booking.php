@@ -21,15 +21,23 @@ class Booking extends Model
         "car_registration_year",
         "additional_information",
         "status",
-        "job_start_date",
-        "job_start_time",
+
         "coupon_code",
 
         "fuel",
         "transmission",
-        // "job_end_date"
-    ];
 
+        "job_start_date",
+        "job_start_time",
+        "job_end_time",
+        "price",
+        "discount_type",
+        "discount_amount",
+        "created_by",
+        "created_from"
+
+    ];
+    
 
 
 

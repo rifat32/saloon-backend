@@ -26,7 +26,7 @@ class CreateFuelStationsTable extends Migration
 
             $table->string("country");
             $table->string("city");
-            $table->string("postcode");
+            $table->string("postcode")->nullable();
             $table->text("additional_information")->nullable();
             $table->string("address_line_1")->nullable();
             $table->string("address_line_2")->nullable();

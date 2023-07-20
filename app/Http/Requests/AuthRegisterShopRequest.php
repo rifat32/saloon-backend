@@ -53,7 +53,7 @@ class AuthRegisterShopRequest extends FormRequest
             'shop.long' => 'nullable|string',
             'shop.country' => 'required|string',
             'shop.city' => 'required|string',
-            'shop.postcode' => 'required|string',
+            'shop.postcode' => 'nullable|string',
             'shop.address_line_1' => 'required|string',
             'shop.address_line_2' => 'nullable|string',
 
@@ -104,7 +104,7 @@ class AuthRegisterShopRequest extends FormRequest
             'shop.email.required' => $this->customRequiredMessage("shop email"),
             'shop.country.required' => $this->customRequiredMessage("shop country"),
             'shop.city.required' => $this->customRequiredMessage("shop city"),
-            'shop.postcode.required' => $this->customRequiredMessage("shop postcode"),
+     
             'shop.address_line_1.required' => $this->customRequiredMessage("shop address line 1"),
 
         ];
