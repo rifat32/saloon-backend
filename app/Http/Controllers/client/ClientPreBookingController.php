@@ -694,6 +694,7 @@ class ClientPreBookingController extends Controller
                 $pre_booking  = PreBooking::where([
                     "id" => $insertableData["pre_booking_id"],
                     "customer_id" => auth()->user()->id,
+
                 ])
                     ->first();
 
@@ -703,6 +704,12 @@ class ClientPreBookingController extends Controller
                         "message" => "pre booking not found"
                     ], 404);
                 }
+                if ($pre_booking->status == "pending" && $insertableData["is_confirmed"]) {
+                    return response()->json([
+                        "message" => "you can only confirm pending pre bookings"
+                    ], 409);
+                }
+
 
                 $job_bid  = JobBid::where([
                     "id" => $insertableData["job_bid_id"],
@@ -743,6 +750,15 @@ $job_bid->save();
                     $insertableData["customer_id"] = auth()->user()->id;
                     $insertableData["created_by"] = $request->user()->id;
                     $insertableData["created_from"] = "customer_side";
+
+                    $pre_booking->status = "booked";
+                    $pre_booking->selected_bid_id =  $job_bid->id;
+                    $pre_booking->save();
+
+                    $job_bid->status = "accepted";
+                    $job_bid->save();
+
+
 
 
                     $booking = Booking::create([
@@ -809,17 +825,10 @@ $job_bid->save();
 
 
 
-
-
-
                     // $job->price = $total_price;
 
                     $booking->save();
-                    $pre_booking->status = "booked";
-                    $pre_booking->save();
 
-                    $job_bid->status = "accepted";
-                    $job_bid->save();
 
                     $notification_template = NotificationTemplate::where([
                         "type" => "bid_accepted_by_client"
@@ -919,11 +928,24 @@ $job_bid->save();
 
         try {
             $this->storeActivity($request,"");
-            PreBooking::where([
+            $pre_booking = PreBooking::where([
                 "id" => $id,
                 "customer_id" => $request->user()->id
             ])
-                ->delete();
+                ->first();
+
+            if (!$pre_booking) {
+                return response()->json([
+                    "message" => "no pre-booking not found"
+                ], 404);
+            }
+
+            if ($pre_booking->status != "pending") {
+                // Return an error response indicating that the status cannot be updated
+                return response()->json(["message" => "only pending job can be deleted"], 422);
+            }
+
+            $pre_booking->delete();
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

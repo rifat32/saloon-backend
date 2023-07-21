@@ -21,6 +21,7 @@ use App\Models\GarageAutomobileModel;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
 use App\Models\Job;
+use App\Models\JobBid;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
@@ -380,12 +381,23 @@ class ClientBookingController extends Controller
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
                     $booking->save();
-                    PreBooking::where([
-                        "id" => $booking->pre_booking_id
-                    ])
-                    ->update([
-                        "status" => "pending"
-                    ]);
+                    if($booking->pre_booking_id) {
+                        $prebooking  =  PreBooking::where([
+                            "id" => $booking->pre_booking_id
+                        ])
+                        ->first();
+                        JobBid::where([
+                            "id" => $prebooking->selected_bid_id
+                        ])
+                        ->update([
+                            "status" => "canceled_after_booking"
+                        ]);
+                        $prebooking->status = "pending";
+                        $prebooking->selected_bid_id = NULL;
+                        $prebooking->save();
+
+                    }
+
                     $notification_template = NotificationTemplate::where([
                         "type" => "booking_rejected_by_client"
                     ])
@@ -893,15 +905,13 @@ Coupon::where([
                 ->where([
                     "customer_id" => $request->user()->id
                 ])
-                ->where(function ($query) use ($request) {
-                    // Exclude bookings with "converted_to_job" status
-                    $query->whereNotIn("status", ["converted_to_job"]);
+                ->whereNotIn("status", ["converted_to_job"]);
 
-                    // Apply the existing status filter if provided in the request
-                    if (!empty($request->status)) {
-                        $query->orWhere("status", $request->status);
-                    }
-                });;
+                // Apply the existing status filter if provided in the request
+                if (!empty($request->status)) {
+                    // If status is provided, include the condition in the query
+                    $bookingQuery->where("status", $request->status);
+                }
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
@@ -1092,12 +1102,33 @@ Coupon::where([
                 ],
             404);
             }
-            PreBooking::where([
-                "id" => $booking->pre_booking_id
-            ])
-            ->update([
-                "status" => "pending"
-            ]);
+
+
+
+
+            if ($booking->status != "pending") {
+                // Return an error response indicating that the status cannot be updated
+                return response()->json(["message" => "only pending booking can be deleted"], 422);
+            }
+
+
+            if($booking->pre_booking_id) {
+                $prebooking  =  PreBooking::where([
+                    "id" => $booking->pre_booking_id
+                ])
+                ->first();
+                JobBid::where([
+                    "id" => $prebooking->selected_bid_id
+                ])
+                ->update([
+                    "status" => "canceled_after_booking"
+                ]);
+                $prebooking->status = "pending";
+                $prebooking->selected_bid_id = NULL;
+                $prebooking->save();
+
+            }
+
             $booking->delete();
 
             $notification_template = NotificationTemplate::where([

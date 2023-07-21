@@ -23,6 +23,7 @@ use App\Models\GarageAutomobileModel;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
 use App\Models\Job;
+use App\Models\JobBid;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
@@ -409,12 +410,22 @@ class BookingController extends Controller
                     ], 401);
                 }
 
-
-                $booking  =  tap(Booking::where([
+                $booking = Booking::where([
                     "id" => $updatableData["id"],
                     "garage_id" =>  $updatableData["garage_id"]
-                ]))->update(
-                    collect($updatableData)->only([
+                ])->first();
+                if (!$booking) {
+                    return response()->json([
+                        "message" => "booking not found"
+                    ], 404);
+                }
+                if ($booking->status === "converted_to_job") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
+                }
+
+
+                    $booking->update(collect($updatableData)->only([
                         "automobile_make_id",
                         "automobile_model_id",
                         "car_registration_no",
@@ -428,19 +439,10 @@ class BookingController extends Controller
 
                         "discount_type",
                         "discount_amount",
+                    ])->toArray());
 
 
 
-                    ])->toArray()
-                )
-                    // ->with("somthing")
-
-                    ->first();
-                if (!$booking) {
-                    return response()->json([
-                        "message" => "booking not found"
-                    ], 404);
-                }
 
                 $garage_make = GarageAutomobileMake::where([
                     "automobile_make_id" => $updatableData["automobile_make_id"],
@@ -669,31 +671,51 @@ class BookingController extends Controller
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
                     ], 401);
                 }
-
-
-                $booking  =  tap(Booking::where([
+                $booking = Booking::where([
                     "id" => $updatableData["id"],
                     "garage_id" =>  $updatableData["garage_id"]
-                ]))->update(
-                    collect($updatableData)->only([
-                        "status",
-                    ])->toArray()
-                )
-                    // ->with("somthing")
-
-                    ->first();
+                ])->first();
                 if (!$booking) {
                     return response()->json([
                         "message" => "booking not found"
                     ], 404);
                 }
+                if ($booking->status === "converted_to_job") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
+                }
+
+
+
+                if ($booking) {
+                    $booking->update(collect($updatableData)->only(["status"])->toArray());
+                }
+
+                    if ($booking->status != "confirmed") {
+                        return response()->json([
+                            "message" => "you can only accecpt or reject only a confirmed booking"
+                        ], 409);
+                    }
+
+
                 if($booking->status == "rejected_by_garage_owner") {
-                    PreBooking::where([
-                        "id" => $booking->pre_booking_id
-                    ])
-                    ->update([
-                        "status" => "pending"
-                    ]);
+                    if($booking->pre_booking_id) {
+                        $prebooking  =  PreBooking::where([
+                            "id" => $booking->pre_booking_id
+                        ])
+                        ->first();
+                        JobBid::where([
+                            "id" => $prebooking->selected_bid_id
+                        ])
+                        ->update([
+                            "status" => "canceled_after_booking"
+                        ]);
+                        $prebooking->status = "pending";
+                        $prebooking->selected_bid_id = NULL;
+                        $prebooking->save();
+
+                    }
+
 
                 }
 
@@ -815,11 +837,22 @@ class BookingController extends Controller
                 }
 
                 $updatableData["status"] = "confirmed";
-                $booking  =  tap(Booking::where([
+                $booking = Booking::where([
                     "id" => $updatableData["id"],
                     "garage_id" =>  $updatableData["garage_id"]
-                ]))->update(
-                    collect($updatableData)->only([
+                ])->first();
+                if (!$booking) {
+                    return response()->json([
+                        "message" => "booking not found"
+                    ], 404);
+                }
+                if ( $booking->status === "converted_to_job") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
+                }
+
+
+                    $booking->update(collect($updatableData)->only([
                         "job_start_date",
                         "job_start_time",
                         "job_end_time",
@@ -827,17 +860,10 @@ class BookingController extends Controller
                         "price",
                         "discount_type",
                         "discount_amount",
+                    ])->toArray());
 
-                    ])->toArray()
-                )
-                    // ->with("somthing")
 
-                    ->first();
-                if (!$booking) {
-                    return response()->json([
-                        "message" => "booking not found"
-                    ], 404);
-                }
+
                 $discount_amount = 0;
                 if (!empty($booking->discount_type) && !empty($booking->discount_amount)) {
                     $discount_amount += $this->calculateDiscountPriceAmount($booking->price, $booking->discount_amount, $booking->discount_type);
@@ -1282,11 +1308,20 @@ class BookingController extends Controller
                 "id" => $id
             ])
                 ->first();
+
             if (!$booking) {
                 return response()->json([
                     "message" => "booking not found"
                 ], 404);
             }
+
+            if ($booking->status === "converted_to_job") {
+                // Return an error response indicating that the status cannot be updated
+                return response()->json(["message" => "can not be deleted if status is converted_to_job"], 422);
+            }
+
+
+
             PreBooking::where([
                 "id" => $booking->pre_booking_id
             ])

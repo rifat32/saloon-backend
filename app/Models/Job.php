@@ -36,6 +36,9 @@ class Job extends Model
          "fuel",
          "transmission",
     ];
+    public function booking(){
+        return $this->belongsTo(Booking::class,'booking_id', 'id');
+    }
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id');
     }

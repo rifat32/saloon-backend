@@ -25,12 +25,12 @@ class CreateJobBidsTable extends Migration
 
             $table->date("job_start_date")->nullable();
 
-     
+
            $table->time("job_start_time")->nullable();
            $table->time("job_end_time")->nullable();
 
 
-           $table->enum("status",['accepted', 'rejected'])->nullable();
+           $table->enum("status",["pending",'accepted', 'rejected',"canceled_after_booking", "canceled_after_job",'job_completed'])->default("pending");
 
             $table->timestamps();
         });

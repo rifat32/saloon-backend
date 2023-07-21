@@ -42,7 +42,9 @@ class CreatePreBookingsTable extends Migration
 
 
 
-            $table->enum("status",["pending","booked"])->nullable()->default("pending");
+            $table->enum("status",["pending","booked","converted_to_job","job_completed"])->nullable()->default("pending");
+            $table->unsignedBigInteger("selected_bid_id")->nullable();
+            $table->foreign('selected_bid_id')->references('id')->on('job_bids')->onDelete('cascade');
 
 
             // $table->string("address")->nullable();

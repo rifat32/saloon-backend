@@ -369,7 +369,8 @@ class JobBidController extends Controller
             $pre_booking = PreBooking::with(
                 "pre_booking_sub_services.sub_service",
                 "automobile_make",
-                "automobile_model"
+                "automobile_model",
+                "customer",
                 )
                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
                 ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
@@ -490,6 +491,7 @@ class JobBidController extends Controller
                 }
 
                 $insertableData = $request->validated();
+                $insertableData["status"] = "pending";
                 if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
                     return response()->json([
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -698,7 +700,7 @@ class JobBidController extends Controller
         try {
             $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
-                if (!$request->user()->hasPermissionTo('fuel_station_update')) {
+                if (!$request->user()->hasPermissionTo('job_bids_update')) {
                     return response()->json([
                         "message" => "You can not perform this action"
                     ], 401);
@@ -935,13 +937,37 @@ class JobBidController extends Controller
 
 
 
-            $jobBidQuery = JobBid::with("pre_booking.pre_booking_sub_services")
-                ->leftJoin('pre_bookings', 'job_bids.pre_booking_id', '=', 'pre_bookings.id');
+
+            $jobBidQuery = JobBid::with(
+                "garage",
+                "pre_booking.pre_booking_sub_services.sub_service",
+                "pre_booking.automobile_make",
+                "pre_booking.automobile_model",
+                "pre_booking.customer",
+
+                )
+                ->where([
+                    "garage_id" => $garage_id
+                ])
+
+                ->leftJoin('pre_bookings', 'job_bids.pre_booking_id', '=', 'pre_bookings.id')
+                ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id');
+
 
             if (!empty($request->search_key)) {
                 $jobBidQuery = $jobBidQuery->where(function ($query) use ($request) {
                     $term = $request->search_key;
                     $query->where("pre_bookings.car_registration_no", "like", "%" . $term . "%");
+                    $query->orWhere("users.first_Name", "like", "%" . $term . "%");
+                    $query->orWhere("users.last_Name", "like", "%" . $term . "%");
+                    $query->orWhere("users.phone", "like", "%" . $term . "%");
+                    $query->orWhere("users.email", "like", "%" . $term . "%");
+                    $query->orWhere("users.address_line_1", "like", "%" . $term . "%");
+                    $query->orWhere("users.address_line_2", "like", "%" . $term . "%");
+                    $query->orWhere("users.country", "like", "%" . $term . "%");
+                    $query->orWhere("users.city", "like", "%" . $term . "%");
+                    $query->orWhere("users.postcode", "like", "%" . $term . "%");
+
                 });
             }
 
@@ -1042,11 +1068,18 @@ class JobBidController extends Controller
 
 
 
-            $job_bid =  JobBid::with("pre_booking.pre_booking_sub_services")
+            $job_bid =  JobBid::with(
+                "garage",
+                "pre_booking.pre_booking_sub_services.sub_service",
+                "pre_booking.automobile_make",
+                "pre_booking.automobile_model",
+                "pre_booking.customer",
+            )
                 ->leftJoin('pre_bookings', 'job_bids.pre_booking_id', '=', 'pre_bookings.id')
 
 
                 ->where([
+                    "job_bids.garage_id",
                     "job_bids.id" => $id
                 ])
                 ->select("job_bids.*")

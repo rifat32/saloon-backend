@@ -18,11 +18,13 @@ use App\Models\BookingSubService;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
 use App\Models\Job;
+use App\Models\JobBid;
 use App\Models\JobPackage;
 use App\Models\JobPayment;
 use App\Models\JobSubService;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
+use App\Models\PreBooking;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -258,6 +260,27 @@ class JobController extends Controller
 
                 $booking->status = "converted_to_job";
                 $booking->save();
+                if($booking->pre_booking_id) {
+                    PreBooking::where([
+                            "id" => $booking->pre_booking_id
+                        ])
+                        ->where([
+                            "status" => "converted_to_job"
+                        ]);
+
+                    // $prebooking  =  PreBooking::where([
+                    //     "id" => $booking->pre_booking_id
+                    // ])
+
+                    // ->first();
+                    // if($prebooking) {
+
+                    //     $prebooking->save();
+                    // }
+
+
+
+                }
 
                 // $booking->delete();
                 $notification_template = NotificationTemplate::where([
@@ -664,6 +687,47 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
+
+            if($job->status == "completed") {
+                if($job->booking->pre_booking_id) {
+                    $prebooking  =  PreBooking::where([
+                        "id" => $job->booking->pre_booking_id
+                    ])
+                    ->first();
+                    JobBid::where([
+                        "id" => $prebooking->selected_bid_id
+                    ])
+                    ->update([
+                        "status" => "job_completed"
+                    ]);
+                    $prebooking->status = "job_completed";
+                    $prebooking->save();
+
+
+
+                }
+            }
+            if($job->status == "cancelled") {
+                if($job->booking->pre_booking_id) {
+                    $prebooking  =  PreBooking::where([
+                        "id" => $job->booking->pre_booking_id
+                    ])
+                    ->first();
+                    JobBid::where([
+                        "id" => $prebooking->selected_bid_id
+                    ])
+                    ->update([
+                        "status" => "pending"
+                    ]);
+                    $prebooking->selected_bid_id = NULL;
+                    $prebooking->status = "canceled_after_job";
+                    $prebooking->save();
+
+
+
+                }
+            }
+
             $notification_template = NotificationTemplate::where([
                 "type" => "job_status_changed_by_garage_owner"
             ])
@@ -1020,7 +1084,28 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
+        
+                if($job->booking->pre_booking_id) {
+                    $prebooking  =  PreBooking::where([
+                        "id" => $job->booking->pre_booking_id
+                    ])
+                    ->first();
+                    JobBid::where([
+                        "id" => $prebooking->selected_bid_id
+                    ])
+                    ->update([
+                        "status" => "pending"
+                    ]);
+                    $prebooking->selected_bid_id = NULL;
+                    $prebooking->status = "canceled_after_job";
+                    $prebooking->save();
+
+
+
+                }
+
             $job->delete();
+
 
             $notification_template = NotificationTemplate::where([
                 "type" => "job_deleted_by_garage_owner"

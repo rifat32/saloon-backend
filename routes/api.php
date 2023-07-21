@@ -168,8 +168,9 @@ Route::get('/v1.0/customer-users/get-by-phone/{phone}', [UserManagementControlle
 Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getUserById"]);
 
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
+Route::put('/v1.0/users/profile', [UserManagementController::class, "updateUserProfile"]);
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
-Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getUserById"]);
+
 
 Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);
 
@@ -196,6 +197,8 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
+Route::put('/v1.0/garages/separate', [GaragesController::class, "updateGarageSeparate"]);
+
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageById"]);
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);

@@ -17,7 +17,7 @@ class CreateJobsTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger("booking_id")->nullable();
-            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
+            $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('restrict');
 
 
 

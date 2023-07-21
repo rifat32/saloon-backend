@@ -17,7 +17,7 @@ class CreateBookingsTable extends Migration
             $table->id();
 
             $table->unsignedBigInteger("pre_booking_id")->nullable();
-            $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('cascade');
+            $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('restrict');
 
 
             $table->unsignedBigInteger("garage_id");
