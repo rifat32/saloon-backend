@@ -196,6 +196,8 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 
+Route::post('/v1.0/garages', [GaragesController::class, "createGarage"]);
+
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
 Route::put('/v1.0/garages/separate', [GaragesController::class, "updateGarageSeparate"]);
 

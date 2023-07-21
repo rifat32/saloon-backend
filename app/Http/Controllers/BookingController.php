@@ -1322,12 +1322,22 @@ class BookingController extends Controller
 
 
 
-            PreBooking::where([
-                "id" => $booking->pre_booking_id
-            ])
-            ->update([
-                "status" => "pending"
-            ]);
+            if($booking->pre_booking_id) {
+                $prebooking  =  PreBooking::where([
+                    "id" => $booking->pre_booking_id
+                ])
+                ->first();
+                JobBid::where([
+                    "id" => $prebooking->selected_bid_id
+                ])
+                ->update([
+                    "status" => "canceled_after_booking"
+                ]);
+                $prebooking->status = "pending";
+                $prebooking->selected_bid_id = NULL;
+                $prebooking->save();
+
+            }
             $booking->delete();
 
             $notification_template = NotificationTemplate::where([

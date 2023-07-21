@@ -722,12 +722,9 @@ class UserManagementController extends Controller
      {
 
          try{
+
+
              $this->storeActivity($request,"");
-
-
-
-
-
 
              $updatableData = $request->validated();
 

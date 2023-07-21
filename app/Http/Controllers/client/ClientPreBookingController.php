@@ -704,7 +704,7 @@ class ClientPreBookingController extends Controller
                         "message" => "pre booking not found"
                     ], 404);
                 }
-                if ($pre_booking->status == "pending" && $insertableData["is_confirmed"]) {
+                if ($pre_booking->status !== "pending" && $insertableData["is_confirmed"]) {
                     return response()->json([
                         "message" => "you can only confirm pending pre bookings"
                     ], 409);
