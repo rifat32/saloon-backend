@@ -28,7 +28,7 @@ class UserUpdateProfileRequest extends FormRequest
             'first_Name' => 'required|string|max:255',
             'last_Name' => 'required|string|max:255',
             // 'email' => 'required|string|email|indisposable|max:255|unique:users',
-            'email' => 'required|string|unique:users,email,' . $this->id . ',id',
+            'email' => 'required|string|unique:users,email,' . auth()->user()->id . ',id',
 
             'password' => 'nullable|confirmed|string|min:6',
             'phone' => 'required|string',
