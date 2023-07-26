@@ -449,7 +449,13 @@ return [
        "product_delete",
 
     ],
-
+    "unchangeable_roles" => [
+        "superadmin"
+    ],
+    "unchangeable_permissions" => [
+        "garage_update",
+        "garage_view",
+    ],
     "user_image_location" => "user_image",
     "garage_gallery_location" => "garage_gallery",
     "shop_gallery_location" => "shop_gallery",

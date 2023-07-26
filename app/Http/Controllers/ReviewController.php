@@ -1229,6 +1229,178 @@ $data2["total_comment"] = $data2["total_comment"]->get();
 
 
     }
+
+
+/**
+        *
+     * @OA\Post(
+     *      path="/review-new/create/tags/multiple/by/admin",
+     *      operationId="storeTagMultipleByAdmin",
+     *      tags={"review.setting.tag"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store tag",
+     *      description="This method is to store tag",
+
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"tags"},
+ *  @OA\Property(property="tags", type="string", format="array",example={
+ * "tag1","tag2"
+     * }
+     *
+     * ),
+     *
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+    public function storeTagMultipleByAdmin(Request $request)
+    {
+
+
+
+        try{
+            $this->storeActivity($request,"");
+            if ($request->user()->hasRole("garage_owner")) {
+
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+
+                }
+
+
+            if (!$request->user()->hasPermissionTo('questions_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+            $dataArray = [];
+        $duplicate_indexes_array = [];
+
+        $uniqueTags = collect($request->tags)->unique()->values()->all();
+
+
+
+
+
+        foreach($uniqueTags as $index=>$tag) {
+            $question = [
+                'tag' => $tag,
+                'garage_id' => NULL
+            ];
+
+
+            if ($request->user()->hasRole("superadmin")) {
+
+
+            $tag_found =    Tag::where([
+                    "garage_id" => NULL,
+                    "tag" => $question["tag"],
+                    "is_default" => 1
+                ])
+                ->first();
+
+         if($tag_found) {
+
+            array_push($duplicate_indexes_array,$index);
+        }
+            }
+
+
+
+
+        }
+
+
+
+        if(count($duplicate_indexes_array)) {
+
+            return response([
+                "message" => "duplicate data",
+                "duplicate_indexes_array"=> $duplicate_indexes_array
+        ], 409);
+
+        }
+
+        else {
+
+ foreach($uniqueTags as $index=>$tag) {
+            $question = [
+                'tag' => $tag,
+                'garage_id' => NULL
+            ];
+
+
+            if ($request->user()->hasRole("superadmin")) {
+                $question["is_default"] = true;
+                $garage_id = NULL;
+                $question["garage_id"] = NULL;
+
+
+
+            }
+
+            if(!count($duplicate_indexes_array)) {
+              $finalTag =  Tag::create($question);
+              array_push($dataArray,$finalTag);
+            }
+            else {
+                return response()->json($duplicate_indexes_array,200) ;
+            }
+
+
+
+        }
+        }
+
+
+
+
+
+        return response(["message" => "data inserted","data"=>$dataArray], 201);
+        }catch(Exception $e) {
+      return $this->sendError($e, 500,$request);
+        }
+
+
+
+    }
+
+
 /**
         *
      * @OA\Post(

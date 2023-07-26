@@ -573,9 +573,30 @@ class RolesController extends Controller
                 ],401);
            }
 
-           $role_permissions = config("setup-config.roles_permission");
+           $role_permissions_main = config("setup-config.roles_permission");
 
-           return response()->json($role_permissions,200);
+           $role_permissions_json = json_decode(json_encode($role_permissions_main),true);
+           $unchangeable_roles = config("setup-config.unchangeable_roles");
+           $unchangeable_permissions = config("setup-config.unchangeable_permissions");
+
+           foreach ($role_permissions_json as $key => $roleAndPermissions) {
+            if(in_array($roleAndPermissions["role"], $unchangeable_roles)){
+                array_splice($role_permissions_main, $key, 1);
+            } else {
+                foreach ($roleAndPermissions["permissions"] as $key2 => $permission) {
+                    if(in_array($permission, $unchangeable_permissions)){
+                        array_splice($role_permissions_main[$key]["permissions"], $key2, 1);
+                    }
+
+                }
+            }
+
+
+
+
+        }
+
+           return response()->json($role_permissions_main,200);
         } catch(Exception $e){
 
         return $this->sendError($e,500,$request);
