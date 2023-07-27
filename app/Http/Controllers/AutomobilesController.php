@@ -297,7 +297,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $users = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+            $users = $automobilesQuery->orderBy("name",'asc')->paginate($perPage);
 
             return response()->json($users, 200);
         } catch(Exception $e){
@@ -402,7 +402,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $users = $automobilesQuery->orderByDesc("id")->get();
+            $users = $automobilesQuery->orderBy("name",'asc')->get();
 
             return response()->json($users, 200);
         } catch(Exception $e){
@@ -849,7 +849,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $makes = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+            $makes = $automobilesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($makes, 200);
         } catch(Exception $e){
 
@@ -958,7 +958,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $makes = $automobilesQuery->orderBy("name")->get();
+            $makes = $automobilesQuery->orderBy("name",'asc')->get();
             return response()->json($makes, 200);
         } catch(Exception $e){
 
@@ -1066,7 +1066,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $makes = $automobilesQuery->orderBy("name")->get();
+            $makes = $automobilesQuery->orderBy("name",'asc')->get();
             return response()->json($makes, 200);
         } catch(Exception $e){
 
@@ -1524,7 +1524,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+            $models = $automobilesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($models, 200);
         } catch(Exception $e){
 
@@ -1713,7 +1713,7 @@ class AutomobilesController extends Controller
 
             }
 
-            $models = $automobilesQuery->orderBy("name")->get();
+            $models = $automobilesQuery->orderBy("name",'asc')->get();
             return response()->json($models, 200);
         } catch(Exception $e){
 
@@ -2081,7 +2081,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+            $models = $automobilesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($models, 200);
         } catch(Exception $e){
 
@@ -2553,7 +2553,7 @@ class AutomobilesController extends Controller
                 $automobilesQuery = $automobilesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $models = $automobilesQuery->orderByDesc("id")->paginate($perPage);
+            $models = $automobilesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($models, 200);
         } catch(Exception $e){
 

@@ -304,7 +304,7 @@ class ServiceController extends Controller
 
 
 
-            $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
+            $services = $servicesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($services, 200);
         } catch(Exception $e){
 
@@ -502,7 +502,7 @@ class ServiceController extends Controller
 
 
 
-            $services = $servicesQuery->orderByDesc("name")->get();
+            $services = $servicesQuery->orderBy("name",'asc')->get();
             return response()->json($services, 200);
         } catch(Exception $e){
 
@@ -610,7 +610,7 @@ class ServiceController extends Controller
                 $servicesQuery = $servicesQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $services = $servicesQuery->orderByDesc("name")->get();
+            $services = $servicesQuery->orderBy("name",'asc')->get();
             return response()->json($services, 200);
         } catch(Exception $e){
 
@@ -737,7 +737,7 @@ class ServiceController extends Controller
 
             }
 
-            $sub_services = $subServiceQuery->orderBy("name")->get();
+            $sub_services = $subServiceQuery->order("name",'asc')->get();
             return response()->json($sub_services, 200);
         } catch(Exception $e){
 
@@ -1120,7 +1120,7 @@ class ServiceController extends Controller
                 $is_fixed_price = (int)$request->is_fixed_price;
                 $servicesQuery = $servicesQuery->where('is_fixed_price',  $is_fixed_price);
             }
-            $services = $servicesQuery->orderByDesc("id")->paginate($perPage);
+            $services = $servicesQuery->orderBy("name",'asc')->paginate($perPage);
             return response()->json($services, 200);
         } catch(Exception $e){
 
@@ -1246,7 +1246,7 @@ class ServiceController extends Controller
             }
 
 
-            $services = $servicesQuery->orderByDesc("name")->get();
+            $services = $servicesQuery->orderBy("name",'asc')->get();
             return response()->json($services, 200);
         } catch(Exception $e){
 
