@@ -105,7 +105,7 @@ class GaragesController extends Controller
 
             $location =  config("setup-config.garage_gallery_location");
 
-            $new_file_name = time() . '_' . $insertableData["image"]->getClientOriginalName();
+            $new_file_name = time() . '_' . str_replace(' ', '_', $insertableData["image"]->getClientOriginalName());
 
             $insertableData["image"]->move(public_path($location), $new_file_name);
 
@@ -198,7 +198,7 @@ class GaragesController extends Controller
             $images = [];
             if(!empty($insertableData["images"])) {
                 foreach($insertableData["images"] as $image){
-                    $new_file_name = time() . '_' . $image->getClientOriginalName();
+                    $new_file_name = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
                     $image->move(public_path($location), $new_file_name);
 
                     array_push($images,("/".$location."/".$new_file_name));

@@ -106,7 +106,7 @@ class ShopGalleryController extends Controller
           $location =  config("setup-config.shop_gallery_location");
           if(!empty($insertableData["images"])) {
             foreach($insertableData["images"] as $image){
-                $new_file_name = time() . '_' . $image->getClientOriginalName();
+                $new_file_name = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
                 $image->move(public_path($location), $new_file_name);
 
 
