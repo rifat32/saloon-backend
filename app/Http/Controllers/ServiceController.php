@@ -737,7 +737,7 @@ class ServiceController extends Controller
 
             }
 
-            $sub_services = $subServiceQuery->order("name",'asc')->get();
+            $sub_services = $subServiceQuery->orderBy("name",'asc')->get();
             return response()->json($sub_services, 200);
         } catch(Exception $e){
 
