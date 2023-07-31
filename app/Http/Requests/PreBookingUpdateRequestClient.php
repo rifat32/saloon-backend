@@ -47,7 +47,8 @@ class PreBookingUpdateRequestClient extends FormRequest
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
-
+    "images" => "nullable|string",
+    "videos" => "nullable|string",
 
 
     // 'country' => 'required|string',

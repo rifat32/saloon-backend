@@ -551,6 +551,16 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "1207"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
                                     }
                                 },
                                 "type": "object"
@@ -1032,12 +1042,7 @@
                                             "password": "12345678",
                                             "password_confirmation": "12345678",
                                             "phone": "01771034383",
-                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                            "address_line_1": "Dhaka",
-                                            "address_line_2": "Dinajpur",
-                                            "country": "Bangladesh",
-                                            "city": "Dhaka",
-                                            "postcode": "Dinajpur"
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
                                         }
                                     },
                                     "garage": {
@@ -1056,6 +1061,7 @@
                                             "long": "90.44707059805279",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
+                                            "currency": "BDT",
                                             "postcode": "Dinajpur",
                                             "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
                                             "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
@@ -1460,6 +1466,16 @@
                                         "example": "1"
                                     },
                                     "postcode": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1"
+                                    },
+                                    "long": {
                                         "type": "string",
                                         "format": "string",
                                         "example": "1"
@@ -2516,101 +2532,6 @@
                 ]
             }
         },
-        "/v1.0/automobile-models-all": {
-            "get": {
-                "tags": [
-                    "basics"
-                ],
-                "summary": "This method is to get all automobile models by make ids",
-                "description": "This method is to get all automobile models by make ids",
-                "operationId": "getAutomobileModelsAll",
-                "parameters": [
-                    {
-                        "name": "start_date",
-                        "in": "query",
-                        "description": "start_date",
-                        "required": true,
-                        "example": "2019-06-29"
-                    },
-                    {
-                        "name": "end_date",
-                        "in": "query",
-                        "description": "end_date",
-                        "required": true,
-                        "example": "2019-06-29"
-                    },
-                    {
-                        "name": "search_key",
-                        "in": "query",
-                        "description": "search_key",
-                        "required": true,
-                        "example": "search_key"
-                    },
-                    {
-                        "name": "automobile_make_ids[]",
-                        "in": "query",
-                        "description": "automobile_make_id",
-                        "required": true,
-                        "example": "1,2"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocesseble Content",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {}
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/v1.0/automobile-makes/single/get/{id}": {
             "get": {
                 "tags": [
@@ -3068,6 +2989,101 @@
                         "description": "id",
                         "required": true,
                         "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/automobile-models-all": {
+            "get": {
+                "tags": [
+                    "basics"
+                ],
+                "summary": "This method is to get all automobile models by make ids",
+                "description": "This method is to get all automobile models by make ids",
+                "operationId": "getAutomobileModelsAll",
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": true,
+                        "example": "2019-06-29"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    },
+                    {
+                        "name": "automobile_make_ids[]",
+                        "in": "query",
+                        "description": "automobile_make_id",
+                        "required": true,
+                        "example": "1,2"
                     }
                 ],
                 "responses": {
@@ -4123,10 +4139,15 @@
                                         "format": "number",
                                         "example": "1"
                                     },
-                                    "coupon_code": {
+                                    "discount_type": {
                                         "type": "string",
                                         "format": "string",
-                                        "example": "123456"
+                                        "example": "percentage"
+                                    },
+                                    "discount_amount": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
                                     },
                                     "price": {
                                         "type": "number",
@@ -4202,6 +4223,191 @@
                                         "type": "string",
                                         "format": "string",
                                         "example": "Fuel"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "booking_management"
+                ],
+                "summary": "This method is to store booking",
+                "description": "This method is to store booking",
+                "operationId": "createBooking",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "garage_id",
+                                    "coupon_code",
+                                    "automobile_make_id",
+                                    "automobile_model_id",
+                                    "car_registration_no",
+                                    "car_registration_year",
+                                    "booking_sub_service_ids",
+                                    "booking_garage_package_ids"
+                                ],
+                                "properties": {
+                                    "customer_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "garage_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "coupon_code": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "123456"
+                                    },
+                                    "automobile_make_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "automobile_model_id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "car_registration_no": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "r-00011111"
+                                    },
+                                    "car_registration_year": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "additional_information": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "r-00011111"
+                                    },
+                                    "transmission": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "transmission"
+                                    },
+                                    "fuel": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Fuel"
+                                    },
+                                    "booking_sub_service_ids": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                        ]
+                                    },
+                                    "booking_garage_package_ids": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            1,
+                                            2,
+                                            3,
+                                            4
+                                        ]
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "30"
+                                    },
+                                    "discount_type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "percentage"
+                                    },
+                                    "discount_amount": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
+                                    },
+                                    "job_start_date": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "2019-06-29"
+                                    },
+                                    "job_start_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "08:10"
+                                    },
+                                    "job_end_time": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "10:10"
                                     }
                                 },
                                 "type": "object"
@@ -4397,6 +4603,16 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "30"
+                                    },
+                                    "discount_type": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "percentage"
+                                    },
+                                    "discount_amount": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "10"
                                     },
                                     "job_start_date": {
                                         "type": "string",
@@ -7215,6 +7431,13 @@
                         "example": "10:10"
                     },
                     {
+                        "name": "location",
+                        "in": "query",
+                        "description": "location",
+                        "required": true,
+                        "example": "location"
+                    },
+                    {
                         "name": "country",
                         "in": "query",
                         "description": "country",
@@ -9924,6 +10147,87 @@
                 ]
             }
         },
+        "/v1.0/client/garage-packages/single/{garage_id}/{id}": {
+            "get": {
+                "tags": [
+                    "client.package"
+                ],
+                "summary": "This method is to  get garage package by id",
+                "description": "This method is to get garage package by id",
+                "operationId": "getGaragePackageByIdClient",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/garage-rules": {
             "patch": {
                 "tags": [
@@ -10130,6 +10434,87 @@
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "search_key",
+                        "required": true,
+                        "example": "search_key"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/garage-services/get/all/{garage_id}": {
+            "get": {
+                "tags": [
+                    "client.basics"
+                ],
+                "summary": "This method is to get automobile Services all  ",
+                "description": "This method is to get automobile Services all",
+                "operationId": "getGarageServicesAll",
+                "parameters": [
+                    {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
                         "required": true,
                         "example": "6"
                     },
@@ -11034,14 +11419,14 @@
                 ]
             }
         },
-        "/v1.0/auth/register-with-garage": {
-            "post": {
+        "/v1.0/garages": {
+            "put": {
                 "tags": [
                     "garage_management"
                 ],
-                "summary": "This method is to store user with garage",
-                "description": "This method is to store user with garage",
-                "operationId": "registerUserWithGarage",
+                "summary": "This method is to update user with garage",
+                "description": "This method is to update user with garage",
+                "operationId": "updateGarage",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -11057,24 +11442,21 @@
                                         "type": "string",
                                         "format": "array",
                                         "example": {
+                                            "id": 1,
                                             "first_Name": "Rifat",
                                             "last_Name": "Al-Ashwad",
                                             "email": "rifatalashwad@gmail.com",
                                             "password": "12345678",
                                             "password_confirmation": "12345678",
                                             "phone": "01771034383",
-                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                            "address_line_1": "Dhaka",
-                                            "address_line_2": "Dinajpur",
-                                            "country": "Bangladesh",
-                                            "city": "Dhaka",
-                                            "postcode": "Dinajpur"
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
                                         }
                                     },
                                     "garage": {
                                         "type": "string",
                                         "format": "array",
                                         "example": {
+                                            "id": 1,
                                             "name": "ABCD Garage",
                                             "about": "Best Garage in Dhaka",
                                             "web_page": "https://www.facebook.com/",
@@ -11202,16 +11584,168 @@
                         "bearerAuth": []
                     }
                 ]
-            }
-        },
-        "/v1.0/garages": {
-            "put": {
+            },
+            "post": {
                 "tags": [
                     "garage_management"
                 ],
-                "summary": "This method is to update user with garage",
-                "description": "This method is to update user with garage",
-                "operationId": "updateGarage",
+                "summary": "This method is to store garage",
+                "description": "This method is to store  garage",
+                "operationId": "createGarage",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user",
+                                    "garage",
+                                    "service"
+                                ],
+                                "properties": {
+                                    "garage": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": {
+                                            "owner_id": "1",
+                                            "name": "ABCD Garage",
+                                            "about": "Best Garage in Dhaka",
+                                            "web_page": "https://www.facebook.com/",
+                                            "phone": "01771034383",
+                                            "email": "rifatalashwad@gmail.com",
+                                            "additional_information": "No Additional Information",
+                                            "address_line_1": "Dhaka",
+                                            "address_line_2": "Dinajpur",
+                                            "lat": "23.704263332849386",
+                                            "long": "90.44707059805279",
+                                            "country": "Bangladesh",
+                                            "city": "Dhaka",
+                                            "currency": "BDT",
+                                            "postcode": "Dinajpur",
+                                            "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
+                                            "is_mobile_garage": true,
+                                            "wifi_available": true,
+                                            "labour_rate": 500
+                                        }
+                                    },
+                                    "service": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "automobile_category_id": 1,
+                                                "services": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "sub_services": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "automobile_makes": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "models": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/auth/register-with-garage": {
+            "post": {
+                "tags": [
+                    "garage_management"
+                ],
+                "summary": "This method is to store user with garage",
+                "description": "This method is to store user with garage",
+                "operationId": "registerUserWithGarage",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -11227,21 +11761,167 @@
                                         "type": "string",
                                         "format": "array",
                                         "example": {
-                                            "id": 1,
                                             "first_Name": "Rifat",
                                             "last_Name": "Al-Ashwad",
                                             "email": "rifatalashwad@gmail.com",
                                             "password": "12345678",
                                             "password_confirmation": "12345678",
                                             "phone": "01771034383",
-                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
-                                            "address_line_1": "Dhaka",
-                                            "address_line_2": "Dinajpur",
-                                            "country": "Bangladesh",
-                                            "city": "Dhaka",
-                                            "postcode": "Dinajpur"
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"
                                         }
                                     },
+                                    "garage": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": {
+                                            "name": "ABCD Garage",
+                                            "about": "Best Garage in Dhaka",
+                                            "web_page": "https://www.facebook.com/",
+                                            "phone": "01771034383",
+                                            "email": "rifatalashwad@gmail.com",
+                                            "additional_information": "No Additional Information",
+                                            "address_line_1": "Dhaka",
+                                            "address_line_2": "Dinajpur",
+                                            "lat": "23.704263332849386",
+                                            "long": "90.44707059805279",
+                                            "country": "Bangladesh",
+                                            "city": "Dhaka",
+                                            "currency": "BDT",
+                                            "postcode": "Dinajpur",
+                                            "logo": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "image": "https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+                                            "images": [
+                                                "/a",
+                                                "/b",
+                                                "/c"
+                                            ],
+                                            "is_mobile_garage": true,
+                                            "wifi_available": true,
+                                            "labour_rate": 500
+                                        }
+                                    },
+                                    "service": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "automobile_category_id": 1,
+                                                "services": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "sub_services": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "automobile_makes": [
+                                                    {
+                                                        "id": 1,
+                                                        "checked": true,
+                                                        "models": [
+                                                            {
+                                                                "id": 1,
+                                                                "checked": true
+                                                            },
+                                                            {
+                                                                "id": 2,
+                                                                "checked": false
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/garages/separate": {
+            "put": {
+                "tags": [
+                    "garage_management"
+                ],
+                "summary": "This method is to update garage",
+                "description": "This method is to update garage",
+                "operationId": "updateGarageSeparate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "garage",
+                                    "service"
+                                ],
+                                "properties": {
                                     "garage": {
                                         "type": "string",
                                         "format": "array",
@@ -11412,6 +12092,13 @@
                         "description": "country_code",
                         "required": true,
                         "example": "country_code"
+                    },
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "address",
+                        "required": true,
+                        "example": "address"
                     },
                     {
                         "name": "city",
@@ -13593,11 +14280,184 @@
                 "operationId": "getNotificationsByGarageId",
                 "parameters": [
                     {
+                        "name": "garage_id",
+                        "in": "path",
+                        "description": "garage_id",
+                        "required": true,
+                        "example": "6"
+                    },
+                    {
                         "name": "perPage",
                         "in": "path",
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/notifications/change-status": {
+            "put": {
+                "tags": [
+                    "notification_management"
+                ],
+                "summary": "This method is to update notification status",
+                "description": "This method is to update notification status",
+                "operationId": "updateNotificationStatus",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "notification_ids"
+                                ],
+                                "properties": {
+                                    "notification_ids": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            1,
+                                            2,
+                                            3,
+                                            4,
+                                            5,
+                                            6
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/notifications/{id}": {
+            "delete": {
+                "tags": [
+                    "notification_management"
+                ],
+                "summary": "This method is to delete notification by id",
+                "description": "This method is to delete notification by id",
+                "operationId": "deleteNotificationById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "example": "1"
                     }
                 ],
                 "responses": {
@@ -16108,6 +16968,91 @@
                 ]
             }
         },
+        "/review-new/get/questions-all-report-by-user/{perPage}": {
+            "get": {
+                "tags": [
+                    "review"
+                ],
+                "summary": "This method is to get all question report by user",
+                "description": "This method is to get all question report by user",
+                "operationId": "getQuestionAllReportByUser",
+                "parameters": [
+                    {
+                        "name": "perPage",
+                        "in": "path",
+                        "description": "perPage Id",
+                        "required": true
+                    },
+                    {
+                        "name": "garage_id",
+                        "in": "query",
+                        "description": "garage Id",
+                        "required": false
+                    },
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "description": "start_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "description": "end_date",
+                        "required": false,
+                        "example": "2023-06-29"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/review-new/get/questions/{id}": {
             "get": {
                 "tags": [
@@ -16342,6 +17287,78 @@
                                         "type": "number",
                                         "format": "number",
                                         "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/review-new/create/tags/multiple/by/admin": {
+            "post": {
+                "tags": [
+                    "review.setting.tag"
+                ],
+                "summary": "This method is to store tag",
+                "description": "This method is to store tag",
+                "operationId": "storeTagMultipleByAdmin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "tags"
+                                ],
+                                "properties": {
+                                    "tags": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            "tag1",
+                                            "tag2"
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -19526,7 +20543,9 @@
                                             "address_line_2": "Dinajpur",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
-                                            "postcode": "Dinajpur"
+                                            "postcode": "Dinajpur",
+                                            "lat": "12",
+                                            "long": "12"
                                         }
                                     },
                                     "shop": {
@@ -19656,7 +20675,9 @@
                                             "address_line_2": "Dinajpur",
                                             "country": "Bangladesh",
                                             "city": "Dhaka",
-                                            "postcode": "Dinajpur"
+                                            "postcode": "Dinajpur",
+                                            "lat": "12",
+                                            "long": "12"
                                         }
                                     },
                                     "shop": {
@@ -19782,6 +20803,13 @@
                         "description": "search_key",
                         "required": true,
                         "example": "search_key"
+                    },
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "address",
+                        "required": true,
+                        "example": "address"
                     },
                     {
                         "name": "country_code",
@@ -20431,6 +21459,16 @@
                                         "format": "boolean",
                                         "example": "1"
                                     },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
+                                    },
                                     "role": {
                                         "type": "boolean",
                                         "format": "boolean",
@@ -20580,10 +21618,406 @@
                                         "format": "boolean",
                                         "example": "1207"
                                     },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
+                                    },
                                     "role": {
                                         "type": "string",
                                         "format": "boolean",
                                         "example": "customer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/customer-users": {
+            "put": {
+                "tags": [
+                    "customer_management"
+                ],
+                "summary": "This method is to upsert customer user",
+                "description": "This method is to upsert customer user",
+                "operationId": "createOrUpdateCustomerUser",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "first_Name",
+                                    "last_Name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "phone",
+                                    "address_line_1",
+                                    "address_line_2",
+                                    "country",
+                                    "city",
+                                    "postcode"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "number",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "first_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Rifat"
+                                    },
+                                    "last_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Al"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "rifat@g.c"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "01771034383"
+                                    },
+                                    "address_line_1": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dhaka"
+                                    },
+                                    "address_line_2": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dinajpur"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "bangladesh"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "dhaka"
+                                    },
+                                    "postcode": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "1207"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/customer-users/get-by-phone/{phone}": {
+            "get": {
+                "tags": [
+                    "customer_management"
+                ],
+                "summary": "This method is to get customer user by phone",
+                "description": "This method is to get customer user by phone",
+                "operationId": "getCustomerUserByPhone",
+                "parameters": [
+                    {
+                        "name": "phone",
+                        "in": "path",
+                        "description": "phone",
+                        "required": true,
+                        "example": "01771034383"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/users/profile": {
+            "put": {
+                "tags": [
+                    "user_management"
+                ],
+                "summary": "This method is to update user profile",
+                "description": "This method is to update user profile",
+                "operationId": "updateUserProfile",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "first_Name",
+                                    "last_Name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "phone",
+                                    "address_line_1",
+                                    "address_line_2",
+                                    "country",
+                                    "city",
+                                    "postcode",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "format": "number",
+                                        "example": "1"
+                                    },
+                                    "first_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "Rifat"
+                                    },
+                                    "last_Name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "How was this?"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "How was this?"
+                                    },
+                                    "password": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "phone": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "address_line_1": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "address_line_2": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "country": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "city": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "postcode": {
+                                        "type": "boolean",
+                                        "format": "boolean",
+                                        "example": "1"
+                                    },
+                                    "lat": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
+                                    },
+                                    "long": {
+                                        "type": "string",
+                                        "format": "boolean",
+                                        "example": "1207"
                                     }
                                 },
                                 "type": "object"
@@ -20920,6 +22354,13 @@
                         "description": "country_code",
                         "required": true,
                         "example": "country_code"
+                    },
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "address",
+                        "required": true,
+                        "example": "address"
                     },
                     {
                         "name": "city",
@@ -21877,6 +23318,13 @@
                         "example": "6"
                     },
                     {
+                        "name": "status",
+                        "in": "query",
+                        "description": "status",
+                        "required": true,
+                        "example": "pending"
+                    },
+                    {
                         "name": "start_date",
                         "in": "query",
                         "description": "start_date",
@@ -22631,6 +24079,177 @@
                 ]
             }
         },
+        "/v1.0/client/pre-bookings-video": {
+            "post": {
+                "tags": [
+                    "client.prebooking"
+                ],
+                "summary": "This method is to store pre booking video ",
+                "description": "This method is to store pre booking video",
+                "operationId": "createPreBookingVideoClient",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "image"
+                                ],
+                                "properties": {
+                                    "image": {
+                                        "description": "image to upload",
+                                        "type": "file",
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/client/pre-bookings-image-multiple": {
+            "post": {
+                "tags": [
+                    "client.prebooking"
+                ],
+                "summary": "This method is to store pre booking images",
+                "description": "This method is to store pre booking images",
+                "operationId": "createPreBookingImageMultipleClient",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "images[]"
+                                ],
+                                "properties": {
+                                    "images[]": {
+                                        "description": "array of images to upload",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "file"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/v1.0/client/pre-bookings": {
             "put": {
                 "tags": [
@@ -22821,6 +24440,16 @@
                                         "format": "string",
                                         "example": "2019-07-29"
                                     },
+                                    "images": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "json array of image links"
+                                    },
+                                    "videos": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "json array of video links"
+                                    },
                                     "pre_booking_sub_service_ids": {
                                         "type": "string",
                                         "format": "array",
@@ -22830,36 +24459,6 @@
                                             3,
                                             4
                                         ]
-                                    },
-                                    "country": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "country"
-                                    },
-                                    "city": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "city"
-                                    },
-                                    "postcode": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "postcode"
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "address"
-                                    },
-                                    "lat": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "23.704263332849386"
-                                    },
-                                    "long": {
-                                        "type": "string",
-                                        "format": "string",
-                                        "example": "90.44707059805279"
                                     }
                                 },
                                 "type": "object"
@@ -22939,6 +24538,13 @@
                         "description": "perPage",
                         "required": true,
                         "example": "6"
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "status",
+                        "required": true,
+                        "example": "pending"
                     },
                     {
                         "name": "start_date",

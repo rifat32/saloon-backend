@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ImageUploadRequest;
+use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Requests\PreBookingConfirmRequestClient;
 use App\Http\Requests\PreBookingCreateRequestClient;
 use App\Http\Requests\PreBookingUpdateRequestClient;
+use App\Http\Requests\VideoUploadRequest;
 use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
@@ -28,6 +31,210 @@ use Illuminate\Support\Facades\DB;
 class ClientPreBookingController extends Controller
 {
     use ErrorUtil,UserActivityUtil,PriceUtil;
+
+
+       /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/client/pre-bookings-video",
+     *      operationId="createPreBookingVideoClient",
+     *      tags={"client.prebooking"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store pre booking video ",
+     *      description="This method is to store pre booking video",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"image"},
+*         @OA\Property(
+*             description="image to upload",
+*             property="image",
+*             type="file",
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function createPreBookingVideoClient(VideoUploadRequest $request)
+     {
+         try{
+             $this->storeActivity($request,"");
+             // if(!$request->user()->hasPermissionTo('user_create')){
+             //      return response()->json([
+             //         "message" => "You can not perform this action"
+             //      ],401);
+             // }
+
+             $insertableData = $request->validated();
+
+             $location =  config("setup-config.pre_booking_file_location");
+
+             $new_file_name = time() . '_' . str_replace(' ', '_', $insertableData["video"]->getClientOriginalName());
+
+             $insertableData["video"]->move(public_path($location), $new_file_name);
+
+
+             return response()->json(["video" => $new_file_name,"location" => $location,"full_location"=>("/".$location."/".$new_file_name)], 200);
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
+
+ /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/client/pre-bookings-image-multiple",
+     *      operationId="createPreBookingImageMultipleClient",
+     *      tags={"client.prebooking"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *      summary="This method is to store pre booking images",
+     *      description="This method is to store pre booking images",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"images[]"},
+*         @OA\Property(
+*             description="array of images to upload",
+*             property="images[]",
+*             type="array",
+*             @OA\Items(
+*                 type="file"
+*             ),
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function createPreBookingImageMultipleClient(MultipleImageUploadRequest $request)
+     {
+         try{
+
+             $this->storeActivity($request,"");
+             $insertableData = $request->validated();
+
+             $location =  config("setup-config.pre_booking_file_location");
+
+             $images = [];
+             if(!empty($insertableData["images"])) {
+                 foreach($insertableData["images"] as $image){
+                     $new_file_name = time() . '_' . str_replace(' ', '_', $image->getClientOriginalName());
+                     $image->move(public_path($location), $new_file_name);
+
+                     array_push($images,("/".$location."/".$new_file_name));
+
+
+
+
+                     // GarageGallery::create([
+                     //     "image" => ("/".$location."/".$new_file_name),
+                     //     "garage_id" => $garage_id
+                     // ]);
+
+
+
+
+                 }
+             }
+
+
+             return response()->json(["images" => $images], 201);
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
+
+
+
+
     /**
      *
      * @OA\Post(
@@ -62,7 +269,8 @@ class ClientPreBookingController extends Controller
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
      *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *
-
+     *     *  * @OA\Property(property="images", type="string", format="string",example="json array of image links"),
+ *     *  * @OA\Property(property="videos", type="string", format="string",example="json array of video links"),
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -227,7 +435,8 @@ class ClientPreBookingController extends Controller
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
      *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *   *
-     *
+     *     *     *  * @OA\Property(property="images", type="string", format="string",example="json array of image links"),
+ *     *  * @OA\Property(property="videos", type="string", format="string",example="json array of video links"),
      *
      *      ),
      *      @OA\Response(
@@ -318,7 +527,8 @@ class ClientPreBookingController extends Controller
                         'pre_booking_sub_service_ids.*',
                         "fuel",
                         "transmission",
-
+                        "images",
+                        "videos",
 
 
 

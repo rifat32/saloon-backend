@@ -458,9 +458,11 @@ return [
     ],
     "user_image_location" => "user_image",
     "garage_gallery_location" => "garage_gallery",
+
     "shop_gallery_location" => "shop_gallery",
     "fuel_station_gallery_location" => "fuel_station_gallery",
 
-    "affiliation_logo_location" => "affiliation_logo"
+    "affiliation_logo_location" => "affiliation_logo",
+    "pre_booking_file_location" => "pre_booking_files"
 
 ];

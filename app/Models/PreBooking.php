@@ -24,6 +24,8 @@ class PreBooking extends Model
         "fuel",
         "transmission",
 
+        "images",
+        "videos",
 
 
     ];

@@ -40,6 +40,8 @@ class CreatePreBookingsTable extends Migration
             $table->time("job_start_time")->nullable();
             $table->time("job_end_time")->nullable();
 
+            $table->text("images")->nullable();
+            $table->text("videos")->nullable();
 
 
             $table->enum("status",["pending","booked","converted_to_job","job_completed"])->nullable()->default("pending");

@@ -46,7 +46,8 @@ class PreBookingCreateRequestClient extends FormRequest
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
-
+    "images" => "nullable|string",
+    "videos" => "nullable|string",
 
     // 'country' => 'required|string',
     // 'city' => 'required|string',

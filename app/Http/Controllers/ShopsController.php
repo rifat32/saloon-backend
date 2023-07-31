@@ -181,7 +181,7 @@ class ShopsController extends Controller
             $this->storeActivity($request,"");
             $insertableData = $request->validated();
 
-            $location =  config("setup-config.garage_shop_location");
+            $location =  config("setup-config.shop_gallery_location");
 
             $images = [];
             if(!empty($insertableData["images"])) {
