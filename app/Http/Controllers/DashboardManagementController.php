@@ -1240,7 +1240,7 @@ class DashboardManagementController extends Controller
         }
 
     }
-    public function garages()
+    public function garages($created_by_filter=0)
     {
         $startDateOfThisMonth = Carbon::now()->startOfMonth();
         $endDateOfThisMonth = Carbon::now()->endOfMonth();
@@ -1254,26 +1254,65 @@ class DashboardManagementController extends Controller
 
 
 
-        $data["total_data_count"] = Garage::count();
+        $total_data_count_query = new Garage();
+        if($created_by_filter) {
+            $total_data_count_query =  $total_data_count_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+
+        $data["total_data_count"] = $total_data_count_query->count();
 
 
 
-        $data["this_week_data"] = Garage::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
+        $this_week_data_query = Garage::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek]);
 
-        $data["previous_week_data"] = Garage::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
+        if($created_by_filter) {
+            $this_week_data_query =  $this_week_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_week_data"] = $this_week_data_query->select("id","created_at","updated_at")->get();
 
 
 
-        $data["this_month_data"] = Garage::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
-        $data["previous_month_data"] = Garage::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
+
+        $previous_week_data_query = Garage::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
+        ;
+
+        if($created_by_filter) {
+            $previous_week_data_query =  $previous_week_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+
+        $data["previous_week_data"] = $total_data_count_query->select("id","created_at","updated_at")->get();
+
+
+
+
+        $this_month_data_query =Garage::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth]);
+
+        if($created_by_filter) {
+            $this_month_data_query =  $this_month_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_month_data"] = $this_month_data_query->select("id","created_at","updated_at")->get();
+
+
+
+
+        $previous_month_data_query =Garage::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth]);
+
+        if($created_by_filter) {
+            $previous_month_data_query =  $previous_month_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_month_data"] = $previous_month_data_query->select("id","created_at","updated_at")->get();
+
+
 
             $data["this_week_data_count"] = $data["this_week_data"]->count();
             $data["previous_week_data_count"] = $data["previous_week_data"]->count();
@@ -1281,7 +1320,7 @@ class DashboardManagementController extends Controller
             $data["previous_month_data_count"] = $data["previous_month_data"]->count();
         return $data;
     }
-    public function fuel_stations()
+    public function fuel_stations($created_by_filter = 0)
     {
         $startDateOfThisMonth = Carbon::now()->startOfMonth();
         $endDateOfThisMonth = Carbon::now()->endOfMonth();
@@ -1294,26 +1333,55 @@ class DashboardManagementController extends Controller
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
 
 
-
-        $data["total_data_count"] = FuelStation::count();
-
-
-        $data["this_week_data"] = FuelStation::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
-
-        $data["previous_week_data"] = FuelStation::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
+        $total_data_count_query = new FuelStation();
+        if($created_by_filter) {
+            $total_data_count_query =  $total_data_count_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["total_data_count"] = $total_data_count_query->count();
 
 
+        $this_week_data_query = FuelStation::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek]);
+        if($created_by_filter) {
+            $this_week_data_query =  $this_week_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_week_data"] = $this_week_data_query->select("id","created_at","updated_at")
+        ->get();
 
-        $data["this_month_data"] = FuelStation::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
-        $data["previous_month_data"] = FuelStation::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
+
+        $previous_week_data_query = FuelStation::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek]);
+        if($created_by_filter) {
+            $previous_week_data_query =  $previous_week_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_week_data"] = $previous_week_data_query->select("id","created_at","updated_at")
+        ->get();
+
+
+        $this_month_data_query =  FuelStation::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth]);
+        if($created_by_filter) {
+            $this_month_data_query =  $this_month_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_month_data"] = $this_month_data_query->select("id","created_at","updated_at")
+        ->get();
+
+        $previous_month_data_query =  FuelStation::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth]);
+        if($created_by_filter) {
+            $previous_month_data_query =  $previous_month_data_query->where([
+                "created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_month_data"] = $previous_month_data_query->select("id","created_at","updated_at")
+        ->get();
+
+
+
 
             $data["this_week_data_count"] = $data["this_week_data"]->count();
             $data["previous_week_data_count"] = $data["previous_week_data"]->count();
@@ -1414,7 +1482,7 @@ class DashboardManagementController extends Controller
         return $data;
     }
 
-    public function overall_bookings()
+    public function overall_bookings($created_by_filter = 0)
     {
         $startDateOfThisMonth = Carbon::now()->startOfMonth();
         $endDateOfThisMonth = Carbon::now()->endOfMonth();
@@ -1427,26 +1495,65 @@ class DashboardManagementController extends Controller
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
 
 
-
-        $data["total_data_count"] = Booking::count();
-
-
-        $data["this_week_data"] = Booking::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
-
-        $data["previous_week_data"] = Booking::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
+        $total_data_count_query =  Booking::leftJoin('garages', 'garages.id', '=', 'bookings.garage_id');
+        if($created_by_filter) {
+            $total_data_count_query =  $total_data_count_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["total_data_count"] = $total_data_count_query->count();
 
 
 
-        $data["this_month_data"] = Booking::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
-        $data["previous_month_data"] = Booking::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
+        $this_week_data_query =  Booking::leftJoin('garages', 'garages.id', '=', 'bookings.garage_id')
+        ->whereBetween('bookings.created_at', [$startDateOfThisWeek, $endDateOfThisWeek]);
+        if($created_by_filter) {
+            $this_week_data_query =  $this_week_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_week_data"] = $this_week_data_query->select("bookings.id","bookings.created_at","bookings.updated_at")
+        ->get();
+
+
+
+
+        $previous_week_data_query =  Booking::leftJoin('garages', 'garages.id', '=', 'bookings.garage_id')
+        ->whereBetween('bookings.created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek]);
+        if($created_by_filter) {
+            $previous_week_data_query =  $previous_week_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_week_data"] = $previous_week_data_query->select("bookings.id","bookings.created_at","bookings.updated_at")
+        ->get();
+
+
+
+
+
+
+        $this_month_data_query =  Booking::leftJoin('garages', 'garages.id', '=', 'bookings.garage_id')
+        ->whereBetween('bookings.created_at', [$startDateOfThisMonth, $endDateOfThisMonth]);
+        if($created_by_filter) {
+            $this_month_data_query =  $this_month_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_month_data"] = $this_month_data_query->select("bookings.id","bookings.created_at","bookings.updated_at")
+        ->get();
+
+
+        $previous_month_data_query =  Booking::leftJoin('garages', 'garages.id', '=', 'bookings.garage_id')
+        ->whereBetween('bookings.created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth]);
+        if($created_by_filter) {
+            $previous_month_data_query =  $previous_month_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_month_data"] = $previous_month_data_query->select("bookings.id","bookings.created_at","bookings.updated_at")
+        ->get();
+     
 
             $data["this_week_data_count"] = $data["this_week_data"]->count();
             $data["previous_week_data_count"] = $data["previous_week_data"]->count();
@@ -1624,6 +1731,92 @@ class DashboardManagementController extends Controller
         }
 
     }
+
+        /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/data-collector-dashboard",
+     *      operationId="getDataCollectorDashboardData",
+     *      tags={"dashboard_management.data_collector"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *      summary="get all dashboard data combined",
+     *      description="get all dashboard data combined",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getDataCollectorDashboardData( Request $request)
+     {
+         try{
+             $this->storeActivity($request,"");
+             if (!$request->user()->hasRole('data_collector')) {
+                 return response()->json([
+                     "message" => "You are not a superadmin"
+                 ], 401);
+             }
+
+             $data["garages"] = $this->garages(1);
+
+             $data["fuel_stations"] = $this->fuel_stations(1);
+
+             $data["overall_bookings"] = $this->overall_bookings(1);
+
+             $data["overall_jobs"] = $this->overall_jobs(1);
+
+            //  $data["customers"] = $this->customers();
+
+            //  $data["overall_customer_jobs"] = $this->overall_customer_jobs();
+
+
+
+            //  $data["overall_services"] = $this->overall_services();
+
+
+
+
+
+
+             return response()->json($data, 200);
+         }catch(Exception $e) {
+       return $this->sendError($e, 500,$request);
+         }
+
+     }
 
 
 

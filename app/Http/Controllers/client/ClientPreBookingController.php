@@ -49,10 +49,10 @@ class ClientPreBookingController extends Controller
         *   * @OA\MediaType(
 *     mediaType="multipart/form-data",
 *     @OA\Schema(
-*         required={"image"},
+*         required={"video"},
 *         @OA\Property(
-*             description="image to upload",
-*             property="image",
+*             description="video to upload",
+*             property="video",
 *             type="file",
 *             collectionFormat="multi",
 *         )
@@ -269,8 +269,8 @@ class ClientPreBookingController extends Controller
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
      *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *
-     *     *  * @OA\Property(property="images", type="string", format="string",example="json array of image links"),
- *     *  * @OA\Property(property="videos", type="string", format="string",example="json array of video links"),
+     *     *  * @OA\Property(property="images", type="string", format="array",example={"a.mp4","b.mp4"}),
+ *     *  * @OA\Property(property="videos", type="string", format="array",example={"a.jpg","b.jpg"}),
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -325,7 +325,8 @@ class ClientPreBookingController extends Controller
 
                 $insertableData["customer_id"] = auth()->user()->id;
                 $insertableData["status"] = "pending";
-
+                $insertableData["images"] = json_encode($insertableData["images"]) ;
+                $insertableData["videos"] = json_encode($insertableData["videos"]) ;
 
 
                 $automobile_make = AutomobileMake::where([
@@ -435,8 +436,8 @@ class ClientPreBookingController extends Controller
      *  * @OA\Property(property="job_start_time", type="string", format="string",example="10:10"),
      *  * @OA\Property(property="job_end_date", type="string", format="string",example="2019-07-29"),
      *   *
-     *     *     *  * @OA\Property(property="images", type="string", format="string",example="json array of image links"),
- *     *  * @OA\Property(property="videos", type="string", format="string",example="json array of video links"),
+     *     *  * @OA\Property(property="images", type="string", format="array",example={"a.mp4","b.mp4"}),
+ *     *  * @OA\Property(property="videos", type="string", format="array",example={"a.jpg","b.jpg"}),
      *
      *      ),
      *      @OA\Response(
@@ -480,6 +481,8 @@ class ClientPreBookingController extends Controller
                 $this->storeActivity($request,"");
 
                 $updatableData = $request->validated();
+                $updatableData["images"] = json_encode($updatableData["images"]) ;
+                $updatableData["videos"] = json_encode($updatableData["videos"]) ;
 
 
                 $automobile_make = AutomobileMake::where([

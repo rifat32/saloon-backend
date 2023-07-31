@@ -759,6 +759,7 @@ Route::get('/v1.0/garage-owner-dashboard/expiring-affiliations/{garage_id}/{dura
 Route::get('/v1.0/garage-owner-dashboard/{garage_id}', [DashboardManagementController::class, "getGarageOwnerDashboardData"]);
 
 Route::get('/v1.0/superadmin-dashboard', [DashboardManagementController::class, "getSuperAdminDashboardData"]);
+Route::get('/v1.0/data-collector-dashboard', [DashboardManagementController::class, "getDataCollectorDashboardData"]);
 
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
