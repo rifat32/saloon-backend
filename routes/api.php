@@ -383,6 +383,7 @@ Route::get('/review-new/get/questions-all', [ReviewController::class, "getQuesti
 
 
 Route::get('/review-new/get/questions-all-report', [ReviewController::class, "getQuestionAllReport"]);
+Route::get('/review-new/get/questions-all-report-by-user/{perPage}', [ReviewController::class, "getQuestionAllReportByUser"]);
 
 Route::get('/review-new/get/questions/{id}', [ReviewController::class, "getQuestionById"]);
 

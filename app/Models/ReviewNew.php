@@ -15,7 +15,7 @@ class ReviewNew extends Model
         'rate',
         'user_id',
         'comment',
-     
+
         // "question_id",
         // 'tag_id' ,
         // 'star_id',
@@ -32,6 +32,9 @@ class ReviewNew extends Model
     }
     public function garage() {
         return $this->hasOne(Garage::class,'id','garage_id');
+    }
+    public function user() {
+        return $this->hasOne(User::class,'id','user_id');
     }
     protected $hidden = [
         'created_at',
