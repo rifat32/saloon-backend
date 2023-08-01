@@ -1553,7 +1553,7 @@ class DashboardManagementController extends Controller
         }
         $data["previous_month_data"] = $previous_month_data_query->select("bookings.id","bookings.created_at","bookings.updated_at")
         ->get();
-     
+
 
             $data["this_week_data_count"] = $data["this_week_data"]->count();
             $data["previous_week_data_count"] = $data["previous_week_data"]->count();
@@ -1562,7 +1562,7 @@ class DashboardManagementController extends Controller
         return $data;
     }
 
-    public function overall_jobs()
+    public function overall_jobs($created_by_filter = 0)
     {
         $startDateOfThisMonth = Carbon::now()->startOfMonth();
         $endDateOfThisMonth = Carbon::now()->endOfMonth();
@@ -1575,27 +1575,72 @@ class DashboardManagementController extends Controller
         $endDateOfPreviousWeek = Carbon::now()->endOfWeek()->subWeek(1);
 
 
-
-        $data["total_data_count"] = Job::count();
-
-
-        $data["this_week_data"] = Job::whereBetween('created_at', [$startDateOfThisWeek, $endDateOfThisWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
-
-        $data["previous_week_data"] = Job::whereBetween('created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek])
-            ->select("id","created_at","updated_at")
-            ->get();
+        $total_data_count_query =  Job::leftJoin('garages', 'garages.id', '=', 'jobs.garage_id');
+        if($created_by_filter) {
+            $total_data_count_query =  $total_data_count_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["total_data_count"] = $total_data_count_query->count();
 
 
 
-        $data["this_month_data"] = Job::whereBetween('created_at', [$startDateOfThisMonth, $endDateOfThisMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
 
-        $data["previous_month_data"] = Job::whereBetween('created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth])
-            ->select("id","created_at","updated_at")
-            ->get();
+
+        $this_week_data_query =  Job::leftJoin('garages', 'garages.id', '=', 'jobs.garage_id')
+        ->whereBetween('jobs.created_at', [$startDateOfThisWeek, $endDateOfThisWeek]);
+        if($created_by_filter) {
+            $this_week_data_query =  $this_week_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_week_data"] = $this_week_data_query
+        ->select("jobs.id","jobs.created_at","jobs.updated_at")
+        ->get();
+
+
+
+
+        $previous_week_data_query =  Job::leftJoin('garages', 'garages.id', '=', 'jobs.garage_id')
+        ->whereBetween('jobs.created_at', [$startDateOfPreviousWeek, $endDateOfPreviousWeek]);
+        if($created_by_filter) {
+            $previous_week_data_query =  $previous_week_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_week_data"] = $previous_week_data_query
+        ->select("jobs.id","jobs.created_at","jobs.updated_at")
+        ->get();
+
+
+
+
+
+        $this_month_data_query =  Job::leftJoin('garages', 'garages.id', '=', 'jobs.garage_id')
+        ->whereBetween('jobs.created_at', [$startDateOfThisMonth, $endDateOfThisMonth]);
+        if($created_by_filter) {
+            $this_month_data_query =  $this_month_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["this_month_data"] = $this_month_data_query
+        ->select("jobs.id","jobs.created_at","jobs.updated_at")
+        ->get();
+
+
+
+        $previous_month_data_query =  Job::leftJoin('garages', 'garages.id', '=', 'jobs.garage_id')
+        ->whereBetween('jobs.created_at', [$startDateOfPreviousMonth, $endDateOfPreviousMonth]);
+        if($created_by_filter) {
+            $previous_month_data_query =  $previous_month_data_query->where([
+                "garages.created_by" =>auth()->user()->id
+            ]);
+        }
+        $data["previous_month_data"] = $previous_month_data_query
+        ->select("jobs.id","jobs.created_at","jobs.updated_at")
+        ->get();
+
+
 
             $data["this_week_data_count"] = $data["this_week_data"]->count();
             $data["previous_week_data_count"] = $data["previous_week_data"]->count();

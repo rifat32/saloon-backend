@@ -978,7 +978,8 @@ Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [Cli
 
 
 
-
+Route::post('/v1.0/client/pre-bookings-image-multiple', [ClientPreBookingController::class, "createPreBookingImageMultipleClient"]);
+Route::post('/v1.0/client/pre-bookings-video', [ClientPreBookingController::class, "createPreBookingVideoClient"]);
 
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 // client protected routes
@@ -1024,8 +1025,7 @@ Route::get('/v1.0/client/jobs/single/{id}', [ClientJobController::class, "getJob
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
-Route::post('/v1.0/client/pre-bookings-image-multiple', [ClientPreBookingController::class, "createPreBookingImageMultipleClient"]);
-Route::post('/v1.0/client/pre-bookings-video', [ClientPreBookingController::class, "createPreBookingVideoClient"]);
+
 Route::post('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "createPreBookingClient"]);
 Route::put('/v1.0/client/pre-bookings', [ClientPreBookingController::class, "updatePreBookingClient"]);
 
