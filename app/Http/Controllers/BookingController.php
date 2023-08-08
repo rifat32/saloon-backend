@@ -22,11 +22,13 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GaragePackage;
 use App\Models\GarageSubService;
+use App\Models\GarageTime;
 use App\Models\Job;
 use App\Models\JobBid;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,8 +146,29 @@ class BookingController extends Controller
                 $insertableData["created_by"] = $request->user()->id;
                 $insertableData["created_from"] = "garage_owner_side";
 
+                $date = Carbon::createFromFormat('Y-m-d', $insertableData["job_start_date"]);
+                $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
+                $garage_timesQuery = GarageTime::where([
+                    "garage_id" => $insertableData["garage_id"]
+                ])
+                ->where('garage_times.day', "=", $dayOfWeek);
 
+                if(!empty($insertableData["job_start_time"])) {
+                    $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])
+                    ->whereTime('garage_times.closing_time', ">", $insertableData["job_start_time"]);
+                }
 
+                $garage_time = $garage_timesQuery->first();
+
+                if (!$garage_time) {
+                    return response()
+                        ->json(
+                            [
+                                "message" => "garage time mismatch."
+                            ],
+                            409
+                        );
+                }
 
                 $garage_make = GarageAutomobileMake::where([
                     "automobile_make_id" => $insertableData["automobile_make_id"],
