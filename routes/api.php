@@ -131,7 +131,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::put('/v1.0/notifications/change-status', [NotificationController::class, "updateNotificationStatus"]);
 
     Route::delete('/v1.0/notifications/{id}', [NotificationController::class, "deleteNotificationById"]);
-    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // notification management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
