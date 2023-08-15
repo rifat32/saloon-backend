@@ -4,9 +4,8 @@ namespace App\Http\Requests;
 
 use App\Rules\SomeTimes;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
 
-class AuthRegisterGarageRequest extends FormRequest
+class AuthRegisterGarageRequestClient extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,9 +30,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.last_Name' => 'required|string|max:255',
             // 'user.email' => 'required|string|email|indisposable|max:255|unique:users,email',
             'user.email' => 'required|string|email|max:255|unique:users,email',
-            'user.password' => 'nullable|confirmed|string|min:6',
-            'user.send_password' => 'required|boolean',
-
+            'user.password' => 'required|confirmed|string|min:6',
             'user.phone' => 'required|string',
             'user.image' => 'nullable|string',
 

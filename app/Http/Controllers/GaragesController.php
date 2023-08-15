@@ -11,6 +11,7 @@ use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Mail\VerifyMail;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageGallery;
@@ -20,6 +21,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
@@ -546,7 +548,18 @@ if(!$user->hasRole('garage_owner')) {
         $insertableData = $request->validated();
 
    // user info starts ##############
-    $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
+   $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
+   if(!$request->user()->hasRole('superadmin') || empty($insertableData['user']['password'])) {
+    $insertableData['user']['password'] = Hash::make(Str::random(10));
+    }
+
+    if($insertableData['user']['send_password']) {
+        if(env("SEND_EMAIL") == true) {
+            Mail::to($insertableData['user']['email'])->send(new VerifyMail($insertableData['user']));
+        }
+    }
+
+
     $insertableData['user']['remember_token'] = Str::random(10);
     $insertableData['user']['is_active'] = true;
     $insertableData['user']['created_by'] = $request->user()->id;
@@ -559,11 +572,10 @@ if(!$user->hasRole('garage_owner')) {
     $insertableData['user']['lat'] = $insertableData['garage']['lat'];
     $insertableData['user']['long'] = $insertableData['garage']['long'];
 
-
-
-
-
     $user =  User::create($insertableData['user']);
+    $user->email_verified_at = now();
+    $user->save();
+
     $user->assignRole('garage_owner');
    // end user info ##############
 

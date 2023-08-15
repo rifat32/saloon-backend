@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegenerateTokenRequest;
 use App\Http\Requests\AuthRegisterGarageRequest;
+use App\Http\Requests\AuthRegisterGarageRequestClient;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\EmailVerifyTokenRequest;
@@ -787,7 +788,7 @@ $datediff = $now - $user_created_date;
      *      )
      *     )
      */
-    public function registerUserWithGarageClient(AuthRegisterGarageRequest $request)
+    public function registerUserWithGarageClient(AuthRegisterGarageRequestClient $request)
     {
 
         try {
