@@ -5,7 +5,8 @@ return [
         [
             "role" => "superadmin",
             "permissions" => [
-
+                "global_garage_background_image_create",
+                "global_garage_background_image_view",
        "user_create",
        "user_update",
        "user_view",
@@ -240,6 +241,9 @@ return [
        "product_category_view",
 
 
+       "global_garage_background_image_view",
+
+
 
             ],
         ],
@@ -288,6 +292,10 @@ return [
 
     ],
     "permissions" => [
+        "global_garage_background_image_create",
+        "global_garage_background_image_view",
+
+
        "user_create",
        "user_update",
        "user_view",
@@ -463,6 +471,8 @@ return [
     "fuel_station_gallery_location" => "fuel_station_gallery",
 
     "affiliation_logo_location" => "affiliation_logo",
-    "pre_booking_file_location" => "pre_booking_files"
+    "pre_booking_file_location" => "pre_booking_files",
 
+    "garage_background_image_location" => "garage_background_image",
+    "garage_background_image_location_full" => "garage_background_image/garage_background_image.jpeg"
 ];

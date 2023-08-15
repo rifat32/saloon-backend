@@ -19,6 +19,8 @@ use App\Http\Controllers\FuelStationGalleryController;
 use App\Http\Controllers\FuelStationServiceController;
 use App\Http\Controllers\GarageAffiliationController;
 use App\Http\Controllers\GarageAutomobilesController;
+
+use App\Http\Controllers\GarageBackgroundImageController;
 use App\Http\Controllers\GarageGalleryController;
 use App\Http\Controllers\GaragePackageController;
 use App\Http\Controllers\GarageRuleController;
@@ -498,6 +500,15 @@ Route::get('/v1.0/notification-template-types', [NotificationTemplateController:
 
 Route::patch('/v1.0/garage-times', [GarageTimesController::class, "updateGarageTimes"]);
 Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "getGarageTimes"]);
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// Garage Background Image Management
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/garage-background-image', [GarageBackgroundImageController::class, "updateGarageBackgroundImage"]);
+Route::get('/v1.0/garage-background-image', [GarageBackgroundImageController::class, "getGarageBackgroundImage"]);
+
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end Garage Time Management
