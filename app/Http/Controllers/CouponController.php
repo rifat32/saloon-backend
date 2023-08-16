@@ -382,7 +382,18 @@ class CouponController extends Controller
                 $couponQuery = $couponQuery->where('created_at', "<=", $request->end_date);
             }
 
-            $coupons = $couponQuery->orderByDesc("id")->paginate($perPage);
+            $couponQuery = $couponQuery->orderByDesc("id");
+
+            if($perPage == '0') {
+                $coupons = $couponQuery->get();
+            }else {
+                $coupons = $couponQuery->paginate($perPage);
+
+            }
+
+
+
+
             return response()->json($coupons, 200);
         } catch (Exception $e) {
 
