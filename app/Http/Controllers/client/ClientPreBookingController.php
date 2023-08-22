@@ -702,7 +702,11 @@ class ClientPreBookingController extends Controller
             }
 
             if (!empty($request->status)) {
-                $preBookingQuery = $preBookingQuery->where('pre_bookings.status', $request->status);
+                $status   = $request->status;
+                if($status == "completed") {
+                    $status = "job_completed";
+                }
+                $preBookingQuery = $preBookingQuery->where('pre_bookings.status', $status);
             }
 
 

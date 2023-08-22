@@ -46,7 +46,7 @@ class CreateUsersTable extends Migration
             $table->dateTime('last_failed_login_attempt_at')->nullable();
 
 
-
+            $table->string("background_image")->nullable();
 
             $table->softDeletes();
             $table->rememberToken();

@@ -878,6 +878,11 @@ class JobController extends Controller
 
             }
 
+            if (!empty($request->status)) {
+                $status   = $request->status;
+                $jobQuery = $jobQuery->where('jobs.status', $status);
+
+            }
             if (!empty($request->start_date)) {
                 $jobQuery = $jobQuery->where('created_at', ">=", $request->start_date);
             }
@@ -1084,7 +1089,7 @@ class JobController extends Controller
             "message" => "job not found"
                 ], 404);
             }
-        
+
                 if($job->booking->pre_booking_id) {
                     $prebooking  =  PreBooking::where([
                         "id" => $job->booking->pre_booking_id

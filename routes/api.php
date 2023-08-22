@@ -507,6 +507,7 @@ Route::get('/v1.0/garage-times/{garage_id}', [GarageTimesController::class, "get
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/garage-background-image', [GarageBackgroundImageController::class, "updateGarageBackgroundImage"]);
+Route::post('/v1.0/garage-background-image/by-user', [GarageBackgroundImageController::class, "updateGarageBackgroundImageByUser"]);
 Route::get('/v1.0/garage-background-image', [GarageBackgroundImageController::class, "getGarageBackgroundImage"]);
 
 

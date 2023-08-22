@@ -935,7 +935,7 @@ public function getUser (Request $request) {
         $user->permissions = $user->getAllPermissions()->pluck('name');
         $user->roles = $user->roles->pluck('name');
 
-
+        $user->default_background_image = ("/".  config("setup-config.garage_background_image_location_full"));
 
         return response()->json(
             $user,

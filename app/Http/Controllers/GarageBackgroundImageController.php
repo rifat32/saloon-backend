@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Models\Garage;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -99,6 +100,109 @@ config(["setup-config.garage_background_image_location_full" => $location . "/" 
 
 // Save the updated configuration to the file
 File::put(config_path('setup-config.php'), '<?php return ' . var_export(config('setup-config'), true) . ';');
+
+
+
+
+
+
+
+
+
+             return response()->json(["image" => $new_file_name,"location" => $location,"full_location"=>("/".$location."/".$new_file_name)], 200);
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
+
+
+          /**
+        *
+     * @OA\Post(
+     *      path="/v1.0/garage-background-image/by-user",
+     *      operationId="updateGarageBackgroundImageByUser",
+     *      tags={"garage_background_image"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *      summary="This method is to store garage bakground image by owner ",
+     *      description="This method is to garage bakground user image by owner",
+     *
+   *  @OA\RequestBody(
+        *   * @OA\MediaType(
+*     mediaType="multipart/form-data",
+*     @OA\Schema(
+*         required={"image"},
+*         @OA\Property(
+*             description="image to upload",
+*             property="image",
+*             type="file",
+*             collectionFormat="multi",
+*         )
+*     )
+* )
+
+
+
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function updateGarageBackgroundImageByUser(ImageUploadRequest $request)
+     {
+         try{
+             $this->storeActivity($request,"");
+
+
+
+             $insertableData = $request->validated();
+
+             $location =  config("setup-config.garage_background_image_location");
+
+
+             $new_file_name = time() . '_' . str_replace(' ', '_', $insertableData["image"]->getClientOriginalName());
+             $insertableData["image"]->move(public_path($location), $new_file_name);
+
+
+             $request->user()
+             ->update([
+                "background_image" => ("/".$location."/".$new_file_name)
+             ]);
 
 
 

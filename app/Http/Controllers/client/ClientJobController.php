@@ -118,6 +118,10 @@ class ClientJobController extends Controller
             if (!empty($request->end_date)) {
                 $jobsQuery = $jobsQuery->where('created_at', "<=", $request->end_date);
             }
+            if (!empty($request->status)) {
+                $status   = $request->status;
+                $jobsQuery = $jobsQuery->where('jobs.status', $status);
+            }
 
             $jobs = $jobsQuery->orderByDesc("id")->paginate($perPage);
 
