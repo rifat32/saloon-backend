@@ -429,7 +429,7 @@ Route::patch('/review-new/owner/update/questions', [ReviewController::class, "up
 
 Route::get('/review-new/getavg/review/{garageId}/{start}/{end}', [ReviewController::class, "getAverage"]);
 Route::get('/review-new/getreview/{garageId}/{rate}/{start}/{end}', [ReviewController::class, "filterReview"]);
-Route::get('/review-new/getreviewAll/{garageId}', [ReviewController::class, "getReviewByGarageId"]);
+
 Route::get('/review-new/getcustomerreview/{garageId}/{start}/{end}', [ReviewController::class, "getCustommerReview"]);
 Route::post('/review-new/{jobId}', [ReviewController::class, "storeReview"]);
 
@@ -963,7 +963,8 @@ Route::get('/client/review-new/get/questions-all', [ClientReviewController::clas
 
 Route::get('/client/review-new/get/questions-all-report', [ClientReviewController::class, "getQuestionAllReportUnauthorized"]);
 
-
+Route::get('/review-new/getreviewAll/{garageId}', [ReviewController::class, "getReviewByGarageIdAll"]);
+Route::get('/review-new/getreviewAll/{garageId}/{perPage}', [ReviewController::class, "getReviewByGarageId"]);
 
 
 

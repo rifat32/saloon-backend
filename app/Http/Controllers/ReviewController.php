@@ -2725,7 +2725,7 @@ $data2["total_comment"] = $data2["total_comment"]->get();
         *
      * @OA\Get(
      *      path="/review-new/getreviewAll/{garageId}",
-     *      operationId="getReviewByGarageId",
+     *      operationId="getReviewByGarageIdAll",
      *      tags={"review"},
      *        security={
      *           {"bearerAuth": {}}
@@ -2771,7 +2771,7 @@ $data2["total_comment"] = $data2["total_comment"]->get();
      *     )
      */
 
-    public function  getReviewByGarageId($garage_id, Request $request)
+    public function  getReviewByGarageIdAll($garage_id, Request $request)
     {
         try{
             $this->storeActivity($request,"");
@@ -2794,7 +2794,84 @@ $data2["total_comment"] = $data2["total_comment"]->get();
 
     }
 
+  /**
+        *
+     * @OA\Get(
+     *      path="/review-new/getreviewAll/{garageId}/{perPage}",
+     *      operationId="getReviewByGarageId",
+     *      tags={"review"},
+     *        security={
+     *           {"bearerAuth": {}}
+     *       },
+        *  @OA\Parameter(
+* name="garageId",
+* in="path",
+* description="garageId",
+* required=true,
+* example="1"
+* ),
+        *  @OA\Parameter(
+* name="perPage",
+* in="path",
+* description="perPage",
+* required=true,
+* example="1"
+* ),
+     *      summary="This method is to get review by garage id",
+     *      description="This method is to get review by garage id",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
 
+     public function  getReviewByGarageId($garage_id,$perPage, Request $request)
+     {
+         try{
+             $this->storeActivity($request,"");
+             if (!$request->user()->hasPermissionTo('review_view')) {
+                 return response()->json([
+                     "message" => "You can not perform this action"
+                 ], 401);
+             }
+             // with
+             $reviewValue = ReviewNew::with("value")->where([
+                 "garage_id" => $garage_id,
+             ])
+                 ->paginate($perPage);
+
+
+             return response($reviewValue, 200);
+         }catch(Exception $e) {
+       return $this->sendError($e, 500,$request);
+         }
+
+     }
 
       /**
         *

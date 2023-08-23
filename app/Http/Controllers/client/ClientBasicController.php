@@ -11,6 +11,8 @@ use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
 use App\Models\GarageService;
 use App\Models\GarageSubService;
+use App\Models\ReviewValueNew;
+use App\Models\Star;
 use App\Models\SubService;
 use Carbon\Carbon;
 use Exception;
@@ -383,7 +385,45 @@ class ClientBasicController extends Controller
                 }
 
 
+foreach($garages->items() as $key=>$value) {
+    $totalCount = 0;
+$ttotalRating = 0;
 
+foreach(Star::get() as $star) {
+
+    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+    ->where([
+        "review_news.garage_id" => $garages->items()[$key]->id,
+        "star_id" => $star->id,
+        // "review_news.guest_id" => NULL
+    ])
+    ->distinct("review_value_news.review_id","review_value_news.question_id");
+    if(!empty($request->start_date) && !empty($request->end_date)) {
+
+        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+            $request->start_date,
+            $request->end_date
+        ]);
+
+    }
+    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+    $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+
+}
+if($totalCount > 0) {
+    $data2["total_rating"] = $totalCount / $ttotalRating;
+
+}
+else {
+    $data2["total_rating"] = 0;
+
+}
+$garages->items()[$key]->average_rating = $data2["total_rating"];
+
+}
 
 
 

@@ -11,6 +11,7 @@ use App\Http\Requests\MultipleImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Mail\SendPassword;
 use App\Mail\VerifyMail;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
@@ -440,6 +441,7 @@ if(!$user->hasRole('garage_owner')) {
      *  "password_confirmation":"12345678",
      *  "phone":"01771034383",
      *  "image":"https://images.unsplash.com/photo-1671410714831-969877d103b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+     * "send_password":1
      *
      *
      * }),
@@ -548,16 +550,15 @@ if(!$user->hasRole('garage_owner')) {
         $insertableData = $request->validated();
 
    // user info starts ##############
-   $insertableData['user']['password'] = Hash::make($insertableData['user']['password']);
+
+   $password = $insertableData['user']['password'];
+   $insertableData['user']['password'] = Hash::make($password);
    if(!$request->user()->hasRole('superadmin') || empty($insertableData['user']['password'])) {
-    $insertableData['user']['password'] = Hash::make(Str::random(10));
+    $password = Str::random(10);
+    $insertableData['user']['password'] = Hash::make($password);
     }
 
-    if($insertableData['user']['send_password']) {
-        if(env("SEND_EMAIL") == true) {
-            Mail::to($insertableData['user']['email'])->send(new VerifyMail($insertableData['user']));
-        }
-    }
+
 
 
     $insertableData['user']['remember_token'] = Str::random(10);
@@ -614,6 +615,11 @@ if(!$user->hasRole('garage_owner')) {
 
      $this->storeQuestion($garage->id);
 
+     if($insertableData['user']['send_password']) {
+        if(env("SEND_EMAIL") == true) {
+            Mail::to($insertableData['user']['email'])->send(new SendPassword($user,$password));
+        }
+    }
 
         return response([
             "user" => $user,

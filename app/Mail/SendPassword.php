@@ -17,9 +17,12 @@ class SendPassword extends Mailable
      * @return void
      */
     public $user;
-    public function __construct($user)
+    public $password;
+    public function __construct($user,$password)
     {
         $this->user = $user;
+        $this->password = $password;
+
     }
 
     /**
@@ -34,6 +37,6 @@ class SendPassword extends Mailable
 
 
 
-        return $this->view('email.send-password',["user" => $this->user]);
+        return $this->subject(("Your Account Password for") . env("APP_NAME"))->view('email.send-password',["user" => $this->user,"password"=>$this->password]);
     }
 }
