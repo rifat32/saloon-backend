@@ -8,6 +8,7 @@ use App\Http\Utils\UserActivityUtil;
 use App\Models\Job;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ClientJobController extends Controller
 {
@@ -123,7 +124,20 @@ class ClientJobController extends Controller
                 $jobsQuery = $jobsQuery->where('jobs.status', $status);
             }
 
-            $jobs = $jobsQuery->orderByDesc("id")->paginate($perPage);
+            $jobs = $jobsQuery
+            ->select("jobs.*",
+            DB::raw('CASE WHEN(SELECT COUNT(questions.id)
+            FROM
+            questions
+
+            WHERE jobs.garage_id = questions.garage_id
+
+
+            ) = 0 THEN 0  ELSE 1
+            END AS is_question_available'),
+            )
+
+            ->orderByDesc("id")->paginate($perPage);
 
             return response()->json($jobs, 200);
         } catch(Exception $e){
