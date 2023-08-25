@@ -1361,7 +1361,7 @@ class BookingController extends Controller
                 $prebooking->save();
 
             }
-            $booking->delete();
+
 
             $notification_template = NotificationTemplate::where([
                 "type" => "booking_deleted_by_garage_owner"
@@ -1382,7 +1382,7 @@ class BookingController extends Controller
                     "booking_deleted_by_garage_owner"
                 ));
             }
-
+            $booking->delete();
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
 

@@ -17,5 +17,8 @@ class GarageTime extends Model
         "is_closed"
     ];
 
-
+    protected  $casts = [
+        'opening_time' => 'datetime:H:i',
+        'closing_time' => 'datetime:H:i',
+    ];
 }

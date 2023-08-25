@@ -41,7 +41,6 @@ class DynamicMail extends Mailable
 
         if(!$email_content){
             return $this->view('email.dummy');
-
         }
 
 

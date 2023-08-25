@@ -87,6 +87,9 @@ class NotificationTemplateController extends Controller
                 }
                 $updatableData = $request->validated();
 
+                $updatableData["template"] =  json_encode($updatableData["template"]);
+
+
                 $template  =  tap(NotificationTemplate::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
                         "name",

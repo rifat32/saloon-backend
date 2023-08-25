@@ -123,7 +123,34 @@ class NotificationController extends Controller
                     );
                 }
 
+                if(in_array($notifications->items()[$i]->template->type,["booking_created_by_client","booking_accepted_by_client"]) ) {
 
+                    $notifications->items()[$i]["template_string"] =  str_replace(
+                        "[Date]",
+                        ($notifications->items()[$i]->booking->job_start_date),
+
+                        $notifications->items()[$i]["template_string"]
+                    );
+                    $notifications->items()[$i]["template_string"] =  str_replace(
+                        "[Time]",
+                        ($notifications->items()[$i]->booking->job_start_time),
+
+                        $notifications->items()[$i]["template_string"]
+                    );
+
+                }
+
+
+
+
+
+
+
+
+
+
+
+                // link section
                 $notifications->items()[$i]["link"] = json_decode($notifications->items()[$i]->template->link);
 
 
@@ -279,6 +306,25 @@ class NotificationController extends Controller
                         $notifications->items()[$i]["template_string"]
                     );
                 }
+
+                if(in_array($notifications->items()[$i]->template->type,["booking_created_by_client","booking_accepted_by_client"]) ) {
+
+                    $notifications->items()[$i]["template_string"] =  str_replace(
+                        "[Date]",
+                        ($notifications->items()[$i]->booking->job_start_date),
+
+                        $notifications->items()[$i]["template_string"]
+                    );
+                    $notifications->items()[$i]["template_string"] =  str_replace(
+                        "[Time]",
+                        ($notifications->items()[$i]->booking->job_start_time),
+
+                        $notifications->items()[$i]["template_string"]
+                    );
+
+
+                }
+
 
 
                 $notifications->items()[$i]["link"] = json_decode($notifications->items()[$i]->template->link);

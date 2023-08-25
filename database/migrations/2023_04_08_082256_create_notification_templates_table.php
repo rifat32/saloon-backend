@@ -84,7 +84,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'booking_confirmed_by_garage_owner',
-                    "template"=> json_encode("hello [customer_name]! your booking confirmed by the garage named[garage_owner_name],[garage_name] "),
+                    "template"=> json_encode("hello [customer_name]! your booking confirmed by the garage named [garage_name]."),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],
@@ -108,11 +108,12 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'booking_created_by_client',
-                    "template"=> json_encode("hello [garage_owner_name]!  booking created by [customer_name] "),
+                    "template"=> json_encode("A new booking is requested by [customer_name] for [Date] [Time]."),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],
-
+                // @@@ @@@
+                // hello [garage_owner_name]!  booking created by [customer_name]
                 [
 
                     'type' => 'booking_updated_by_client',
@@ -132,7 +133,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'booking_accepted_by_client',
-                    "template"=> json_encode("hello [garage_owner_name]!  booking accepted by [customer_name] "),
+                    "template"=> json_encode("Congratulations, [customer_name] have confirmed the booking [Date] and [Time]."),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],
