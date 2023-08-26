@@ -672,21 +672,27 @@ class JobController extends Controller
     ], 401);
 }
 
+$job = Job::where([
+    "id" => $updatableData["id"],
+    "garage_id" =>  $updatableData["garage_id"]
+])
+->first();
+if(!$job){
+    return response()->json([
+"message" => "job not found"
+    ], 404);
+}
+if ($job->status === "completed") {
+    // job an error response indicating that the status cannot be updated
+    return response()->json(["message" => "Status cannot be updated because it is 'completed'"], 422);
+}
 
-        $job  =  tap(Job::where([
-            "id" => $updatableData["id"],
-            "garage_id" =>  $updatableData["garage_id"]
-        ]))->update(collect($updatableData)->only([
-            "status",
-        ])->toArray()
-        )
-            // ->with("somthing")
-            ->first();
-            if(!$job){
-                return response()->json([
-            "message" => "job not found"
-                ], 404);
-            }
+if ($job) {
+    $job->status = $updatableData["status"];
+    $job->update(collect($updatableData)->only(["status"])->toArray());
+}
+
+
 
             if($job->status == "completed") {
                 if($job->booking->pre_booking_id) {

@@ -711,14 +711,15 @@ class BookingController extends Controller
 
 
                 if ($booking) {
+                    $booking->status = $updatableData["status"];
                     $booking->update(collect($updatableData)->only(["status"])->toArray());
                 }
 
-                    if ($booking->status != "confirmed") {
-                        return response()->json([
-                            "message" => "you can only accecpt or reject only a confirmed booking"
-                        ], 409);
-                    }
+                    // if ($booking->status != "confirmed") {
+                    //     return response()->json([
+                    //         "message" => "you can only accecpt or reject only a confirmed booking"
+                    //     ], 409);
+                    // }
 
 
                 if($booking->status == "rejected_by_garage_owner") {
@@ -1118,13 +1119,12 @@ class BookingController extends Controller
                 "customer",
                 "garage",
 
-
-
-
             )
                 ->where([
                     "garage_id" => $garage_id
-                ]);
+                ])
+                ->whereNotIn("bookings.status", ["converted_to_job"]);
+                ;
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {

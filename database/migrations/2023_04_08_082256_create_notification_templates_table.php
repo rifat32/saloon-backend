@@ -172,7 +172,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'job_deleted_by_garage_owner',
-                    "template"=> json_encode("hello [customer_name]!  job deleted changed  by [garage_owner_name] "),
+                    "template"=> json_encode("hello [customer_name]! job deleted by [garage_owner_name]"),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],
