@@ -723,10 +723,10 @@ if ($job) {
                         "id" => $prebooking->selected_bid_id
                     ])
                     ->update([
-                        "status" => "pending"
+                        "status" => "canceled_after_job"
                     ]);
                     $prebooking->selected_bid_id = NULL;
-                    $prebooking->status = "canceled_after_job";
+                    $prebooking->status = "pending";
                     $prebooking->save();
 
 
@@ -1105,10 +1105,10 @@ if ($job) {
                         "id" => $prebooking->selected_bid_id
                     ])
                     ->update([
-                        "status" => "pending"
+                        "status" => "canceled_after_job"
                     ]);
                     $prebooking->selected_bid_id = NULL;
-                    $prebooking->status = "canceled_after_job";
+                    $prebooking->status = "pending";
                     $prebooking->save();
 
 
@@ -1137,7 +1137,7 @@ if ($job) {
                 "job_deleted_by_garage_owner"
             ));
         }
-            return response()->json($job, 200);
+        return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500,$request);
