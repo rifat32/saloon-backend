@@ -2775,11 +2775,7 @@ $data2["total_comment"] = $data2["total_comment"]->get();
     {
         try{
             $this->storeActivity($request,"");
-            if (!$request->user()->hasPermissionTo('review_view')) {
-                return response()->json([
-                    "message" => "You can not perform this action"
-                ], 401);
-            }
+
             // with
             $reviewValue = ReviewNew::with("value")->where([
                 "garage_id" => $garage_id,
@@ -2854,11 +2850,11 @@ $data2["total_comment"] = $data2["total_comment"]->get();
      {
          try{
              $this->storeActivity($request,"");
-             if (!$request->user()->hasPermissionTo('review_view')) {
-                 return response()->json([
-                     "message" => "You can not perform this action"
-                 ], 401);
-             }
+            //  if (!$request->user()->hasPermissionTo('review_view')) {
+            //      return response()->json([
+            //          "message" => "You can not perform this action"
+            //      ], 401);
+            //  }
              // with
              $reviewValue = ReviewNew::with("value")->where([
                  "garage_id" => $garage_id,

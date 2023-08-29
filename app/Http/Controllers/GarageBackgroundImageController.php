@@ -6,6 +6,7 @@ use App\Http\Requests\ImageUploadRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\Garage;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -199,10 +200,13 @@ File::put(config_path('setup-config.php'), '<?php return ' . var_export(config('
              $insertableData["image"]->move(public_path($location), $new_file_name);
 
 
-             $request->user()
+             User::where([
+                "id" => $request->user()->id
+             ])
              ->update([
                 "background_image" => ("/".$location."/".$new_file_name)
              ]);
+
 
 
 

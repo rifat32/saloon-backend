@@ -86,6 +86,8 @@ class NotificationController extends Controller
             $notifications = $notificationsQuery->orderByDesc("id")->paginate($perPage);
 
 
+
+
             $total_data = count($notifications->items());
             for ($i = 0; $i < $total_data; $i++) {
 
@@ -180,8 +182,12 @@ class NotificationController extends Controller
                 );
             }
 
+            $data = json_decode(json_encode($notifications),true);
 
-            return response()->json($notifications, 200);
+            $data["total_unread_messages"] = Notification::where('receiver_id', $request->user()->id)->where([
+                "status" => "unread"
+            ])->count();
+            return response()->json($data, 200);
         } catch (Exception $e) {
 
             return $this->sendError($e, 500,$request);
@@ -366,8 +372,12 @@ class NotificationController extends Controller
                 );
             }
 
+            $data = json_decode(json_encode($notifications),true);
 
-            return response()->json($notifications, 200);
+            $data["total_unread_messages"] = Notification::where('receiver_id', $request->user()->id)->where([
+                "status" => "unread"
+            ])->count();
+            return response()->json($data, 200);
         } catch (Exception $e) {
 
             return $this->sendError($e, 500,$request);
