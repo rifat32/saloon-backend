@@ -2777,7 +2777,10 @@ $data2["total_comment"] = $data2["total_comment"]->get();
             $this->storeActivity($request,"");
 
             // with
-            $reviewValue = ReviewNew::with("value")->where([
+            $reviewValue = ReviewNew::with(
+                "value.star",
+            "value.tag",
+            "value.question",)->where([
                 "garage_id" => $garage_id,
             ])
                 ->get();
@@ -2856,7 +2859,11 @@ $data2["total_comment"] = $data2["total_comment"]->get();
             //      ], 401);
             //  }
              // with
-             $reviewValue = ReviewNew::with("value")->where([
+             $reviewValue = ReviewNew::with(
+                "value.star",
+                "value.tag",
+                "value.question",
+                )->where([
                  "garage_id" => $garage_id,
              ])
                  ->paginate($perPage);

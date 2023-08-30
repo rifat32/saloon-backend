@@ -20,7 +20,13 @@ class ReviewValueNew extends Model
         'updated_at',
     ];
 
-    public function garage() {
-        return $this->hasOne(Garage::class,'id','garage_id');
+    public function tag() {
+        return $this->belongsTo(Tag::class,'tag_id','id');
+    }
+    public function star() {
+        return $this->belongsTo(Star::class,'star_id','id');
+    }
+    public function question() {
+        return $this->belongsTo(Question::class,'question_id','id');
     }
 }
