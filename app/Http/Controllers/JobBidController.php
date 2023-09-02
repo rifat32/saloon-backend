@@ -505,7 +505,13 @@ class JobBidController extends Controller
                 $garage_timesQuery = GarageTime::where([
                     "garage_id" => $insertableData["garage_id"]
                 ])
-                ->where('garage_times.day', "=", $dayOfWeek);
+                ->where('garage_times.day', "=", $dayOfWeek)
+                ->where('garage_times.is_closed', "=", 0);
+
+                $insertableData["job_start_time"] = Carbon::createFromFormat('H:i', $insertableData["job_start_time"])
+                ->format('H:i:s');
+               $insertableData["job_end_time"] = Carbon::createFromFormat('H:i', $insertableData["job_end_time"])
+                ->format('H:i:s');
 
                 if(!empty($insertableData["job_start_time"])) {
                     $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])
@@ -818,11 +824,19 @@ class JobBidController extends Controller
                     ]);
                 }
 
-
-
-
-
-                $job_bid  =  tap(JobBid::where(["id" => $updatableData["id"]]))->update(
+                $job_bidQuery  =  JobBid::where(["id" => $updatableData["id"]])
+                  ;
+                    $job_bid =    $job_bidQuery->first();
+                    if(!$job_bid) {
+                        return response()->json([
+                            "message" => "no job bid found"
+                            ],404);
+                }
+                if ($job_bid->status != "pending") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "only pending bid can be updated"], 403);
+                }
+                $job_bid  =  tap($job_bidQuery)->update(
                     collect($updatableData)->only([
                         "garage_id",
                         "pre_booking_id",
@@ -836,10 +850,9 @@ class JobBidController extends Controller
                     // ->with("somthing")
 
                     ->first();
+
                     if(!$job_bid) {
-                        return response()->json([
-                            "message" => "no job bid found"
-                            ],404);
+                      throw new Exception("Something went wrong");
 
                 }
 
@@ -1215,10 +1228,16 @@ class JobBidController extends Controller
                 "id" => $id
             ])
                 ->first();
+
+
             if (!$job_bid) {
                 return response()->json([
                     "message" => "job bid not found"
                 ], 404);
+            }
+            if ($job_bid->status != "pending") {
+                // Return an error response indicating that the status cannot be updated
+                return response()->json(["message" => "only pending bid can be deleted"], 403);
             }
             $job_bid->delete();
 

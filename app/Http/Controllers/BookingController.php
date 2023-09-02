@@ -151,7 +151,11 @@ class BookingController extends Controller
                 $garage_timesQuery = GarageTime::where([
                     "garage_id" => $insertableData["garage_id"]
                 ])
-                ->where('garage_times.day', "=", $dayOfWeek);
+                ->where('garage_times.day', "=", $dayOfWeek)
+                ->where('garage_times.is_closed', "=", 0);
+                $insertableData["job_start_time"] = Carbon::createFromFormat('H:i', $insertableData["job_start_time"])
+                ->format('H:i:s');
+
 
                 if(!empty($insertableData["job_start_time"])) {
                     $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])

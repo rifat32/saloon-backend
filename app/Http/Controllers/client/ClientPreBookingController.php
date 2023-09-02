@@ -953,7 +953,7 @@ $job_bid->save();
 
                     Notification::create([
                         "sender_id" => $request->user()->id,
-                        "receiver_id" => $job_bid->pre_booking->customer_id,
+                        "receiver_id" => $job_bid->garage->owner_id,
                         "customer_id" => $job_bid->pre_booking->customer_id,
                         "garage_id" => $job_bid->garage_id,
                         "bid_id" => $job_bid->id,
@@ -989,6 +989,7 @@ $job_bid->save();
                         "additional_information" => $pre_booking->additional_information,
                         "job_start_date" => $job_bid->job_start_date,
                         "job_start_time" => $job_bid->job_start_time,
+                        "job_end_time" => $job_bid->job_end_time,
                         // "job_end_time" => $pre_booking->job_end_time,
 
                         "fuel" => $pre_booking->fuel,
@@ -1054,11 +1055,12 @@ $job_bid->save();
 
                     Notification::create([
                         "sender_id" => $request->user()->id,
-                        "receiver_id" => $job_bid->pre_booking->customer_id,
+                        "receiver_id" => $job_bid->garage->owner_id,
                         "customer_id" => $job_bid->pre_booking->customer_id,
                         "garage_id" => $job_bid->garage_id,
                         "bid_id" => $job_bid->id,
                         "pre_booking_id" => $job_bid->pre_booking->id,
+                        "booking_id" => $booking->id,
                         "notification_template_id" => $notification_template->id,
                         "status" => "unread",
                     ]);

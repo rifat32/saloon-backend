@@ -27,6 +27,9 @@ class TimeValidation implements Rule
     {
 
             $timeParts = explode(':', $value);
+            if(empty($timeParts[0]) || empty($timeParts[1])) {
+                return false;
+            }
             $hour = $timeParts[0];
             $minute = $timeParts[1];
             $second = !empty($timeParts[2])?$timeParts[2]:0;

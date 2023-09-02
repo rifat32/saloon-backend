@@ -29,7 +29,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'bid_created_by_garage_owner',
-                    "template"=> json_encode("A garage named [garage_name] posted a bid. its owner is"),
+                    "template"=> json_encode("A garage named [garage_name] posted a bid. its owner is [garage_owner_name]"),
                     "link"=> json_encode("/[garage_id]/[bid_id]"),
                     "is_active" => 1
                 ],
@@ -61,7 +61,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'booking_created_by_garage_owner',
-                    "template"=> json_encode("hello [customer_name]! your booking is updated by the garage named[garage_owner_name],[garage_name] "),
+                    "template"=> json_encode("hello [customer_name]! your booking is updated by the garage named [garage_owner_name],[garage_name] "),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],
