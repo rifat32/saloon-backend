@@ -566,7 +566,7 @@ if(!$user->hasRole('garage_owner')) {
     $insertableData['user']['created_by'] = $request->user()->id;
 
     $insertableData['user']['address_line_1'] = $insertableData['garage']['address_line_1'];
-    $insertableData['user']['address_line_2'] = $insertableData['garage']['address_line_2'];
+    $insertableData['user']['address_line_2'] = (!empty($insertableData['garage']['address_line_2'])?$insertableData['garage']['address_line_2']:"") ;
     $insertableData['user']['country'] = $insertableData['garage']['country'];
     $insertableData['user']['city'] = $insertableData['garage']['city'];
     $insertableData['user']['postcode'] = $insertableData['garage']['postcode'];

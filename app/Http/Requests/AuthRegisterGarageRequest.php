@@ -109,7 +109,9 @@ class AuthRegisterGarageRequest extends FormRequest
         return [
             'user.first_Name.required' => $this->customRequiredMessage("first name"),
             'user.last_Name.required' => $this->customRequiredMessage("last name"),
+            'user.phone.required' => $this->customRequiredMessage("phone"),
             'user.email.required' => $this->customRequiredMessage("email"),
+            'user.email.unique' => "The email has already been taken.",
             'user.password.required' => $this->customRequiredMessage("password"),
 
 
