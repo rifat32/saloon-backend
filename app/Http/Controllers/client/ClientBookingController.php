@@ -537,8 +537,8 @@ class ClientBookingController extends Controller
 
 
 
-                    $job->price = $total_price;
-                    $job->save();
+                    // $job->price = $total_price;
+                    // $job->save();
                     $booking->status = "converted_to_job";
                     $booking->save();
                     // $booking->delete();

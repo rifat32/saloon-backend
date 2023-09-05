@@ -16,7 +16,7 @@ class CreateGaragePackagesTable extends Migration
         Schema::create('garage_packages', function (Blueprint $table) {
             $table->id();
             $table->string("name");
-            $table->text("description");
+            $table->text("description")->nullable();
             $table->double("price")->default(0);
             $table->unsignedBigInteger("garage_id");
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
