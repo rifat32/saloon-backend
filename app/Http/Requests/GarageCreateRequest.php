@@ -6,6 +6,7 @@ use App\Rules\DayValidation;
 use App\Rules\SomeTimes;
 use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Validator;
 
 class GarageCreateRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ class GarageCreateRequest extends FormRequest
             'garage.owner_id' => 'required|numeric',
 
 
-            'garage.name' => 'required|string|max:255',
+
             'garage.name' => 'required|string|max:255',
             'garage.about' => 'nullable|string',
             'garage.web_page' => 'nullable|string',
@@ -100,6 +101,24 @@ class GarageCreateRequest extends FormRequest
     public function messages()
     {
 
+
+        $defaultMessages = Validator::getDefaultMessages();
+
+        $requiredMessage = Validator::getDefaultMessages()['required'];
+        $requiredMessage = str_replace('garage.name', 'name', $requiredMessage);
+
+        $defaultMessages['garage.name.required'] = $requiredMessage;
+        // Edit the default messages as needed
+        $defaultMessages['garage.name.required'] = 'The garage name is required.';
+        $defaultMessages['garage.email.required'] = 'The garage email is required.';
+        $defaultMessages['garage.country.required'] = 'The garage country is required.';
+        $defaultMessages['garage.city.required'] = 'The garage city is required.';
+        $defaultMessages['garage.address_line_1.required'] = 'The garage address line 1 is required.';
+
+        return $defaultMessages;
+
+
+
         return [
 
 
@@ -108,6 +127,7 @@ class GarageCreateRequest extends FormRequest
 
             'garage.name.required' => $this->customRequiredMessage("garage name"),
             'garage.email.required' => $this->customRequiredMessage("garage email"),
+              'garage.email.required' => $this->customRequiredMessage("garage email"),
             'garage.country.required' => $this->customRequiredMessage("garage country"),
             'garage.city.required' => $this->customRequiredMessage("garage city"),
 

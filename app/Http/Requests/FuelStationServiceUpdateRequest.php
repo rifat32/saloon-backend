@@ -26,7 +26,7 @@ class FuelStationServiceUpdateRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "name" => "required|string",
-            "icon" => "nullable|string",
+            "icon" => "required|string",
         ];
     }
 }

@@ -20,7 +20,7 @@ class PreBooking extends Model
         "status",
         "job_start_date",
         "job_start_time",
-
+"job_end_date",
         "fuel",
         "transmission",
 

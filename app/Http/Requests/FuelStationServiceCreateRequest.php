@@ -25,7 +25,7 @@ class FuelStationServiceCreateRequest extends FormRequest
     {
         return [
             "name" => "required|string",
-            "icon" => "nullable|string",
+            "icon" => "required|string",
         ];
     }
 }
