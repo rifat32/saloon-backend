@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DayValidation;
 use App\Rules\SomeTimes;
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
 class GarageCreateRequest extends FormRequest
@@ -62,6 +64,13 @@ class GarageCreateRequest extends FormRequest
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
 
+            "times" => "array",
+            "times.*.day" => ["numeric",new DayValidation],
+            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
+           ],
+            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation
+           ],
+           "times.*.is_closed" => ['required',"boolean"],
 
 
 

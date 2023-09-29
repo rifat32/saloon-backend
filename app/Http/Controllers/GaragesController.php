@@ -17,6 +17,7 @@ use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageGallery;
 use App\Models\GarageService;
+use App\Models\GarageTime;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -272,6 +273,19 @@ class GaragesController extends Controller
      *
      * }),
      *
+     *
+     *   *      *    @OA\Property(property="times", type="string", format="array",example={
+     *
+    *{"day":0,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":1,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":2,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+     *{"day":3,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":4,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":5,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":6,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true}
+     *
+     * }),
+     *
      *   *  @OA\Property(property="service", type="string", format="array",example={
      *{
 
@@ -376,6 +390,25 @@ if(!$user->hasRole('garage_owner')) {
 
         $insertableData['garage']['created_by'] = $request->user()->id;
         $garage =  Garage::create($insertableData['garage']);
+
+
+        GarageTime::where([
+            "garage_id" => $garage->id
+           ])
+           ->delete();
+           $timesArray = collect($insertableData["times"])->unique("day");
+           foreach($timesArray as $garage_time) {
+            GarageTime::create([
+                "garage_id" => $garage->id,
+                "day"=> $garage_time["day"],
+                "opening_time"=> $garage_time["opening_time"],
+                "closing_time"=> $garage_time["closing_time"],
+                "is_closed"=> $garage_time["is_closed"],
+            ]);
+           }
+
+
+
 
         if(!empty($insertableData["images"])) {
             foreach($insertableData["images"] as $garage_images){
