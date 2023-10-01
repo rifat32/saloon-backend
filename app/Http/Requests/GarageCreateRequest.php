@@ -65,7 +65,7 @@ class GarageCreateRequest extends FormRequest
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
 
-            "times" => "array",
+            "times" => "required|array",
             "times.*.day" => ["numeric",new DayValidation],
             "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
            ],

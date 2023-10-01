@@ -79,7 +79,7 @@ class AuthRegisterGarageRequestClient extends FormRequest
 
 
 
-            "times" => "array",
+            "times" => "required|array",
             "times.*.day" => ["numeric",new DayValidation],
             "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
            ],

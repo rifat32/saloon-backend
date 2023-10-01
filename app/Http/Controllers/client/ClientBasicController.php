@@ -62,8 +62,8 @@ class ClientBasicController extends Controller
 
 
 
-        if (!empty($request->country_code)) {
-            $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country_code . "%");
+        if (!empty($request->country)) {
+            $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country . "%");
 
         }
         if (!empty($request->city)) {
@@ -179,11 +179,11 @@ class ClientBasicController extends Controller
 * example="search_key"
 * ),
      * *  @OA\Parameter(
-* name="country_code",
+* name="country",
 * in="query",
-* description="country_code",
+* description="country",
 * required=true,
-* example="country_code"
+* example="country"
 * ),
      * *  @OA\Parameter(
 * name="address",
@@ -369,6 +369,8 @@ class ClientBasicController extends Controller
                 array_splice($info, 0);
 
                     $garages = $this->getGarageSearchQuery($request)
+           
+
                     ->groupBy("garages.id")
 
                     ->orderByDesc("garages.id")

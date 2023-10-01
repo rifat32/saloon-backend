@@ -791,6 +791,7 @@ class FuelStationController extends Controller
                 array_splice($info, 0);
 
                     $fuel_stations = $this->getFuelStationSearchQuery($request)
+               
                     ->groupBy("fuel_stations.id")
 
                     ->orderByDesc("fuel_stations.id")
