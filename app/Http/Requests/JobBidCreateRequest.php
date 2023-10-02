@@ -29,7 +29,7 @@ class JobBidCreateRequest extends FormRequest
             "pre_booking_id" => "required|numeric",
             "price" => "required|numeric",
             "offer_template"=> "required|string",
-            "job_start_date" => "required|date",
+            "job_start_date" => "required|date_format:Y-m-d",
             "job_start_time" => ['required','date_format:H:i', new TimeValidation
         ],
             "job_end_time" => ['required','date_format:H:i', new TimeValidation

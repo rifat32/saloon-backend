@@ -33,7 +33,7 @@ class BookingCreateRequestClient extends FormRequest
             "car_registration_year" => "nullable|date",
             "additional_information" => "nullable|string",
             // "status",
-            "job_start_date" => "required|date",
+            "job_start_date" => "required|date_format:Y-m-d",
             "job_start_time" => ['nullable','date_format:H:i', new TimeValidation
         ],
             // "job_end_date" => "required|date",
