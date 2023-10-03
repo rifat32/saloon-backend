@@ -631,6 +631,22 @@ if(!$user->hasRole('garage_owner')) {
             }
         }
 
+        GarageTime::where([
+            "garage_id" => $garage->id
+           ])
+           ->delete();
+           $timesArray = collect($insertableData["times"])->unique("day");
+           foreach($timesArray as $garage_time) {
+            GarageTime::create([
+                "garage_id" => $garage->id,
+                "day"=> $garage_time["day"],
+                "opening_time"=> $garage_time["opening_time"],
+                "closing_time"=> $garage_time["closing_time"],
+                "is_closed"=> $garage_time["is_closed"],
+            ]);
+           }
+
+
 
   // end garage info ##############
 

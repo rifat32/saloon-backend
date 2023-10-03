@@ -60,7 +60,7 @@ class AuthRegisterGarageRequestClient extends FormRequest
 
             'garage.currency' => 'nullable|string',
 
-            'garage.postcode' => 'nullable|string',
+            'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
             'garage.address_line_2' => 'nullable|string',
 
@@ -79,7 +79,7 @@ class AuthRegisterGarageRequestClient extends FormRequest
 
 
 
-            "times" => "required|array",
+            'times' => 'required|array|min:1',
             "times.*.day" => ["numeric",new DayValidation],
             "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
            ],

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DayValidation;
 use App\Rules\SomeTimes;
+use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
 
@@ -61,7 +63,7 @@ class AuthRegisterGarageRequest extends FormRequest
 
             'garage.currency' => 'nullable|string',
 
-            'garage.postcode' => 'nullable|string',
+            'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
             'garage.address_line_2' => 'nullable|string',
 
@@ -77,6 +79,13 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
 
+            'times' => 'required|array|min:1',
+            "times.*.day" => ["numeric",new DayValidation],
+            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
+           ],
+            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation
+           ],
+           "times.*.is_closed" => ['required',"boolean"],
 
 
 

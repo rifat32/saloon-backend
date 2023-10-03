@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegenerateTokenRequest;
-use App\Http\Requests\AuthRegisterGarageRequest;
+
 use App\Http\Requests\AuthRegisterGarageRequestClient;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Http\Requests\ChangePasswordRequest;

@@ -49,7 +49,7 @@ class GarageCreateRequest extends FormRequest
 
             'garage.currency' => 'nullable|string',
 
-            'garage.postcode' => 'nullable|string',
+            'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
             'garage.address_line_2' => 'nullable|string',
 
@@ -65,7 +65,7 @@ class GarageCreateRequest extends FormRequest
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
 
-            "times" => "required|array",
+            'times' => 'required|array|min:1',
             "times.*.day" => ["numeric",new DayValidation],
             "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
            ],
