@@ -107,33 +107,68 @@ class AuthRegisterGarageRequestClient extends FormRequest
 
 
     }
-
-    public function customRequiredMessage($property) {
-
-        return "The ".$property." must be required";
-    }
-
     public function messages()
     {
-
         return [
-            'user.first_Name.required' => $this->customRequiredMessage("first name"),
-            'user.last_Name.required' => $this->customRequiredMessage("last name"),
-            'user.email.required' => $this->customRequiredMessage("email"),
-            'user.password.required' => $this->customRequiredMessage("password"),
+            'user.first_Name.required' => 'The first name field is required.',
+            'user.last_Name.required' => 'The last name field is required.',
+            'user.email.required' => 'The email field is required.',
+            'user.password.required' => 'The password field is required.',
+            'user.password.confirmed' => 'The password confirmation does not match.',
+            'user.phone.required' => 'The phone field is required.',
+            'user.image.string' => 'The image must be a string.',
+            'user.email.unique' => 'The email has already been taken.',
 
+            'garage.name.required' => 'The name field is required.',
+            'garage.about.string' => 'The about field must be a string.',
+            'garage.web_page.string' => 'The web page field must be a string.',
+            'garage.phone.string' => 'The phone field must be a string.',
+            'garage.email.required' => 'The email field is required.',
+            'garage.email.unique' => 'The email has already been taken.',
+            'garage.additional_information.string' => 'The additional information field must be a string.',
+            'garage.lat.required' => 'The latitude field is required.',
+            'garage.long.required' => 'The longitude field is required.',
+            'garage.country.required' => 'The country field is required.',
+            'garage.city.required' => 'The city field is required.',
+            'garage.currency.string' => 'The currency field must be a string.',
+            'garage.postcode.required' => 'The postcode field is required.',
+            'garage.address_line_1.required' => 'The address line 1 field is required.',
+            'garage.address_line_2.string' => 'The address line 2 field must be a string.',
+            'garage.logo.string' => 'The logo field must be a string.',
+            'garage.image.string' => 'The image field must be a string.',
+            'garage.images.array' => 'The images field must be an array.',
+            'garage.images.*.string' => 'Each image in the images field must be a string.',
+            'garage.is_mobile_garage.required' => 'The is mobile garage field is required.',
+            'garage.is_mobile_garage.boolean' => 'The is mobile garage field must be a boolean.',
+            'garage.wifi_available.required' => 'The wifi available field is required.',
+            'garage.wifi_available.boolean' => 'The wifi available field must be a boolean.',
+            'garage.labour_rate.numeric' => 'The labour rate field must be numeric.',
 
+            'times.required' => 'The times field is required.',
+            'times.array' => 'The times field must be an array.',
+            'times.*.day.numeric' => 'Each day in the times field must be numeric.',
+            'times.*.opening_time.required' => 'The opening time field is required.',
+            'times.*.opening_time.date_format' => 'The opening time field must be in the format H:i.',
+            'times.*.closing_time.required' => 'The closing time field is required.',
+            'times.*.closing_time.date_format' => 'The closing time field must be in the format H:i.',
+            'times.*.is_closed.required' => 'The is closed field is required.',
+            'times.*.is_closed.boolean' => 'The is closed field must be a boolean.',
 
-
-            'garage.name.required' => $this->customRequiredMessage("garage name"),
-            'garage.email.required' => $this->customRequiredMessage("garage email"),
-            'garage.country.required' => $this->customRequiredMessage("garage country"),
-            'garage.city.required' => $this->customRequiredMessage("garage city"),
-
-            'garage.address_line_1.required' => $this->customRequiredMessage("garage address line 1"),
-
+            'service.array' => 'The service field must be an array.',
+            'service.required' => 'The service field is required.',
+            'service.*.automobile_category_id.numeric' => 'Each automobile category ID in the service field must be numeric.',
+            'service.*.services.required' => 'The services field is required.',
+            'service.*.services.array' => 'The services field must be an array.',
+            'service.*.services.*.id.numeric' => 'Each service ID in the services field must be numeric.',
+            'service.*.services.*.checked.boolean' => 'Each checked value in the services field must be a boolean.',
+            'service.*.automobile_makes.required' => 'The automobile makes field is required.',
+            'service.*.automobile_makes.array' => 'The automobile makes field must be an array.',
+            'service.*.automobile_makes.*.id.numeric' => 'Each automobile make ID in the automobile makes field must be numeric.',
+            'service.*.automobile_makes.*.checked.boolean' => 'Each checked value in the automobile makes field must be a boolean.',
         ];
     }
+
+
 
 
 

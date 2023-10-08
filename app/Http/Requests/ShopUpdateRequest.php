@@ -84,41 +84,91 @@ class ShopUpdateRequest extends FormRequest
 
     }
 
-    public function customRequiredMessage($property) {
-
-        return "The ".$property." must be required";
-    }
-
     public function messages()
     {
-
         return [
-            'user.first_Name.required' => $this->customRequiredMessage("first name"),
-            'user.last_Name.required' => $this->customRequiredMessage("last name"),
-            'user.email.required' => $this->customRequiredMessage("email"),
-            // 'user.password.confirmed' => $this->customRequiredMessage("password"),
+            'user.id.required' => 'The user ID field is required.',
+            'user.id.numeric' => 'The user ID must be a numeric value.',
 
+            'user.first_Name.required' => 'The first name field is required.',
+            'user.first_Name.string' => 'The first name field must be a string.',
+            'user.first_Name.max' => 'The first name field may not be greater than :max characters.',
 
+            'user.last_Name.required' => 'The last name field is required.',
+            'user.last_Name.string' => 'The last name field must be a string.',
+            'user.last_Name.max' => 'The last name field may not be greater than :max characters.',
 
+            'user.email.required' => 'The email field is required.',
+            'user.email.string' => 'The email field must be a string.',
+            'user.email.email' => 'The email field must be a valid email address.',
+            'user.email.max' => 'The email field may not be greater than :max characters.',
 
-            'shop.name.required' => $this->customRequiredMessage("shop name"),
-            'shop.email.required' => $this->customRequiredMessage("shop email"),
-            'shop.country.required' => $this->customRequiredMessage("shop country"),
-            'shop.city.required' => $this->customRequiredMessage("shop city"),
-            
-            'shop.address_line_1.required' => $this->customRequiredMessage("shop address line 1"),
+            'user.password.confirmed' => 'The password confirmation does not match.',
+            'user.password.string' => 'The password field must be a string.',
+            'user.password.min' => 'The password must be at least :min characters.',
 
+            'user.phone.required' => 'The phone field is required.',
+            'user.phone.string' => 'The phone field must be a string.',
 
+            'user.image.nullable' => 'The image field must be nullable.',
 
+            'user.address_line_1.string' => 'The address line 1 field must be a string.',
+            'user.address_line_2.string' => 'The address line 2 field must be a string.',
+            'user.country.string' => 'The country field must be a string.',
+            'user.city.string' => 'The city field must be a string.',
+            'user.postcode.string' => 'The postcode field must be a string.',
+            'user.lat.string' => 'The latitude field must be a string.',
+            'user.long.string' => 'The longitude field must be a string.',
 
+            'shop.id.required' => 'The shop ID field is required.',
+            'shop.id.numeric' => 'The shop ID must be a numeric value.',
 
+            'shop.name.required' => 'The shop name field is required.',
+            'shop.name.string' => 'The shop name field must be a string.',
+            'shop.name.max' => 'The shop name field may not be greater than :max characters.',
 
+            'shop.about.string' => 'The about field must be a string.',
+            'shop.web_page.string' => 'The web page field must be a string.',
+            'shop.phone.string' => 'The phone field must be a string.',
 
+            'shop.email.required' => 'The shop email field is required.',
+            'shop.email.string' => 'The shop email field must be a string.',
+            'shop.email.email' => 'The shop email field must be a valid email address.',
+            'shop.email.max' => 'The shop email field may not be greater than :max characters.',
 
+            'shop.additional_information.string' => 'The additional information field must be a string.',
 
+            'shop.lat.string' => 'The latitude field must be a string.',
+            'shop.long.string' => 'The longitude field must be a string.',
 
+            'shop.country.required' => 'The country field is required.',
+            'shop.country.string' => 'The country field must be a string.',
 
+            'shop.city.required' => 'The city field is required.',
+            'shop.city.string' => 'The city field must be a string.',
 
+            'shop.postcode.string' => 'The postcode field must be a string.',
+
+            'shop.address_line_1.required' => 'The address line 1 field is required.',
+            'shop.address_line_1.string' => 'The address line 1 field must be a string.',
+
+            'shop.address_line_2.string' => 'The address line 2 field must be a string.',
+
+            'shop.sku_prefix.string' => 'The SKU prefix field must be a string.',
+            'shop.logo.string' => 'The logo field must be a string.',
+            'shop.image.string' => 'The image field must be a string.',
+
+            'shop.images.array' => 'The images field must be an array.',
+            'shop.images.*.string' => 'Each image in the images field must be a string.',
+
+            'shop.is_mobile_shop.required' => 'The is mobile shop field is required.',
+            'shop.is_mobile_shop.boolean' => 'The is mobile shop field must be a boolean.',
+
+            'shop.wifi_available.required' => 'The wifi available field is required.',
+            'shop.wifi_available.boolean' => 'The wifi available field must be a boolean.',
+
+            'shop.labour_rate.numeric' => 'The labour rate field must be numeric.',
         ];
     }
+
 }

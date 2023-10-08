@@ -76,30 +76,76 @@ class GarageUpdateSeparateRequest extends FormRequest
 
     }
 
-    public function customRequiredMessage($property) {
-
-        return "The ".$property." must be required";
-    }
-
     public function messages()
     {
-
         return [
+            'garage.id.required' => 'The garage ID field is required.',
+            'garage.id.numeric' => 'The garage ID must be a numeric value.',
+            'garage.id.exists' => 'The selected garage ID is invalid.',
 
+            'garage.name.required' => 'The name field is required.',
+            'garage.name.string' => 'The name field must be a string.',
+            'garage.name.max' => 'The name field may not be greater than :max characters.',
 
+            'garage.about.string' => 'The about field must be a string.',
+            'garage.web_page.string' => 'The web page field must be a string.',
+            'garage.phone.string' => 'The phone field must be a string.',
+            'garage.email.required' => 'The email field is required.',
+            'garage.email.string' => 'The email field must be a string.',
+            'garage.email.unique' => 'The email has already been taken.',
+            'garage.email.exists' => 'The selected email is invalid.',
+            'garage.additional_information.string' => 'The additional information field must be a string.',
 
+            'garage.lat.required' => 'The latitude field is required.',
+            'garage.lat.string' => 'The latitude field must be a string.',
 
+            'garage.long.required' => 'The longitude field is required.',
+            'garage.long.string' => 'The longitude field must be a string.',
 
-            'garage.name.required' => $this->customRequiredMessage("garage name"),
-            'garage.email.required' => $this->customRequiredMessage("garage email"),
-            'garage.country.required' => $this->customRequiredMessage("garage country"),
-            'garage.city.required' => $this->customRequiredMessage("garage city"),
+            'garage.country.required' => 'The country field is required.',
+            'garage.country.string' => 'The country field must be a string.',
 
-            'garage.address_line_1.required' => $this->customRequiredMessage("garage address line 1"),
+            'garage.city.required' => 'The city field is required.',
+            'garage.city.string' => 'The city field must be a string.',
 
+            'garage.postcode.string' => 'The postcode field must be a string.',
 
+            'garage.address_line_1.required' => 'The address line 1 field is required.',
+            'garage.address_line_1.string' => 'The address line 1 field must be a string.',
 
+            'garage.address_line_2.string' => 'The address line 2 field must be a string.',
 
+            'garage.logo.string' => 'The logo field must be a string.',
+            'garage.image.string' => 'The image field must be a string.',
+
+            'garage.images.array' => 'The images field must be an array.',
+            'garage.images.*.string' => 'Each image in the images field must be a string.',
+
+            'garage.is_mobile_garage.required' => 'The is mobile garage field is required.',
+            'garage.is_mobile_garage.boolean' => 'The is mobile garage field must be a boolean.',
+
+            'garage.wifi_available.required' => 'The wifi available field is required.',
+            'garage.wifi_available.boolean' => 'The wifi available field must be a boolean.',
+
+            'garage.labour_rate.numeric' => 'The labour rate field must be numeric.',
+
+            'service.array' => 'The service field must be an array.',
+            'service.required' => 'The service field is required.',
+            'service.*.automobile_category_id.required' => 'The automobile category ID field is required.',
+            'service.*.automobile_category_id.numeric' => 'The automobile category ID must be a numeric value.',
+            'service.*.services.required' => 'The services field is required.',
+            'service.*.services.array' => 'The services field must be an array.',
+            'service.*.services.*.id.required' => 'The service ID field is required.',
+            'service.*.services.*.id.numeric' => 'The service ID must be a numeric value.',
+            'service.*.services.*.checked.required' => 'The checked field for services is required.',
+            'service.*.services.*.checked.boolean' => 'The checked field for services must be a boolean.',
+            'service.*.automobile_makes.required' => 'The automobile makes field is required.',
+            'service.*.automobile_makes.array' => 'The automobile makes field must be an array.',
+            'service.*.automobile_makes.*.id.required' => 'The automobile make ID field is required.',
+            'service.*.automobile_makes.*.id.numeric' => 'The automobile make ID must be a numeric value.',
+            'service.*.automobile_makes.*.checked.required' => 'The checked field for automobile makes is required.',
+            'service.*.automobile_makes.*.checked.boolean' => 'The checked field for automobile makes must be a boolean.',
         ];
     }
+
 }
