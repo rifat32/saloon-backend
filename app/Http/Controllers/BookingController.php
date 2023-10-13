@@ -318,12 +318,12 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if (env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_created_by_garage_owner"
-                    ));
-                }
+                // if (env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //         $booking,
+                //         "booking_created_by_garage_owner"
+                //     ));
+                // }
 
                 return response($booking, 201);
             });
@@ -611,12 +611,12 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if (env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_updated_by_garage_owner"
-                    ));
-                }
+                // if (env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //         $booking,
+                //         "booking_updated_by_garage_owner"
+                //     ));
+                // }
 
                 return response($booking, 201);
             });
@@ -760,12 +760,12 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if (env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_status_changed_by_garage_owner"
-                    ));
-                }
+                // if (env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //         $booking,
+                //         "booking_status_changed_by_garage_owner"
+                //     ));
+                // }
                 return response($booking, 201);
             });
         } catch (Exception $e) {
@@ -918,12 +918,12 @@ class BookingController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if (env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_confirmed_by_garage_owner"
-                    ));
-                }
+                // if (env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //         $booking,
+                //         "booking_confirmed_by_garage_owner"
+                //     ));
+                // }
 
 
 
@@ -1380,12 +1380,12 @@ class BookingController extends Controller
                 "notification_template_id" => $notification_template->id,
                 "status" => "unread",
             ]);
-            if (env("SEND_EMAIL") == true) {
-                Mail::to($booking->customer->email)->send(new DynamicMail(
-                    $booking,
-                    "booking_deleted_by_garage_owner"
-                ));
-            }
+            // if (env("SEND_EMAIL") == true) {
+            //     Mail::to($booking->customer->email)->send(new DynamicMail(
+            //         $booking,
+            //         "booking_deleted_by_garage_owner"
+            //     ));
+            // }
             $booking->delete();
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

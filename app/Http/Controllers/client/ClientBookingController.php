@@ -330,12 +330,12 @@ class ClientBookingController extends Controller
                     "status" => "unread",
                 ]);
 
-                if(env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                    $booking,
-                    "booking_created_by_client"
-                ));
-                }
+                // if(env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //     $booking,
+                //     "booking_created_by_client"
+                // ));
+                // }
 
                 return response($booking, 201);
             });
@@ -463,12 +463,12 @@ class ClientBookingController extends Controller
                         "notification_template_id" => $notification_template->id,
                         "status" => "unread",
                     ]);
-                    if(env("SEND_EMAIL") == true) {
-                        Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_rejected_by_client"
-                    ));
-                    }
+                    // if(env("SEND_EMAIL") == true) {
+                    //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                    //     $booking,
+                    //     "booking_rejected_by_client"
+                    // ));
+                    // }
 
                 } else if ($updatableData["status"] == "accepted") {
 
@@ -556,11 +556,11 @@ class ClientBookingController extends Controller
                         "notification_template_id" => $notification_template->id,
                         "status" => "unread",
                     ]);
-                    if(env("SEND_EMAIL") == true) {
-                        Mail::to($booking->customer->email)->send(new DynamicMail(
-                        $booking,
-                        "booking_accepted_by_client"
-                    ));}
+                    // if(env("SEND_EMAIL") == true) {
+                    //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                    //     $booking,
+                    //     "booking_accepted_by_client"
+                    // ));}
                 }
 
 
@@ -842,11 +842,11 @@ Coupon::where([
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if(env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                    $booking,
-                    "booking_updated_by_client"
-                ));}
+                // if(env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //     $booking,
+                //     "booking_updated_by_client"
+                // ));}
 
 
                 return response($booking, 201);
@@ -1196,12 +1196,12 @@ Coupon::where([
                 "notification_template_id" => $notification_template->id,
                 "status" => "unread",
             ]);
-                if(env("SEND_EMAIL") == true) {
-                    Mail::to($booking->customer->email)->send(new DynamicMail(
-                    $booking,
-                    "booking_deleted_by_client"
-                ));
-            }
+            //     if(env("SEND_EMAIL") == true) {
+            //         Mail::to($booking->customer->email)->send(new DynamicMail(
+            //         $booking,
+            //         "booking_deleted_by_client"
+            //     ));
+            // }
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {

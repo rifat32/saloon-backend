@@ -94,6 +94,7 @@ class AuthRegisterShopRequest extends FormRequest
             'user.last_Name.max' => 'The last name field may not be greater than :max characters.',
 
             'user.email.required' => 'The email field is required.',
+            'user.email.email' => 'The email must be a valid email address.',
             'user.email.string' => 'The email field must be a string.',
             'user.email.email' => 'The email field must be a valid email address.',
             'user.email.max' => 'The email field may not be greater than :max characters.',

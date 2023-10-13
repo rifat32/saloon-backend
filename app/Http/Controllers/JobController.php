@@ -296,12 +296,12 @@ class JobController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if(env("SEND_EMAIL") == true) {
-                    Mail::to($job->customer->email)->send(new DynamicMail(
-                    $job,
-                    "job_created_by_garage_owner"
-                ));
-            }
+            //     if(env("SEND_EMAIL") == true) {
+            //         Mail::to($job->customer->email)->send(new DynamicMail(
+            //         $job,
+            //         "job_created_by_garage_owner"
+            //     ));
+            // }
 
     return response([
         "ok" => true
@@ -581,12 +581,12 @@ class JobController extends Controller
                     "notification_template_id" => $notification_template->id,
                     "status" => "unread",
                 ]);
-                if(env("SEND_EMAIL") == true) {
-                    Mail::to($job->customer->email)->send(new DynamicMail(
-                    $job,
-                    "job_updated_by_garage_owner"
-                ));
-            }
+            //     if(env("SEND_EMAIL") == true) {
+            //         Mail::to($job->customer->email)->send(new DynamicMail(
+            //         $job,
+            //         "job_updated_by_garage_owner"
+            //     ));
+            // }
 
 
     return response($job, 201);
@@ -747,12 +747,12 @@ if ($job) {
                 "notification_template_id" => $notification_template->id,
                 "status" => "unread",
             ]);
-            if(env("SEND_EMAIL") == true) {
-                Mail::to($job->customer->email)->send(new DynamicMail(
-                $job,
-                "job_status_changed_by_garage_owner"
-            ));
-        }
+        //     if(env("SEND_EMAIL") == true) {
+        //         Mail::to($job->customer->email)->send(new DynamicMail(
+        //         $job,
+        //         "job_status_changed_by_garage_owner"
+        //     ));
+        // }
     return response($job, 201);
 });
 
@@ -1131,12 +1131,12 @@ if ($job) {
                 "notification_template_id" => $notification_template->id,
                 "status" => "unread",
             ]);
-            if(env("SEND_EMAIL") == true) {
-                Mail::to($job->customer->email)->send(new DynamicMail(
-                $job,
-                "job_deleted_by_garage_owner"
-            ));
-        }
+        //     if(env("SEND_EMAIL") == true) {
+        //         Mail::to($job->customer->email)->send(new DynamicMail(
+        //         $job,
+        //         "job_deleted_by_garage_owner"
+        //     ));
+        // }
         return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 

@@ -30,7 +30,7 @@ class GarageUpdateRequest extends FormRequest
             'user.last_Name' => 'required|string|max:255',
             // 'user.email' => 'required|string|email|indisposable|max:255',
             // 'user.email' => 'required|string|email|max:255',
-            'user.email' => 'required|string|unique:users,email,' . $this->user["id"] . ',id',
+            'user.email' => 'required|string|email|unique:users,email,' . $this->user["id"] . ',id',
 
             'user.password' => 'nullable|confirmed|string|min:6',
             'user.phone' => 'required|string',
@@ -109,6 +109,7 @@ class GarageUpdateRequest extends FormRequest
         'user.last_Name.max' => 'The last name field may not be greater than :max characters.',
 
         'user.email.required' => 'The email field is required.',
+        'user.email.email' => 'The email must be a valid email address.',
         'user.email.string' => 'The email field must be a string.',
         'user.email.unique' => 'The email has already been taken.',
         'user.email.exists' => 'The selected email is invalid.',
@@ -134,6 +135,7 @@ class GarageUpdateRequest extends FormRequest
         'garage.web_page.string' => 'The web page field must be a string.',
         'garage.phone.string' => 'The phone field must be a string.',
         'garage.email.required' => 'The email field is required.',
+        'garage.email.email' => 'The email must be a valid email address.',
         'garage.email.string' => 'The email field must be a string.',
         'garage.email.unique' => 'The email has already been taken.',
         'garage.email.exists' => 'The selected email is invalid.',

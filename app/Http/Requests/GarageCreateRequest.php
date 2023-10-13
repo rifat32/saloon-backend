@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\DayValidation;
 use App\Rules\SomeTimes;
+use App\Rules\TimeOrderRule;
 use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -67,10 +68,10 @@ class GarageCreateRequest extends FormRequest
 
             'times' => 'required|array|min:1',
             "times.*.day" => ["numeric",new DayValidation],
-            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
-           ],
-            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation
-           ],
+            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+        ],
+         "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+        ],
            "times.*.is_closed" => ['required',"boolean"],
 
 

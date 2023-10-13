@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Rules\DayValidation;
 use App\Rules\SomeTimes;
+use App\Rules\TimeOrderRule;
 use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
@@ -81,10 +82,10 @@ class AuthRegisterGarageRequest extends FormRequest
 
             'times' => 'required|array|min:1',
             "times.*.day" => ["numeric",new DayValidation],
-            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation
-           ],
-            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation
-           ],
+            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+        ],
+         "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+        ],
            "times.*.is_closed" => ['required',"boolean"],
 
 
@@ -115,6 +116,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.first_Name.required' => 'The first name field is required.',
             'user.last_Name.required' => 'The last name field is required.',
             'user.email.required' => 'The email field is required.',
+            'user.email.email' => 'The email must be a valid email address.',
             'user.email.unique' => 'The email has already been taken.',
             'user.password.min' => 'The password must be at least :min characters.',
             'user.send_password.required' => 'The send password field is required.',
@@ -127,6 +129,8 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.web_page.string' => 'The web page must be a string.',
             'garage.phone.string' => 'The phone must be a string.',
             'garage.email.required' => 'The email field is required.',
+            'garage.email.email' => 'The email must be a valid email address.',
+
             'garage.email.unique' => 'The email has already been taken.',
             'garage.lat.required' => 'The latitude field is required.',
             'garage.long.required' => 'The longitude field is required.',
