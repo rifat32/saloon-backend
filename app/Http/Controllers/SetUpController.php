@@ -373,4 +373,20 @@ return "swagger generated";
 
                                                 return response()->json("done",200);
     }
+    public function backupFuelStationService() {
+        foreach(DB::connection('backup_database')->table('fuel_station_services')->get() as $backup_data){
+
+        $data_exists = DB::connection('mysql')->table('fuel_station_services')->where([
+            "id" => $backup_data->id
+           ])->first();
+           if(!$data_exists) {
+            DB::connection('mysql')->table('fuel_station_services')->insert(get_object_vars($backup_data));
+           }
+        }
+
+
+
+
+                                                return response()->json("done",200);
+    }
 }

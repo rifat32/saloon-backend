@@ -32,7 +32,7 @@ Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
 Route::get('/setup2', [SetUpController::class, "setUp2"])->name("setup2");
 
 Route::get('/backup', [SetUpController::class, "backup"])->name("backup");
-
+Route::get('/backup/fuel-station-services', [SetUpController::class, "backupFuelStationService"])->name("backupFuelStationSubService");
 
 Route::get('/roleRefresh', [SetUpController::class, "roleRefresh"])->name("roleRefresh");
 

@@ -33,7 +33,7 @@ class CouponUpdateRequest extends FormRequest
             "discount_amount"=>"required|numeric",
             "min_total"=>"nullable|numeric",
             "max_total"=>"nullable|numeric",
-            "redemptions"=>"required|numeric",
+            "redemptions"=>"nullable|numeric",
             "coupon_start_date"=>"required|date",
             "coupon_end_date"=>"required|date",
             "is_auto_apply"=>"required|boolean",

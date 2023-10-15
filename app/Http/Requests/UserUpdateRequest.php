@@ -34,7 +34,7 @@ class UserUpdateRequest extends FormRequest
             'password' => 'nullable|confirmed|string|min:6',
             'phone' => 'required|string',
             'image' => 'nullable',
-            'address_line_1' => 'nullable',
+            'address_line_1' => 'required|string',
             'address_line_2' => 'nullable',
             'country' => 'required|string',
             'city' => 'required|string',
