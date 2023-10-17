@@ -88,6 +88,7 @@ Route::get('/v1.0/automobile-models-all', [AutomobilesController::class, "getAut
 Route::get('/v1.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryId"]);
 Route::get('/v2.0/services-all/{categoryId}', [ServiceController::class, "getAllServicesByCategoryIdV2"]);
 Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesAll"]);
+Route::get('/v1.0/garage-sub-services-all/{garage_id}', [GarageServiceController::class, "getGarageSubServicesAll"]);
 
 Route::get('/v1.0/garage-packages/get/all/{garage_id}', [GaragePackageController::class, "getGaragePackagesAll"]);
 

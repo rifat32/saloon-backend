@@ -113,7 +113,9 @@ class GaragePackageController extends Controller
 
                     foreach ($insertableData["sub_service_ids"] as $index=>$sub_service_id) {
                         $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+
                             ->where([
+                                "garage_services.garage_id" => $insertableData["garage_id"],
                                 "garage_sub_services.sub_service_id" => $sub_service_id,
 
                             ])
