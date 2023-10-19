@@ -30,10 +30,10 @@ class Notification extends Model
         return $this->belongsTo(NotificationTemplate::class,'notification_template_id', 'id');
     }
     public function customer(){
-        return $this->belongsTo(User::class,'customer_id', 'id');
+        return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
 
     public function booking(){

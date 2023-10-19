@@ -70,7 +70,10 @@ class ClientBasicController extends Controller
             $garagesQuery =   $garagesQuery->where("city", "like", "%" . $request->city . "%");
 
         }
+        if (!empty($request->address_line_1)) {
+            $garagesQuery =   $garagesQuery->where("address_line_1", "like", "%" . $request->address_line_1 . "%");
 
+        }
 
 
         if (!empty($request->is_mobile_garage)) {
@@ -369,7 +372,7 @@ class ClientBasicController extends Controller
                 array_splice($info, 0);
 
                     $garages = $this->getGarageSearchQuery($request)
-           
+
 
                     ->groupBy("garages.id")
 
