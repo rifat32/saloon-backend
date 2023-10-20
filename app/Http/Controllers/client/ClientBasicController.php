@@ -392,7 +392,7 @@ class ClientBasicController extends Controller
 
 foreach($garages->items() as $key=>$value) {
     $totalCount = 0;
-$ttotalRating = 0;
+$totalRating = 0;
 
 foreach(Star::get() as $star) {
 
@@ -415,18 +415,19 @@ foreach(Star::get() as $star) {
 
     $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
 
-    $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+    $totalRating += $data2["star_" . $star->value . "_selected_count"];
 
 }
 if($totalCount > 0) {
-    $data2["total_rating"] = $totalCount / $ttotalRating;
+    $data2["average_rating"] = $totalCount / $totalRating;
 
 }
 else {
-    $data2["total_rating"] = 0;
+    $data2["average_rating"] = 0;
 
 }
-$garages->items()[$key]->average_rating = $data2["total_rating"];
+$garages->items()[$key]->average_rating = $data2["average_rating"];
+$garages->items()[$key]->total_rating_count = $totalCount;
 
 }
 
@@ -544,7 +545,7 @@ $garages->items()[$key]->average_rating = $data2["total_rating"];
 
 
         $totalCount = 0;
-        $ttotalRating = 0;
+        $totalRating = 0;
 
         foreach(Star::get() as $star) {
 
@@ -567,18 +568,20 @@ $garages->items()[$key]->average_rating = $data2["total_rating"];
 
             $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
 
-            $ttotalRating += $data2["star_" . $star->value . "_selected_count"];
+            $totalRating += $data2["star_" . $star->value . "_selected_count"];
 
         }
         if($totalCount > 0) {
-            $data2["total_rating"] = $totalCount / $ttotalRating;
+            $data2["average_rating"] = $totalCount / $totalRating;
 
         }
         else {
-            $data2["total_rating"] = 0;
+            $data2["average_rating"] = 0;
 
         }
-        $data["garage"]->average_rating = $data2["total_rating"];
+        $data["garage"]->average_rating = $data2["average_rating"];
+        $data["garage"]->total_rating_count = $totalCount;
+
 
 
         return response()->json($data, 200);
