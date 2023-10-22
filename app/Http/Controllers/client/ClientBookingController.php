@@ -553,6 +553,7 @@ class ClientBookingController extends Controller
                         "customer_id" => $booking->customer_id,
                         "garage_id" => $booking->garage_id,
                         "booking_id" => $booking->id,
+                        "job_id" => $job->id,
                         "notification_template_id" => $notification_template->id,
                         "status" => "unread",
                     ]);
