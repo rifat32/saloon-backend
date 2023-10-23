@@ -172,6 +172,12 @@ Route::get('/v1.0/users/get-by-id/{id}', [UserManagementController::class, "getU
 
 Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::put('/v1.0/users/profile', [UserManagementController::class, "updateUserProfile"]);
+
+
+Route::put('/v1.0/users/toggle-active', [UserManagementController::class, "toggleActive"]);
+
+
+
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
 
 

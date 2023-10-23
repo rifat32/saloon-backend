@@ -117,6 +117,7 @@ class AuthController extends Controller
 
             $insertableData['password'] = Hash::make($request['password']);
             $insertableData['remember_token'] = Str::random(10);
+            $insertableData['is_active'] = true;
             $user =  User::create($insertableData);
 
               // verify email starts
@@ -256,6 +257,11 @@ class AuthController extends Controller
             }
 
             $user = auth()->user();
+
+            if(!$user->is_active) {
+                return response(['message' => 'User not active'], 403);
+
+            }
             $now = time(); // or your date as well
 $user_created_date = strtotime($user->created_at);
 $datediff = $now - $user_created_date;
@@ -819,6 +825,7 @@ $datediff = $now - $user_created_date;
     $insertableData['user']['postcode'] = $insertableData['garage']['postcode'];
     $insertableData['user']['lat'] = $insertableData['garage']['lat'];
     $insertableData['user']['long'] = $insertableData['garage']['long'];
+
                 $user =  User::create($insertableData['user']);
                 $user->assignRole('garage_owner');
                 // end user info ##############
