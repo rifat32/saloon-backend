@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GaragePackage extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
     protected $fillable = [
         "name",
         "description",
@@ -17,7 +18,7 @@ class GaragePackage extends Model
     ];
 
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
     public function garage_package_sub_services(){
         return $this->hasMany(GaragePackageSubService::class,'garage_package_id', 'id');

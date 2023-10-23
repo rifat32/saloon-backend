@@ -28,7 +28,7 @@ class SubServiceCreateRequest extends FormRequest
             "description" => "nullable|string",
 
             "service_id" => "required|numeric",
-            "is_fixed_price" => "required|numeric"
+            "is_fixed_price" => "nullable|numeric"
         ];
     }
 }

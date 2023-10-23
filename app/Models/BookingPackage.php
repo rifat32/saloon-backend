@@ -15,6 +15,6 @@ class BookingPackage extends Model
         "price"
     ];
     public function garage_package(){
-        return $this->belongsTo(GaragePackage::class,'garage_package_id', 'id');
+        return $this->belongsTo(GaragePackage::class,'garage_package_id', 'id')->withTrashed();
     }
 }

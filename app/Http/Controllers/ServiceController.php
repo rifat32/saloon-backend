@@ -896,7 +896,7 @@ class ServiceController extends Controller
             }
 
             $insertableData = $request->validated();
-
+            $insertableData["is_fixed_price"] = 1;
             $service =  SubService::create($insertableData);
 
 

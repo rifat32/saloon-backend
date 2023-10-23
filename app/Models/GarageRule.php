@@ -19,6 +19,6 @@ class GarageRule extends Model
     ];
 
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
 }

@@ -18,7 +18,7 @@ class GarageSubServicePrice extends Model
         return $this->belongsTo(GarageSubService::class,'garage_sub_service_id', 'id');
     }
     public function automobile_make(){
-        return $this->belongsTo(SubService::class,'automobile_make_id', 'id');
+        return $this->belongsTo(SubService::class,'automobile_make_id', 'id')->withTrashed();
     }
 
 }

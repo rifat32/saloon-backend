@@ -27,7 +27,7 @@ class SubServiceUpdateRequest extends FormRequest
             "id" => "required|numeric",
             "name" => "required|string",
             "description" => "nullable|string",
-            "is_fixed_price" => "required|numeric"
+            "is_fixed_price" => "nullable|numeric"
             // "automobile_category_id" => "required|numeric"
         ];
     }

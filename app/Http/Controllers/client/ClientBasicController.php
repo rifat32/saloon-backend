@@ -78,13 +78,13 @@ class ClientBasicController extends Controller
 
         if (!empty($request->is_mobile_garage)) {
 
-            if ($request->is_mobile_garage === '1' || $request->is_mobile_garage === 'true') {
+            if ($request->is_mobile_garage == '1' || $request->is_mobile_garage == 'true') {
                 $garagesQuery = $garagesQuery->where("garages.is_mobile_garage", true);
             }
         }
         if (!empty($request->wifi_available)) {
 
-            if ($request->wifi_available === '1' || $request->wifi_available === 'true') {
+            if ($request->wifi_available == '1' || $request->wifi_available == 'true') {
                 $garagesQuery = $garagesQuery->where("garages.wifi_available", true);
             }
         }
@@ -142,6 +142,7 @@ class ClientBasicController extends Controller
         if (!empty($request->end_long)) {
             $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
         }
+
         if (!empty($request->date_time)) {
             $date = Carbon::createFromFormat('Y-m-d H:i', $request->date_time);
             $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)

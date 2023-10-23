@@ -19,7 +19,7 @@ class JobBid extends Model
         "status"
     ];
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
     public function pre_booking(){
         return $this->belongsTo(PreBooking::class,'pre_booking_id', 'id');

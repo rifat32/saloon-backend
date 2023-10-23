@@ -62,7 +62,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.country' => 'required|string',
             'garage.city' => 'required|string',
 
-            'garage.currency' => 'nullable|string',
+            'garage.currency' => 'required|string',
 
             'garage.postcode' => 'required|string',
             'garage.address_line_1' => 'required|string',
@@ -136,6 +136,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.long.required' => 'The longitude field is required.',
             'garage.country.required' => 'The country field is required.',
             'garage.city.required' => 'The city field is required.',
+            'garage.currency.required' => 'The currency field is required.',
             'garage.currency.string' => 'The currency must be a string.',
             'garage.postcode.required' => 'The postcode field is required.',
             'garage.address_line_1.required' => 'The address line 1 field is required.',

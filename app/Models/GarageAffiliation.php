@@ -18,7 +18,7 @@ class GarageAffiliation extends Model
 
 
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
     public function affiliation(){
         return $this->belongsTo(Affiliation::class,'affiliation_id', 'id');

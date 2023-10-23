@@ -31,7 +31,7 @@ class ReviewNew extends Model
         return $this->hasMany(ReviewValueNew::class,'review_id','id');
     }
     public function garage() {
-        return $this->hasOne(Garage::class,'id','garage_id');
+        return $this->hasOne(Garage::class,'id','garage_id')->withTrashed();
     }
     public function user() {
         return $this->hasOne(User::class,'id','user_id');

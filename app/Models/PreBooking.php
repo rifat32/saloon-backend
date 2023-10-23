@@ -30,16 +30,16 @@ class PreBooking extends Model
 
     ];
     public function garage(){
-        return $this->belongsTo(Garage::class,'garage_id', 'id');
+        return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
     public function customer(){
-        return $this->belongsTo(User::class,'customer_id', 'id');
+        return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
     public function automobile_make(){
-        return $this->belongsTo(AutomobileMake::class,'automobile_make_id', 'id');
+        return $this->belongsTo(AutomobileMake::class,'automobile_make_id', 'id')->withTrashed();
     }
     public function automobile_model(){
-        return $this->belongsTo(AutomobileModel::class,'automobile_model_id', 'id');
+        return $this->belongsTo(AutomobileModel::class,'automobile_model_id', 'id')->withTrashed();
     }
     public function pre_booking_sub_services(){
         return $this->hasMany(PreBookingSubService::class,'pre_booking_id', 'id');

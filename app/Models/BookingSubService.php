@@ -15,7 +15,7 @@ class BookingSubService extends Model
         "price"
     ];
     public function sub_service(){
-        return $this->belongsTo(SubService::class,'sub_service_id', 'id');
+        return $this->belongsTo(SubService::class,'sub_service_id', 'id')->withTrashed();
     }
 
 }
