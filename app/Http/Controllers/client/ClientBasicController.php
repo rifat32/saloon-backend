@@ -143,8 +143,8 @@ class ClientBasicController extends Controller
             $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
         }
 
-        if (!empty($request->date_time)) {
-            $date = Carbon::createFromFormat('Y-m-d H:i', $request->date_time);
+        if (!empty($request->open_time)) {
+            $date = Carbon::createFromFormat('Y-m-d H:i', $request->open_time);
             $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
             $time = $date->format('H:i');
             $garagesQuery = $garagesQuery->where('garage_times.day', "=", $dayOfWeek)
@@ -276,7 +276,7 @@ class ClientBasicController extends Controller
 * ),
 
      * *  @OA\Parameter(
-* name="date_time",
+* name="open_time",
 * in="query",
 * description="2019-06-29 22:00",
 * required=true,
