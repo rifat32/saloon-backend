@@ -835,6 +835,8 @@ $datediff = $now - $user_created_date;
                 //  garage info ##############
                 $insertableData['garage']['status'] = "pending";
                 $insertableData['garage']['owner_id'] = $user->id;
+
+                $insertableData['garage']['is_active'] = true;
                 $garage =  Garage::create($insertableData['garage']);
 
                 GarageTime::where([

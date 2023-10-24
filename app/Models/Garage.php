@@ -27,7 +27,7 @@ class Garage extends Model
         "logo",
         "image",
         "status",
-        // "is_active",
+         "is_active",
         "is_mobile_garage",
         "wifi_available",
         "labour_rate",

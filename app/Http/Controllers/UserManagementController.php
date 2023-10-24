@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GuestUserRegisterRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserToggleRequest;
+use App\Http\Requests\GetIdRequest;
 use App\Http\Requests\UserUpdateProfileRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Utils\ErrorUtil;
@@ -654,7 +654,7 @@ class UserManagementController extends Controller
         *
      * @OA\Put(
      *      path="/v1.0/users/toggle-active",
-     *      operationId="toggleActive",
+     *      operationId="toggleActiveUser",
      *      tags={"user_management"},
     *       security={
      *           {"bearerAuth": {}}
@@ -704,7 +704,7 @@ class UserManagementController extends Controller
      *     )
      */
 
-     public function toggleActive(UserToggleRequest $request)
+     public function toggleActiveUser(GetIdRequest $request)
      {
 
          try{
@@ -716,11 +716,14 @@ class UserManagementController extends Controller
             }
             $updatableData = $request->validated();
 
+            $userQuery  = User::where(["id" => $updatableData["id"]]);
+            if(!auth()->user()->hasRole('superadmin')) {
+                $userQuery = $userQuery->where(function ($query) {
+                    $query->where('created_by', auth()->user()->id);
+                });
+            }
 
-            $user = User::where([
-                "id" => $updatableData["id"]
-            ])
-            ->first();
+            $user =  $userQuery->first();
             if (!$user) {
                 return response()->json([
                     "message" => "no user found"

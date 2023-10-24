@@ -8,6 +8,7 @@ use App\Http\Requests\GarageUpdateRequest;
 use App\Http\Requests\GarageUpdateSeparateRequest;
 use App\Http\Requests\ImageUploadRequest;
 use App\Http\Requests\MultipleImageUploadRequest;
+use App\Http\Requests\GetIdRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\UserActivityUtil;
@@ -389,6 +390,7 @@ if(!$user->hasRole('garage_owner')) {
         $insertableData['garage']['status'] = "pending";
 
         $insertableData['garage']['created_by'] = $request->user()->id;
+        $insertableData['garage']['is_active'] = true;
         $garage =  Garage::create($insertableData['garage']);
 
 
@@ -620,6 +622,7 @@ if(!$user->hasRole('garage_owner')) {
         $insertableData['garage']['status'] = "pending";
         $insertableData['garage']['owner_id'] = $user->id;
         $insertableData['garage']['created_by'] = $request->user()->id;
+        $insertableData['garage']['is_active'] = true;
         $garage =  Garage::create($insertableData['garage']);
 
         if(!empty($insertableData["images"])) {
@@ -736,7 +739,8 @@ if(!$user->hasRole('garage_owner')) {
      *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500
+     *  "labour_rate":500,
+     *  "currency":"BDT"
      *
      * }),
      *
@@ -922,6 +926,7 @@ if(!$user->hasRole('garage_owner')) {
                 "is_mobile_garage",
                 "wifi_available",
                 "labour_rate",
+                "currency",
 
         ])->toArray()
         )
@@ -971,6 +976,108 @@ if(!$user->hasRole('garage_owner')) {
 
     }
 
+
+
+     /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/garages/toggle-active",
+     *      operationId="toggleActiveGarage",
+     *      tags={"garage_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to toggle user activity",
+     *      description="This method is to toggle user activity",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode","role"},
+     *           @OA\Property(property="id", type="string", format="number",example="1"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function toggleActiveGarage(GetIdRequest $request)
+     {
+
+         try{
+             $this->storeActivity($request,"");
+             if(!$request->user()->hasPermissionTo('garage_update')){
+                 return response()->json([
+                    "message" => "You can not perform this action"
+                 ],401);
+            }
+            $updatableData = $request->validated();
+
+            $garageQuery  = Garage::where(["id" => $updatableData["id"]]);
+            if(!auth()->user()->hasRole('superadmin')) {
+                $garageQuery = $garageQuery->where(function ($query) {
+                    $query->where('created_by', auth()->user()->id);
+                });
+            }
+
+            $garage =  $garageQuery->first();
+
+
+            if (!$garage) {
+                return response()->json([
+                    "message" => "no garage found"
+                ], 404);
+            }
+
+
+            $garage->update([
+                'is_active' => !$garage->is_active
+            ]);
+
+            return response()->json(['message' => 'User status updated successfully'], 200);
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
+
+
+
+
+
       /**
         *
      * @OA\Put(
@@ -1012,7 +1119,8 @@ if(!$user->hasRole('garage_owner')) {
      *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500
+     *  "labour_rate":500,
+     * *  "currency":"BDT"
      *
      * }),
      *
@@ -1123,6 +1231,7 @@ if(!$user->hasRole('garage_owner')) {
                 "is_mobile_garage",
                 "wifi_available",
                 "labour_rate",
+             "currency",
 
         ])->toArray()
         )

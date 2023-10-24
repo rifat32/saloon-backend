@@ -42,7 +42,7 @@ class ClientBasicController extends Controller
         ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
 
 ->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
-        ;
+->where('garages.is_active', true);
 
         if(!empty($request->search_key)) {
             $garagesQuery = $garagesQuery->where(function($query) use ($request){
@@ -521,7 +521,8 @@ $garages->items()[$key]->total_rating_count = $totalCount;
 
 
             $garage = $garagesQuery->where([
-                "id" => $id
+                "id" => $id,
+                "is_active" => 1
             ])
             ->first();
 

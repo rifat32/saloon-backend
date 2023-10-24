@@ -174,7 +174,7 @@ Route::put('/v1.0/users', [UserManagementController::class, "updateUser"]);
 Route::put('/v1.0/users/profile', [UserManagementController::class, "updateUserProfile"]);
 
 
-Route::put('/v1.0/users/toggle-active', [UserManagementController::class, "toggleActive"]);
+Route::put('/v1.0/users/toggle-active', [UserManagementController::class, "toggleActiveUser"]);
 
 
 
@@ -206,6 +206,14 @@ Route::delete('/v1.0/roles/{id}', [RolesController::class, "deleteRoleById"]);
 Route::post('/v1.0/auth/register-with-garage', [GaragesController::class, "registerUserWithGarage"]);
 
 Route::post('/v1.0/garages', [GaragesController::class, "createGarage"]);
+
+
+
+Route::put('/v1.0/garages/toggle-active', [UserManagementController::class, "toggleActiveUser"]);
+Route::put('/v1.0/garages/toggle-active', [GaragesController::class, "toggleActiveGarage"]);
+
+
+
 
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
 Route::put('/v1.0/garages/separate', [GaragesController::class, "updateGarageSeparate"]);
