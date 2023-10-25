@@ -353,7 +353,7 @@ class ClientBasicController extends Controller
                     ->select(
                         "garages.*",
                         DB::raw('CASE
-                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id) = 0 THEN 0
+                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
                         ELSE 1
                     END AS is_package_available')
                         )
@@ -378,13 +378,13 @@ class ClientBasicController extends Controller
                     ->groupBy("garages.id")
 
                     ->orderByDesc("garages.id")
-                    ->select("garages.*",
-                    DB::raw('CASE
-                    WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id) = 0 THEN 0
-                    ELSE 1
-                END AS is_package_available')
-
-                    )
+                    ->select(
+                        "garages.*",
+                        DB::raw('CASE
+                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
+                        ELSE 1
+                    END AS is_package_available')
+                        )
 
                     ->paginate($perPage);
 
