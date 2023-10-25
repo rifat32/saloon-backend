@@ -54,7 +54,7 @@ class GarageUpdateSeparateRequest extends FormRequest
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
-
+            'garage.currency' => 'required|string',
 
 
 
@@ -108,6 +108,8 @@ class GarageUpdateSeparateRequest extends FormRequest
 
             'garage.city.required' => 'The city field is required.',
             'garage.city.string' => 'The city field must be a string.',
+            'garage.currency.required' => 'The currency field is required.',
+            'garage.currency.string' => 'The currency must be a string.',
 
             'garage.postcode.string' => 'The postcode field must be a string.',
 
