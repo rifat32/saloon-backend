@@ -19,7 +19,8 @@ class FuelStationController extends Controller
 
     public function getFuelStationSearchQuery(Request $request) {
         $fuelStationQuery = FuelStation::with("options.option")
-            ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id');
+            ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id')
+            ->where('fuel_stations.is_active', true);
 
 
             if (!empty($request->search_key)) {
@@ -69,7 +70,10 @@ class FuelStationController extends Controller
                 $fuelStationQuery =   $fuelStationQuery->where("city", "like", "%" . $request->city . "%");
 
             }
+            if (!empty($request->address_line_1)) {
+                $fuelStationQuery =   $fuelStationQuery->where("address_line_1", "like", "%" . $request->address_line_1 . "%");
 
+            }
 
             if(!empty($request->active_option_ids)) {
 
@@ -979,6 +983,7 @@ class FuelStationController extends Controller
             ->where([
                 "id" => $id
             ])
+            ->where('fuel_stations.is_active', true)
             ->first();
 
             if(!$fuelStation) {
