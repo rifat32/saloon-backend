@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\FuelStationCreateRequest;
 use App\Http\Requests\FuelStationUpdateRequest;
+use App\Http\Requests\GetIdRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStation;
@@ -360,6 +361,103 @@ class FuelStationController extends Controller
             return $this->sendError($e, 500,$request);
         }
     }
+      /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/fuel-station/toggle-active",
+     *      operationId="toggleActiveFuelStation",
+     *      tags={"fuel_station_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to toggle fuel station",
+     *      description="This method is to toggle fuel station",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode","role"},
+     *           @OA\Property(property="id", type="string", format="number",example="1"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function toggleActiveFuelStation(GetIdRequest $request)
+     {
+
+         try{
+             $this->storeActivity($request,"");
+             if(!$request->user()->hasPermissionTo('fuel_station_update')){
+                 return response()->json([
+                    "message" => "You can not perform this action"
+                 ],401);
+            }
+            $updatableData = $request->validated();
+
+            $fuelStationQuery  = FuelStation::where(["id" => $updatableData["id"]]);
+            if(!auth()->user()->hasRole('superadmin')) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) {
+                    $query->where('created_by', auth()->user()->id);
+                });
+            }
+
+            $fuelStation =  $fuelStationQuery->first();
+
+
+            if (!$fuelStation) {
+                return response()->json([
+                    "message" => "no fuel station found"
+                ], 404);
+            }
+
+
+            $fuelStation->update([
+                'is_active' => !$fuelStation->is_active
+            ]);
+
+            return response()->json(['message' => 'fuel station status updated successfully'], 200);
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
+
+
 
     /**
      *
@@ -791,7 +889,7 @@ class FuelStationController extends Controller
                 array_splice($info, 0);
 
                     $fuel_stations = $this->getFuelStationSearchQuery($request)
-               
+
                     ->groupBy("fuel_stations.id")
 
                     ->orderByDesc("fuel_stations.id")

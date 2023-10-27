@@ -209,7 +209,7 @@ Route::post('/v1.0/garages', [GaragesController::class, "createGarage"]);
 
 
 
-Route::put('/v1.0/garages/toggle-active', [UserManagementController::class, "toggleActiveUser"]);
+
 Route::put('/v1.0/garages/toggle-active', [GaragesController::class, "toggleActiveGarage"]);
 
 
@@ -376,6 +376,22 @@ Route::delete('/v1.0/fuel-station-services/{id}', [FuelStationServiceController:
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStation"]);
 Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
+
+
+
+
+
+Route::put('/v1.0/fuel-station-services/toggle-active', [GaragesController::class, "toggleActiveGarage"]);
+Route::put('/v1.0/fuel-station/toggle-active', [FuelStationServiceController::class, "toggleActiveFuelStation"]);
+
+
+
+
+
+
+
+
+
 Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
 Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

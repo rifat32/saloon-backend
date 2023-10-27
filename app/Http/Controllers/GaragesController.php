@@ -987,8 +987,8 @@ if(!$user->hasRole('garage_owner')) {
     *       security={
      *           {"bearerAuth": {}}
      *       },
-     *      summary="This method is to toggle user activity",
-     *      description="This method is to toggle user activity",
+     *      summary="This method is to toggle garage",
+     *      description="This method is to toggle garage",
      *
      *  @OA\RequestBody(
      *         required=true,
@@ -1065,7 +1065,7 @@ if(!$user->hasRole('garage_owner')) {
                 'is_active' => !$garage->is_active
             ]);
 
-            return response()->json(['message' => 'User status updated successfully'], 200);
+            return response()->json(['message' => 'garage status updated successfully'], 200);
 
 
          } catch(Exception $e){
