@@ -90,7 +90,7 @@ Route::get('/v2.0/services-all/{categoryId}', [ServiceController::class, "getAll
 Route::get('/v1.0/sub-services-all', [ServiceController::class, "getSubServicesAll"]);
 Route::get('/v1.0/garage-sub-services-all/{garage_id}', [GarageServiceController::class, "getGarageSubServicesAll"]);
 
-Route::get('/v1.0/garage-packages/get/all/{garage_id}', [GaragePackageController::class, "getGaragePackagesAll"]);
+
 
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
@@ -979,7 +979,7 @@ Route::delete('/v1.0/products/{id}', [ProductController::class, "deleteProductBy
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 
 
-
+Route::get('/v1.0/garage-packages/get/all/{garage_id}', [GaragePackageController::class, "getGaragePackagesAll"]);
 Route::get('/v1.0/client/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageByIdClient"]);
 
 

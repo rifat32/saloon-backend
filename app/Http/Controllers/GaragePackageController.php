@@ -640,7 +640,8 @@ class GaragePackageController extends Controller
             $garagePackageQuery = GaragePackage::with("garage_package_sub_services.sub_service")
             ->where([
                 "garage_id" => $garage_id
-            ]);
+            ])
+            ->where('is_active', true);
 
             if(!empty($request->search_key)) {
                 $garagePackageQuery = $garagePackageQuery->where(function($query) use ($request){
@@ -831,10 +832,11 @@ class GaragePackageController extends Controller
                 "garage_id" => $garage_id,
                 "id" => $id
             ])
+            ->where('is_active', true)
             ->first();
              if(!$garage_package){
                 return response()->json([
-            "message" => "booking not found"
+            "message" => "package not found"
                 ], 404);
             }
 
