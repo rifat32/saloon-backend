@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GarageOwnerToggleOptionsRequest;
 use App\Http\Requests\GaragePackageCreateRequest;
 use App\Http\Requests\GaragePackageRequest;
 use App\Http\Requests\GaragePackageUpdateRequest;
@@ -314,6 +315,108 @@ class GaragePackageController extends Controller
             return $this->sendError($e, 500,$request);
         }
     }
+
+
+   /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/garage-packages/toggle-active",
+     *      operationId="toggleActiveGaragePackage",
+     *      tags={"garage_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to toggle Garage Package",
+     *      description="This method is to toggle Garage Package",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"id","first_Name","last_Name","email","password","password_confirmation","phone","address_line_1","address_line_2","country","city","postcode","role"},
+     *           @OA\Property(property="id", type="string", format="number",example="1"),
+     *  *           @OA\Property(property="garage_id", type="string", format="number",example="1"),
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function toggleActiveGaragePackage(GarageOwnerToggleOptionsRequest $request)
+     {
+
+         try{
+             $this->storeActivity($request,"");
+             if(!$request->user()->hasPermissionTo('garage_package_update')){
+                 return response()->json([
+                    "message" => "You can not perform this action"
+                 ],401);
+            }
+            $updatableData = $request->validated();
+
+            if (!$this->garageOwnerCheck($updatableData["garage_id"])) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
+
+
+
+            $garage_package =  GaragePackage::where([
+                "garage_id"=> $updatableData["garage_id"],
+                "id"=> $updatableData["id"]
+            ])
+            ->first();
+
+
+
+            $garage_package->update([
+                'is_active' => !$garage_package->is_active
+            ]);
+
+
+
+
+            return response()->json(['message' => 'garage package status updated successfully'], 200);
+
+
+
+
+         } catch(Exception $e){
+             error_log($e->getMessage());
+         return $this->sendError($e,500,$request);
+         }
+     }
 
 
 

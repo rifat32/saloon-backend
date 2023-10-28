@@ -689,7 +689,7 @@ Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "del
 Route::post('/v1.0/coupons', [CouponController::class, "createCoupon"]);
 Route::put('/v1.0/coupons', [CouponController::class, "updateCoupon"]);
 
-Route::put('/v1.0/coupons/toggle-active', [GaragesController::class, "toggleActiveCoupon"]);
+Route::put('/v1.0/coupons/toggle-active', [CouponController::class, "toggleActiveCoupon"]);
 
 Route::get('/v1.0/coupons/{garage_id}/{perPage}', [CouponController::class, "getCoupons"]);
 Route::get('/v1.0/coupons/single/{garage_id}/{id}', [CouponController::class, "getCouponById"]);
@@ -764,6 +764,21 @@ Route::delete('/v1.0/garage-service-prices/by-garage-sub-service/{id}', [GarageS
 Route::post('/v1.0/garage-packages', [GaragePackageController::class, "createGaragePackage"]);
 
 Route::put('/v1.0/garage-packages', [GaragePackageController::class, "updateGaragePackage"]);
+
+
+
+
+Route::put('/v1.0/garage-packages/toggle-active', [GaragePackageController::class, "toggleActiveGaragePackage"]);
+
+
+
+
+
+
+
+
+
+
 
 Route::get('/v1.0/garage-packages/{garage_id}/{perPage}', [GaragePackageController::class, "getGaragePackages"]);
 
