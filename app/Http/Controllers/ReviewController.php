@@ -2785,8 +2785,49 @@ $data2["total_comment"] = $data2["total_comment"]->get();
             ])
                 ->get();
 
+                $info = [];
+                $totalCount = 0;
+                $totalRating = 0;
 
-            return response($reviewValue, 200);
+                foreach(Star::get() as $star) {
+
+                    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                    ->where([
+                        "review_news.garage_id" => $garage_id,
+                        "star_id" => $star->id,
+                        // "review_news.guest_id" => NULL
+                    ])
+                    ->distinct("review_value_news.review_id","review_value_news.question_id");
+                    if(!empty($request->start_date) && !empty($request->end_date)) {
+
+                        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+                            $request->start_date,
+                            $request->end_date
+                        ]);
+
+                    }
+                    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+                    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                    $totalRating += $data2["star_" . $star->value . "_selected_count"];
+
+                }
+                if($totalCount > 0) {
+                    $data2["average_rating"] = $totalCount / $totalRating;
+
+                }
+                else {
+                    $data2["average_rating"] = 0;
+
+                }
+
+                $info["id"]->average_rating  = $data2["average_rating"];
+                $info["id"]->total_rating_count = $totalCount;
+
+
+
+            return response(["review"=>$reviewValue,"info" =>$info], 200);
         }catch(Exception $e) {
       return $this->sendError($e, 500,$request);
         }
