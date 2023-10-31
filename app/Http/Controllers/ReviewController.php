@@ -2822,8 +2822,8 @@ $data2["total_comment"] = $data2["total_comment"]->get();
 
                 }
 
-                $info["id"]->average_rating  = $data2["average_rating"];
-                $info["id"]->total_rating_count = $totalCount;
+                $info["average_rating"]  = $data2["average_rating"];
+                $info["total_rating_count"] = $totalCount;
 
 
 

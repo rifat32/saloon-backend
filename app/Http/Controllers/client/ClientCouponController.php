@@ -249,7 +249,120 @@ class ClientCouponController extends Controller
         }
     }
 
+    /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/coupons/all-auto-applied-coupons/{garage_id}",
+     *      operationId="getAutoAppliedCouponsByGarageIdClient",
+     *      tags={"client.coupon"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     *      summary="This method is to get coupons",
+     *      description="This method is to get coupons",
+     *
 
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getAutoAppliedCouponsByGarageIdClient($garage_id, Request $request)
+     {
+         try {
+             $this->storeActivity($request,"");
+
+
+             $couponQuery =  Coupon::where([
+                 "is_active" => 1,
+                 "garage_id" => $garage_id,
+                 "is_auto_apply" => 1
+             ])
+
+         ->where('coupon_start_date', '<=', Carbon::now()->subDay())
+         ->where('coupon_end_date', '>=', Carbon::now()->subDay());
+
+             if (!empty($request->search_key)) {
+                 $couponQuery = $couponQuery->where(function ($query) use ($request) {
+                     $term = $request->search_key;
+                     $query->where("name", "like", "%" . $term . "%");
+                     $query->orWhere("code", "like", "%" . $term . "%");
+                 });
+             }
+
+             if (!empty($request->start_date)) {
+                 $couponQuery = $couponQuery->where('created_at', ">=", $request->start_date);
+             }
+             if (!empty($request->end_date)) {
+                 $couponQuery = $couponQuery->where('created_at', "<=", $request->end_date);
+             }
+
+
+             $coupons = $couponQuery->orderByDesc("id")->get();
+
+             return response()->json($coupons, 200);
+         } catch (Exception $e) {
+
+             return $this->sendError($e,500,$request);
+         }
+     }
 
      /**
      *

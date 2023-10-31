@@ -1024,9 +1024,9 @@ Route::get('/review-new/getreviewAll/{garageId}/{perPage}', [ReviewController::c
 Route::get('/v1.0/client/coupons/by-garage-id/{garage_id}/{perPage}', [ClientCouponController::class, "getCouponsByGarageIdClient"]);
 Route::get('/v1.0/client/coupons/all/{perPage}', [ClientCouponController::class, "getCouponsClient"]);
 Route::get('/v1.0/client/coupons/single/{id}', [ClientCouponController::class, "getCouponByIdClient"]);
-
-
 Route::get('/v1.0/client/coupons/get-discount/{garage_id}/{code}/{amount}', [ClientCouponController::class, "getCouponDiscountClient"]);
+Route::get('/v1.0/client/coupons/all-auto-applied-coupons/{garage_id}', [ClientCouponController::class, "getAutoAppliedCouponsByGarageIdClient"]);
+
 
 
 
