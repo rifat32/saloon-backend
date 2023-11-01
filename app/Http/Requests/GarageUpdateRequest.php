@@ -33,7 +33,7 @@ class GarageUpdateRequest extends FormRequest
             'user.email' => 'required|string|email|unique:users,email,' . $this->user["id"] . ',id',
 
             'user.password' => 'nullable|confirmed|string|min:6',
-            'user.phone' => 'required|string',
+            'user.phone' => 'nullable|string',
             'user.image' => 'nullable',
             // 'user.address_line_1' => 'nullable|string',
             // 'user.address_line_2' => 'nullable|string',
@@ -49,7 +49,7 @@ class GarageUpdateRequest extends FormRequest
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
             // 'garage.email' => 'required|string|email|indisposable|max:255',
-            'garage.email' => 'required|string|unique:garages,email,' . $this->garage["id"] . ',id',
+            'garage.email' => 'nullable|string|unique:garages,email,' . $this->garage["id"] . ',id',
             'garage.additional_information' => 'nullable|string',
 
 
@@ -118,7 +118,7 @@ class GarageUpdateRequest extends FormRequest
         'user.password.string' => 'The password field must be a string.',
         'user.password.min' => 'The password must be at least :min characters.',
 
-        'user.phone.required' => 'The phone field is required.',
+        // 'user.phone.required' => 'The phone field is required.',
         'user.phone.string' => 'The phone field must be a string.',
 
         'user.image.nullable' => 'The image field must be nullable.',
@@ -134,7 +134,7 @@ class GarageUpdateRequest extends FormRequest
         'garage.about.string' => 'The about field must be a string.',
         'garage.web_page.string' => 'The web page field must be a string.',
         'garage.phone.string' => 'The phone field must be a string.',
-        'garage.email.required' => 'The email field is required.',
+        // 'garage.email.required' => 'The email field is required.',
         'garage.email.email' => 'The email must be a valid email address.',
         'garage.email.string' => 'The email field must be a string.',
         'garage.email.unique' => 'The email has already been taken.',

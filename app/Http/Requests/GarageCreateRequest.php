@@ -40,7 +40,7 @@ class GarageCreateRequest extends FormRequest
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
             // 'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
-            'garage.email' => 'required|string|email|max:255|unique:garages,email',
+            'garage.email' => 'nullable|string|email|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
 
             'garage.lat' => 'required|string',
@@ -106,7 +106,7 @@ class GarageCreateRequest extends FormRequest
             'garage.about.string' => 'The about field must be a string.',
             'garage.web_page.string' => 'The web page field must be a string.',
             'garage.phone.string' => 'The phone field must be a string.',
-            'garage.email.required' => 'The email field is required.',
+            // 'garage.email.required' => 'The email field is required.',
             'garage.email.string' => 'The email field must be a string.',
             'garage.email.email' => 'The email field must be a valid email address.',
             'garage.email.max' => 'The email field may not be greater than :max characters.',

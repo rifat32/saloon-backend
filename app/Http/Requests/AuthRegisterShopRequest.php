@@ -30,7 +30,7 @@ class AuthRegisterShopRequest extends FormRequest
             // 'user.email' => 'required|string|email|indisposable|max:255|unique:users,email',
             'user.email' => 'required|string|email|max:255|unique:users,email',
             'user.password' => 'required|confirmed|string|min:6',
-            'user.phone' => 'required|string',
+            'user.phone' => 'nullable|string',
             'user.image' => 'nullable|string',
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
@@ -105,7 +105,7 @@ class AuthRegisterShopRequest extends FormRequest
             'user.password.string' => 'The password field must be a string.',
             'user.password.min' => 'The password must be at least :min characters.',
 
-            'user.phone.required' => 'The phone field is required.',
+            // 'user.phone.required' => 'The phone field is required.',
             'user.phone.string' => 'The phone field must be a string.',
 
             'user.image.nullable' => 'The image field must be nullable.',

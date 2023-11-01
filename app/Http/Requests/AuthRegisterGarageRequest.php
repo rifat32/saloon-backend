@@ -37,7 +37,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.password' => 'nullable|confirmed|string|min:6',
             'user.send_password' => 'required|boolean',
 
-            'user.phone' => 'required|string',
+            'user.phone' => 'nullable|string',
             'user.image' => 'nullable|string',
 
             // 'user.address_line_1' => 'nullable|string',
@@ -54,7 +54,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
             // 'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
-            'garage.email' => 'required|string|email|max:255|unique:garages,email',
+            'garage.email' => 'nullable|string|email|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
 
             'garage.lat' => 'required|string',
@@ -120,7 +120,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'user.email.unique' => 'The email has already been taken.',
             'user.password.min' => 'The password must be at least :min characters.',
             'user.send_password.required' => 'The send password field is required.',
-            'user.phone.required' => 'The phone field is required.',
+            // 'user.phone.required' => 'The phone field is required.',
             'user.image.string' => 'The image must be a string.',
             // Add custom messages for other fields as needed
 
@@ -128,7 +128,7 @@ class AuthRegisterGarageRequest extends FormRequest
             'garage.about.string' => 'The about must be a string.',
             'garage.web_page.string' => 'The web page must be a string.',
             'garage.phone.string' => 'The phone must be a string.',
-            'garage.email.required' => 'The email field is required.',
+            // 'garage.email.required' => 'The email field is required.',
             'garage.email.email' => 'The email must be a valid email address.',
 
             'garage.email.unique' => 'The email has already been taken.',

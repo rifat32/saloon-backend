@@ -30,7 +30,7 @@ class ShopUpdateRequest extends FormRequest
             // 'user.email' => 'required|string|email|indisposable|max:255',
             'user.email' => 'required|string|email|max:255',
             'user.password' => 'nullable|confirmed|string|min:6',
-            'user.phone' => 'required|string',
+            'user.phone' => 'nullable|string',
             'user.image' => 'nullable',
             'user.address_line_1' => 'nullable|string',
             'user.address_line_2' => 'nullable|string',
@@ -108,7 +108,7 @@ class ShopUpdateRequest extends FormRequest
             'user.password.string' => 'The password field must be a string.',
             'user.password.min' => 'The password must be at least :min characters.',
 
-            'user.phone.required' => 'The phone field is required.',
+            // 'user.phone.required' => 'The phone field is required.',
             'user.phone.string' => 'The phone field must be a string.',
 
             'user.image.nullable' => 'The image field must be nullable.',

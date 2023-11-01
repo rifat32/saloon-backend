@@ -32,7 +32,7 @@ class GarageUpdateSeparateRequest extends FormRequest
             'garage.web_page' => 'nullable|string',
             'garage.phone' => 'nullable|string',
             // 'garage.email' => 'required|string|email|indisposable|max:255',
-            'garage.email' => 'required|string|email|unique:garages,email,' . $this->garage["id"] . ',id',
+            'garage.email' => 'nullable|string|email|unique:garages,email,' . $this->garage["id"] . ',id',
             'garage.additional_information' => 'nullable|string',
 
 
@@ -90,7 +90,7 @@ class GarageUpdateSeparateRequest extends FormRequest
             'garage.about.string' => 'The about field must be a string.',
             'garage.web_page.string' => 'The web page field must be a string.',
             'garage.phone.string' => 'The phone field must be a string.',
-            'garage.email.required' => 'The email field is required.',
+            // 'garage.email.required' => 'The email field is required.',
             'garage.email.email' => 'The email must be a valid email address.',
             'garage.email.string' => 'The email field must be a string.',
             'garage.email.unique' => 'The email has already been taken.',
