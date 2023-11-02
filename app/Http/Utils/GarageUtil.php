@@ -192,47 +192,47 @@ trait GarageUtil
 
 
 
-      $defaultQusetionStars =  QusetionStar::where([
-            "question_id"=>$defaultQuestion->id,
-                 ])->get();
+    //   $defaultQusetionStars =  QusetionStar::where([
+    //         "question_id"=>$defaultQuestion->id,
+    //              ])->get();
 
-                 foreach($defaultQusetionStars as $defaultQusetionStar) {
-                    $questionStarData = [
-                        "question_id"=>$question->id,
-                        "star_id" => $defaultQusetionStar->star_id
-                    ];
-                 $questionStar  = QusetionStar::create($questionStarData);
-
-
-                 $defaultStarTags =  StarTag::where([
-                    "question_id"=>$defaultQuestion->id,
-                    "star_id" => $defaultQusetionStar->star_id
-
-                         ])->get();
-
-                         foreach($defaultStarTags as $defaultStarTag) {
-                            $starTagData = [
-                                "question_id"=>$question->id,
-                                "star_id" => $questionStar->star_id,
-                                "tag_id"=>$defaultStarTag->tag_id,
-                            ];
-                         $starTag  = StarTag::create($starTagData);
+    //              foreach($defaultQusetionStars as $defaultQusetionStar) {
+    //                 $questionStarData = [
+    //                     "question_id"=>$question->id,
+    //                     "star_id" => $defaultQusetionStar->star_id
+    //                 ];
+    //              $questionStar  = QusetionStar::create($questionStarData);
 
 
+    //              $defaultStarTags =  StarTag::where([
+    //                 "question_id"=>$defaultQuestion->id,
+    //                 "star_id" => $defaultQusetionStar->star_id
+
+    //                      ])->get();
+
+    //                      foreach($defaultStarTags as $defaultStarTag) {
+    //                         $starTagData = [
+    //                             "question_id"=>$question->id,
+    //                             "star_id" => $questionStar->star_id,
+    //                             "tag_id"=>$defaultStarTag->tag_id,
+    //                         ];
+    //                      $starTag  = StarTag::create($starTagData);
 
 
 
 
 
 
-                        }
+
+
+    //                     }
 
 
 
 
 
 
-                }
+    //             }
 
 
 
