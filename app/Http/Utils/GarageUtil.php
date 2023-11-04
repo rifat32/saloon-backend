@@ -185,7 +185,7 @@ trait GarageUtil
               $questionData = [
                   'question' => $defaultQuestion->question,
                   'garage_id' => $garage_id,
-                  'is_active' => 1
+                  'is_active' => 0
               ];
            $question  = Question::create($questionData);
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRegisterGarageRequest;
 use App\Http\Requests\GarageCreateRequest;
+use App\Http\Requests\GarageTimeFormatUpdateRequest;
 use App\Http\Requests\GarageUpdateRequest;
 use App\Http\Requests\GarageUpdateSeparateRequest;
 use App\Http\Requests\ImageUploadRequest;
@@ -1267,6 +1268,111 @@ if(!$user->hasRole('garage_owner')) {
 
   // create services
   $this->createGarageServices($updatableData['service'],$garage->id);
+
+
+        return response([
+            "garage" => $garage
+        ], 201);
+        });
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
+    }
+
+      /**
+        *
+     * @OA\Put(
+     *      path="/v1.0/garages/update-time-format",
+     *      operationId="updateGarageTimeFormat",
+     *      tags={"garage_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to update garage time format",
+     *      description="This method is to update garage time format",
+     *
+        *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"garage_id","standard_lead_time",*   "booking_accept_start_time","booking_accept_end_time", "block_out_days"},
+     *    @OA\Property(property="garage_id", type="number", format="number", example="1"),
+     *  *    @OA\Property(property="time_format", type="number", format="number", example="12-hour")
+
+     *
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+    public function updateGarageTimeFormat(GarageTimeFormatUpdateRequest $request) {
+
+        try{
+            $this->storeActivity($request,"");
+     return  DB::transaction(function ()use (&$request) {
+        if(!$request->user()->hasPermissionTo('garage_update')){
+            return response()->json([
+               "message" => "You can not perform this action"
+            ],401);
+       }
+       if (!$this->garageOwnerCheck($request["garage_id"])) {
+        return response()->json([
+            "message" => "you are not the owner of the garage or the requested garage does not exist."
+        ], 401);
+    }
+
+       $updatableData = $request->validated();
+
+
+  //  garage info ##############
+        // $updatableData['garage']['status'] = "pending";
+
+        $garage  =  tap(Garage::where([
+            "id" => $updatableData['garage_id']
+            ]))->update(collect($updatableData['garage'])->only([
+                "time_format",
+        ])->toArray()
+        )
+            // ->with("somthing")
+
+            ->first();
+            if(!$garage) {
+                throw new Exception("Something went wrong.");
+            }
+
+
 
 
         return response([

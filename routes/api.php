@@ -217,6 +217,8 @@ Route::put('/v1.0/garages/toggle-active', [GaragesController::class, "toggleActi
 
 Route::put('/v1.0/garages', [GaragesController::class, "updateGarage"]);
 Route::put('/v1.0/garages/separate', [GaragesController::class, "updateGarageSeparate"]);
+Route::put('/v1.0/garages/update-time-format', [GaragesController::class, "updateGarageTimeFormat"]);
+
 
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
 Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageById"]);

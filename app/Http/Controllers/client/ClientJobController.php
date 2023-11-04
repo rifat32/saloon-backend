@@ -131,6 +131,7 @@ class ClientJobController extends Controller
             questions
 
             WHERE jobs.garage_id = questions.garage_id
+            AND questions.is_active = 1
 
 
             ) = 0 THEN 0  ELSE 1
