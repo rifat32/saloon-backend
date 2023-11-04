@@ -27,6 +27,7 @@ use App\Models\SubService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ClientPreBookingController extends Controller
 {
@@ -108,7 +109,7 @@ class ClientPreBookingController extends Controller
 
              $insertableData = $request->validated();
 
-             $location =  config("setup-config.pre_booking_file_location");
+             $location =  config("setup-config.temporary_files_location");
 
              $new_file_name = time() . '_' . str_replace(' ', '_', $insertableData["video"]->getClientOriginalName());
 
@@ -198,7 +199,7 @@ class ClientPreBookingController extends Controller
              $this->storeActivity($request,"");
              $insertableData = $request->validated();
 
-             $location =  config("setup-config.pre_booking_file_location");
+             $location =  config("setup-config.temporary_files_location");
 
              $images = [];
              if(!empty($insertableData["images"])) {
@@ -325,8 +326,38 @@ class ClientPreBookingController extends Controller
 
                 $insertableData["customer_id"] = auth()->user()->id;
                 $insertableData["status"] = "pending";
-                $insertableData["images"] = json_encode($insertableData["images"]) ;
-                $insertableData["videos"] = json_encode($insertableData["videos"]) ;
+
+
+                $temporary_files_location =  config("setup-config.temporary_files_location");
+                $location =  config("setup-config.pre_booking_file_location");
+                foreach(array_merge($insertableData["images"],$insertableData["videos"]) as $temp_file_path) {
+
+
+
+                    if (File::exists(public_path($temp_file_path))) {
+
+                        // Move the file from the temporary location to the permanent location
+                        File::move(public_path($temp_file_path), public_path(str_replace($temporary_files_location, $location, $temp_file_path)));
+                    } else {
+
+                        throw new Exception(("no file exists"));
+                        // Handle the case where the file does not exist (e.g., log an error or take appropriate action)
+                    }
+                }
+
+
+
+
+
+
+
+
+
+
+
+$insertableData["images"] = json_encode($insertableData["images"]) ;
+$insertableData["videos"] = json_encode($insertableData["videos"]) ;
+
 
 
                 $automobile_make = AutomobileMake::where([
