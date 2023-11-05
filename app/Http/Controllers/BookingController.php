@@ -743,23 +743,37 @@ class BookingController extends Controller
                         $prebooking->save();
 
                     }
+                    $notification_template = NotificationTemplate::where([
+                        "type" => "booking_rejected_by_garage_owner"
+                    ])
+                        ->first();
+                    Notification::create([
+                        "sender_id" =>  $booking->garage->owner_id,
+                        "receiver_id" => $booking->customer_id,
+                        "customer_id" => $booking->customer_id,
+                        "garage_id" => $booking->garage_id,
+                        "booking_id" => $booking->id,
+                        "notification_template_id" => $notification_template->id,
+                        "status" => "unread",
+                    ]);
 
-
+                }else {
+                    $notification_template = NotificationTemplate::where([
+                        "type" => "booking_status_changed_by_garage_owner"
+                    ])
+                        ->first();
+                    Notification::create([
+                        "sender_id" =>  $booking->garage->owner_id,
+                        "receiver_id" => $booking->customer_id,
+                        "customer_id" => $booking->customer_id,
+                        "garage_id" => $booking->garage_id,
+                        "booking_id" => $booking->id,
+                        "notification_template_id" => $notification_template->id,
+                        "status" => "unread",
+                    ]);
                 }
 
-                $notification_template = NotificationTemplate::where([
-                    "type" => "booking_status_changed_by_garage_owner"
-                ])
-                    ->first();
-                Notification::create([
-                    "sender_id" =>  $booking->garage->owner_id,
-                    "receiver_id" => $booking->customer_id,
-                    "customer_id" => $booking->customer_id,
-                    "garage_id" => $booking->garage_id,
-                    "booking_id" => $booking->id,
-                    "notification_template_id" => $notification_template->id,
-                    "status" => "unread",
-                ]);
+
                 // if (env("SEND_EMAIL") == true) {
                 //     Mail::to($booking->customer->email)->send(new DynamicMail(
                 //         $booking,

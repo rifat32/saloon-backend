@@ -272,6 +272,7 @@ class ClientPreBookingController extends Controller
      *
      *     *  * @OA\Property(property="images", type="string", format="array",example={"a.mp4","b.mp4"}),
  *     *  * @OA\Property(property="videos", type="string", format="array",example={"a.jpg","b.jpg"}),
+ *  *     *  * @OA\Property(property="file_links", type="string", format="array",example={"a.jpg","b.jpg"}),
 
      *  * *    @OA\Property(property="pre_booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *
@@ -357,6 +358,7 @@ class ClientPreBookingController extends Controller
 
 $insertableData["images"] = json_encode($insertableData["images"]) ;
 $insertableData["videos"] = json_encode($insertableData["videos"]) ;
+$insertableData["file_links"] = json_encode($insertableData["file_links"]) ;
 
 
 
@@ -469,6 +471,8 @@ $insertableData["videos"] = json_encode($insertableData["videos"]) ;
      *   *
      *     *  * @OA\Property(property="images", type="string", format="array",example={"a.mp4","b.mp4"}),
  *     *  * @OA\Property(property="videos", type="string", format="array",example={"a.jpg","b.jpg"}),
+ *  *     *  * @OA\Property(property="file_links", type="string", format="array",example={"a.jpg","b.jpg"}),
+ *
      *
      *      ),
      *      @OA\Response(
@@ -512,8 +516,31 @@ $insertableData["videos"] = json_encode($insertableData["videos"]) ;
                 $this->storeActivity($request,"");
 
                 $updatableData = $request->validated();
+
+
+                $temporary_files_location =  config("setup-config.temporary_files_location");
+                $location =  config("setup-config.pre_booking_file_location");
+                foreach(array_merge($updatableData["images"],$updatableData["videos"]) as $temp_file_path) {
+
+
+
+                    if (File::exists(public_path($temp_file_path))) {
+
+                        // Move the file from the temporary location to the permanent location
+                        File::move(public_path($temp_file_path), public_path(str_replace($temporary_files_location, $location, $temp_file_path)));
+                    } else {
+
+                        // throw new Exception(("no file exists"));
+                        // Handle the case where the file does not exist (e.g., log an error or take appropriate action)
+                    }
+                }
+
+
+
                 $updatableData["images"] = json_encode($updatableData["images"]) ;
                 $updatableData["videos"] = json_encode($updatableData["videos"]) ;
+                $updatableData["file_links"] = json_encode($updatableData["file_links"]) ;
+
 
 
                 $automobile_make = AutomobileMake::where([
@@ -563,6 +590,7 @@ $insertableData["videos"] = json_encode($insertableData["videos"]) ;
                         "transmission",
                         "images",
                         "videos",
+                        "file_links"
 
 
 

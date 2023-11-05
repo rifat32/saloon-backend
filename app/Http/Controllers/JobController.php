@@ -734,19 +734,23 @@ if ($job) {
                 }
             }
 
-            $notification_template = NotificationTemplate::where([
-                "type" => "job_status_changed_by_garage_owner"
-            ])
-                ->first();
-            Notification::create([
-                "sender_id" =>  $job->garage->owner_id,
-                "receiver_id" => $job->customer_id,
-                "customer_id" => $job->customer_id,
-                "garage_id" => $job->garage_id,
-                "job_id" => $job->id,
-                "notification_template_id" => $notification_template->id,
-                "status" => "unread",
-            ]);
+            if($job->status != "active") {
+                $notification_template = NotificationTemplate::where([
+                    "type" => "job_status_changed_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" =>  $job->garage->owner_id,
+                    "receiver_id" => $job->customer_id,
+                    "customer_id" => $job->customer_id,
+                    "garage_id" => $job->garage_id,
+                    "job_id" => $job->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
+            }
+
+
         //     if(env("SEND_EMAIL") == true) {
         //         Mail::to($job->customer->email)->send(new DynamicMail(
         //         $job,

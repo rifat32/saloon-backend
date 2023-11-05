@@ -26,6 +26,7 @@ class PreBooking extends Model
 
         "images",
         "videos",
+        "file_links"
 
 
     ];

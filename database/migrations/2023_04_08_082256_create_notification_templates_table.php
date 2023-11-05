@@ -99,7 +99,7 @@ class CreateNotificationTemplatesTable extends Migration
                 [
 
                     'type' => 'booking_rejected_by_garage_owner',
-                    "template"=> json_encode("hello [customer_name]! your booking rejected by the garage named[garage_owner_name],[garage_name] "),
+                    "template"=> json_encode("hello [customer_name]! your booking rejected by the garage named [garage_name] "),
                     "link"=> json_encode("/[customer_id]/[booking_id]"),
                     "is_active" => 1
                 ],

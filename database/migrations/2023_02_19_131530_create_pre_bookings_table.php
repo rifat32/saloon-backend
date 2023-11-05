@@ -42,11 +42,11 @@ class CreatePreBookingsTable extends Migration
 
             $table->text("images")->nullable();
             $table->text("videos")->nullable();
-
+            $table->text("file_links")->nullable();
 
             $table->enum("status",["pending","booked","converted_to_job","job_completed"])->nullable()->default("pending");
             $table->unsignedBigInteger("selected_bid_id")->nullable();
-          
+
 
 
             // $table->string("address")->nullable();

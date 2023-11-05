@@ -52,6 +52,8 @@ class PreBookingCreateRequestClient extends FormRequest
     'videos' => 'nullable|array',
     'videos.*' => 'nullable|string',
 
+    'file_links' => 'nullable|array',
+    'file_links.*' => 'nullable|string',
 
 
     // 'country' => 'required|string',
