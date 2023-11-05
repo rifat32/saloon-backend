@@ -728,7 +728,8 @@ $datediff = $now - $user_created_date;
      *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500
+     *  "labour_rate":500,
+     * "time_format":"12-hour"
      *
      * }),
      *

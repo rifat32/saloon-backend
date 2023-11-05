@@ -271,7 +271,8 @@ class GaragesController extends Controller
      *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500
+     *  "labour_rate":500,
+     *  "time_format":"12-hour"
      *
      * }),
      *
@@ -506,7 +507,8 @@ if(!$user->hasRole('garage_owner')) {
      *  "images":{"/a","/b","/c"},
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
-     *  "labour_rate":500
+     *  "labour_rate":500,
+     *  "time_format":"12-hour"
      *
      * }),
      *
@@ -741,7 +743,8 @@ if(!$user->hasRole('garage_owner')) {
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
      *  "labour_rate":500,
-     *  "currency":"BDT"
+     *  "currency":"BDT",
+     *  "time_format":"12-hour"
      *
      * }),
      *
@@ -927,6 +930,7 @@ if(!$user->hasRole('garage_owner')) {
                 "is_mobile_garage",
                 "wifi_available",
                 "labour_rate",
+                "time_format",
                 "currency",
 
         ])->toArray()
@@ -1121,6 +1125,7 @@ if(!$user->hasRole('garage_owner')) {
      *  "is_mobile_garage":true,
      *  "wifi_available":true,
      *  "labour_rate":500,
+     *  "time_format":"12-hour",
      * *  "currency":"BDT"
      *
      * }),
@@ -1232,6 +1237,7 @@ if(!$user->hasRole('garage_owner')) {
                 "is_mobile_garage",
                 "wifi_available",
                 "labour_rate",
+                "time_format",
              "currency",
 
         ])->toArray()

@@ -76,6 +76,7 @@ class AuthRegisterGarageRequestClient extends FormRequest
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
+            "garage.time_format"=>"required|string|in:12-hour,24-hour",
 
 
 
@@ -148,6 +149,12 @@ class AuthRegisterGarageRequestClient extends FormRequest
             'garage.wifi_available.required' => 'The wifi available field is required.',
             'garage.wifi_available.boolean' => 'The wifi available field must be a boolean.',
             'garage.labour_rate.numeric' => 'The labour rate field must be numeric.',
+
+
+
+            'garage.time_format.required' => 'The time format is required.',
+            'garage.time_format.string' => 'The time format must be a string.',
+            'garage.time_format.in' => 'The time format must be either "12-hour" or "24-hour".',
 
             'times.required' => 'The times field is required.',
             'times.array' => 'The times field must be an array.',

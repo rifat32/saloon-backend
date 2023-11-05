@@ -1072,7 +1072,8 @@
                                             ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500
+                                            "labour_rate": 500,
+                                            "time_format": "12-hour"
                                         }
                                     },
                                     "times": {
@@ -12234,7 +12235,8 @@
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
                                             "labour_rate": 500,
-                                            "currency": "BDT"
+                                            "currency": "BDT",
+                                            "time_format": "12-hour"
                                         }
                                     },
                                     "service": {
@@ -12386,7 +12388,8 @@
                                             ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500
+                                            "labour_rate": 500,
+                                            "time_format": "12-hour"
                                         }
                                     },
                                     "times": {
@@ -12601,7 +12604,8 @@
                                             ],
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
-                                            "labour_rate": 500
+                                            "labour_rate": 500,
+                                            "time_format": "12-hour"
                                         }
                                     },
                                     "service": {
@@ -12851,6 +12855,7 @@
                                             "is_mobile_garage": true,
                                             "wifi_available": true,
                                             "labour_rate": 500,
+                                            "time_format": "12-hour",
                                             "currency": "BDT"
                                         }
                                     },
@@ -25702,6 +25707,14 @@
                                         ]
                                     },
                                     "videos": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            "a.jpg",
+                                            "b.jpg"
+                                        ]
+                                    },
+                                    "file_links": {
                                         "type": "string",
                                         "format": "array",
                                         "example": [

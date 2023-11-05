@@ -31,6 +31,7 @@ class Garage extends Model
         "is_mobile_garage",
         "wifi_available",
         "labour_rate",
+        "time_format",
         "average_time_slot",
         "owner_id",
         "created_by",
