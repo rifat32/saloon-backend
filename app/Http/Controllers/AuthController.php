@@ -873,7 +873,7 @@ $datediff = $now - $user_created_date;
                     if(!$serviceUpdate["success"]){
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => ["service"=>[$serviceUpdate["message"]]]
+                            "errors" => [("service".$serviceUpdate["type"])=>[$serviceUpdate["message"]]]
                      ];
                         throw new Exception(json_encode($error),422);
 

@@ -432,7 +432,7 @@ if(!$user->hasRole('garage_owner')) {
      if(!$serviceUpdate["success"]){
         $error =  [
             "message" => "The given data was invalid.",
-            "errors" => ["service"=>[$serviceUpdate["message"]]]
+            "errors" => [("service".$serviceUpdate["type"])=>[$serviceUpdate["message"]]]
      ];
         throw new Exception(json_encode($error),422);
 
@@ -662,7 +662,7 @@ if(!$user->hasRole('garage_owner')) {
      if(!$serviceUpdate["success"]){
         $error =  [
             "message" => "The given data was invalid.",
-            "errors" => ["service"=>[$serviceUpdate["message"]]]
+            "errors" => [("service".$serviceUpdate["type"])=>[$serviceUpdate["message"]]]
      ];
         throw new Exception(json_encode($error),422);
 

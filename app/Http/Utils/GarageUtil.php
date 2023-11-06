@@ -29,6 +29,7 @@ trait GarageUtil
                 ->first();
             if (!$automobile_category_db) {
                 return [
+                    "type" => "services",
                     "success" => false,
                     "message" => "please provile valid automobile category id"
                 ];
@@ -49,6 +50,7 @@ trait GarageUtil
                     if (!$service_db) {
 
                         return [
+                            "type" => "services",
                             "success" => false,
                             "message" => "please provile valid service id"
                         ];
@@ -67,6 +69,7 @@ trait GarageUtil
                             if (!$sub_service_db) {
 
                                 return [
+                                    "type" => "services",
                                     "success" => false,
                                     "message" => "please provile valid sub service id"
                                 ];
@@ -96,6 +99,7 @@ trait GarageUtil
                     if (!$automobile_make_db) {
 
                         return [
+                            "type" => "automobile_makes",
                             "success" => false,
                             "message" => "please provile valid automobile make id"
                         ];
@@ -130,6 +134,7 @@ trait GarageUtil
                                 if (!$automobile_model_db) {
 
                                     return [
+                                        "type" => "automobile_makes",
                                         "success" => false,
                                         "message" => "please provile valid automobile model id"
                                     ];
