@@ -966,6 +966,11 @@ class UserManagementController extends Controller
             // ->whereHas('roles', function ($query) {
             //     // return $query->where('name','!=', 'customer');
             // });
+            if(!$request->user()->hasRole('superadmin')) {
+                $usersQuery =    $usersQuery->where([
+                    "created_by" =>$request->user()->id
+                ]);
+            }
 
             if(!empty($request->search_key)) {
                 $usersQuery = $usersQuery->where(function($query) use ($request){
