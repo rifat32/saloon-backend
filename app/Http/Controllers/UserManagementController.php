@@ -1066,11 +1066,18 @@ class UserManagementController extends Controller
             ->where([
                 "id" => $id
             ])
+            ->when(!$request->user()->hasRole('superadmin'), function ($query) use ($request) {
+                $query->where('created_by', $request->user()->id);
+            })
             ->first();
             // ->whereHas('roles', function ($query) {
             //     // return $query->where('name','!=', 'customer');
             // });
-
+            if(!$user) {
+                return response()->json([
+                    "message" => "no user found"
+                ],404);
+            }
 
             return response()->json($user, 200);
         } catch(Exception $e){
@@ -1142,16 +1149,23 @@ class UserManagementController extends Controller
                    "message" => "You can not perform this action"
                 ],401);
            }
-           $userQuery = User::where([
+           $user = User::where([
             "id" => $id
-       ]);
-           if($userQuery->first()->hasRole("superadmin")){
+       ])->when(!$request->user()->hasRole('superadmin'), function ($query) use ($request) {
+        $query->where('created_by', $request->user()->id);
+    })
+    ->first();
+    if(!$user) {
+        return response()->json([
+            "message" => "no user found"
+        ],404);
+    }
+           if($user->hasRole("superadmin")){
             return response()->json([
                "message" => "superadmin can not be deleted"
             ],401);
        }
-
-           $userQuery
+           $user
            ->delete();
 
             return response()->json(["ok" => true], 200);
