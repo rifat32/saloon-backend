@@ -383,8 +383,8 @@ Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStati
 
 
 
-Route::put('/v1.0/fuel-station-services/toggle-active', [GaragesController::class, "toggleActiveGarage"]);
-Route::put('/v1.0/fuel-station/toggle-active', [FuelStationServiceController::class, "toggleActiveFuelStation"]);
+
+Route::put('/v1.0/fuel-station/toggle-active', [FuelStationController::class, "toggleActiveFuelStation"]);
 
 
 
