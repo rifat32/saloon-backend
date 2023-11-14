@@ -584,8 +584,12 @@ class RolesController extends Controller
                 array_splice($role_permissions_main, $key, 1);
             }
           foreach ($roleAndPermissions["permissions"] as $key2 => $permission) {
+
                     if(in_array($permission, $unchangeable_permissions)){
-                        array_splice($role_permissions_main[$key]["permissions"], $key2, 1);
+                        if(!empty($role_permissions_main[$key]["permissions"])) {
+                            array_splice($role_permissions_main[$key]["permissions"], $key2, 1);
+                        }
+                        
                     }
 
         }
