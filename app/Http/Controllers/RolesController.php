@@ -582,14 +582,14 @@ class RolesController extends Controller
            foreach ($role_permissions_json as $key => $roleAndPermissions) {
             if(in_array($roleAndPermissions["role"], $unchangeable_roles)){
                 array_splice($role_permissions_main, $key, 1);
-            } else {
-                foreach ($roleAndPermissions["permissions"] as $key2 => $permission) {
+            }
+          foreach ($roleAndPermissions["permissions"] as $key2 => $permission) {
                     if(in_array($permission, $unchangeable_permissions)){
                         array_splice($role_permissions_main[$key]["permissions"], $key2, 1);
                     }
 
-                }
-            }
+        }
+
 
 
 
