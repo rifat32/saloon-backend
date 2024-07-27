@@ -92,6 +92,12 @@ Route::get('/v1.0/garage-sub-services-all/{garage_id}', [GarageServiceController
 
 
 
+Route::get('/v1.0/service-make-model-combined', [ServiceController::class, "getServiceMakeModelCombined"]);
+
+
+
+
+
 
 Route::get('/v1.0/available-countries', [GaragesController::class, "getAvailableCountries"]);
 

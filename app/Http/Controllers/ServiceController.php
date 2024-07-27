@@ -9,6 +9,8 @@ use App\Http\Requests\SubServiceCreateRequest;
 use App\Http\Requests\SubServiceUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Models\AutomobileMake;
+use App\Models\AutomobileModel;
 use App\Models\Service;
 use App\Models\SubService;
 use Exception;
@@ -739,6 +741,109 @@ class ServiceController extends Controller
 
             $sub_services = $subServiceQuery->orderBy("name",'asc')->get();
             return response()->json($sub_services, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
+    }
+
+
+
+      /**
+        *
+     * @OA\Get(
+     *      path="/v1.0/service-make-model-combined",
+     *      operationId="getServiceMakeModelCombined",
+     *      tags={"basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+
+
+     *      summary="This method is to get all service make models",
+     *      description="This method is to get all service-make-models",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getServiceMakeModelCombined(Request $request) {
+        try{
+            $this->storeActivity($request,"");
+
+            $services =  Service::orderBy("name",'asc')
+            ->select(
+                "id",
+                "name",
+                // "icon",
+                // "image",
+            )->get();
+
+            $sub_services =  SubService::orderBy("name",'asc')
+            ->select(
+                "id",
+                "name",
+                "service_id"
+            )->get();
+
+            $automobile_make =  AutomobileMake::orderBy("name",'asc')
+            ->select(
+                "id",
+                "name",
+            )->get();
+
+            $automobile_model =  AutomobileModel::orderBy("name",'asc')
+            ->select(
+                "id",
+                "name",
+                "automobile_make_id"
+            )->get();
+
+
+
+            $response_data = [
+                "services" => $services,
+                "sub_services" => $sub_services,
+                "automobile_make" => $automobile_make,
+                "automobile_model" => $automobile_model,
+            ];
+
+
+
+            return response()->json($response_data, 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500,$request);
