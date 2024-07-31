@@ -7247,6 +7247,54 @@
                                                 "is_active": true
                                             }
                                         ]
+                                    },
+                                    "times": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 1,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 2,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 3,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 4,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 5,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 6,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            }
+                                        ]
                                     }
                                 },
                                 "type": "object"
@@ -7406,6 +7454,54 @@
                                             {
                                                 "option_id": 2,
                                                 "is_active": true
+                                            }
+                                        ]
+                                    },
+                                    "times": {
+                                        "type": "string",
+                                        "format": "array",
+                                        "example": [
+                                            {
+                                                "day": 0,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 1,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 2,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 3,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 4,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 5,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
+                                            },
+                                            {
+                                                "day": 6,
+                                                "opening_time": "10:10:00",
+                                                "closing_time": "10:15:00",
+                                                "is_closed": true
                                             }
                                         ]
                                     }
@@ -20538,6 +20634,71 @@
                         "example": "0"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocesseble Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1.0/service-make-model-combined": {
+            "get": {
+                "tags": [
+                    "basics"
+                ],
+                "summary": "This method is to get all service make models",
+                "description": "This method is to get all service-make-models",
+                "operationId": "getServiceMakeModelCombined",
                 "responses": {
                     "200": {
                         "description": "Successful operation",

@@ -31,4 +31,8 @@ class FuelStation extends Model
     public function options(){
         return $this->hasMany(FuelStationOption::class,'fuel_station_id', 'id');
     }
+
+    public function fuel_station_times(){
+        return $this->hasMany(FuelStation::class,'fuel_station_id', 'id');
+    }
 }

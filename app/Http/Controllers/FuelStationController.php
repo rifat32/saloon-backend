@@ -9,6 +9,7 @@ use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStation;
 use App\Models\FuelStationOption;
+use App\Models\FuelStationTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -129,6 +130,18 @@ class FuelStationController extends Controller
      *  * {"option_id":2,"is_active":true},
      * }),
      *
+     *      *      *    @OA\Property(property="times", type="string", format="array",example={
+     *
+    *{"day":0,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":1,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":2,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+     *{"day":3,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":4,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":5,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":6,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true}
+     *
+     * }),
+     *
      *
      *         ),
      *      ),
@@ -197,6 +210,21 @@ class FuelStationController extends Controller
 
                 }
 
+                FuelStationTime::where([
+                    "garage_id" => $fuel_station->id
+                   ])
+                   ->delete();
+                   $timesArray = collect($insertableData["times"])->unique("day");
+                   foreach($timesArray as $garage_time) {
+                    FuelStationTime::create([
+                        "garage_id" => $fuel_station->id,
+                        "day"=> $garage_time["day"],
+                        "opening_time"=> $garage_time["opening_time"],
+                        "closing_time"=> $garage_time["closing_time"],
+                        "is_closed"=> $garage_time["is_closed"],
+                    ]);
+                   }
+
                 return response($fuel_station, 201);
             });
         } catch (Exception $e) {
@@ -240,6 +268,18 @@ class FuelStationController extends Controller
      *   * *  * *    @OA\Property(property="options", type="string", format="array",example={
       * {"option_id":1,"is_active":true},
      *  * {"option_id":2,"is_active":true},
+     * }),
+     *
+     *  @OA\Property(property="times", type="string", format="array",example={
+     *
+    *{"day":0,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":1,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":2,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+     *{"day":3,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":4,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":5,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true},
+    *{"day":6,"opening_time":"10:10:00","closing_time":"10:15:00","is_closed":true}
+     *
      * }),
      *
      *         ),
@@ -288,10 +328,10 @@ class FuelStationController extends Controller
                         "message" => "You can not perform this action"
                     ], 401);
                 }
-                $updatableData = $request->validated();
+                $request_data = $request->validated();
 
                 $fuelStationPrev = FuelStation::where([
-                    "id" => $updatableData["id"]
+                    "id" => $request_data["id"]
                    ]);
 
                    if(!$request->user()->hasRole('superadmin')) {
@@ -306,8 +346,8 @@ class FuelStationController extends Controller
                         ],404);
                  }
 
-                $fuel_station  =  tap(FuelStation::where(["id" => $updatableData["id"]]))->update(
-                    collect($updatableData)->only([
+                $fuel_station  =  tap(FuelStation::where(["id" => $request_data["id"]]))->update(
+                    collect($request_data)->only([
                         "name",
                         "address",
                         "opening_time",
@@ -341,11 +381,11 @@ class FuelStationController extends Controller
                     ->delete();
 
 
-                    if(empty($updatableData["options"])) {
-                        $updatableData["options"]  = [];
+                    if(empty($request_data["options"])) {
+                        $request_data["options"]  = [];
                     }
 
-                    foreach($updatableData["options"] as $option) {
+                    foreach($request_data["options"] as $option) {
 
                         FuelStationOption::create([
                             "fuel_station_id"=>$fuel_station->id,
@@ -355,6 +395,21 @@ class FuelStationController extends Controller
 
                     }
 
+
+                    FuelStationTime::where([
+                        "garage_id" => $fuel_station->id
+                       ])
+                       ->delete();
+                       $timesArray = collect($request_data["times"])->unique("day");
+                       foreach($timesArray as $garage_time) {
+                        FuelStationTime::create([
+                            "garage_id" => $fuel_station->id,
+                            "day"=> $garage_time["day"],
+                            "opening_time"=> $garage_time["opening_time"],
+                            "closing_time"=> $garage_time["closing_time"],
+                            "is_closed"=> $garage_time["is_closed"],
+                        ]);
+                       }
 
 
 
@@ -429,9 +484,9 @@ class FuelStationController extends Controller
                     "message" => "You can not perform this action"
                  ],401);
             }
-            $updatableData = $request->validated();
+            $request_data = $request->validated();
 
-            $fuelStationQuery  = FuelStation::where(["id" => $updatableData["id"]]);
+            $fuelStationQuery  = FuelStation::where(["id" => $request_data["id"]]);
             if(!auth()->user()->hasRole('superadmin')) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) {
                     $query->where('created_by', auth()->user()->id);
@@ -979,7 +1034,7 @@ class FuelStationController extends Controller
         try {
             $this->storeActivity($request,"");
 
-            $fuelStation = FuelStation::with("options.option")
+            $fuelStation = FuelStation::with("options.option","fuel_station_times")
             ->where([
                 "id" => $id
             ])

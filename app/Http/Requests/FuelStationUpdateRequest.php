@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\DayValidation;
+use App\Rules\TimeOrderRule;
 use App\Rules\TimeValidation;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -48,6 +50,15 @@ class FuelStationUpdateRequest extends FormRequest
             'address_line_1' => 'required|string',
             'address_line_2' => 'nullable|string',
             'additional_information' => 'nullable|string',
+
+
+            'times' => 'required|array|min:1',
+            "times.*.day" => ["numeric",new DayValidation],
+            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+           ],
+            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
+           ],
+           "times.*.is_closed" => ['required',"boolean"],
 
         ];
 
