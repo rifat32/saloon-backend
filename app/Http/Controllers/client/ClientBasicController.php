@@ -25,7 +25,28 @@ class ClientBasicController extends Controller
 
 
     public function getGarageSearchQuery(Request $request) {
-        $garagesQuery = Garage::with("owner"
+
+        $garagesQuery = Garage::with(
+            [
+                "owner" => function($query) {
+
+                     $query->select("users.*");
+                },
+                "garage_times" => function($query) {
+                    // Get today's date
+$today = Carbon::today();
+
+// Get the day number (0-Sunday, 1-Monday, ..., 6-Saturday)
+$dayNumber = $today->dayOfWeek;
+                     $query
+                     ->where([
+                        "garage_times.day" => $dayNumber
+                     ])
+                     ->select("garage_times.id","garage_times.opening_time","garage_times.closing_time","garage_times.garage_id");
+                }
+
+                ]
+
         // "garageAutomobileMakes.automobileMake",
         // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
         // "garageServices.service",
@@ -34,6 +55,7 @@ class ClientBasicController extends Controller
         // "garage_times",
         // "garageGalleries",
         // "garage_packages",
+
 )
         ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
         ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
@@ -680,11 +702,24 @@ $garages->items()[$key]->total_rating_count = $totalCount;
 
                     ->orderByDesc("garages.id")
                     ->select(
-                        "garages.*",
+                        "garages.id",
+                        "garages.name",
+                        "garages.phone",
+                        "garages.email",
+                        "garages.address_line_1",
+                        "garages.logo",
+                        "garages.image",
+                        "garages.status",
+                        "garages.is_active",
+                        "garages.is_mobile_garage",
+                        "garages.wifi_available",
+                        "garages.time_format",
+                        "garages.created_at",
                         DB::raw('CASE
-                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
-                        ELSE 1
-                    END AS is_package_available')
+                            WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
+                            ELSE 1
+                        END AS is_package_available')
+
                         )
 
                     ->paginate($perPage);
