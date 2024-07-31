@@ -446,6 +446,305 @@ $garages->items()[$key]->total_rating_count = $totalCount;
     }
 
 
+    /**
+        *
+     * @OA\Get(
+     *      path="/v2.0/client/garages/{perPage}",
+     *      operationId="getGaragesClient2",
+     *      tags={"client.basics"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="country",
+* in="query",
+* description="country",
+* required=true,
+* example="country"
+* ),
+     * *  @OA\Parameter(
+* name="address",
+* in="query",
+* description="address",
+* required=true,
+* example="address"
+* ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
+    * *  @OA\Parameter(
+* name="start_lat",
+* in="query",
+* description="start_lat",
+* required=true,
+* example="3"
+* ),
+     * *  @OA\Parameter(
+* name="end_lat",
+* in="query",
+* description="end_lat",
+* required=true,
+* example="2"
+* ),
+     * *  @OA\Parameter(
+* name="start_long",
+* in="query",
+* description="start_long",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="end_long",
+* in="query",
+* description="end_long",
+* required=true,
+* example="4"
+* ),
+
+*  @OA\Parameter(
+*      name="automobile_make_ids[]",
+*      in="query",
+*      description="automobile_make_ids",
+*      required=true,
+*      example="1,2"
+* ),
+*  @OA\Parameter(
+*      name="automobile_model_ids[]",
+*      in="query",
+*      description="automobile_model_id",
+*      required=true,
+*      example="1,2"
+* ),
+*  @OA\Parameter(
+*      name="service_ids[]",
+*      in="query",
+*      description="service_id",
+*      required=true,
+*      example="1,2"
+* ),
+*  @OA\Parameter(
+*      name="sub_service_ids[]",
+*      in="query",
+*      description="sub_service_id",
+*      required=true,
+*      example="1,2"
+* ),
+     * *  @OA\Parameter(
+* name="wifi_available",
+* in="query",
+* description="wifi_available",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="is_mobile_garage",
+* in="query",
+* description="is_mobile_garage",
+* required=true,
+* example="1"
+* ),
+
+     * *  @OA\Parameter(
+* name="open_time",
+* in="query",
+* description="2019-06-29 22:00",
+* required=true,
+* example="1"
+* ),
+*
+     *      summary="This method is to get garages by client",
+     *      description="This method is to get garages by client",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getGaragesClient2($perPage,Request $request) {
+
+        try{
+            $this->storeActivity($request,"");
+
+            $info=[];
+
+
+            if(!empty($request->address)) {
+                $garages = $this->getGarageSearchQuery($request)
+                ->where("garages.city",$request->address)
+                ->groupBy("garages.id")
+
+                ->orderByDesc("garages.id")
+                ->select("garages.*")
+                ->paginate($perPage);
+
+                $info["is_result_by_city"] = true;
+                $info["is_result_by_country"] = false;
+
+                if (count($garages->items()) == 0) {
+                    $info["is_result_by_city"] = false;
+                    $info["is_result_by_country"] = true;
+
+                    $garages = $this->getGarageSearchQuery($request)
+                    ->where("garages.country",$request->address)
+                    ->groupBy("garages.id")
+
+                    ->orderByDesc("garages.id")
+                    ->select(
+                        "garages.id",
+                        "garages.name",
+                        "garages.phone",
+                        "garages.email",
+                        "garages.address_line_1",
+                        "garages.logo",
+                        "garages.image",
+                        "garages.status",
+                        "garages.is_active",
+                        "garages.is_mobile_garage",
+                        "garages.wifi_available",
+                        "garages.time_format",
+                        "garages.created_at",
+                        DB::raw('CASE
+                            WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
+                            ELSE 1
+                        END AS is_package_available')
+
+                        )
+                    ->paginate($perPage);
+
+
+
+                }
+                if (count($garages->items()) == 0) {
+                    $info["is_result_by_city"] = false;
+                    $info["is_result_by_country"] = false;
+                }
+
+            }
+            else {
+
+                array_splice($info, 0);
+
+                    $garages = $this->getGarageSearchQuery($request)
+
+
+                    ->groupBy("garages.id")
+
+                    ->orderByDesc("garages.id")
+                    ->select(
+                        "garages.*",
+                        DB::raw('CASE
+                        WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
+                        ELSE 1
+                    END AS is_package_available')
+                        )
+
+                    ->paginate($perPage);
+
+                }
+
+
+foreach($garages->items() as $key=>$value) {
+    $totalCount = 0;
+$totalRating = 0;
+
+foreach(Star::get() as $star) {
+
+    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+    ->where([
+        "review_news.garage_id" => $garages->items()[$key]->id,
+        "star_id" => $star->id,
+        // "review_news.guest_id" => NULL
+    ])
+    ->distinct("review_value_news.review_id","review_value_news.question_id");
+    if(!empty($request->start_date) && !empty($request->end_date)) {
+
+        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+            $request->start_date,
+            $request->end_date
+        ]);
+
+    }
+    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+    $totalRating += $data2["star_" . $star->value . "_selected_count"];
+
+}
+if($totalCount > 0) {
+    $data2["average_rating"] = $totalCount / $totalRating;
+
+}
+else {
+    $data2["average_rating"] = 0;
+
+}
+$garages->items()[$key]->average_rating = $data2["average_rating"];
+$garages->items()[$key]->total_rating_count = $totalCount;
+
+}
+
+
+
+            return response()->json([
+                "info"=>$info,
+
+                "data"=>$garages], 200);
+        } catch(Exception $e){
+
+            return $this->sendError($e,500,$request);
+        }
+
+    }
      /**
         *
      * @OA\Get(

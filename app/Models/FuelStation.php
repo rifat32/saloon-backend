@@ -33,6 +33,6 @@ class FuelStation extends Model
     }
 
     public function fuel_station_times(){
-        return $this->hasMany(FuelStation::class,'fuel_station_id', 'id');
+        return $this->hasMany(FuelStation::class,'id', 'fuel_station_id');
     }
 }
