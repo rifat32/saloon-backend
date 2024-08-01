@@ -1008,6 +1008,7 @@ Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "get
 Route::get('/v2.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient2"]);
 
 Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient"]);
+Route::get('/v2.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient2"]);
 
 Route::get('/v1.0/client/garages/service-model-details/{garage_id}', [ClientBasicController::class, "getGarageServiceModelDetailsByIdClient"]);
 

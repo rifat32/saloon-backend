@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Models\AutomobileModel;
 use App\Models\Garage;
 use App\Models\GarageAffiliation;
 use App\Models\GarageAutomobileMake;
@@ -24,50 +25,51 @@ class ClientBasicController extends Controller
     use ErrorUtil, UserActivityUtil;
 
 
-    public function getGarageSearchQuery(Request $request) {
+    public function getGarageSearchQuery(Request $request)
+    {
 
         $garagesQuery = Garage::with(
             [
-                "owner" => function($query) {
+                "owner" => function ($query) {
 
-                     $query->select("users.*");
+                    $query->select("users.*");
                 },
-                "garage_times" => function($query) {
+                "garage_times" => function ($query) {
                     // Get today's date
-$today = Carbon::today();
+                    $today = Carbon::today();
 
-// Get the day number (0-Sunday, 1-Monday, ..., 6-Saturday)
-$dayNumber = $today->dayOfWeek;
-                     $query
-                     ->where([
-                        "garage_times.day" => $dayNumber
-                     ])
-                     ->select("garage_times.id","garage_times.opening_time","garage_times.closing_time","garage_times.garage_id");
+                    // Get the day number (0-Sunday, 1-Monday, ..., 6-Saturday)
+                    $dayNumber = $today->dayOfWeek;
+                    $query
+                        ->where([
+                            "garage_times.day" => $dayNumber
+                        ])
+                        ->select("garage_times.id", "garage_times.opening_time", "garage_times.closing_time", "garage_times.garage_id");
                 }
 
-                ]
+            ]
 
-        // "garageAutomobileMakes.automobileMake",
-        // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
-        // "garageServices.service",
-        // "garageServices.garageSubServices.garage_sub_service_prices",
-        // "garageServices.garageSubServices.subService",
-        // "garage_times",
-        // "garageGalleries",
-        // "garage_packages",
+            // "garageAutomobileMakes.automobileMake",
+            // "garageAutomobileMakes.garageAutomobileModels.automobileModel",
+            // "garageServices.service",
+            // "garageServices.garageSubServices.garage_sub_service_prices",
+            // "garageServices.garageSubServices.subService",
+            // "garage_times",
+            // "garageGalleries",
+            // "garage_packages",
 
-)
-        ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
-        ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+        )
+            ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
+            ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 
-        ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
-        ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+            ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
+            ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
 
-->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
-->where('garages.is_active', true);
+            ->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
+            ->where('garages.is_active', true);
 
-        if(!empty($request->search_key)) {
-            $garagesQuery = $garagesQuery->where(function($query) use ($request){
+        if (!empty($request->search_key)) {
+            $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
                 $term = $request->search_key;
                 $query->where("garages.name", "like", "%" . $term . "%");
                 $query->orWhere("garages.phone", "like", "%" . $term . "%");
@@ -75,7 +77,6 @@ $dayNumber = $today->dayOfWeek;
                 $query->orWhere("garages.city", "like", "%" . $term . "%");
                 $query->orWhere("garages.postcode", "like", "%" . $term . "%");
             });
-
         }
 
 
@@ -86,15 +87,12 @@ $dayNumber = $today->dayOfWeek;
 
         if (!empty($request->country)) {
             $garagesQuery =   $garagesQuery->where("country", "like", "%" . $request->country . "%");
-
         }
         if (!empty($request->city)) {
             $garagesQuery =   $garagesQuery->where("city", "like", "%" . $request->city . "%");
-
         }
         if (!empty($request->address_line_1)) {
             $garagesQuery =   $garagesQuery->where("address_line_1", "like", "%" . $request->address_line_1 . "%");
-
         }
 
 
@@ -113,43 +111,39 @@ $dayNumber = $today->dayOfWeek;
 
 
 
-        if(!empty($request->automobile_make_ids)) {
+        if (!empty($request->automobile_make_ids)) {
             $null_filter = collect(array_filter($request->automobile_make_ids))->values();
             $automobile_make_ids =  $null_filter->all();
-            if(count($automobile_make_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_makes.automobile_make_id",$automobile_make_ids);
+            if (count($automobile_make_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_makes.automobile_make_id", $automobile_make_ids);
             }
-
         }
-        if(!empty($request->automobile_model_ids)) {
+        if (!empty($request->automobile_model_ids)) {
 
             $null_filter = collect(array_filter($request->automobile_model_ids))->values();
             $automobile_model_ids =  $null_filter->all();
-            if(count($automobile_model_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_models.automobile_model_id",$automobile_model_ids);
+            if (count($automobile_model_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_automobile_models.automobile_model_id", $automobile_model_ids);
             }
-
         }
 
-        if(!empty($request->service_ids)) {
+        if (!empty($request->service_ids)) {
 
             $null_filter = collect(array_filter($request->service_ids))->values();
-        $service_ids =  $null_filter->all();
+            $service_ids =  $null_filter->all();
 
-            if(count($service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id",$service_ids);
+            if (count($service_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id", $service_ids);
             }
-
         }
 
 
-        if(!empty($request->sub_service_ids)) {
+        if (!empty($request->sub_service_ids)) {
             $null_filter = collect(array_filter($request->sub_service_ids))->values();
-        $sub_service_ids =  $null_filter->all();
-            if(count($sub_service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id",$sub_service_ids);
+            $sub_service_ids =  $null_filter->all();
+            if (count($sub_service_ids)) {
+                $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id", $sub_service_ids);
             }
-
         }
 
         if (!empty($request->start_lat)) {
@@ -170,23 +164,22 @@ $dayNumber = $today->dayOfWeek;
             $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
             $time = $date->format('H:i');
             $garagesQuery = $garagesQuery->where('garage_times.day', "=", $dayOfWeek)
-            ->whereTime('garage_times.opening_time', "<=", $time)
-            ->whereTime('garage_times.closing_time', ">", $time);
+                ->whereTime('garage_times.opening_time', "<=", $time)
+                ->whereTime('garage_times.closing_time', ">", $time);
         }
 
         return $garagesQuery;
-
     }
 
 
 
     /**
-        *
+     *
      * @OA\Get(
      *      path="/v1.0/client/garages/{perPage}",
      *      operationId="getGaragesClient",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
@@ -198,113 +191,113 @@ $dayNumber = $today->dayOfWeek;
      *      ),
 
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      * *  @OA\Parameter(
-* name="country",
-* in="query",
-* description="country",
-* required=true,
-* example="country"
-* ),
+     * name="country",
+     * in="query",
+     * description="country",
+     * required=true,
+     * example="country"
+     * ),
      * *  @OA\Parameter(
-* name="address",
-* in="query",
-* description="address",
-* required=true,
-* example="address"
-* ),
+     * name="address",
+     * in="query",
+     * description="address",
+     * required=true,
+     * example="address"
+     * ),
      * *  @OA\Parameter(
-* name="city",
-* in="query",
-* description="city",
-* required=true,
-* example="city"
-* ),
-    * *  @OA\Parameter(
-* name="start_lat",
-* in="query",
-* description="start_lat",
-* required=true,
-* example="3"
-* ),
+     * name="city",
+     * in="query",
+     * description="city",
+     * required=true,
+     * example="city"
+     * ),
      * *  @OA\Parameter(
-* name="end_lat",
-* in="query",
-* description="end_lat",
-* required=true,
-* example="2"
-* ),
+     * name="start_lat",
+     * in="query",
+     * description="start_lat",
+     * required=true,
+     * example="3"
+     * ),
      * *  @OA\Parameter(
-* name="start_long",
-* in="query",
-* description="start_long",
-* required=true,
-* example="1"
-* ),
+     * name="end_lat",
+     * in="query",
+     * description="end_lat",
+     * required=true,
+     * example="2"
+     * ),
      * *  @OA\Parameter(
-* name="end_long",
-* in="query",
-* description="end_long",
-* required=true,
-* example="4"
-* ),
+     * name="start_long",
+     * in="query",
+     * description="start_long",
+     * required=true,
+     * example="1"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_long",
+     * in="query",
+     * description="end_long",
+     * required=true,
+     * example="4"
+     * ),
 
-*  @OA\Parameter(
-*      name="automobile_make_ids[]",
-*      in="query",
-*      description="automobile_make_ids",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="automobile_model_ids[]",
-*      in="query",
-*      description="automobile_model_id",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="service_ids[]",
-*      in="query",
-*      description="service_id",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="sub_service_ids[]",
-*      in="query",
-*      description="sub_service_id",
-*      required=true,
-*      example="1,2"
-* ),
+     *  @OA\Parameter(
+     *      name="automobile_make_ids[]",
+     *      in="query",
+     *      description="automobile_make_ids",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="automobile_model_ids[]",
+     *      in="query",
+     *      description="automobile_model_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="service_ids[]",
+     *      in="query",
+     *      description="service_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="sub_service_ids[]",
+     *      in="query",
+     *      description="sub_service_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
      * *  @OA\Parameter(
-* name="wifi_available",
-* in="query",
-* description="wifi_available",
-* required=true,
-* example="1"
-* ),
+     * name="wifi_available",
+     * in="query",
+     * description="wifi_available",
+     * required=true,
+     * example="1"
+     * ),
      * *  @OA\Parameter(
-* name="is_mobile_garage",
-* in="query",
-* description="is_mobile_garage",
-* required=true,
-* example="1"
-* ),
+     * name="is_mobile_garage",
+     * in="query",
+     * description="is_mobile_garage",
+     * required=true,
+     * example="1"
+     * ),
 
      * *  @OA\Parameter(
-* name="open_time",
-* in="query",
-* description="2019-06-29 22:00",
-* required=true,
-* example="1"
-* ),
-*
+     * name="open_time",
+     * in="query",
+     * description="2019-06-29 22:00",
+     * required=true,
+     * example="1"
+     * ),
+     *
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -343,22 +336,23 @@ $dayNumber = $today->dayOfWeek;
      *     )
      */
 
-    public function getGaragesClient($perPage,Request $request) {
+    public function getGaragesClient($perPage, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
 
-            $info=[];
+            $info = [];
 
 
-            if(!empty($request->address)) {
+            if (!empty($request->address)) {
                 $garages = $this->getGarageSearchQuery($request)
-                ->where("garages.city",$request->address)
-                ->groupBy("garages.id")
+                    ->where("garages.city", $request->address)
+                    ->groupBy("garages.id")
 
-                ->orderByDesc("garages.id")
-                ->select("garages.*")
-                ->paginate($perPage);
+                    ->orderByDesc("garages.id")
+                    ->select("garages.*")
+                    ->paginate($perPage);
 
                 $info["is_result_by_city"] = true;
                 $info["is_result_by_country"] = false;
@@ -368,33 +362,28 @@ $dayNumber = $today->dayOfWeek;
                     $info["is_result_by_country"] = true;
 
                     $garages = $this->getGarageSearchQuery($request)
-                    ->where("garages.country",$request->address)
-                    ->groupBy("garages.id")
+                        ->where("garages.country", $request->address)
+                        ->groupBy("garages.id")
 
-                    ->orderByDesc("garages.id")
-                    ->select(
-                        "garages.*",
-                        DB::raw('CASE
+                        ->orderByDesc("garages.id")
+                        ->select(
+                            "garages.*",
+                            DB::raw('CASE
                         WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
                         ELSE 1
                     END AS is_package_available')
                         )
-                    ->paginate($perPage);
-
-
-
+                        ->paginate($perPage);
                 }
                 if (count($garages->items()) == 0) {
                     $info["is_result_by_city"] = false;
                     $info["is_result_by_country"] = false;
                 }
-
-            }
-            else {
+            } else {
 
                 array_splice($info, 0);
 
-                    $garages = $this->getGarageSearchQuery($request)
+                $garages = $this->getGarageSearchQuery($request)
 
 
                     ->groupBy("garages.id")
@@ -406,75 +395,68 @@ $dayNumber = $today->dayOfWeek;
                         WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
                         ELSE 1
                     END AS is_package_available')
-                        )
+                    )
 
                     ->paginate($perPage);
+            }
 
+
+            foreach ($garages->items() as $key => $value) {
+                $totalCount = 0;
+                $totalRating = 0;
+
+                foreach (Star::get() as $star) {
+
+                    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                        ->where([
+                            "review_news.garage_id" => $garages->items()[$key]->id,
+                            "star_id" => $star->id,
+                            // "review_news.guest_id" => NULL
+                        ])
+                        ->distinct("review_value_news.review_id", "review_value_news.question_id");
+                    if (!empty($request->start_date) && !empty($request->end_date)) {
+
+                        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+                            $request->start_date,
+                            $request->end_date
+                        ]);
+                    }
+                    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+                    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                    $totalRating += $data2["star_" . $star->value . "_selected_count"];
                 }
-
-
-foreach($garages->items() as $key=>$value) {
-    $totalCount = 0;
-$totalRating = 0;
-
-foreach(Star::get() as $star) {
-
-    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-    ->where([
-        "review_news.garage_id" => $garages->items()[$key]->id,
-        "star_id" => $star->id,
-        // "review_news.guest_id" => NULL
-    ])
-    ->distinct("review_value_news.review_id","review_value_news.question_id");
-    if(!empty($request->start_date) && !empty($request->end_date)) {
-
-        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
-            $request->start_date,
-            $request->end_date
-        ]);
-
-    }
-    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
-
-    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-    $totalRating += $data2["star_" . $star->value . "_selected_count"];
-
-}
-if($totalCount > 0) {
-    $data2["average_rating"] = $totalCount / $totalRating;
-
-}
-else {
-    $data2["average_rating"] = 0;
-
-}
-$garages->items()[$key]->average_rating = $data2["average_rating"];
-$garages->items()[$key]->total_rating_count = $totalCount;
-
-}
+                if ($totalCount > 0) {
+                    $data2["average_rating"] = $totalCount / $totalRating;
+                } else {
+                    $data2["average_rating"] = 0;
+                }
+                $garages->items()[$key]->average_rating = $data2["average_rating"];
+                $garages->items()[$key]->total_rating_count = $totalCount;
+            }
 
 
 
             return response()->json([
-                "info"=>$info,
+                "info" => $info,
 
-                "data"=>$garages], 200);
-        } catch(Exception $e){
+                "data" => $garages
+            ], 200);
+        } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
-
     }
 
 
     /**
-        *
+     *
      * @OA\Get(
      *      path="/v2.0/client/garages/{perPage}",
      *      operationId="getGaragesClient2",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
@@ -486,113 +468,113 @@ $garages->items()[$key]->total_rating_count = $totalCount;
      *      ),
 
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      * *  @OA\Parameter(
-* name="country",
-* in="query",
-* description="country",
-* required=true,
-* example="country"
-* ),
+     * name="country",
+     * in="query",
+     * description="country",
+     * required=true,
+     * example="country"
+     * ),
      * *  @OA\Parameter(
-* name="address",
-* in="query",
-* description="address",
-* required=true,
-* example="address"
-* ),
+     * name="address",
+     * in="query",
+     * description="address",
+     * required=true,
+     * example="address"
+     * ),
      * *  @OA\Parameter(
-* name="city",
-* in="query",
-* description="city",
-* required=true,
-* example="city"
-* ),
-    * *  @OA\Parameter(
-* name="start_lat",
-* in="query",
-* description="start_lat",
-* required=true,
-* example="3"
-* ),
+     * name="city",
+     * in="query",
+     * description="city",
+     * required=true,
+     * example="city"
+     * ),
      * *  @OA\Parameter(
-* name="end_lat",
-* in="query",
-* description="end_lat",
-* required=true,
-* example="2"
-* ),
+     * name="start_lat",
+     * in="query",
+     * description="start_lat",
+     * required=true,
+     * example="3"
+     * ),
      * *  @OA\Parameter(
-* name="start_long",
-* in="query",
-* description="start_long",
-* required=true,
-* example="1"
-* ),
+     * name="end_lat",
+     * in="query",
+     * description="end_lat",
+     * required=true,
+     * example="2"
+     * ),
      * *  @OA\Parameter(
-* name="end_long",
-* in="query",
-* description="end_long",
-* required=true,
-* example="4"
-* ),
+     * name="start_long",
+     * in="query",
+     * description="start_long",
+     * required=true,
+     * example="1"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_long",
+     * in="query",
+     * description="end_long",
+     * required=true,
+     * example="4"
+     * ),
 
-*  @OA\Parameter(
-*      name="automobile_make_ids[]",
-*      in="query",
-*      description="automobile_make_ids",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="automobile_model_ids[]",
-*      in="query",
-*      description="automobile_model_id",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="service_ids[]",
-*      in="query",
-*      description="service_id",
-*      required=true,
-*      example="1,2"
-* ),
-*  @OA\Parameter(
-*      name="sub_service_ids[]",
-*      in="query",
-*      description="sub_service_id",
-*      required=true,
-*      example="1,2"
-* ),
+     *  @OA\Parameter(
+     *      name="automobile_make_ids[]",
+     *      in="query",
+     *      description="automobile_make_ids",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="automobile_model_ids[]",
+     *      in="query",
+     *      description="automobile_model_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="service_ids[]",
+     *      in="query",
+     *      description="service_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="sub_service_ids[]",
+     *      in="query",
+     *      description="sub_service_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
      * *  @OA\Parameter(
-* name="wifi_available",
-* in="query",
-* description="wifi_available",
-* required=true,
-* example="1"
-* ),
+     * name="wifi_available",
+     * in="query",
+     * description="wifi_available",
+     * required=true,
+     * example="1"
+     * ),
      * *  @OA\Parameter(
-* name="is_mobile_garage",
-* in="query",
-* description="is_mobile_garage",
-* required=true,
-* example="1"
-* ),
+     * name="is_mobile_garage",
+     * in="query",
+     * description="is_mobile_garage",
+     * required=true,
+     * example="1"
+     * ),
 
      * *  @OA\Parameter(
-* name="open_time",
-* in="query",
-* description="2019-06-29 22:00",
-* required=true,
-* example="1"
-* ),
-*
+     * name="open_time",
+     * in="query",
+     * description="2019-06-29 22:00",
+     * required=true,
+     * example="1"
+     * ),
+     *
      *      summary="This method is to get garages by client",
      *      description="This method is to get garages by client",
      *
@@ -631,22 +613,23 @@ $garages->items()[$key]->total_rating_count = $totalCount;
      *     )
      */
 
-     public function getGaragesClient2($perPage,Request $request) {
+    public function getGaragesClient2($perPage, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
 
-            $info=[];
+            $info = [];
 
 
-            if(!empty($request->address)) {
+            if (!empty($request->address)) {
                 $garages = $this->getGarageSearchQuery($request)
-                ->where("garages.city",$request->address)
-                ->groupBy("garages.id")
+                    ->where("garages.city", $request->address)
+                    ->groupBy("garages.id")
 
-                ->orderByDesc("garages.id")
-                ->select("garages.*")
-                ->paginate($perPage);
+                    ->orderByDesc("garages.id")
+                    ->select("garages.*")
+                    ->paginate($perPage);
 
                 $info["is_result_by_city"] = true;
                 $info["is_result_by_country"] = false;
@@ -656,46 +639,41 @@ $garages->items()[$key]->total_rating_count = $totalCount;
                     $info["is_result_by_country"] = true;
 
                     $garages = $this->getGarageSearchQuery($request)
-                    ->where("garages.country",$request->address)
-                    ->groupBy("garages.id")
+                        ->where("garages.country", $request->address)
+                        ->groupBy("garages.id")
 
-                    ->orderByDesc("garages.id")
-                    ->select(
-                        "garages.id",
-                        "garages.name",
-                        "garages.phone",
-                        "garages.email",
-                        "garages.address_line_1",
-                        "garages.logo",
-                        "garages.image",
-                        "garages.status",
-                        "garages.is_active",
-                        "garages.is_mobile_garage",
-                        "garages.wifi_available",
-                        "garages.time_format",
-                        "garages.created_at",
-                        DB::raw('CASE
+                        ->orderByDesc("garages.id")
+                        ->select(
+                            "garages.id",
+                            "garages.name",
+                            "garages.phone",
+                            "garages.email",
+                            "garages.address_line_1",
+                            "garages.logo",
+                            "garages.image",
+                            "garages.status",
+                            "garages.is_active",
+                            "garages.is_mobile_garage",
+                            "garages.wifi_available",
+                            "garages.time_format",
+                            "garages.created_at",
+                            DB::raw('CASE
                             WHEN (SELECT COUNT(garage_packages.id) FROM garage_packages WHERE garage_packages.garage_id = garages.id AND garage_packages.deleted_at IS NULL) = 0 THEN 0
                             ELSE 1
                         END AS is_package_available')
 
                         )
-                    ->paginate($perPage);
-
-
-
+                        ->paginate($perPage);
                 }
                 if (count($garages->items()) == 0) {
                     $info["is_result_by_city"] = false;
                     $info["is_result_by_country"] = false;
                 }
-
-            }
-            else {
+            } else {
 
                 array_splice($info, 0);
 
-                    $garages = $this->getGarageSearchQuery($request)
+                $garages = $this->getGarageSearchQuery($request)
 
 
                     ->groupBy("garages.id")
@@ -720,73 +698,68 @@ $garages->items()[$key]->total_rating_count = $totalCount;
                             ELSE 1
                         END AS is_package_available')
 
-                        )
+                    )
 
                     ->paginate($perPage);
+            }
 
+
+            foreach ($garages->items() as $key => $value) {
+                $totalCount = 0;
+                $totalRating = 0;
+
+                foreach (Star::get() as $star) {
+
+                    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                        ->where([
+                            "review_news.garage_id" => $garages->items()[$key]->id,
+                            "star_id" => $star->id,
+                            // "review_news.guest_id" => NULL
+                        ])
+                        ->distinct("review_value_news.review_id", "review_value_news.question_id");
+                    if (!empty($request->start_date) && !empty($request->end_date)) {
+
+                        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+                            $request->start_date,
+                            $request->end_date
+                        ]);
+                    }
+                    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+                    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                    $totalRating += $data2["star_" . $star->value . "_selected_count"];
                 }
-
-
-foreach($garages->items() as $key=>$value) {
-    $totalCount = 0;
-$totalRating = 0;
-
-foreach(Star::get() as $star) {
-
-    $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-    ->where([
-        "review_news.garage_id" => $garages->items()[$key]->id,
-        "star_id" => $star->id,
-        // "review_news.guest_id" => NULL
-    ])
-    ->distinct("review_value_news.review_id","review_value_news.question_id");
-    if(!empty($request->start_date) && !empty($request->end_date)) {
-
-        $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
-            $request->start_date,
-            $request->end_date
-        ]);
-
-    }
-    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
-
-    $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
-
-    $totalRating += $data2["star_" . $star->value . "_selected_count"];
-
-}
-if($totalCount > 0) {
-    $data2["average_rating"] = $totalCount / $totalRating;
-
-}
-else {
-    $data2["average_rating"] = 0;
-
-}
-$garages->items()[$key]->average_rating = $data2["average_rating"];
-$garages->items()[$key]->total_rating_count = $totalCount;
-
-}
+                if ($totalCount > 0) {
+                    $data2["average_rating"] = $totalCount / $totalRating;
+                } else {
+                    $data2["average_rating"] = 0;
+                }
+                $garages->items()[$key]->average_rating = $data2["average_rating"];
+                $garages->items()[$key]->total_rating_count = $totalCount;
+            }
 
 
 
             return response()->json([
-                "info"=>$info,
+                "info" => $info,
 
-                "data"=>$garages], 200);
-        } catch(Exception $e){
+                "data" => $garages
+            ], 200);
+        } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
-
     }
-     /**
-        *
+
+
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/client/garages/single/{id}",
      *      operationId="getGarageByIdClient",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
@@ -834,10 +807,11 @@ $garages->items()[$key]->total_rating_count = $totalCount;
      *     )
      */
 
-    public function getGarageByIdClient($id,Request $request) {
+    public function getGarageByIdClient($id, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
             $garagesQuery = Garage::with(
                 "owner",
                 "garageAutomobileMakes.automobileMake",
@@ -858,82 +832,272 @@ $garages->items()[$key]->total_rating_count = $totalCount;
                 "id" => $id,
                 "is_active" => 1
             ])
-            ->first();
+                ->first();
 
 
-            if(!$garage) {
+            if (!$garage) {
 
 
-           return response()->json([
-            "message" => "no garage found"
-           ],404);
-
+                return response()->json([
+                    "message" => "no garage found"
+                ], 404);
             }
 
 
-       $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
-        $garage_service_ids =   GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
+            $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id" => $garage->id])->pluck("automobile_make_id");
+            $garage_service_ids =   GarageService::where(["garage_id" => $garage->id])->pluck("service_id");
 
-        $data["garage"] = $garage;
-        $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
-        $data["garage_service_ids"] = $garage_service_ids;
+            $data["garage"] = $garage;
+            $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
+            $data["garage_service_ids"] = $garage_service_ids;
 
 
 
-        $totalCount = 0;
-        $totalRating = 0;
+            $totalCount = 0;
+            $totalRating = 0;
 
-        foreach(Star::get() as $star) {
+            foreach (Star::get() as $star) {
 
-            $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
-            ->where([
-                "review_news.garage_id" => $garage->id,
-                "star_id" => $star->id,
-                // "review_news.guest_id" => NULL
-            ])
-            ->distinct("review_value_news.review_id","review_value_news.question_id");
-            if(!empty($request->start_date) && !empty($request->end_date)) {
+                $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                    ->where([
+                        "review_news.garage_id" => $garage->id,
+                        "star_id" => $star->id,
+                        // "review_news.guest_id" => NULL
+                    ])
+                    ->distinct("review_value_news.review_id", "review_value_news.question_id");
+                if (!empty($request->start_date) && !empty($request->end_date)) {
 
-                $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
-                    $request->start_date,
-                    $request->end_date
-                ]);
+                    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+                        $request->start_date,
+                        $request->end_date
+                    ]);
+                }
+                $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
 
+                $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                $totalRating += $data2["star_" . $star->value . "_selected_count"];
             }
-            $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+            if ($totalCount > 0) {
+                $data2["average_rating"] = $totalCount / $totalRating;
+            } else {
+                $data2["average_rating"] = 0;
+            }
+            $data["garage"]->average_rating = $data2["average_rating"];
+            $data["garage"]->total_rating_count = $totalCount;
 
-            $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
 
-            $totalRating += $data2["star_" . $star->value . "_selected_count"];
 
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500, $request);
         }
-        if($totalCount > 0) {
-            $data2["average_rating"] = $totalCount / $totalRating;
-
-        }
-        else {
-            $data2["average_rating"] = 0;
-
-        }
-        $data["garage"]->average_rating = $data2["average_rating"];
-        $data["garage"]->total_rating_count = $totalCount;
-
-
-
-        return response()->json($data, 200);
-        } catch(Exception $e){
-
-            return $this->sendError($e,500,$request);
-        }
-
     }
-  /**
-        *
+
+
+
+    /**
+     *
+     * @OA\Get(
+     *      path="/v2.0/client/garages/single/{id}",
+     *      operationId="getGarageByIdClient2",
+     *      tags={"client.basics"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get garage by id",
+     *      description="This method is to get garage by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageByIdClient2($id, Request $request)
+    {
+
+        try {
+            $this->storeActivity($request, "");
+            $garagesQuery = Garage::with([
+                'owner' => function ($query) {
+                    $query->select('users.id', 'users.first_name', 'users.last_name', 'users.image', 'users.phone', 'users.email');
+                },
+                'automobile_makes' => function ($query) {
+                    $query->select("automobile_makes.*");
+                },
+                'services' => function ($query) {
+                    $query->select('services.*');
+                },
+                'garage_times' => function ($query) {
+                    $query->select('id', 'garage_id', 'day', 'opening_time', 'closing_time', 'is_closed');
+                },
+                'garageGalleries' => function ($query) {
+                    $query->select('garage_galleries.*');
+                },
+                'garage_packages' => function ($query) {
+                    $query->select('garage_packages.*',);
+                },
+                'garage_affiliations' => function ($query) {
+                    $query->select('garage_affiliations.*');
+                }
+            ]);
+
+
+            $garage = $garagesQuery->where([
+                "id" => $id,
+                "is_active" => 1
+            ])
+                ->select(
+                    'garages.id',
+                    'garages.name',
+                    'garages.about',
+                    'garages.web_page',
+                    'garages.phone',
+                    'garages.email',
+                    'garages.additional_information',
+                    'garages.address_line_1',
+                    'garages.address_line_2',
+                    'garages.lat',
+                    'garages.long',
+                    'garages.country',
+                    'garages.city',
+                    'garages.postcode',
+                    'garages.currency',
+                    'garages.logo',
+                    'garages.image',
+                    'garages.background_image',
+                    'garages.status',
+                    'garages.is_active',
+                    'garages.is_mobile_garage',
+                    'garages.wifi_available',
+                    'garages.labour_rate',
+                    'garages.time_format',
+                    'garages.owner_id',
+                )
+                ->first();
+
+
+                $sub_services = SubService::whereHas("service.garageService.garage" , function($query) use($id) {
+$query->where([
+    "garages.id" => $id
+]);
+                })->get();
+                $garage->sub_services = $sub_services;
+
+                $automobile_models = AutomobileModel::whereHas("make.garageAutoMobileMake.garage" , function($query) use($id) {
+                    $query->where([
+                        "garages.id" => $id
+                    ]);
+                                    })->get();
+                                    $garage->sub_services = $sub_services;
+                                    $garage->automobile_models = $automobile_models;
+
+            if (!$garage) {
+
+                return response()->json([
+                    "message" => "no garage found"
+                ], 404);
+            }
+
+
+
+
+            $data["garage"] = $garage;
+
+
+
+
+            $totalCount = 0;
+            $totalRating = 0;
+
+            foreach (Star::get() as $star) {
+
+                $data2["star_" . $star->value . "_selected_count"] = ReviewValueNew::leftjoin('review_news', 'review_value_news.review_id', '=', 'review_news.id')
+                    ->where([
+                        "review_news.garage_id" => $garage->id,
+                        "star_id" => $star->id,
+                        // "review_news.guest_id" => NULL
+                    ])
+                    ->distinct("review_value_news.review_id", "review_value_news.question_id");
+                if (!empty($request->start_date) && !empty($request->end_date)) {
+
+                    $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
+                        $request->start_date,
+                        $request->end_date
+                    ]);
+                }
+                $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
+
+                $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
+
+                $totalRating += $data2["star_" . $star->value . "_selected_count"];
+            }
+            if ($totalCount > 0) {
+                $data2["average_rating"] = $totalCount / $totalRating;
+            } else {
+                $data2["average_rating"] = 0;
+            }
+            $data["garage"]->average_rating = $data2["average_rating"];
+            $data["garage"]->total_rating_count = $totalCount;
+
+
+
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500, $request);
+        }
+    }
+
+
+
+
+
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/client/garages/service-model-details/{garage_id}",
      *      operationId="getGarageServiceModelDetailsByIdClient",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
@@ -981,73 +1145,72 @@ $garages->items()[$key]->total_rating_count = $totalCount;
      *     )
      */
 
-    public function getGarageServiceModelDetailsByIdClient($garage_id,Request $request) {
+    public function getGarageServiceModelDetailsByIdClient($garage_id, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
             $garage = Garage::where([
                 "id" => $garage_id
             ])->first();
 
 
-            if(!$garage) {
+            if (!$garage) {
 
 
-           return response()->json([
-            "message" => "no garage found"
-           ],404);
-
+                return response()->json([
+                    "message" => "no garage found"
+                ], 404);
             }
-$data["garage_services"] = GarageService::with("service")
-->where([
-    "garage_id" => $garage->id
-])
-->get();
+            $data["garage_services"] = GarageService::with("service")
+                ->where([
+                    "garage_id" => $garage->id
+                ])
+                ->get();
 
-$data["garage_sub_services"] = GarageSubService::with("subService")
-->leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-->where([
-    "garage_services.garage_id" => $garage->id
-])
-->select(
-    "garage_sub_services.*"
-)
+            $data["garage_sub_services"] = GarageSubService::with("subService")
+                ->leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+                ->where([
+                    "garage_services.garage_id" => $garage->id
+                ])
+                ->select(
+                    "garage_sub_services.*"
+                )
 
-->get();
+                ->get();
 
-$data["garage_automobile_makes"] = GarageAutomobileMake::with("automobileMake")
-->where([
-    "garage_id" => $garage->id
-])
-->get();
+            $data["garage_automobile_makes"] = GarageAutomobileMake::with("automobileMake")
+                ->where([
+                    "garage_id" => $garage->id
+                ])
+                ->get();
 
-$data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel")
-->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
-->where([
-    "garage_automobile_makes.garage_id" => $garage->id
-])
-->select(
-    "garage_automobile_models.*"
-)
-->get();
-
-
+            $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel")
+                ->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+                ->where([
+                    "garage_automobile_makes.garage_id" => $garage->id
+                ])
+                ->select(
+                    "garage_automobile_models.*"
+                )
+                ->get();
 
 
-        return response()->json($data, 200);
-        } catch(Exception $e){
 
-            return $this->sendError($e,500,$request);
+
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500, $request);
         }
-
     }
-  /**
-        *
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/client/garages/garage-automobile-models/{garage_id}/{automobile_make_id}",
      *      operationId="getGarageAutomobileModelsByAutomobileMakeId",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *              @OA\Parameter(
@@ -1102,49 +1265,48 @@ $data["garage_automobile_models"] = GarageAutomobileModel::with("automobileModel
      *     )
      */
 
-    public function getGarageAutomobileModelsByAutomobileMakeId($garage_id,$automobile_make_id,Request $request) {
+    public function getGarageAutomobileModelsByAutomobileMakeId($garage_id, $automobile_make_id, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
             $garage = Garage::where([
                 "id" => $garage_id
             ])->first();
 
 
-            if(!$garage) {
+            if (!$garage) {
 
-           return response()->json([
-            "message" => "no garage found"
-           ],404);
-
+                return response()->json([
+                    "message" => "no garage found"
+                ], 404);
             }
-$data = GarageAutomobileModel::with("automobileModel")
-->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
-->where([
-    "garage_automobile_makes.automobile_make_id" => $automobile_make_id,
-    "garage_automobile_makes.garage_id" => $garage->id
-])
-->select(
-    "garage_automobile_models.*"
-)
-->get();
+            $data = GarageAutomobileModel::with("automobileModel")
+                ->leftJoin('garage_automobile_makes', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
+                ->where([
+                    "garage_automobile_makes.automobile_make_id" => $automobile_make_id,
+                    "garage_automobile_makes.garage_id" => $garage->id
+                ])
+                ->select(
+                    "garage_automobile_models.*"
+                )
+                ->get();
 
 
 
 
-        return response()->json($data, 200);
-        } catch(Exception $e){
+            return response()->json($data, 200);
+        } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
-
     }
 
 
 
 
 
- /**
+    /**
      *
      * @OA\Get(
      *      path="/v1.0/client/garage-affiliations/get/all/{garage_id}",
@@ -1153,7 +1315,7 @@ $data = GarageAutomobileModel::with("automobileModel")
      *       security={
      *           {"bearerAuth": {}}
      *       },
-*              @OA\Parameter(
+     *              @OA\Parameter(
      *         name="garage_id",
      *         in="path",
      *         description="garage_id",
@@ -1162,26 +1324,26 @@ $data = GarageAutomobileModel::with("automobileModel")
      *      ),
 
      *      * *  @OA\Parameter(
-* name="start_date",
-* in="query",
-* description="start_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="end_date",
-* in="query",
-* description="end_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      *      summary="This method is to get garage affiliations ",
      *      description="This method is to get garage affiliations",
      *
@@ -1223,7 +1385,7 @@ $data = GarageAutomobileModel::with("automobileModel")
     public function getGarageAffiliationsAllByGarageIdClient($garage_id, Request $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
 
 
 
@@ -1236,11 +1398,11 @@ $data = GarageAutomobileModel::with("automobileModel")
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $affiliationQuery =  GarageAffiliation::with("affiliation","garage")
-            ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id')
-            ->where([
-                "garage_id" => $garage_id
-            ]);
+            $affiliationQuery =  GarageAffiliation::with("affiliation", "garage")
+                ->leftJoin('affiliations', 'affiliations.id', '=', 'garage_affiliations.affiliation_id')
+                ->where([
+                    "garage_id" => $garage_id
+                ]);
 
             if (!empty($request->search_key)) {
                 $affiliationQuery = $affiliationQuery->where(function ($query) use ($request) {
@@ -1262,7 +1424,7 @@ $data = GarageAutomobileModel::with("automobileModel")
             return response()->json($affiliations, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -1273,13 +1435,13 @@ $data = GarageAutomobileModel::with("automobileModel")
 
 
 
-  /**
-        *
+    /**
+     *
      * @OA\Get(
      *      path="/v1.0/client/favourite-sub-services/{perPage}",
      *      operationId="getFavouriteSubServices",
      *      tags={"client.basics"},
-    *       security={
+     *       security={
      *           {"bearerAuth": {}}
      *       },
      *   *              @OA\Parameter(
@@ -1328,32 +1490,33 @@ $data = GarageAutomobileModel::with("automobileModel")
      *     )
      */
 
-    public function getFavouriteSubServices($perPage,Request $request) {
+    public function getFavouriteSubServices($perPage, Request $request)
+    {
 
-        try{
-            $this->storeActivity($request,"");
+        try {
+            $this->storeActivity($request, "");
             $user = $request->user();
-            $data = SubService::
-            select("sub_services.*",
-            DB::raw('(SELECT COUNT(job_sub_services.sub_service_id)
+            $data = SubService::select(
+                    "sub_services.*",
+                    DB::raw('(SELECT COUNT(job_sub_services.sub_service_id)
             FROM
             job_sub_services
             LEFT JOIN jobs ON job_sub_services.job_id = jobs.id
 
 
             WHERE jobs.customer_id = '
-            .
-            $user->id
-            .
-            '
+                        .
+                        $user->id
+                        .
+                        '
             AND
             job_sub_services.sub_service_id = sub_services.id
 
             ) AS sub_service_id_count'),
-            )
-            ->orderByRaw('sub_service_id_count desc')
-            ->havingRaw('sub_service_id_count > 0')
-            ->paginate($perPage);
+                )
+                ->orderByRaw('sub_service_id_count desc')
+                ->havingRaw('sub_service_id_count > 0')
+                ->paginate($perPage);
 
 
 
@@ -1362,14 +1525,9 @@ $data = GarageAutomobileModel::with("automobileModel")
 
 
 
-        return response()->json($data, 200);
-        } catch(Exception $e){
-            return $this->sendError($e,500,$request);
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+            return $this->sendError($e, 500, $request);
         }
-
     }
-
-
-
-
 }

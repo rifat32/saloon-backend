@@ -44,12 +44,21 @@ class Garage extends Model
     public function garageServices(){
         return $this->hasMany(GarageService::class,'garage_id', 'id');
     }
+
+    public function services(){
+        return $this->belongsToMany(Service::class,"garage_services",'garage_id','service_id');
+    }
+
     public function garage_packages(){
         return $this->hasMany(GaragePackage::class,'garage_id', 'id');
     }
 
     public function garageAutomobileMakes(){
         return $this->hasMany(GarageAutomobileMake::class,'garage_id', 'id');
+    }
+
+    public function automobile_makes(){
+        return $this->belongsToMany(AutomobileMake::class,"garage_automobile_makes",'garage_id','automobile_make_id');
     }
 
     public function garage_affiliations(){
@@ -63,67 +72,6 @@ class Garage extends Model
     public function garage_times(){
         return $this->hasMany(GarageTime::class,'garage_id', 'id');
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
