@@ -46,13 +46,13 @@ class PreBookingCreateRequestClient extends FormRequest
     "fuel" => "nullable|string",
     "transmission" => "nullable|string",
 
-    'images' => 'nullable|array',
+    'images' => 'present|array',
     'images.*' => 'nullable|string',
 
-    'videos' => 'nullable|array',
+    'videos' => 'present|array',
     'videos.*' => 'nullable|string',
 
-    'file_links' => 'nullable|array',
+    'file_links' => 'present|array',
     'file_links.*' => 'nullable|string',
 
 
