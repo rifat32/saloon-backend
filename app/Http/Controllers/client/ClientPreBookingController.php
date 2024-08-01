@@ -28,6 +28,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class ClientPreBookingController extends Controller
 {
@@ -331,14 +332,30 @@ class ClientPreBookingController extends Controller
 
                 $temporary_files_location =  config("setup-config.temporary_files_location");
                 $location =  config("setup-config.pre_booking_file_location");
+
                 foreach(array_merge($insertableData["images"],$insertableData["videos"]) as $temp_file_path) {
 
 
 
                     if (File::exists(public_path($temp_file_path))) {
 
-                        // Move the file from the temporary location to the permanent location
-                        File::move(public_path($temp_file_path), public_path(str_replace($temporary_files_location, $location, $temp_file_path)));
+                        $destination_path = public_path(str_replace($temporary_files_location, $location, $temp_file_path));
+
+    // Create the destination directory if it doesn't exist
+    if (!File::isDirectory($destination_path)) {
+        File::makeDirectory($destination_path, 0755, true); // Create directory with permissions
+    }
+
+    try {
+        File::move(public_path($temp_file_path), $destination_path);
+    } catch (\Exception $e) {
+        // Handle the exception
+        Log::error('File move failed: ' . $e->getMessage());
+        // Or throw a custom exception with more specific information
+        throw new \Exception('Error moving file: ' . $e->getMessage());
+    }
+
+
                     } else {
 
                         throw new Exception(("no file exists"));
