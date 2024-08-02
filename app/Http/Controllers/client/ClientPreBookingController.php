@@ -994,7 +994,7 @@ $insertableData["file_links"] = json_encode($insertableData["file_links"]) ;
 
                 if (!$pre_booking) {
                     return response()->json([
-                        "message" => "pre booking not found"
+                        "message" => "pre booking not found for user id " . auth()->user()->id
                     ], 404);
                 }
                 if ($pre_booking->status !== "pending" && $insertableData["is_confirmed"]) {
@@ -1080,6 +1080,7 @@ $job_bid->save();
                         "final_price" => $job_bid->price,
                         "status" => "pending",
                         "payment_status" => "due",
+                        "created_by" => $insertableData["created_by"]
 
 
 

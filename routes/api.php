@@ -1109,6 +1109,9 @@ Route::get('/v1.0/client/pre-bookings/single/{id}', [ClientPreBookingController:
 
 Route::post('/v1.0/client/pre-bookings/confirm', [ClientPreBookingController::class, "confirmPreBookingClient"]);
 
+
+
+
 Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::class, "deletePreBookingByIdClient"]);
 
 
