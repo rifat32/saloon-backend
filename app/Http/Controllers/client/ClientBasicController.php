@@ -975,6 +975,10 @@ class ClientBasicController extends Controller
                 'garage_packages' => function ($query) {
                     $query->select('garage_packages.*',);
                 },
+                'garage_packages.sub_services' => function ($query) {
+                    $query->select('sub_services.id');
+                },
+
                 'garage_affiliations' => function ($query) {
                     $query->select('garage_affiliations.*');
                 }

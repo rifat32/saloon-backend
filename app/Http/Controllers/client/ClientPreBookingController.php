@@ -1106,7 +1106,7 @@ $job_bid->save();
                             ->first();
 
                         if (!$garage_sub_service) {
-                            throw new Exception("invalid service");
+                            throw new Exception("invalid sub service for garage id " . $job_bid->garage_id . " sub service id " . $pre_booking_sub_service->sub_service_id);
                         }
 
                         $price = $this->getPrice($pre_booking_sub_service->sub_service_id, $garage_sub_service->id, $pre_booking->automobile_make_id);
