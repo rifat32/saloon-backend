@@ -10,6 +10,7 @@ use App\Http\Utils\UserActivityUtil;
 use App\Models\FuelStation;
 use App\Models\FuelStationOption;
 use App\Models\FuelStationTime;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +20,24 @@ class FuelStationController extends Controller
     use ErrorUtil,UserActivityUtil;
 
     public function getFuelStationSearchQuery(Request $request) {
-        $fuelStationQuery = FuelStation::with("options.option")
+        $fuelStationQuery = FuelStation::with(
+            [
+                "options.option",
+                "fuel_station_times" => function ($query) {
+                    // Get today's date
+                    $today = Carbon::today();
+
+                    // Get the day number (0-Sunday, 1-Monday, ..., 6-Saturday)
+                    $dayNumber = $today->dayOfWeek;
+                    $query
+                        ->where([
+                            "fuel_station_times.day" => $dayNumber
+                        ])
+                        ->select("fuel_station_times.id", "fuel_station_times.opening_time", "fuel_station_times.closing_time", "fuel_station_times.garage_id");
+                }
+
+                ]
+            )
             ->leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id')
             ->where('fuel_stations.is_active', true);
 

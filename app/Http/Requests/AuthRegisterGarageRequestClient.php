@@ -76,18 +76,20 @@ class AuthRegisterGarageRequestClient extends FormRequest
             'garage.is_mobile_garage' => 'required|boolean',
             'garage.wifi_available' => 'required|boolean',
             'garage.labour_rate' => 'nullable|numeric',
-            "garage.time_format"=>"required|string|in:12-hour,24-hour",
+            "garage.time_format" => "required|string|in:12-hour,24-hour",
 
 
 
 
             'times' => 'required|array|min:1',
-            "times.*.day" => ["numeric",new DayValidation],
-            "times.*.opening_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
-           ],
-            "times.*.closing_time" => ['required','date_format:H:i', new TimeValidation, new TimeOrderRule
-           ],
-           "times.*.is_closed" => ['required',"boolean"],
+            "times.*.day" => ["numeric", new DayValidation],
+            "times.*.opening_time" => [
+                'required', 'date_format:H:i', new TimeValidation, new TimeOrderRule
+            ],
+            "times.*.closing_time" => [
+                'required', 'date_format:H:i', new TimeValidation, new TimeOrderRule
+            ],
+            "times.*.is_closed" => ['required', "boolean"],
 
 
 
@@ -95,19 +97,17 @@ class AuthRegisterGarageRequestClient extends FormRequest
             'service' => "array|required",
             'service.*.automobile_category_id' => "required|numeric",
 
-            'service.*.services' => ["required","array",new SomeTimes],
+            'service.*.services' => ["required", "array", new SomeTimes],
             'service.*.services.*.id' => "required|numeric",
             'service.*.services.*.checked' => "required|boolean",
 
-            'service.*.automobile_makes' => ["required","array",new SomeTimes],
+            'service.*.automobile_makes' => ["required", "array", new SomeTimes],
             'service.*.automobile_makes.*.id' => "required|numeric",
-            'service.*.automobile_makes.*.checked' => ["required","boolean"],
+            'service.*.automobile_makes.*.checked' => ["required", "boolean"],
             // 'service.automobile_categories' => "array|required",
 
 
         ];
-
-
     }
     public function messages()
     {
@@ -179,9 +179,4 @@ class AuthRegisterGarageRequestClient extends FormRequest
             'service.*.automobile_makes.*.checked.boolean' => 'Each checked value in the automobile makes field must be a boolean.',
         ];
     }
-
-
-
-
-
 }
