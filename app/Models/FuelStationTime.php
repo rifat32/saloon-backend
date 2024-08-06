@@ -14,7 +14,7 @@ class FuelStationTime extends Model
         "day",
         "opening_time",
         "closing_time",
-        "garage_id",
+        "fuel_station_id",
         "is_closed"
     ];
 

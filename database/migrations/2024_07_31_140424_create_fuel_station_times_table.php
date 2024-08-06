@@ -32,6 +32,8 @@ class CreateFuelStationTimesTable extends Migration
 
             $table->unsignedBigInteger("fuel_station_id");
             $table->foreign('fuel_station_id')->references('id')->on('fuel_stations')->onDelete('cascade');
+
+
             $table->timestamps();
         });
     }

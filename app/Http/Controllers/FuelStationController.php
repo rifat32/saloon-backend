@@ -964,11 +964,8 @@ class FuelStationController extends Controller
             else {
 
                 array_splice($info, 0);
-
                     $fuel_stations = $this->getFuelStationSearchQuery($request)
-
                     ->groupBy("fuel_stations.id")
-
                     ->orderByDesc("fuel_stations.id")
                     ->select("fuel_stations.*")
                     ->paginate($perPage);
