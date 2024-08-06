@@ -33,7 +33,7 @@ class FuelStationController extends Controller
                         ->where([
                             "fuel_station_times.day" => $dayNumber
                         ])
-                        ->select("fuel_station_times.id", "fuel_station_times.opening_time", "fuel_station_times.closing_time", "fuel_station_times.garage_id");
+                        ->select("fuel_station_times.id", "fuel_station_times.opening_time", "fuel_station_times.closing_time", "fuel_station_times.fuel_station_id");
                 }
 
                 ]
@@ -229,13 +229,13 @@ class FuelStationController extends Controller
                 }
 
                 FuelStationTime::where([
-                    "garage_id" => $fuel_station->id
+                    "fuel_station_id" => $fuel_station->id
                    ])
                    ->delete();
                    $timesArray = collect($insertableData["times"])->unique("day");
                    foreach($timesArray as $garage_time) {
                     FuelStationTime::create([
-                        "garage_id" => $fuel_station->id,
+                        "fuel_station_id" => $fuel_station->id,
                         "day"=> $garage_time["day"],
                         "opening_time"=> $garage_time["opening_time"],
                         "closing_time"=> $garage_time["closing_time"],
@@ -415,13 +415,13 @@ class FuelStationController extends Controller
 
 
                     FuelStationTime::where([
-                        "garage_id" => $fuel_station->id
+                        "fuel_station_id" => $fuel_station->id
                        ])
                        ->delete();
                        $timesArray = collect($request_data["times"])->unique("day");
                        foreach($timesArray as $garage_time) {
                         FuelStationTime::create([
-                            "garage_id" => $fuel_station->id,
+                            "fuel_station_id" => $fuel_station->id,
                             "day"=> $garage_time["day"],
                             "opening_time"=> $garage_time["opening_time"],
                             "closing_time"=> $garage_time["closing_time"],
