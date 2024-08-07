@@ -112,6 +112,83 @@ class FuelStationController extends Controller
 
 
     }
+
+    public function getFuelStationSearchQuery2(Request $request) {
+        $fuelStationQuery = FuelStation::
+            leftJoin('fuel_station_options', 'fuel_station_options.fuel_station_id', '=', 'fuel_stations.id')
+            ->where('fuel_stations.is_active', true);
+
+
+            if (!empty($request->search_key)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("fuel_stations.name", "like", "%" . $term . "%");
+
+
+                });
+            }
+
+            if (!empty($request->start_date)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', "<=", $request->end_date);
+            }
+
+            if (!empty($request->start_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_lat);
+            }
+            if (!empty($request->end_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_lat);
+            }
+            if (!empty($request->start_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_long);
+            }
+            if (!empty($request->end_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
+            }
+
+            if (!empty($request->time)) {
+                $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
+                    $term = $request->time;
+                    $query->whereTime("fuel_stations.opening_time","<=", $term);
+                    $query->whereTime("fuel_stations.closing_time",">", $term);
+
+                });
+            }
+
+
+            if (!empty($request->country)) {
+                $fuelStationQuery =   $fuelStationQuery->where("country", "like", "%" . $request->country . "%");
+
+            }
+            if (!empty($request->city)) {
+                $fuelStationQuery =   $fuelStationQuery->where("city", "like", "%" . $request->city . "%");
+
+            }
+            if (!empty($request->address_line_1)) {
+                $fuelStationQuery =   $fuelStationQuery->where("address_line_1", "like", "%" . $request->address_line_1 . "%");
+
+            }
+
+            if(!empty($request->active_option_ids)) {
+
+                $null_filter = collect(array_filter($request->active_option_ids))->values();
+                $active_option_ids =  $null_filter->all();
+
+
+                if(count($active_option_ids)) {
+                    $fuelStationQuery =   $fuelStationQuery
+                    ->whereIn("fuel_station_options.option_id",
+                    $active_option_ids)
+                    ->where("fuel_station_options.is_active",1);
+                }
+
+            }
+            return $fuelStationQuery;
+
+
+    }
     /**
      *
      * @OA\Post(
@@ -989,6 +1066,234 @@ class FuelStationController extends Controller
             return $this->sendError($e, 500,$request);
         }
     }
+
+
+
+          /**
+     *
+     * @OA\Get(
+     *      path="/v2.0/client/fuel-station/{perPage}",
+     *      operationId="getFuelStationsClient2",
+     *      tags={"client.fuel_station_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *
+     *   *              @OA\Parameter(
+     *         name="time",
+     *         in="query",
+     *         description="current time",
+     *         required=true,
+     *  example="10:10"
+     *      ),
+     *  *   *              @OA\Parameter(
+     *         name="location",
+     *         in="query",
+     *         description="location",
+     *         required=true,
+     *  example="location"
+     *      ),
+     *
+     *
+     *     * *  @OA\Parameter(
+* name="country",
+* in="query",
+* description="country",
+* required=true,
+* example="country"
+* ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
+     *
+     *
+
+     *      * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="start_lat",
+* in="query",
+* description="start_lat",
+* required=true,
+* example="3"
+* ),
+     * *  @OA\Parameter(
+* name="end_lat",
+* in="query",
+* description="end_lat",
+* required=true,
+* example="2"
+* ),
+     * *  @OA\Parameter(
+* name="start_long",
+* in="query",
+* description="start_long",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="end_long",
+* in="query",
+* description="end_long",
+* required=true,
+* example="4"
+* ),
+*  @OA\Parameter(
+*      name="active_option_ids[]",
+*      in="query",
+*      description="active_option_ids",
+*      required=true,
+*      example="1,2"
+* ),
+     *      summary="This method is to get fuel stations client ",
+     *      description="This method is to get fuel stations client",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+
+     public function getFuelStationsClient2($perPage, Request $request)
+     {
+         try {
+             $this->storeActivity($request,"");
+             $info=[];
+
+
+             if(!empty($request->location)) {
+                 $fuel_stations = $this->getFuelStationSearchQuery2($request)
+                 ->where("fuel_stations.city",$request->location)
+                 ->groupBy("fuel_stations.id")
+
+                 ->orderByDesc("fuel_stations.id")
+                 ->select(
+                    "fuel_stations.id",
+                    "fuel_stations.name",
+                    "fuel_stations.lat",
+                    "fuel_stations.long",
+                    )
+                 ->paginate($perPage);
+
+                 $info["is_result_by_city"] = true;
+                 $info["is_result_by_country"] = false;
+
+                 if (count($fuel_stations->items()) == 0) {
+                     $info["is_result_by_city"] = false;
+                     $info["is_result_by_country"] = true;
+
+                     $fuel_stations = $this->getFuelStationSearchQuery2($request)
+                     ->where("fuel_stations.country",$request->location)
+                     ->groupBy("fuel_stations.id")
+
+                     ->orderByDesc("fuel_stations.id")
+                     ->select(
+                        "fuel_stations.id",
+                        "fuel_stations.name",
+                        "fuel_stations.lat",
+                        "fuel_stations.long",
+
+                        )
+                     ->paginate($perPage);
+                 }
+                 if (count($fuel_stations->items()) == 0) {
+                     $info["is_result_by_city"] = false;
+                     $info["is_result_by_country"] = false;
+                 }
+
+             }
+             else {
+
+                 array_splice($info, 0);
+                     $fuel_stations = $this->getFuelStationSearchQuery2($request)
+                     ->groupBy("fuel_stations.id")
+                     ->orderByDesc("fuel_stations.id")
+                     ->select(
+
+                        "fuel_stations.id",
+                        "fuel_stations.name",
+                        "fuel_stations.lat",
+                        "fuel_stations.long",
+                        )
+                     ->paginate($perPage);
+
+                 }
+
+
+
+             return response()->json([
+                 "info"=>$info,
+
+                 "data"=>$fuel_stations], 200);
+
+
+
+         } catch (Exception $e) {
+
+             return $this->sendError($e, 500,$request);
+         }
+     }
 
           /**
      *
