@@ -11,6 +11,7 @@ use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\FuelStationService;
 use App\Models\Service;
 use App\Models\SubService;
 use Exception;
@@ -832,13 +833,15 @@ class ServiceController extends Controller
                 "automobile_make_id"
             )->get();
 
-
+            $fuel_station_services =  FuelStationService::orderBy("name",'asc')
+            ->get();
 
             $response_data = [
                 "services" => $services,
                 "sub_services" => $sub_services,
                 "automobile_make" => $automobile_make,
                 "automobile_model" => $automobile_model,
+                "fuel_station_services" => $fuel_station_services
             ];
 
 
