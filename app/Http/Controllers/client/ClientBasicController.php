@@ -864,7 +864,7 @@ class ClientBasicController extends Controller
     /**
      *
      * @OA\Get(
-     *      path="/v3.0/client/garages/{perPage}",
+     *      path="/v3.0/client/garages",
      *      operationId="getGaragesClient3",
      *      tags={"client.basics"},
      *       security={
@@ -1024,7 +1024,7 @@ class ClientBasicController extends Controller
      *     )
      */
 
-     public function getGaragesClient3($perPage, Request $request)
+     public function getGaragesClient3(Request $request)
      {
 
          try {
@@ -1045,7 +1045,7 @@ class ClientBasicController extends Controller
                         "garages.lat",
                         "garages.long",
                      )
-                     ->paginate($perPage);
+                     ->get();
 
                  $info["is_result_by_city"] = true;
                  $info["is_result_by_country"] = false;
@@ -1066,7 +1066,7 @@ class ClientBasicController extends Controller
                              "garages.long",
 
                          )
-                         ->paginate($perPage);
+                         ->get();
                  }
                  if (count($garages->items()) == 0) {
                      $info["is_result_by_city"] = false;
@@ -1089,7 +1089,7 @@ class ClientBasicController extends Controller
                         "garages.long",
                      )
 
-                     ->paginate($perPage);
+                     ->get();
              }
 
              return response()->json([

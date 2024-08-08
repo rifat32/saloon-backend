@@ -1072,20 +1072,14 @@ class FuelStationController extends Controller
           /**
      *
      * @OA\Get(
-     *      path="/v2.0/client/fuel-station/{perPage}",
+     *      path="/v2.0/client/fuel-station",
      *      operationId="getFuelStationsClient2",
      *      tags={"client.fuel_station_management"},
      *       security={
      *           {"bearerAuth": {}}
      *       },
 
-     *              @OA\Parameter(
-     *         name="perPage",
-     *         in="path",
-     *         description="perPage",
-     *         required=true,
-     *  example="6"
-     *      ),
+
      *
      *   *              @OA\Parameter(
      *         name="time",
@@ -1215,7 +1209,7 @@ class FuelStationController extends Controller
      */
 
 
-     public function getFuelStationsClient2($perPage, Request $request)
+     public function getFuelStationsClient2(Request $request)
      {
          try {
              $this->storeActivity($request,"");
@@ -1234,7 +1228,7 @@ class FuelStationController extends Controller
                     "fuel_stations.lat",
                     "fuel_stations.long",
                     )
-                 ->paginate($perPage);
+                 ->get();
 
                  $info["is_result_by_city"] = true;
                  $info["is_result_by_country"] = false;
@@ -1255,7 +1249,7 @@ class FuelStationController extends Controller
                         "fuel_stations.long",
 
                         )
-                     ->paginate($perPage);
+                     ->get();
                  }
                  if (count($fuel_stations->items()) == 0) {
                      $info["is_result_by_city"] = false;
@@ -1276,7 +1270,7 @@ class FuelStationController extends Controller
                         "fuel_stations.lat",
                         "fuel_stations.long",
                         )
-                     ->paginate($perPage);
+                     ->get();
 
                  }
 

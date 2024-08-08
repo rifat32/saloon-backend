@@ -995,7 +995,7 @@ Route::get('/v1.0/client/garage-services/get/all/{garage_id}', [GarageServiceCon
 
 Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
 
-Route::get('/v2.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient2"]);
+Route::get('/v2.0/client/fuel-station', [FuelStationController::class, "getFuelStationsClient2"]);
 
 
 
@@ -1011,7 +1011,7 @@ Route::get('/v1.0/client/fuel-stations-galleries/{fuel_station_id}', [FuelStatio
 
 Route::get('/v1.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient"]);
 Route::get('/v2.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient2"]);
-Route::get('/v3.0/client/garages/{perPage}', [ClientBasicController::class, "getGaragesClient3"]);
+Route::get('/v3.0/client/garages', [ClientBasicController::class, "getGaragesClient3"]);
 
 Route::get('/v1.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient"]);
 Route::get('/v2.0/client/garages/single/{id}', [ClientBasicController::class, "getGarageByIdClient2"]);
