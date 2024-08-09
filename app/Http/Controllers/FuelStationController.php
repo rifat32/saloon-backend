@@ -320,6 +320,7 @@ class FuelStationController extends Controller
                     ]);
                    }
 
+                   $fuel_station = $fuel_station->load(["fuel_station_times"]);
                 return response($fuel_station, 201);
             });
         } catch (Exception $e) {
@@ -458,7 +459,7 @@ class FuelStationController extends Controller
         "address_line_2",
                     ])->toArray()
                 )
-                     ->with("options")
+                     ->with("options","fuel_station_times")
 
                     ->first();
 
