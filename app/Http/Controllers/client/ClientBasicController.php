@@ -754,6 +754,8 @@ class ClientBasicController extends Controller
                         ->orderByDesc("garages.id")
                         ->select(
                             "garages.id",
+                            "garages.lat",
+                            "garages.long",
                             "garages.name",
                             "garages.phone",
                             "garages.email",
@@ -790,7 +792,10 @@ class ClientBasicController extends Controller
                     ->orderByDesc("garages.id")
                     ->select(
                         "garages.id",
+                        "garages.lat",
+                        "garages.long",
                         "garages.name",
+
                         "garages.phone",
                         "garages.email",
                         "garages.address_line_1",
