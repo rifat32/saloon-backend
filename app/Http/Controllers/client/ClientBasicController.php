@@ -20,6 +20,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class ClientBasicController extends Controller
 {
@@ -160,7 +161,7 @@ class ClientBasicController extends Controller
             $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
         }
 
-        
+
 
         if (!empty($request->open_time)) {
             $date = Carbon::createFromFormat('Y-m-d H:i', $request->open_time);
@@ -451,6 +452,8 @@ class ClientBasicController extends Controller
     public function getGaragesClient($perPage, Request $request)
     {
 
+
+
         try {
             $this->storeActivity($request, "");
 
@@ -733,20 +736,35 @@ class ClientBasicController extends Controller
 
             $info = [];
 
-            $location = $this->getCountryAndCity($request->lat, $request->long);
+            $ip = $request->ip(); // Get the user's IP address
 
-            if (!empty($location)) {
+
+
+            // Make an HTTP request to the ipinfo.io API
+          $response = Http::get("https://ipinfo.io/{$ip}/json");
+
+          if ($response->successful()) {
+              $data = $response->json();
+
+              // Extract country and city
+              $country = $data['country'] ?? '';
+              $city = $data['city'] ?? '';
+          }
+
+            // $location = $this->getCountryAndCity($request->lat, $request->long);
+
+            if (!empty($country) && !empty($city) && empty(request()->start_lat) && empty(request()->end_lat)  && empty(request()->start_long) && empty(request()->end_long) ) {
 
 
                 $garages = $this->getGarageSearchQuery($request)
-                    ->where("garages.city", $location["city"])
+                    ->where("garages.city", $city)
                     ->groupBy("garages.id")
                     ->orderByDesc("garages.id")
                     ->select("garages.*")
                     ->paginate($perPage);
 
 
-                $info["location"] = $location;
+                $info["city"] = $city;
                 $info["is_result_by_city"] = true;
                 $info["is_result_by_country"] = false;
 
@@ -755,7 +773,7 @@ class ClientBasicController extends Controller
                     $info["is_result_by_country"] = true;
 
                     $garages = $this->getGarageSearchQuery($request)
-                        ->where("garages.country", $location["country"])
+                        ->where("garages.country", $country)
                         ->groupBy("garages.id")
 
                         ->orderByDesc("garages.id")

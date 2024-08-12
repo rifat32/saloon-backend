@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BookingCreateRequestClient;
 use App\Http\Requests\BookingStatusChangeRequestClient;
 use App\Http\Requests\BookingUpdateRequestClient;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\PriceUtil;
@@ -34,7 +35,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ClientBookingController extends Controller
 {
-    use ErrorUtil, DiscountUtil, PriceUtil,UserActivityUtil;
+    use ErrorUtil, DiscountUtil, PriceUtil,UserActivityUtil, BasicUtil;
     /**
      *
      * @OA\Post(
