@@ -7,6 +7,7 @@ use App\Http\Requests\BookingCreateRequest;
 use App\Http\Requests\BookingStatusChangeRequest;
 
 use App\Http\Requests\BookingUpdateRequest;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
@@ -36,7 +37,7 @@ use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
-    use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil;
+    use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil, BasicUtil;
 
     /**
      *
@@ -148,31 +149,10 @@ class BookingController extends Controller
 
                 $date = Carbon::createFromFormat('Y-m-d', $insertableData["job_start_date"]);
                 $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
-                $garage_timesQuery = GarageTime::where([
-                    "garage_id" => $insertableData["garage_id"]
-                ])
-                ->where('garage_times.day', "=", $dayOfWeek)
-                ->where('garage_times.is_closed', "=", 0);
-                $insertableData["job_start_time"] = Carbon::createFromFormat('H:i', $insertableData["job_start_time"])
-                ->format('H:i:s');
+
+                 $this->validateGarageTimes($insertableData["garage_id"], $dayOfWeek, $insertableData["job_start_time"]);
 
 
-                if(!empty($insertableData["job_start_time"])) {
-                    $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])
-                    ->whereTime('garage_times.closing_time', ">", $insertableData["job_start_time"]);
-                }
-
-                $garage_time = $garage_timesQuery->first();
-
-                if (!$garage_time) {
-                    return response()
-                        ->json(
-                            [
-                                "message" => "garage time mismatch."
-                            ],
-                            409
-                        );
-                }
 
                 $garage_make = GarageAutomobileMake::where([
                     "automobile_make_id" => $insertableData["automobile_make_id"],

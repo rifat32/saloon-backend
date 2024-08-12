@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\JobBidCreateRequest;
 use App\Http\Requests\JobBidUpdateRequest;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
 use App\Http\Utils\PriceUtil;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 
 class JobBidController extends Controller
 {
-    use ErrorUtil, GarageUtil, PriceUtil,UserActivityUtil;
+    use ErrorUtil, GarageUtil, PriceUtil,UserActivityUtil, BasicUtil;
     /**
      *
      * @OA\Get(
@@ -502,37 +503,12 @@ class JobBidController extends Controller
 
                 $date = Carbon::createFromFormat('Y-m-d', $insertableData["job_start_date"]);
                 $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
-                $garage_timesQuery = GarageTime::where([
-                    "garage_id" => $insertableData["garage_id"]
-                ])
-                ->where('garage_times.day', "=", $dayOfWeek)
-                ->where('garage_times.is_closed', "=", 0);
 
-                $insertableData["job_start_time"] = Carbon::createFromFormat('H:i', $insertableData["job_start_time"])
-                ->format('H:i:s');
-               $insertableData["job_end_time"] = Carbon::createFromFormat('H:i', $insertableData["job_end_time"])
-                ->format('H:i:s');
 
-                if(!empty($insertableData["job_start_time"])) {
-                    $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])
-                    ->whereTime('garage_times.closing_time', ">", $insertableData["job_start_time"]);
-                }
-                if(!empty($insertableData["job_end_time"])) {
-                    $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_end_time"])
-                    ->whereTime('garage_times.closing_time', ">", $insertableData["job_end_time"]);
-                }
 
-                $garage_time = $garage_timesQuery->first();
+                    $this->validateGarageTimes($insertableData["garage_id"], $dayOfWeek, $insertableData["job_start_time"], $insertableData["job_end_time"]);
+                    // Proceed with your logic
 
-                if (!$garage_time) {
-                    return response()
-                        ->json(
-                            [
-                                "message" => "garage time mismatch."
-                            ],
-                            409
-                        );
-                }
 
                 // $garage_sub_service_ids = GarageSubService::
                 // leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')

@@ -138,32 +138,8 @@ class ClientBookingController extends Controller
                 $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
 
 
-                $garage_timesQuery = GarageTime::where([
-                    "garage_id" => $garage->id
-                ])
-                ->where('garage_times.day', "=", $dayOfWeek)
-                ->where('garage_times.is_closed', "=", 0);
+                $this->validateGarageTimes($garage->id, $dayOfWeek, $insertableData["job_start_time"]);
 
-                $insertableData["job_start_time"] = Carbon::createFromFormat('H:i', $insertableData["job_start_time"])
-                ->format('H:i:s');
-
-
-                if(!empty($insertableData["job_start_time"])) {
-                    $garage_timesQuery  =  $garage_timesQuery->whereTime('garage_times.opening_time', "<=", $insertableData["job_start_time"])
-                    ->whereTime('garage_times.closing_time', ">", $insertableData["job_start_time"]);
-                }
-
-                $garage_time = $garage_timesQuery->first();
-
-                if (!$garage_time) {
-                    return response()
-                        ->json(
-                            [
-                                "message" => "garage time mismatch."
-                            ],
-                            409
-                        );
-                }
 
 
 
