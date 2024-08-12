@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileModel;
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 
 class ClientBasicController extends Controller
 {
-    use ErrorUtil, UserActivityUtil;
+    use ErrorUtil, UserActivityUtil, BasicUtil;
 
 
     public function getGarageSearchQuery(Request $request)
@@ -730,15 +731,18 @@ class ClientBasicController extends Controller
 
             $info = [];
 
+            $location = $this->getCountryAndCity($request->lat, $request->long);
 
-            if (!empty($request->address)) {
+            if (!empty($location)) {
+
+
                 $garages = $this->getGarageSearchQuery($request)
-                    ->where("garages.city", $request->address)
+                    ->where("garages.city", $location["city"])
                     ->groupBy("garages.id")
-
                     ->orderByDesc("garages.id")
                     ->select("garages.*")
                     ->paginate($perPage);
+
 
                 $info["is_result_by_city"] = true;
                 $info["is_result_by_country"] = false;
@@ -748,7 +752,7 @@ class ClientBasicController extends Controller
                     $info["is_result_by_country"] = true;
 
                     $garages = $this->getGarageSearchQuery($request)
-                        ->where("garages.country", $request->address)
+                        ->where("garages.country", $location["country"])
                         ->groupBy("garages.id")
 
                         ->orderByDesc("garages.id")
