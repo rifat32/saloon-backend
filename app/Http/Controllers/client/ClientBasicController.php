@@ -160,6 +160,8 @@ class ClientBasicController extends Controller
             $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
         }
 
+        
+
         if (!empty($request->open_time)) {
             $date = Carbon::createFromFormat('Y-m-d H:i', $request->open_time);
             $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
@@ -744,6 +746,7 @@ class ClientBasicController extends Controller
                     ->paginate($perPage);
 
 
+                $info["location"] = $location;
                 $info["is_result_by_city"] = true;
                 $info["is_result_by_country"] = false;
 
@@ -1225,6 +1228,7 @@ class ClientBasicController extends Controller
                         // "review_news.guest_id" => NULL
                     ])
                     ->distinct("review_value_news.review_id", "review_value_news.question_id");
+
                 if (!empty($request->start_date) && !empty($request->end_date)) {
 
                     $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->whereBetween('review_news.created_at', [
@@ -1232,6 +1236,7 @@ class ClientBasicController extends Controller
                         $request->end_date
                     ]);
                 }
+
                 $data2["star_" . $star->value . "_selected_count"] = $data2["star_" . $star->value . "_selected_count"]->count();
 
                 $totalCount += $data2["star_" . $star->value . "_selected_count"] * $star->value;
