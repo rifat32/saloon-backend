@@ -148,17 +148,38 @@ class ClientBasicController extends Controller
             }
         }
 
-        if (!empty($request->start_lat)) {
-            $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_lat);
+        $start_lat = $request->start_lat;
+        $end_lat = $request->end_lat;
+        $start_long = $request->start_long;
+        $end_long = $request->end_long;
+
+        if ($start_lat < 0 && $end_lat < 0) {
+            // Handle case where both start and end latitude are negative
+            $start_lat_temp = $start_lat;
+            $start_lat = $end_lat;
+            $end_lat = $start_lat_temp;
+
         }
-        if (!empty($request->end_lat)) {
-            $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
+
+        if ($start_long < 0 && $end_long < 0) {
+            // Handle case where both start and end longitude are negative
+            $start_long_temp = $start_long;
+            $start_long = $end_long;
+            $end_long = $start_long_temp;
         }
-        if (!empty($request->start_long)) {
-            $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
+
+
+        if (!empty($start_lat)) {
+            $garagesQuery = $garagesQuery->where('lat', ">=", $start_lat);
         }
-        if (!empty($request->end_long)) {
-            $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
+        if (!empty($end_lat)) {
+            $garagesQuery = $garagesQuery->where('lat', "<=", $end_lat);
+        }
+        if (!empty($start_long)) {
+            $garagesQuery = $garagesQuery->where('long', ">=", $start_long);
+        }
+        if (!empty($end_long)) {
+            $garagesQuery = $garagesQuery->where('long', "<=", $end_long);
         }
 
 
