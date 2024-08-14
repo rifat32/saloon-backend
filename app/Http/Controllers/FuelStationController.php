@@ -1520,16 +1520,18 @@ class FuelStationController extends Controller
 
           if ($location->successful()) {
               $data = $location->json();
-
               // Extract country and city
               $country = $data['country'] ?? '';
               $city = $data['city'] ?? '';
           }
 
+               $info["city"] = $city;
+                 $info["country"] = $country;
+
 
           if (!empty($country) && !empty($city) && empty(request()->start_lat) && empty(request()->end_lat)  && empty(request()->start_long) && empty(request()->end_long) ) {
                  $fuel_stations = $this->getFuelStationSearchQuery2($request)
-                 ->where("fuel_stations.city",$request->city)
+                 ->where("fuel_stations.city",$city)
                  ->groupBy("fuel_stations.id")
 
                  ->orderByDesc("fuel_stations.id")
@@ -1541,18 +1543,19 @@ class FuelStationController extends Controller
                     )
                  ->get();
 
+
                  $info["is_result_by_city"] = true;
                  $info["is_result_by_country"] = false;
 
                  $info["city"] = $city;
                  $info["country"] = $country;
 
-                 if (count($fuel_stations->count()) == 0) {
+                 if ($fuel_stations->count() == 0) {
                      $info["is_result_by_city"] = false;
                      $info["is_result_by_country"] = true;
 
                      $fuel_stations = $this->getFuelStationSearchQuery2($request)
-                     ->where("fuel_stations.country",$request->country)
+                     ->where("fuel_stations.country",$country)
                      ->groupBy("fuel_stations.id")
 
                      ->orderByDesc("fuel_stations.id")
@@ -1565,7 +1568,7 @@ class FuelStationController extends Controller
                         )
                      ->get();
                  }
-                 if (count($fuel_stations->count()) == 0) {
+                 if ($fuel_stations->count() == 0) {
                      $info["is_result_by_city"] = false;
                      $info["is_result_by_country"] = false;
                  }
@@ -1573,7 +1576,7 @@ class FuelStationController extends Controller
              }
              else {
 
-                 array_splice($info, 0);
+                //  array_splice($info, 0);
                      $fuel_stations = $this->getFuelStationSearchQuery2($request)
                      ->groupBy("fuel_stations.id")
                      ->orderByDesc("fuel_stations.id")
@@ -1583,6 +1586,8 @@ class FuelStationController extends Controller
                         "fuel_stations.name",
                         "fuel_stations.lat",
                         "fuel_stations.long",
+                        "fuel_stations.country",
+                        "fuel_stations.city",
                         )
                      ->get();
 
