@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class FuelStationController extends Controller
 {
@@ -58,17 +59,40 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', "<=", $request->end_date);
             }
 
-            if (!empty($request->start_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_lat);
+            $start_lat = $request->start_lat;
+            $end_lat = $request->end_lat;
+            $start_long = $request->start_long;
+            $end_long = $request->end_long;
+
+            if ($start_lat < 0 && $end_lat < 0) {
+                // Handle case where both start and end latitude are negative
+                $start_lat_temp = $start_lat;
+                $start_lat = $end_lat;
+                $end_lat = $start_lat_temp;
+
             }
-            if (!empty($request->end_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_lat);
+
+            if ($start_long < 0 && $end_long < 0) {
+                // Handle case where both start and end longitude are negative
+                $start_long_temp = $start_long;
+                $start_long = $end_long;
+                $end_long = $start_long_temp;
             }
-            if (!empty($request->start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_long);
+
+
+
+
+            if (!empty($start_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_lat);
             }
-            if (!empty($request->end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
+            if (!empty($end_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
+            }
+            if (!empty($start_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+            }
+            if (!empty($end_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
             }
 
             if (!empty($request->time)) {
@@ -135,19 +159,42 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', "<=", $request->end_date);
             }
 
-            if (!empty($request->start_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_lat);
-            }
-            if (!empty($request->end_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_lat);
-            }
-            if (!empty($request->start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_long);
-            }
-            if (!empty($request->end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
+
+            $start_lat = $request->start_lat;
+            $end_lat = $request->end_lat;
+            $start_long = $request->start_long;
+            $end_long = $request->end_long;
+
+            if ($start_lat < 0 && $end_lat < 0) {
+                // Handle case where both start and end latitude are negative
+                $start_lat_temp = $start_lat;
+                $start_lat = $end_lat;
+                $end_lat = $start_lat_temp;
+
             }
 
+            if ($start_long < 0 && $end_long < 0) {
+                // Handle case where both start and end longitude are negative
+                $start_long_temp = $start_long;
+                $start_long = $end_long;
+                $end_long = $start_long_temp;
+            }
+
+
+
+
+            if (!empty($start_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_lat);
+            }
+            if (!empty($end_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
+            }
+            if (!empty($start_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+            }
+            if (!empty($end_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
+            }
             if (!empty($request->time)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
                     $term = $request->time;
@@ -795,17 +842,41 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.created_at', "<=", $request->end_date);
             }
 
-            if (!empty($request->start_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_lat);
+
+            $start_lat = $request->start_lat;
+            $end_lat = $request->end_lat;
+            $start_long = $request->start_long;
+            $end_long = $request->end_long;
+
+            if ($start_lat < 0 && $end_lat < 0) {
+                // Handle case where both start and end latitude are negative
+                $start_lat_temp = $start_lat;
+                $start_lat = $end_lat;
+                $end_lat = $start_lat_temp;
+
             }
-            if (!empty($request->end_lat)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_lat);
+
+            if ($start_long < 0 && $end_long < 0) {
+                // Handle case where both start and end longitude are negative
+                $start_long_temp = $start_long;
+                $start_long = $end_long;
+                $end_long = $start_long_temp;
             }
-            if (!empty($request->start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $request->start_long);
+
+
+
+
+            if (!empty($start_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_lat);
             }
-            if (!empty($request->end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $request->end_long);
+            if (!empty($end_lat)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
+            }
+            if (!empty($start_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+            }
+            if (!empty($end_long)) {
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
             }
 
             if (!empty($request->time)) {
@@ -1216,10 +1287,21 @@ class FuelStationController extends Controller
              $this->storeActivity($request,"");
              $info=[];
 
+             $ip = $request->ip(); // Get the user's IP address
+                // Make an HTTP request to the ipinfo.io API
+          $location = Http::get("https://ipinfo.io/{$ip}/json");
 
-             if(!empty($request->location)) {
+          if ($location->successful()) {
+              $data = $location->json();
+
+              // Extract country and city
+              $country = $data['country'] ?? '';
+              $city = $data['city'] ?? '';
+          }
+
+          if (!empty($country) && !empty($city) && empty(request()->start_lat) && empty(request()->end_lat)  && empty(request()->start_long) && empty(request()->end_long) ) {
                  $fuel_stations = $this->getFuelStationSearchQuery2($request)
-                 ->where("fuel_stations.city",$request->location)
+                 ->where("fuel_stations.city",$request->city)
                  ->groupBy("fuel_stations.id")
 
                  ->orderByDesc("fuel_stations.id")
@@ -1234,12 +1316,15 @@ class FuelStationController extends Controller
                  $info["is_result_by_city"] = true;
                  $info["is_result_by_country"] = false;
 
+                 $info["city"] = $city;
+                 $info["country"] = $country;
+
                  if (count($fuel_stations->items()) == 0) {
                      $info["is_result_by_city"] = false;
                      $info["is_result_by_country"] = true;
 
                      $fuel_stations = $this->getFuelStationSearchQuery2($request)
-                     ->where("fuel_stations.country",$request->location)
+                     ->where("fuel_stations.country",$request->country)
                      ->groupBy("fuel_stations.id")
 
                      ->orderByDesc("fuel_stations.id")

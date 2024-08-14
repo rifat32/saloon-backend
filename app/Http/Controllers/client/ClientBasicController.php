@@ -762,10 +762,10 @@ class ClientBasicController extends Controller
 
 
             // Make an HTTP request to the ipinfo.io API
-          $response = Http::get("https://ipinfo.io/{$ip}/json");
+          $location = Http::get("https://ipinfo.io/{$ip}/json");
 
-          if ($response->successful()) {
-              $data = $response->json();
+          if ($location->successful()) {
+              $data = $location->json();
 
               // Extract country and city
               $country = $data['country'] ?? '';
