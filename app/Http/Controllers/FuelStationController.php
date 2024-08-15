@@ -89,11 +89,14 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
             }
             if (!empty($start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', ">=", $start_long);
             }
             if (!empty($end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', "<=", $end_long);
             }
+
+
+
 
             if (!empty($request->time)) {
                 $fuelStationQuery = $fuelStationQuery->where(function ($query) use ($request) {
@@ -190,10 +193,10 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
             }
             if (!empty($start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', ">=", $start_long);
             }
             if (!empty($end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', "<=", $end_long);
             }
 
             if (!empty($request->time)) {
@@ -874,10 +877,10 @@ class FuelStationController extends Controller
                 $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_lat);
             }
             if (!empty($start_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', ">=", $start_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', ">=", $start_long);
             }
             if (!empty($end_long)) {
-                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.lat', "<=", $end_long);
+                $fuelStationQuery = $fuelStationQuery->where('fuel_stations.long', "<=", $end_long);
             }
 
             if (!empty($request->time)) {
