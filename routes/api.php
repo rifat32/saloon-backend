@@ -993,8 +993,12 @@ Route::get('/v1.0/client/garage-packages/single/{garage_id}/{id}', [GaragePackag
 
 Route::get('/v1.0/client/garage-services/get/all/{garage_id}', [GarageServiceController::class, "getGarageServicesAll"]);
 
+
 Route::get('/v1.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClient"]);
+
+
 Route::get('/v3.0/client/fuel-station/{perPage}', [FuelStationController::class, "getFuelStationsClientV3"]);
+
 
 
 Route::get('/v2.0/client/fuel-station', [FuelStationController::class, "getFuelStationsClient2"]);
