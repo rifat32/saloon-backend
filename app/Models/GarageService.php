@@ -14,6 +14,9 @@ class GarageService extends Model
         "service_id",
     ];
 
+    public function garageSubServices(){
+        return $this->hasMany(GarageSubService::class,'garage_service_id', 'id');
+    }
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
@@ -21,9 +24,7 @@ class GarageService extends Model
         return $this->belongsTo(Service::class,'service_id', 'id');
     }
 
-    public function garageSubServices(){
-        return $this->hasMany(GarageSubService::class,'garage_service_id', 'id');
-    }
+
 
 
     public function sub_services() {

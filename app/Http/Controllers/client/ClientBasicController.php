@@ -64,8 +64,7 @@ class ClientBasicController extends Controller
             ->leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
             ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 
-            ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
-            ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+
 
             ->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
             ->where('garages.is_active', true);
@@ -134,9 +133,15 @@ class ClientBasicController extends Controller
             $null_filter = collect(array_filter($request->service_ids))->values();
             $service_ids =  $null_filter->all();
 
-            if (count($service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id", $service_ids);
-            }
+            $count = count($service_ids); // Number of service IDs to match
+
+            $garagesQuery = $garagesQuery->whereHas('garageServices', function ($query) use ($service_ids, $count) {
+                $query
+                    ->whereIn('service_id', $service_ids) // Filter to only the specified service IDs
+                    ->selectRaw('garage_id')              // Select the garage_id (essential for grouping)
+                    ->groupBy('garage_id')               // Group by garage_id
+                    ->havingRaw('COUNT(DISTINCT service_id) = ?', [$count]); // Ensure the count of distinct services matches the expected count
+            });
         }
 
 
@@ -144,7 +149,15 @@ class ClientBasicController extends Controller
             $null_filter = collect(array_filter($request->sub_service_ids))->values();
             $sub_service_ids =  $null_filter->all();
             if (count($sub_service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id", $sub_service_ids);
+
+                $count = count($sub_service_ids);
+                $garagesQuery = $garagesQuery->whereHas('garageServices.garageSubServices', function ($query) use ($sub_service_ids, $count) {
+                    $query
+                        ->whereIn('sub_service_id', $sub_service_ids) // Filter to only the specified sub_service_ids
+                        ->selectRaw('garage_service_id')           // Select the garage_service_id (essential for grouping)
+                        ->groupBy('garage_service_id')            // Group by garage_service_id
+                        ->havingRaw('COUNT(DISTINCT sub_service_id) = ?', [$count]); // Ensure the count of distinct sub_service_ids matches the expected count
+                });
             }
         }
 
@@ -203,8 +216,7 @@ class ClientBasicController extends Controller
             leftJoin('garage_automobile_makes', 'garage_automobile_makes.garage_id', '=', 'garages.id')
             ->leftJoin('garage_automobile_models', 'garage_automobile_models.garage_automobile_make_id', '=', 'garage_automobile_makes.id')
 
-            ->leftJoin('garage_services', 'garage_services.garage_id', '=', 'garages.id')
-            ->leftJoin('garage_sub_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+
 
             ->leftJoin('garage_times', 'garage_times.garage_id', '=', 'garages.id')
             ->where('garages.is_active', true);
@@ -267,9 +279,15 @@ class ClientBasicController extends Controller
             $null_filter = collect(array_filter($request->service_ids))->values();
             $service_ids =  $null_filter->all();
 
-            if (count($service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_services.service_id", $service_ids);
-            }
+            $count = count($service_ids); // Number of service IDs to match
+
+            $garagesQuery = $garagesQuery->whereHas('garageServices', function ($query) use ($service_ids, $count) {
+                $query
+                    ->whereIn('service_id', $service_ids) // Filter to only the specified service IDs
+                    ->selectRaw('garage_id')              // Select the garage_id (essential for grouping)
+                    ->groupBy('garage_id')               // Group by garage_id
+                    ->havingRaw('COUNT(DISTINCT service_id) = ?', [$count]); // Ensure the count of distinct services matches the expected count
+            });
         }
 
 
@@ -277,7 +295,15 @@ class ClientBasicController extends Controller
             $null_filter = collect(array_filter($request->sub_service_ids))->values();
             $sub_service_ids =  $null_filter->all();
             if (count($sub_service_ids)) {
-                $garagesQuery =   $garagesQuery->whereIn("garage_sub_services.sub_service_id", $sub_service_ids);
+
+                $count = count($sub_service_ids);
+                $garagesQuery = $garagesQuery->whereHas('garageServices.garageSubServices', function ($query) use ($sub_service_ids, $count) {
+                    $query
+                        ->whereIn('sub_service_id', $sub_service_ids) // Filter to only the specified sub_service_ids
+                        ->selectRaw('garage_service_id')           // Select the garage_service_id (essential for grouping)
+                        ->groupBy('garage_service_id')            // Group by garage_service_id
+                        ->havingRaw('COUNT(DISTINCT sub_service_id) = ?', [$count]); // Ensure the count of distinct sub_service_ids matches the expected count
+                });
             }
         }
 
