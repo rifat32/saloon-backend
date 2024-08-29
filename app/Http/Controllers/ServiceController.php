@@ -9,6 +9,7 @@ use App\Http\Requests\SubServiceCreateRequest;
 use App\Http\Requests\SubServiceUpdateRequest;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Models\AutomobileCategory;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
 use App\Models\FuelStationService;
@@ -820,6 +821,12 @@ class ServiceController extends Controller
                 "service_id"
             )->get();
 
+            $automobile_categories =  AutomobileCategory::orderBy("name",'asc')
+            ->select(
+                "id",
+                "name",
+            )->get();
+
             $automobile_make =  AutomobileMake::orderBy("name",'asc')
             ->select(
                 "id",
@@ -839,6 +846,8 @@ class ServiceController extends Controller
             $response_data = [
                 "services" => $services,
                 "sub_services" => $sub_services,
+
+                "automobile_categories" => $automobile_categories,
                 "automobile_make" => $automobile_make,
                 "automobile_model" => $automobile_model,
                 "fuel_station_services" => $fuel_station_services
