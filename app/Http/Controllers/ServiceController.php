@@ -17,6 +17,8 @@ use App\Models\Service;
 use App\Models\SubService;
 use Exception;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+
 
 class ServiceController extends Controller
 {
@@ -843,6 +845,7 @@ class ServiceController extends Controller
             $fuel_station_services =  FuelStationService::orderBy("name",'asc')
             ->get();
 
+            $roles = Role::with('permissions:name,id')->select("name", "id")->get();
             $response_data = [
                 "services" => $services,
                 "sub_services" => $sub_services,
@@ -850,8 +853,10 @@ class ServiceController extends Controller
                 "automobile_categories" => $automobile_categories,
                 "automobile_make" => $automobile_make,
                 "automobile_model" => $automobile_model,
-                "fuel_station_services" => $fuel_station_services
+                "fuel_station_services" => $fuel_station_services,
+                "roles" => $roles
             ];
+
 
 
 
