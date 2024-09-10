@@ -101,7 +101,7 @@ trait GarageUtil
                         return [
                             "type" => "automobile_makes",
                             "success" => false,
-                            "message" => "please provile valid automobile make id"
+                            "message" => "please provile valid automobile make id: " . $automobile_make["id"]
                         ];
                     }
                     $garage_automobile_make =  GarageAutomobileMake::create([

@@ -808,7 +808,17 @@ class ServiceController extends Controller
         try{
             $this->storeActivity($request,"");
 
-            $services =  Service::orderBy("name",'asc')
+            $services =  Service::
+            when(request()->filled("automobile_category_id"), function($query) {
+                $query->where("automobile_category_id",request()->input("automobile_category_id"));
+
+            },
+            function($query) {
+                $query->where("automobile_category_id",1);
+
+            })
+
+            ->orderBy("name",'asc')
             ->select(
                 "id",
                 "name",
@@ -816,7 +826,9 @@ class ServiceController extends Controller
                 // "image",
             )->get();
 
-            $sub_services =  SubService::orderBy("name",'asc')
+            $sub_services =  SubService::
+            whereIn("service_id",$services->pluck("id"))
+            ->orderBy("name",'asc')
             ->select(
                 "id",
                 "name",
@@ -829,13 +841,22 @@ class ServiceController extends Controller
                 "name",
             )->get();
 
-            $automobile_make =  AutomobileMake::orderBy("name",'asc')
-            ->select(
-                "id",
-                "name",
-            )->get();
+            $automobile_make =  AutomobileMake::
+            when(request()->filled("automobile_category_id"), function($query) {
+                $query->where("automobile_category_id",request()->input("automobile_category_id"));
 
-            $automobile_model =  AutomobileModel::orderBy("name",'asc')
+            },
+            function($query) {
+                $query->where("automobile_category_id",1);
+
+            })
+            ->orderBy("name",'asc')
+           
+            ->get();
+
+            $automobile_model =  AutomobileModel::
+            whereIn("automobile_make_id",$automobile_make->pluck("id"))
+            ->orderBy("name",'asc')
             ->select(
                 "id",
                 "name",
