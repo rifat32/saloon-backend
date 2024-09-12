@@ -674,6 +674,13 @@ class FuelStationController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *      *              @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
      *
      *      *
      *   *              @OA\Parameter(
@@ -915,7 +922,15 @@ class FuelStationController extends Controller
                 ->distinct("fuel_stations.id")
                 ->select("fuel_stations.*")
                 ->orderByDesc("fuel_stations.id")
-                ->paginate($perPage);
+                ->when(request()->filled("id"), function ($query) {
+                    return  $query->where("id", request()->input("id"))
+                      ->first();
+                   },
+                   function ($query) use($perPage) {
+                     return $query->paginate($perPage);
+                   },
+
+               );
             return response()->json($fuelStations, 200);
         } catch (Exception $e) {
 

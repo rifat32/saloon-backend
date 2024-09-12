@@ -221,6 +221,13 @@ class FuelStationServiceController extends Controller
      *         required=true,
      *  example="6"
      *      ),
+     *     *              @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         description="id",
+     *         required=true,
+     *  example="6"
+     *      ),
      *      * *  @OA\Parameter(
 * name="start_date",
 * in="query",
@@ -312,9 +319,18 @@ class FuelStationServiceController extends Controller
 
 
             $fuelStationServices= $fuelStationServiceQuery
-
             ->orderByDesc("id")
-            ->paginate($perPage);
+            ->when(request()->filled("id"), function ($query) {
+             return  $query->where("id", request()->input("id"))
+               ->first();
+            },
+            function ($query) use($perPage) {
+              return $query->paginate($perPage);
+            },
+
+        );
+
+
             return response()->json($fuelStationServices, 200);
         } catch (Exception $e) {
 

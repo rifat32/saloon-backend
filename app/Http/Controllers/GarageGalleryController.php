@@ -14,6 +14,114 @@ use Illuminate\Http\Request;
 class GarageGalleryController extends Controller
 {
 use ErrorUtil,GarageUtil,UserActivityUtil;
+
+/**
+ *
+ * @OA\Post(
+ *      path="/v1.0/garage-galleries-by-url/{garage_id}",
+ *      operationId="createGarageGalleryByUrl",
+ *      tags={"garage_gallery_management"},
+ *      security={
+ *           {"bearerAuth": {}}
+ *      },
+ *      @OA\Parameter(
+ *          name="garage_id",
+ *          in="path",
+ *          description="garage_id",
+ *          required=true,
+ *          example="1"
+ *      ),
+ *      summary="This method is to store URLs to the garage gallery",
+ *      description="This method is to store URLs to the garage gallery",
+ *      @OA\RequestBody(
+ *          required=true,
+ *          @OA\MediaType(
+ *              mediaType="application/json",
+ *              @OA\Schema(
+ *                  required={"urls"},
+ *                  @OA\Property(
+ *                      description="Array of image URLs to add to the gallery",
+ *                      property="urls",
+ *                      type="array",
+ *                      @OA\Items(
+ *                          type="string",
+ *                          format="url"
+ *                      )
+ *                  )
+ *              )
+ *          )
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=422,
+ *          description="Unprocessable Content",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden",
+ *          @OA\JsonContent()
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Bad Request",
+ *          @OA\JsonContent()
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="Not Found",
+ *          @OA\JsonContent()
+ *      )
+ * )
+ */
+public function createGarageGalleryByUrl($garage_id, Request $request)
+{
+    try {
+        $this->storeActivity($request, "");
+
+        if (!$request->user()->hasPermissionTo('garage_gallery_create')) {
+            return response()->json([
+                "message" => "You cannot perform this action"
+            ], 401);
+        }
+
+        if (!$this->garageOwnerCheck($garage_id)) {
+            return response()->json([
+                "message" => "You are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
+
+        $validatedData = $request->validate([
+            'urls' => 'required|array',
+            'urls.*' => 'url'
+        ]);
+
+
+
+        foreach ($validatedData['urls'] as $url) {
+            GarageGallery::create([
+                "image" => $url,
+                "garage_id" => $garage_id
+            ]);
+        }
+
+        return response()->json(["ok" => true], 201);
+
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return $this->sendError($e, 500, $request);
+    }
+}
+
       /**
         *
      * @OA\Post(
@@ -128,6 +236,9 @@ use ErrorUtil,GarageUtil,UserActivityUtil;
         return $this->sendError($e,500,$request);
         }
     }
+
+
+
  /**
         *
      * @OA\Get(
