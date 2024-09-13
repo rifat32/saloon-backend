@@ -227,7 +227,11 @@ Route::put('/v1.0/garages/update-time-format', [GaragesController::class, "updat
 
 
 Route::get('/v1.0/garages/{perPage}', [GaragesController::class, "getGarages"]);
+
 Route::get('/v1.0/garages/single/{id}', [GaragesController::class, "getGarageById"]);
+
+Route::get('/v2.0/garages/single/{id}', [GaragesController::class, "getGarageByIdV2"]);
+
 Route::delete('/v1.0/garages/{id}', [GaragesController::class, "deleteGarageById"]);
 
 Route::get('/v1.0/garages/by-garage-owner/all', [GaragesController::class, "getAllGaragesByGarageOwner"]);

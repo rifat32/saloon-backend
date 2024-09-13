@@ -21,4 +21,9 @@ class SubService extends Model
     public function service(){
         return $this->belongsTo(Service::class,'service_id', 'id');
     }
+
+    public function garage_automobile_sub_services () {
+        return $this->hasMany(GarageSubService::class,"sub_service_id","id");
+   }
+
 }

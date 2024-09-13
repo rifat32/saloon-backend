@@ -1602,7 +1602,6 @@ if(!$user->hasRole('garage_owner')) {
         }
 
     }
-
      /**
         *
      * @OA\Get(
@@ -1657,7 +1656,7 @@ if(!$user->hasRole('garage_owner')) {
      *     )
      */
 
-    public function getGarageById($id,Request $request) {
+     public function getGarageById($id,Request $request) {
 
         try{
             $this->storeActivity($request,"");
@@ -1683,6 +1682,116 @@ if(!$user->hasRole('garage_owner')) {
                 "garageGalleries",
                 "garage_packages",
                 "garage_affiliations.affiliation"
+            )->where([
+                "id" => $id
+            ])
+            ->first();
+       $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
+        $garage_service_ids =   GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
+
+        $data["garage"] = $garage;
+        $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
+        $data["garage_service_ids"] = $garage_service_ids;
+        return response()->json($data, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
+    }
+     /**
+        *
+     * @OA\Get(
+     *      path="/v2.0/garages/single/{id}",
+     *      operationId="getGarageByIdV2",
+     *      tags={"garage_management"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="id",
+     *         required=true,
+     *  example="1"
+     *      ),
+     *      summary="This method is to get garage by id",
+     *      description="This method is to get garage by id",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getGarageByIdV2($id,Request $request) {
+
+        try{
+            $this->storeActivity($request,"");
+            if(!$request->user()->hasPermissionTo('garage_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+           if (!$this->garageOwnerCheck($id)) {
+            return response()->json([
+                "message" => "you are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
+
+            $garage = Garage::with(
+                [
+                "owner",
+                "automobile_makes",
+                "automobile_makes.automobile_models" => function($query) use($id) {
+                    $query->whereHas("garage_automobile_models.garageAutomobileMake", function($query) use($id) {
+                       $query->where("garage_automobile_makes.garage_id",$id);
+                    });
+                },
+
+                "services",
+                "services.automobile_sub_services" => function($query) use($id) {
+                    $query->whereHas("garage_automobile_sub_services.garageService", function($query) use($id) {
+                       $query->where("garage_services.garage_id",$id);
+                    });
+                },
+
+
+
+                "garage_times",
+                "garageGalleries",
+                "garage_packages",
+                "garage_affiliations.affiliation"
+                ]
             )->where([
                 "id" => $id
             ])

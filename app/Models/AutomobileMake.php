@@ -22,7 +22,9 @@ class AutomobileMake extends Model
     public function models(){
         return $this->hasMany(AutomobileModel::class,'automobile_make_id', 'id');
     }
-
+    public function automobile_models(){
+        return $this->hasMany(AutomobileModel::class,'automobile_make_id', 'id');
+    }
 
     public function garageAutoMobileMake(){
         return $this->belongsTo(GarageAutomobileMake::class,'id','automobile_make_id');

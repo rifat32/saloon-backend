@@ -500,7 +500,7 @@ $datediff = $now - $user_created_date;
      *         required=true,
      *         @OA\JsonContent(
      *            required={"email"},
-     *
+
      *             @OA\Property(property="email", type="string", format="string",* example="test@g.c"),
      *         ),
      *      ),
@@ -542,7 +542,10 @@ $datediff = $now - $user_created_date;
             return DB::transaction(function () use (&$request) {
                 $insertableData = $request->validated();
 
-            $user = User::where(["email" => $insertableData["email"]])->first();
+            $user = User::
+
+
+            where(["email" => $insertableData["email"]])->first();
             if (!$user) {
                 return response()->json(["message" => "no user found"], 404);
             }
@@ -1003,7 +1006,7 @@ public function getUser (Request $request) {
      *         required=true,
      *         @OA\JsonContent(
      *            required={"email"},
-     *
+     *  *             @OA\Property(property="id", type="string", format="string",example="1"),
      *             @OA\Property(property="email", type="string", format="string",example="test@g.c"),
      *
      *
@@ -1044,7 +1047,12 @@ public function getUser (Request $request) {
     public function checkEmail(Request $request) {
         try{
             $this->storeActivity($request,"");
-            $user = User::where([
+            $user = User::
+            when(request()->filled("id"), function($query) {
+                $query->whereNotIn("id",[request()->input("id")]);
+            })
+
+            ->where([
                 "email" => $request->email
                ])->first();
                if($user) {

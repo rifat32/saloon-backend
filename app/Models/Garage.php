@@ -61,6 +61,13 @@ class Garage extends Model
         return $this->belongsToMany(AutomobileMake::class,"garage_automobile_makes",'garage_id','automobile_make_id');
     }
 
+
+
+
+
+
+
+
     public function garage_affiliations(){
         return $this->hasMany(GarageAffiliation::class,'garage_id', 'id');
     }
