@@ -102,7 +102,7 @@ public function createGarageGalleryByUrl($garage_id, Request $request)
 
         $validatedData = $request->validate([
             'urls' => 'required|array',
-            'urls.*' => 'url'
+            'urls.*' => 'string'
         ]);
 
 
