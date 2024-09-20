@@ -1602,6 +1602,223 @@ if(!$user->hasRole('garage_owner')) {
         }
 
     }
+
+
+   /**
+        *
+     * @OA\Get(
+     *      path="/v2.0/garages/{perPage}",
+     *      operationId="getGaragesV2",
+     *      tags={"garage_management"},
+     * *  @OA\Parameter(
+* name="start_date",
+* in="query",
+* description="start_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="end_date",
+* in="query",
+* description="end_date",
+* required=true,
+* example="2019-06-29"
+* ),
+     * *  @OA\Parameter(
+* name="search_key",
+* in="query",
+* description="search_key",
+* required=true,
+* example="search_key"
+* ),
+     * *  @OA\Parameter(
+* name="country_code",
+* in="query",
+* description="country_code",
+* required=true,
+* example="country_code"
+* ),
+    * *  @OA\Parameter(
+* name="address",
+* in="query",
+* description="address",
+* required=true,
+* example="address"
+* ),
+     * *  @OA\Parameter(
+* name="city",
+* in="query",
+* description="city",
+* required=true,
+* example="city"
+* ),
+    * *  @OA\Parameter(
+* name="start_lat",
+* in="query",
+* description="start_lat",
+* required=true,
+* example="3"
+* ),
+     * *  @OA\Parameter(
+* name="end_lat",
+* in="query",
+* description="end_lat",
+* required=true,
+* example="2"
+* ),
+     * *  @OA\Parameter(
+* name="start_long",
+* in="query",
+* description="start_long",
+* required=true,
+* example="1"
+* ),
+     * *  @OA\Parameter(
+* name="end_long",
+* in="query",
+* description="end_long",
+* required=true,
+* example="4"
+* ),
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      summary="This method is to get garages",
+     *      description="This method is to get garages",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getGaragesV2($perPage,Request $request) {
+
+        try{
+            $this->storeActivity($request,"");
+            if(!$request->user()->hasPermissionTo('garage_view')){
+                return response()->json([
+                   "message" => "You can not perform this action"
+                ],401);
+           }
+
+            $garagesQuery = Garage::with([
+                "owner"=> function($query) {
+    $query->select("users.id","users.first_Name","users.last_Name","users.email");
+                },
+
+            ]);
+
+
+            if(!$request->user()->hasRole('superadmin')) {
+                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
+                    $query->where('created_by', $request->user()->id)
+                          ->orWhere('owner_id', $request->user()->id);
+                });
+            }
+
+            if(!empty($request->search_key)) {
+                $garagesQuery = $garagesQuery->where(function($query) use ($request){
+                    $term = $request->search_key;
+                    $query->where("name", "like", "%" . $term . "%");
+                    $query->orWhere("phone", "like", "%" . $term . "%");
+                    $query->orWhere("email", "like", "%" . $term . "%");
+                    $query->orWhere("city", "like", "%" . $term . "%");
+                    $query->orWhere("postcode", "like", "%" . $term . "%");
+                });
+
+            }
+
+
+            if (!empty($request->start_date)) {
+                $garagesQuery = $garagesQuery->where('created_at', ">=", $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $garagesQuery = $garagesQuery->where('created_at', "<=", $request->end_date);
+            }
+
+            if (!empty($request->start_lat)) {
+                $garagesQuery = $garagesQuery->where('lat', ">=", $request->start_lat);
+            }
+            if (!empty($request->end_lat)) {
+                $garagesQuery = $garagesQuery->where('lat', "<=", $request->end_lat);
+            }
+            if (!empty($request->start_long)) {
+                $garagesQuery = $garagesQuery->where('long', ">=", $request->start_long);
+            }
+            if (!empty($request->end_long)) {
+                $garagesQuery = $garagesQuery->where('long', "<=", $request->end_long);
+            }
+
+            if (!empty($request->address)) {
+                $garagesQuery = $garagesQuery->where(function ($query) use ($request) {
+                    $term = $request->address;
+                    $query->where("country", "like", "%" . $term . "%");
+                    $query->orWhere("city", "like", "%" . $term . "%");
+
+
+                });
+            }
+            if (!empty($request->country_code)) {
+                $garagesQuery =   $garagesQuery->orWhere("country", "like", "%" . $request->country_code . "%");
+
+            }
+            if (!empty($request->city)) {
+                $garagesQuery =   $garagesQuery->orWhere("city", "like", "%" . $request->city . "%");
+
+            }
+
+
+            $garages = $garagesQuery->orderByDesc("id")
+            ->select("garages.id","garages.name","garages.email","garages.owner_id")
+
+            ->paginate($perPage);
+            return response()->json($garages, 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
+    }
+
+
+
      /**
         *
      * @OA\Get(

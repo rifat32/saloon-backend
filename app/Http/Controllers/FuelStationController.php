@@ -818,7 +818,7 @@ class FuelStationController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $fuelStationQuery = FuelStation::with("options.option");
+            $fuelStationQuery = FuelStation::with("options.option","fuel_station_times");
 
             if (!$request->user()->hasRole('superadmin')) {
                 $fuelStationQuery =    $fuelStationQuery->where([

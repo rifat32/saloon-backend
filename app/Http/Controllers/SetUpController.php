@@ -48,9 +48,12 @@ class SetUpController extends Controller
 
     }
     public function swaggerRefresh() {
+
 Artisan::call('l5-swagger:generate');
-return "swagger generated";
+return "swagger generated ...............";
     }
+
+
     public function setUp(Request $request)
     {
         // @@@@@@@@@@@@@@@@@@@

@@ -1967,19 +1967,28 @@ $data2["total_comment"] = $data2["total_comment"]->get();
                 ], 401);
             }
 
-           $question = [
-            'tag' => $request->tag
-        ];
-        $checkQuestion =    Tag::where(["id" => $request->id])->first();
-        if ($checkQuestion->is_default == true && !$request->user()->hasRole("superadmin")) {
-            return response()->json(["message" => "you can not update the question. you are not a super admin"]);
-        }
-        $updatedQuestion =    tap(Tag::where(["id" => $request->id]))->update(
-            $question
-        )
-            // ->with("somthing")
+            $tag = [
+                'tag' => $request->tag
+            ];
 
-            ->first();
+            // Check if the question exists
+            $checkQuestion = Tag::where('id', $request->id)->first();
+
+            if (!$checkQuestion) {
+                return response()->json(['message' => 'tag not found.'], 404);
+            }
+
+            // Check if the user is allowed to update
+            if ($checkQuestion->is_default == true && !$request->user()->hasRole('superadmin')) {
+                return response()->json(['message' => 'You cannot update the tag. You are not a super admin.'], 403);
+            }
+
+            // Update the question
+            $updatedQuestion = tap($checkQuestion)->update($tag);
+
+            // Return the updated question
+            return response()->json($updatedQuestion);
+
 
 
         return response($updatedQuestion, 200);
