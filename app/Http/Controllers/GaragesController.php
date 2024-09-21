@@ -1908,7 +1908,7 @@ if(!$user->hasRole('garage_owner')) {
             $data["garage_automobile_make_ids"] =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
             $data["garage_service_ids"] =  GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
 
-            $data["garage_automobile_make_ids"] =  GarageAutomobileModel::
+            $data["garage_automobile_models_ids"] =  GarageAutomobileModel::
             whereHas("garageAutomobileMake", function($query) use ($garage) {
                   $query->where("garage_automobile_makes.garage_id",$garage->id);
             })
