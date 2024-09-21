@@ -13,4 +13,12 @@ class JobPayment extends Model
         "payment_type_id",
         "amount",
     ];
+
+
+    public function job(){
+        return $this->belongsTo(Job::class,'job_id', 'id');
+    }
+
+
+
 }
