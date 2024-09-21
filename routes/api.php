@@ -656,6 +656,9 @@ Route::delete('/v1.0/bookings/{garage_id}/{id}', [BookingController::class, "del
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::get('/v1.0/pre-bookings/{garage_id}/{perPage}', [JobBidController::class, "getPreBookings"]);
+
+Route::get('/v2.0/pre-bookings/{garage_id}/{perPage}', [JobBidController::class, "getPreBookingsV2"]);
+
 Route::get('/v1.0/pre-bookings/single/{garage_id}/{id}', [JobBidController::class, "getPreBookingById"]);
 
 Route::post('/v1.0/job-bids', [JobBidController::class, "createJobBid"]);

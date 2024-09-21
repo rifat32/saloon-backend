@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\DB;
 class JobBidController extends Controller
 {
     use ErrorUtil, GarageUtil, PriceUtil,UserActivityUtil, BasicUtil;
-    /**
+        /**
      *
      * @OA\Get(
      *      path="/v1.0/pre-bookings/{garage_id}/{perPage}",
@@ -158,7 +158,267 @@ class JobBidController extends Controller
      *     )
      */
 
-    public function getPreBookings($garage_id, $perPage, Request $request)
+     public function getPreBookings($garage_id, $perPage, Request $request)
+     {
+         try {
+             $this->storeActivity($request,"");
+             if (!$request->user()->hasPermissionTo('job_bids_create')) {
+                 return response()->json([
+                     "message" => "You can not perform this action"
+                 ], 401);
+             }
+             if (!$this->garageOwnerCheck($garage_id)) {
+                 return response()->json([
+                     "message" => "you are not the owner of the garage or the requested garage does not exist."
+                 ], 401);
+             }
+
+             // $garage_sub_service_ids = GarageSubService::
+             // leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
+             // ->where([
+             //     "garage_services.garage_id" => $garage_id
+             // ])
+             // ->pluck("garage_sub_services.sub_service_id");
+
+
+             $preBookingQuery = PreBooking::with(
+                 "pre_booking_sub_services.sub_service",
+                 "automobile_make",
+                 "automobile_model",
+                 "customer",
+                 )
+
+                 ->leftJoin('users', 'pre_bookings.customer_id', '=', 'users.id')
+
+                 ->leftJoin('pre_booking_sub_services', 'pre_bookings.id', '=', 'pre_booking_sub_services.pre_booking_id')
+                 ->where("status","pending");
+
+
+
+             // ->whereIn("pre_booking_sub_services.sub_service_id",$garage_sub_service_ids);
+
+             if (!empty($request->automobile_make_ids)) {
+                 $null_filter = collect(array_filter($request->automobile_make_ids))->values();
+                 $automobile_make_ids =  $null_filter->all();
+                 if (count($automobile_make_ids)) {
+                     $preBookingQuery =   $preBookingQuery->whereIn("pre_bookings.automobile_make_id", $automobile_make_ids);
+                 }
+             }
+
+             if (!empty($request->sub_service_ids)) {
+                 $null_filter = collect(array_filter($request->sub_service_ids))->values();
+                 $sub_service_ids =  $null_filter->all();
+                 if (count($sub_service_ids)) {
+                     $preBookingQuery =   $preBookingQuery->whereIn("pre_booking_sub_services.sub_service_id", $sub_service_ids);
+                 }
+             }
+
+             if (!empty($request->start_lat)) {
+                 $preBookingQuery = $preBookingQuery->where('users.lat', ">=", $request->start_lat);
+             }
+             if (!empty($request->end_lat)) {
+                 $preBookingQuery = $preBookingQuery->where('users.lat', "<=", $request->end_lat);
+             }
+             if (!empty($request->start_long)) {
+                 $preBookingQuery = $preBookingQuery->where('users.long', ">=", $request->start_long);
+             }
+             if (!empty($request->end_long)) {
+                 $preBookingQuery = $preBookingQuery->where('users.long', "<=", $request->end_long);
+             }
+
+
+             if (!empty($request->search_key)) {
+                 $preBookingQuery = $preBookingQuery->where(function ($query) use ($request) {
+                     $term = $request->search_key;
+                     $query->where("pre_bookings.car_registration_no", "like", "%" . $term . "%");
+                 });
+             }
+             if (!empty($request->country_or_postcode)) {
+                 $preBookingQuery = $preBookingQuery->where(function ($query) use ($request) {
+                     $term = $request->country_or_postcode;
+                     $query->where("pre_bookings.city", "like", "%" . $term . "%");
+                     $query->orWhere("pre_bookings.postcode", "like", "%" . $term . "%");
+                 });
+             }
+
+
+
+
+             if (!empty($request->start_date)) {
+                 $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', ">=", $request->start_date);
+             }
+             if (!empty($request->end_date)) {
+                 $preBookingQuery = $preBookingQuery->where('pre_bookings.created_at', "<=", $request->end_date);
+             }
+             $pre_bookings = $preBookingQuery
+                 ->select(
+                     "pre_bookings.*",
+
+                     DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id) AS job_bids_count'),
+
+                     DB::raw('(SELECT COUNT(job_bids.id) FROM job_bids
+                     WHERE
+                     job_bids.pre_booking_id = pre_bookings.id
+                     AND
+                     job_bids.garage_id = ' . $garage_id .'
+
+                     ) AS garage_applied'),
+
+                     'users.address_line_1',
+                     'users.address_line_2',
+                     'users.country',
+                     'users.city',
+                     'users.postcode',
+                     "users.lat",
+                     "users.long",
+
+                 )
+                 ->groupBy("pre_bookings.id")
+                 ->orderByDesc("pre_bookings.id")
+
+                  ->havingRaw('(SELECT COUNT(job_bids.id) FROM job_bids WHERE job_bids.pre_booking_id = pre_bookings.id)  < 4')
+                 ->paginate($perPage);
+             return response()->json($pre_bookings, 200);
+         } catch (Exception $e) {
+
+             return $this->sendError($e, 500,$request);
+         }
+     }
+
+
+    /**
+     *
+     * @OA\Get(
+     *      path="/v2.0/pre-bookings/{garage_id}/{perPage}",
+     *      operationId="getPreBookingsV2",
+     *      tags={"pre_booking_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
+     * *  @OA\Parameter(
+     * name="country_or_postcode",
+     * in="query",
+     * description="country_or_postcode",
+     * required=true,
+     * example="country_or_postcode"
+     * ),
+     * *  @OA\Parameter(
+     * name="start_lat",
+     * in="query",
+     * description="start_lat",
+     * required=true,
+     * example="3"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_lat",
+     * in="query",
+     * description="end_lat",
+     * required=true,
+     * example="2"
+     * ),
+     * *  @OA\Parameter(
+     * name="start_long",
+     * in="query",
+     * description="start_long",
+     * required=true,
+     * example="1"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_long",
+     * in="query",
+     * description="end_long",
+     * required=true,
+     * example="4"
+     * ),
+
+     *  @OA\Parameter(
+     *      name="automobile_make_ids[]",
+     *      in="query",
+     *      description="automobile_make_ids",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *  @OA\Parameter(
+     *      name="sub_service_ids[]",
+     *      in="query",
+     *      description="sub_service_id",
+     *      required=true,
+     *      example="1,2"
+     * ),
+     *      summary="This method is to get pre bookings ",
+     *      description="This method is to get pre bookings by garage id. only supported prebooking will show. the garage must have the sub service selected in the pre booking",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getPreBookingsV2($garage_id, $perPage, Request $request)
     {
         try {
             $this->storeActivity($request,"");
@@ -213,18 +473,42 @@ class JobBidController extends Controller
                 }
             }
 
-            if (!empty($request->start_lat)) {
-                $preBookingQuery = $preBookingQuery->where('users.lat', ">=", $request->start_lat);
+            $start_lat = $request->start_lat;
+            $end_lat = $request->end_lat;
+            $start_long = $request->start_long;
+            $end_long = $request->end_long;
+
+            if ($start_lat < 0 && $end_lat < 0) {
+                // Handle case where both start and end latitude are negative
+                $start_lat_temp = $start_lat;
+                $start_lat = $end_lat;
+                $end_lat = $start_lat_temp;
             }
-            if (!empty($request->end_lat)) {
-                $preBookingQuery = $preBookingQuery->where('users.lat', "<=", $request->end_lat);
+
+            if ($start_long < 0 && $end_long < 0) {
+                // Handle case where both start and end longitude are negative
+                $start_long_temp = $start_long;
+                $start_long = $end_long;
+                $end_long = $start_long_temp;
             }
-            if (!empty($request->start_long)) {
-                $preBookingQuery = $preBookingQuery->where('users.long', ">=", $request->start_long);
+
+
+
+
+            if (!empty($start_lat)) {
+                $preBookingQuery = $preBookingQuery->where('users.lat', ">=", $start_lat);
             }
-            if (!empty($request->end_long)) {
-                $preBookingQuery = $preBookingQuery->where('users.long', "<=", $request->end_long);
+            if (!empty($end_lat)) {
+                $preBookingQuery = $preBookingQuery->where('users.lat', "<=", $end_lat);
             }
+            if (!empty($start_long)) {
+                $preBookingQuery = $preBookingQuery->where('users.long', ">=", $start_long);
+            }
+            if (!empty($end_long)) {
+                $preBookingQuery = $preBookingQuery->where('users.long', "<=", $end_long);
+            }
+
+
 
 
             if (!empty($request->search_key)) {
@@ -284,6 +568,13 @@ class JobBidController extends Controller
             return $this->sendError($e, 500,$request);
         }
     }
+
+
+
+
+
+
+
 
     /**
      *
