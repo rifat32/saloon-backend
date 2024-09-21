@@ -988,8 +988,6 @@ public function getUser (Request $request) {
 
 }
 
-
-
   /**
         *
      * @OA\Post(
@@ -1044,10 +1042,85 @@ public function getUser (Request $request) {
      */
 
 
-    public function checkEmail(Request $request) {
+     public function checkEmail(Request $request) {
         try{
             $this->storeActivity($request,"");
             $user = User::
+            when(request()->filled("id"), function($query) {
+                $query->whereNotIn("id",[request()->input("id")]);
+            })
+
+            ->where([
+                "email" => $request->email
+               ])->first();
+               if($user) {
+       return response()->json(["data" => true],200);
+               }
+               return response()->json(["data" => false],200);
+        }catch(Exception $e) {
+            return $this->sendError($e, 500,$request);
+        }
+
+ }
+
+  /**
+        *
+     * @OA\Post(
+     *      path="/auth/check/business-email",
+     *      operationId="checkBusinessEmail",
+     *      tags={"auth"},
+    *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to check business email",
+     *      description="This method is to check business email",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"email"},
+     *  *             @OA\Property(property="id", type="string", format="string",example="1"),
+     *             @OA\Property(property="email", type="string", format="string",example="test@g.c"),
+     *
+     *
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request"
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found"
+     *   ),
+     *@OA\JsonContent()
+     *      )
+     *     )
+     */
+
+
+    public function checkBusinessEmail(Request $request) {
+        try{
+            $this->storeActivity($request,"");
+            $user = Garage::
             when(request()->filled("id"), function($query) {
                 $query->whereNotIn("id",[request()->input("id")]);
             })

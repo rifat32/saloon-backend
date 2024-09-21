@@ -1634,7 +1634,7 @@ $data2["total_comment"] = $data2["total_comment"]->get();
             if ($request->user()->hasRole("superadmin")) {
 
 
-            $tag_found =    Tag::where([
+            $tag_found =  Tag::where([
                     "garage_id" => NULL,
                     "tag" => $question["tag"],
                     "is_default" => 1
