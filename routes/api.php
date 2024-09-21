@@ -584,6 +584,7 @@ Route::post('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::clas
 Route::post('/v1.0/garage-galleries-by-url/{garage_id}', [GarageGalleryController::class, "createGarageGalleryByUrl"]);
 
 Route::get('/v1.0/garage-galleries/{garage_id}', [GarageGalleryController::class, "getGarageGalleries"]);
+
 Route::delete('/v1.0/garage-galleries/{garage_id}/{id}', [GarageGalleryController::class, "deleteGarageGalleryById"]);
 
 

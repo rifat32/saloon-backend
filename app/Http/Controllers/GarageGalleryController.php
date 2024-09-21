@@ -471,31 +471,40 @@ public function createGarageGalleryByUrl($garage_id, Request $request)
             ], 401);
         }
 
-        $garage_gallery  = GarageGallery::where([
-            "id" => $id,
-            "garage_id" => $garage_id
-           ])
-           ->first();
-           if(!$garage_gallery) {
+        $idsArray = array_filter(explode(',', $id));  // Filter out any empty values
+
+        $garage_gallery = GarageGallery::where('garage_id', $garage_id)
+            ->whereIn('id', $idsArray)
+            ->get();  // Get all matching records
+
+        // Check if any gallery items were found
+        if ($garage_gallery->isEmpty()) {
             return response()->json([
-                "message" => "gallery not found"
-                    ], 404);
-           }
+                "message" => "No gallery items found for the specified IDs."
+            ], 404);
+        }
 
-        // Define the path of the file you want to delete
-$location =  config("setup-config.garage_gallery_location");
-$file_path = public_path($location) . '/' . $garage_gallery->image;
+        // Define the path to the gallery location
+        $location = config("setup-config.garage_gallery_location");
 
-// Check if the file exists before trying to delete it
-if (file_exists($file_path)) {
-    unlink($file_path);
-}
-        $garage_gallery->delete();
+        foreach ($garage_gallery as $gallery) {
+            $file_path = public_path($location) . '/' . $gallery->image;
+
+            // Check if the file exists before trying to delete it
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+
+            // Delete the gallery entry from the database
+            $gallery->delete();
+        }
+
+        return response()->json([
+            'message' => 'Gallery items successfully deleted.'
+        ], 200);
 
 
 
-
-            return response()->json(["ok" => true], 200);
         } catch(Exception $e){
 
         return $this->sendError($e,500,$request);
