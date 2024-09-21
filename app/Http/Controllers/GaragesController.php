@@ -17,8 +17,10 @@ use App\Mail\SendPassword;
 use App\Mail\VerifyMail;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
+use App\Models\GarageAutomobileModel;
 use App\Models\GarageGallery;
 use App\Models\GarageService;
+use App\Models\GarageSubService;
 use App\Models\GarageTime;
 use App\Models\User;
 use Exception;
@@ -1903,12 +1905,25 @@ if(!$user->hasRole('garage_owner')) {
                 "id" => $id
             ])
             ->first();
-       $garage_automobile_make_ids =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
-        $garage_service_ids =   GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
+            $data["garage_automobile_make_ids"] =  GarageAutomobileMake::where(["garage_id"=>$garage->id])->pluck("automobile_make_id");
+            $data["garage_service_ids"] =  GarageService::where(["garage_id"=>$garage->id])->pluck("service_id");
+
+            $data["garage_automobile_make_ids"] =  GarageAutomobileModel::
+            whereHas("garageAutomobileMake", function($query) use ($garage) {
+                  $query->where("garage_automobile_makes.garage_id",$garage->id);
+            })
+            ->pluck("automobile_model_id");
+
+
+            $data["garage_sub_service_ids"] =  GarageSubService::
+            whereHas("garageService", function($query) use ($garage) {
+                  $query->where("garage_services.garage_id",$garage->id);
+            })
+            ->pluck("sub_service_id");
 
         $data["garage"] = $garage;
-        $data["garage_automobile_make_ids"] = $garage_automobile_make_ids;
-        $data["garage_service_ids"] = $garage_service_ids;
+
+
         return response()->json($data, 200);
         } catch(Exception $e){
 
