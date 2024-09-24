@@ -140,6 +140,53 @@ class FuelStationGalleryController extends Controller
         }
     }
 
+    public function createFuelStationGalleryByUrl($fuel_station_id, Request $request)
+{
+    try {
+        $this->storeActivity($request,"");
+        if(!$request->user()->hasPermissionTo('fuel_station_gallery_create')){
+             return response()->json([
+                "message" => "You can not perform this action"
+             ],401);
+        }
+
+        $fuelStationQuery =   FuelStation::where([
+            "id" => $fuel_station_id
+           ]);
+           if(!$request->user()->hasRole('superadmin')) {
+            $fuelStationQuery =    $fuelStationQuery->where([
+                "created_by" =>$request->user()->id
+            ]);
+        }
+        $fuelStation = $fuelStationQuery->first();
+        if(!$fuelStation){
+            return response()->json([
+                "message" => "fuel station does not exists or you did not created the fuel station"
+            ],404);
+        }
+
+        $validatedData = $request->validate([
+            'urls' => 'required|array',
+            'urls.*' => 'string'
+        ]);
+
+
+
+        foreach ($validatedData['urls'] as $url) {
+            FuelStationGallery::create([
+                "image" => $url,
+                "fuel_station_id" => $fuel_station_id
+            ]);
+        }
+
+        return response()->json(["ok" => true], 201);
+
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return $this->sendError($e, 500, $request);
+    }
+}
+
     /**
         *
      * @OA\Get(

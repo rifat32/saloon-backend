@@ -15,9 +15,11 @@ use App\Models\AutomobileModel;
 use App\Models\FuelStationService;
 use App\Models\Service;
 use App\Models\SubService;
+use App\Models\PaymentType;
 use Exception;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+
 
 
 class ServiceController extends Controller
@@ -808,24 +810,24 @@ class ServiceController extends Controller
         try{
             $this->storeActivity($request,"");
 
+            // CHECK IF REQUEST HAVE AUTOMOBILE CATEGORY ID
             $services =  Service::
             when(request()->filled("automobile_category_id"), function($query) {
                 $query->where("automobile_category_id",request()->input("automobile_category_id"));
-
             },
+
+            // IF THERE IS NO CATEGORY ID USE ID 1
             function($query) {
                 $query->where("automobile_category_id",1);
 
             })
-
             ->orderBy("name",'asc')
             ->select(
                 "id",
                 "name",
-                // "icon",
-                // "image",
             )->get();
 
+            // GETTING SUB SERVICES
             $sub_services =  SubService::
             whereIn("service_id",$services->pluck("id"))
             ->orderBy("name",'asc')
@@ -835,12 +837,14 @@ class ServiceController extends Controller
                 "service_id"
             )->get();
 
+            // GETTING AUTOMOBILE CATEGORIES
             $automobile_categories =  AutomobileCategory::orderBy("name",'asc')
             ->select(
                 "id",
                 "name",
             )->get();
 
+            // GETTING AUTOMOBILE MAKES
             $automobile_make =  AutomobileMake::
             when(request()->filled("automobile_category_id"), function($query) {
                 $query->where("automobile_category_id",request()->input("automobile_category_id"));
@@ -851,9 +855,9 @@ class ServiceController extends Controller
 
             })
             ->orderBy("name",'asc')
-           
             ->get();
 
+            // GETTING AUTOMOBILE MODELS
             $automobile_model =  AutomobileModel::
             whereIn("automobile_make_id",$automobile_make->pluck("id"))
             ->orderBy("name",'asc')
@@ -863,10 +867,17 @@ class ServiceController extends Controller
                 "automobile_make_id"
             )->get();
 
+            // GETTING FUEL STATION SERVICES
             $fuel_station_services =  FuelStationService::orderBy("name",'asc')
             ->get();
 
+            // GETTING ROLES
             $roles = Role::with('permissions:name,id')->select("name", "id")->get();
+
+            // GETTING ROLES
+            $payment_types = PaymentType::orderBy("name",'asc')->select("name", "id")->get();
+
+
             $response_data = [
                 "services" => $services,
                 "sub_services" => $sub_services,
@@ -875,7 +886,8 @@ class ServiceController extends Controller
                 "automobile_make" => $automobile_make,
                 "automobile_model" => $automobile_model,
                 "fuel_station_services" => $fuel_station_services,
-                "roles" => $roles
+                "roles" => $roles,
+                "payment_types" => $payment_types,
             ];
 
 

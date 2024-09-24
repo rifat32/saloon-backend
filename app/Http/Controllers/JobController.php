@@ -1309,7 +1309,6 @@ public function getJobPayments($garage_id,Request $request)
         try {
             $this->storeActivity($request, "");
             return  DB::transaction(function () use ($request) {
-
                 if (!$request->user()->hasPermissionTo('job_update')) {
                     return response()->json([
                         "message" => "You can not perform this action"
@@ -1326,8 +1325,7 @@ public function getJobPayments($garage_id,Request $request)
                 $job  = Job::where([
                     "id" => $updatableData["job_id"],
                     "garage_id" =>  $updatableData["garage_id"]
-                ])
-                    ->first();
+                ])->first();
 
                 if (!$job) {
                     return response()->json([
@@ -1346,21 +1344,15 @@ public function getJobPayments($garage_id,Request $request)
                     }
                 }
 
-
-
-
-
                 $payments = collect($updatableData["payments"]);
+
                 $payment_amount =  $payments->sum("amount");
 
                 $job_payment_amount =  JobPayment::where([
                     "job_id" => $job->id
-                ])
-                    ->sum("amount");
+                ])->sum("amount");
 
                 $total_payment = $job_payment_amount + $payment_amount;
-
-
 
                 if ($total_payable < $total_payment) {
                     return response([
@@ -1369,6 +1361,7 @@ public function getJobPayments($garage_id,Request $request)
                 }
 
                 foreach ($payments->all() as $payment) {
+
                     JobPayment::create([
                         "job_id" => $job->id,
                         "payment_type_id" => $payment["payment_type_id"],
@@ -1378,18 +1371,12 @@ public function getJobPayments($garage_id,Request $request)
 
                 if ($total_payable == $total_payment) {
                     Job::where([
-                        "id" => $payment->job_id
+                        "id" => $updatableData["job_id"]
                     ])
                         ->update([
                             "payment_status" => "complete"
                         ]);
                 }
-
-
-
-
-
-
 
                 return response($job, 201);
             });

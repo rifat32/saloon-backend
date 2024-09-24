@@ -34,7 +34,7 @@ class User extends Authenticatable
         'email',
         'password',
         "created_by",
-         'is_active'
+        'is_active'
     ];
 
     /**
@@ -46,7 +46,6 @@ class User extends Authenticatable
         'password',
         'remember_token',
         "site_redirect_token",
-
         "email_verify_token",
         "email_verify_token_expires",
         "resetPasswordToken",

@@ -507,7 +507,50 @@ class UserManagementController extends Controller
         return $this->sendError($e,500,$request);
         }
 
+
     }
+
+
+
+     public function getCustomerUserByPhoneV2(Request $request) {
+        try{
+            $this->storeActivity($request,"");
+
+            $user = User::where([
+                "phone" => $request->phone
+            ])
+            ->whereHas('roles', function ($query) {
+             return $query->where('name','=', 'customer');
+                })
+            ->first();
+
+            if(!$user) {
+                return response()->json([
+                    "message" => "no user found"
+                ],404);
+            }
+            $booking = Booking::with("automobile_make","automobile_model")->where([
+              "customer_id" => $user->id
+            ])
+            ->select(
+            "automobile_make_id",
+            "automobile_model_id",
+            "car_registration_no",
+            "car_registration_year",
+            "fuel",
+            "transmission",)
+            ->first();
+            $user->booking = $booking;
+
+            return response()->json([$user], 200);
+        } catch(Exception $e){
+
+        return $this->sendError($e,500,$request);
+        }
+
+    }
+
+
  /**
         *
      * @OA\Put(

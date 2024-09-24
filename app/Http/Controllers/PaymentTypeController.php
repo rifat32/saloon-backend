@@ -270,13 +270,12 @@ class PaymentTypeController extends Controller
     {
         try {
             $this->storeActivity($request,"");
+            // CHECK PERMISSION
             if (!$request->user()->hasPermissionTo('payment_type_view')) {
                 return response()->json([
                     "message" => "You can not perform this action"
                 ], 401);
             }
-
-
 
             $paymentTypeQuery = new PaymentType();
 

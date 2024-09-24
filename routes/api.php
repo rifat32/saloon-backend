@@ -165,6 +165,7 @@ Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
 
 Route::put('/v1.0/customer-users', [UserManagementController::class, "createOrUpdateCustomerUser"]);
 Route::get('/v1.0/customer-users/get-by-phone/{phone}', [UserManagementController::class, "getCustomerUserByPhone"]);
+Route::post('/v2.0/customer-users/get-by-phone', [UserManagementController::class, "getCustomerUserByPhoneV2"]);
 
 
 
@@ -391,23 +392,10 @@ Route::delete('/v1.0/fuel-station-services/{id}', [FuelStationServiceController:
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/fuel-station', [FuelStationController::class, "createFuelStation"]);
 Route::put('/v1.0/fuel-station', [FuelStationController::class, "updateFuelStation"]);
-
-
-
-
-
-
+Route::post('/v1.0/fuel-station-image-multiple', [FuelStationController::class, "createFuelStationImageMultiple"]);
 Route::put('/v1.0/fuel-station/toggle-active', [FuelStationController::class, "toggleActiveFuelStation"]);
-
-
-
-
-
-
-
-
-
 Route::get('/v1.0/fuel-station/{perPage}', [FuelStationController::class, "getFuelStations"]);
+Route::get('/v2.0/fuel-station/single/{id}', [FuelStationController::class, "getFuelStationByIdV2"]);
 Route::delete('/v1.0/fuel-station/{id}', [FuelStationController::class, "deleteFuelStationById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // fuel station management section
@@ -607,6 +595,7 @@ Route::delete('/v1.0/shop-galleries/{shop_id}/{id}', [ShopGalleryController::cla
 // fuel station gallery management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::post('/v1.0/fuel-stations-galleries/{fuel_station_id}', [FuelStationGalleryController::class, "createFuelStationGallery"]);
+Route::post('/v1.0/fuel-stations-galleries-by-url/{garage_id}', [FuelStationGalleryController::class, "createFuelStationGalleryByUrl"]);
 Route::get('/v1.0/fuel-stations-galleries/{fuel_station_id}', [FuelStationGalleryController::class, "getFuelStationGalleries"]);
 Route::delete('/v1.0/fuel-stations-galleries/{fuel_station_id}/{id}', [FuelStationGalleryController::class, "deleteFuelStationGalleryById"]);
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -698,7 +687,7 @@ Route::get('/v1.0/jobs/single/{garage_id}/{id}', [JobController::class, "getJobB
 Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobById"]);
 
 
-Route::post('/v1.0/jobs/payment', [JobController::class, "addPayment"]);
+Route::patch('/v1.0/jobs/payment', [JobController::class, "addPayment"]);
 Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "deletePaymentById"]);
 Route::get('/v1.0/jobs/payments/{garage_id}', [JobController::class, "getJobPayments"]);
 
@@ -1173,5 +1162,3 @@ Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::cla
 
 
 });
-
-

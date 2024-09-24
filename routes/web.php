@@ -18,37 +18,20 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
 });
-
 Route::get('/error-log', [SetUpController::class, "getErrorLogs"])->name("error-log");
-
 Route::get('/activity-log', [SetUpController::class, "getActivityLogs"])->name("activity-log");
-
-
 Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
 Route::get('/setup2', [SetUpController::class, "setUp2"])->name("setup2");
-
 Route::get('/backup', [SetUpController::class, "backup"])->name("backup");
 Route::get('/backup/fuel-station-services', [SetUpController::class, "backupFuelStationService"])->name("backupFuelStationSubService");
-
 Route::get('/roleRefresh', [SetUpController::class, "roleRefresh"])->name("roleRefresh");
-
 Route::get('/swagger-refresh', [SetUpController::class, "swaggerRefresh"]);
-
-
 Route::get('/automobile-refresh', [SetUpController::class, "automobileRefresh"]);
-
 Route::get("/swagger-login",[SwaggerLoginController::class,"login"])->name("login.view");
 Route::post("/swagger-login",[SwaggerLoginController::class,"passUser"]);
-
-
-
-
-
-
 Route::get("/activate/{token}",function(Request $request,$token) {
     $user = User::where([
         "email_verify_token" => $token,
@@ -93,7 +76,6 @@ Route::get("/activate/{token}",function(Request $request,$token) {
 
     return view("dynamic-welcome-message",["html_content" => $html_final]);
 });
-
 Route::get("/test",function() {
     $html_content = EmailTemplate::where([
         "type" => "email_verification_mail",
@@ -102,5 +84,3 @@ Route::get("/test",function() {
     ])->first()->template;
     return view('email.dynamic_mail',["contactEmail"=>"rest@gmail.com","user"=>[],"html_content"=>$html_content]);
 });
-
-
