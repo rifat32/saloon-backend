@@ -115,6 +115,7 @@ Route::get('/v1.0/available-cities/for-shop/{country_code}', [ShopsController::c
 
 
 Route::post('/v1.0/user-image', [UserManagementController::class, "createUserImage"]);
+Route::post('/v2.0/user-image', [UserManagementController::class, "createUserImageV2"]);
 
 Route::post('/v1.0/garage-image', [GaragesController::class, "createGarageImage"]);
 Route::post('/v2.0/garage-image', [GaragesController::class, "createGarageImageV2"]);

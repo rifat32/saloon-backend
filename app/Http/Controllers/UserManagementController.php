@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\GuestUserRegisterRequest;
 use App\Http\Requests\ImageUploadRequest;
+use App\Http\Requests\ImageUploadRequestInBase64;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\GetIdRequest;
 use App\Http\Requests\UserUpdateProfileRequest;
@@ -118,6 +119,50 @@ class UserManagementController extends Controller
         return $this->sendError($e,500,$request);
         }
     }
+    public function createUserImageV2(ImageUploadRequestInBase64 $request)
+{
+    try {
+        $this->storeActivity($request,"");
+
+        // Decode the base64 image
+        $base64Image = $request->validated()['image'];
+
+        // Extract base64 string by removing metadata (if present)
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // Get the image extension (e.g., jpg, png, gif)
+        } else {
+            throw new \Exception('Invalid image format');
+        }
+
+        // Decode base64 to binary
+        $base64Image = base64_decode($base64Image);
+        if ($base64Image === false) {
+            throw new \Exception('Base64 decode failed');
+        }
+
+        // Generate new file name
+        $new_file_name = time() . '_' . uniqid() . '.' . $type;
+
+        // Define the location to save the image
+        $location = config("setup-config.user_image_location");
+
+        // Save the image to the public path
+        $file_path = public_path($location) . '/' . $new_file_name;
+        file_put_contents($file_path, $base64Image);
+
+        return response()->json([
+            "image" => $new_file_name,
+            "location" => $location,
+            "full_location" => "/" . $location . "/" . $new_file_name
+        ], 200);
+
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return $this->sendError($e, 500, $request);
+    }
+}
+
 
 
 
