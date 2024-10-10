@@ -90,7 +90,7 @@ class ServicePriceController extends Controller
         try {
             $this->storeActivity($request, "DUMMY activity", "DUMMY description");
             return DB::transaction(function () use ($request) {
-                if (!auth()->user()->hasPermissionTo('service_price_create')) {
+                if (!auth()->user()->hasPermissionTo('garage_service_price_create')) {
                     return response()->json([
                         "message" => "You can not perform this action"
                     ], 401);

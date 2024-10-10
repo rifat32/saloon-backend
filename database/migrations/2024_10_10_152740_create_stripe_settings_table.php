@@ -23,14 +23,7 @@ class CreateStripeSettingsTable extends Migration
             ->onDelete('cascade');
             $table->timestamps();
         });
-        DB::table('system_settings')
-        ->insert(array(
-           [
-            "self_registration_enabled" => 0,
-            "STRIPE_KEY" => NULL,
-            "STRIPE_SECRET" => NULL,
-           ],
-        ));
+
 
     }
 

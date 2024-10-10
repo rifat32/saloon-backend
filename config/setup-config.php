@@ -261,12 +261,7 @@ return [
             "permissions" => [
 
 
-                "service_price_create",
-                "service_price_update",
-                "service_price_activate",
 
-                "service_price_view",
-                "service_price_delete",
 
                 "questions_create",
                 "questions_update",
@@ -347,11 +342,7 @@ return [
                 "product_category_view",
 
 
-                "service_price_create",
-                "service_price_update",
-                "service_price_activate",
-                "service_price_view",
-                "service_price_delete",
+               
 
 
 

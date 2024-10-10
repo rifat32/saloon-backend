@@ -267,7 +267,6 @@ return "swagger generated ...............";
                         "business_experts",
                     ]) ? 1 : 0)
 
-
                 ]);
             }
         }
