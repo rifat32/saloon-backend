@@ -146,6 +146,12 @@ return "swagger generated ...............";
 
         return "You are done with setup";
     }
+
+    public function migrate(Request $request) {
+ 
+        Artisan::call('check:migrate');
+        return "migrated";
+            }
     public function setUp2(Request $request)
     {
         // @@@@@@@@@@@@@@@@@@@

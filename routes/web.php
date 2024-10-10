@@ -24,6 +24,10 @@ Route::get('/', function () {
 Route::get('/error-log', [SetUpController::class, "getErrorLogs"])->name("error-log");
 Route::get('/activity-log', [SetUpController::class, "getActivityLogs"])->name("activity-log");
 Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
+Route::get('/migrate', [SetUpController::class, "migrate"]);
+
+
+
 Route::get('/setup2', [SetUpController::class, "setUp2"])->name("setup2");
 Route::get('/backup', [SetUpController::class, "backup"])->name("backup");
 Route::get('/backup/fuel-station-services', [SetUpController::class, "backupFuelStationService"])->name("backupFuelStationSubService");
