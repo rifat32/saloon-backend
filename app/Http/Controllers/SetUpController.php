@@ -61,6 +61,10 @@ return "swagger generated ...............";
         // @@@@@@@@@@@@@@@@@@@
         Artisan::call('optimize:clear');
         Artisan::call('migrate:fresh');
+        Artisan::call('migrate:fresh', [
+            '--path' => 'database/activity_migrations',
+            '--database' => 'logs'
+        ]);
         Artisan::call('migrate', ['--path' => 'vendor/laravel/passport/database/migrations']);
         Artisan::call('passport:install');
         Artisan::call('db:seed --class AutomobileCarSeeder');
