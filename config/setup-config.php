@@ -7,104 +7,104 @@ return [
             "permissions" => [
                 "global_garage_background_image_create",
                 "global_garage_background_image_view",
-       "user_create",
-       "user_update",
-       "user_view",
-       "user_delete",
+                "user_create",
+                "user_update",
+                "user_view",
+                "user_delete",
 
-       "role_create",
-       "role_update",
-       "role_view",
-       "role_delete",
+                "role_create",
+                "role_update",
+                "role_view",
+                "role_delete",
 
-       "garage_create",
-       "garage_update",
-       "garage_view",
-       "garage_delete",
+                "garage_create",
+                "garage_update",
+                "garage_view",
+                "garage_delete",
 
-       "shop_create",
-       "shop_update",
-       "shop_view",
-       "shop_delete",
+                "shop_create",
+                "shop_update",
+                "shop_view",
+                "shop_delete",
 
-       "automobile_create",
-       "automobile_update",
-       "automobile_view",
-       "automobile_delete",
+                "automobile_create",
+                "automobile_update",
+                "automobile_view",
+                "automobile_delete",
 
-       "service_create",
-       "service_update",
-       "service_view",
-       "service_delete",
+                "service_create",
+                "service_update",
+                "service_view",
+                "service_delete",
 
-       "fuel_station_create",
-       "fuel_station_update",
-       "fuel_station_view",
-       "fuel_station_delete",
+                "fuel_station_create",
+                "fuel_station_update",
+                "fuel_station_view",
+                "fuel_station_delete",
 
-       "fuel_station_service_create",
-       "fuel_station_service_update",
-       "fuel_station_service_view",
-       "fuel_station_service_delete",
+                "fuel_station_service_create",
+                "fuel_station_service_update",
+                "fuel_station_service_view",
+                "fuel_station_service_delete",
 
-       "template_create",
-       "template_update",
-       "template_view",
-       "template_delete",
-
-
-       "payment_type_create",
-       "payment_type_update",
-       "payment_type_view",
-       "payment_type_delete",
+                "template_create",
+                "template_update",
+                "template_view",
+                "template_delete",
 
 
-
-       "affiliation_create",
-       "affiliation_update",
-       "affiliation_view",
-       "affiliation_delete",
-
-       "questions_create",
-       "questions_update",
-       "questions_view",
-       "questions_delete",
-
-       "review_create",
-       "review_update",
-       "review_view",
-       "review_delete",
+                "payment_type_create",
+                "payment_type_update",
+                "payment_type_view",
+                "payment_type_delete",
 
 
-// this permission may remove later
-       "garage_affiliation_create",
-       "garage_affiliation_update",
-       "garage_affiliation_view",
-       "garage_affiliation_delete",
-// end this permission may remove later
 
-"garage_gallery_create",
-"garage_gallery_view",
-"garage_gallery_delete",
+                "affiliation_create",
+                "affiliation_update",
+                "affiliation_view",
+                "affiliation_delete",
 
-"shop_gallery_create",
-       "shop_gallery_view",
-       "shop_gallery_delete",
+                "questions_create",
+                "questions_update",
+                "questions_view",
+                "questions_delete",
 
-"fuel_station_gallery_create",
-"fuel_station_gallery_view",
-"fuel_station_gallery_delete",
+                "review_create",
+                "review_update",
+                "review_view",
+                "review_delete",
 
 
-"product_category_create",
-"product_category_update",
-"product_category_view",
-"product_category_delete",
+                // this permission may remove later
+                "garage_affiliation_create",
+                "garage_affiliation_update",
+                "garage_affiliation_view",
+                "garage_affiliation_delete",
+                // end this permission may remove later
 
-"product_create",
-"product_update",
-"product_view",
-"product_delete",
+                "garage_gallery_create",
+                "garage_gallery_view",
+                "garage_gallery_delete",
+
+                "shop_gallery_create",
+                "shop_gallery_view",
+                "shop_gallery_delete",
+
+                "fuel_station_gallery_create",
+                "fuel_station_gallery_view",
+                "fuel_station_gallery_delete",
+
+
+                "product_category_create",
+                "product_category_update",
+                "product_category_view",
+                "product_category_delete",
+
+                "product_create",
+                "product_update",
+                "product_view",
+                "product_delete",
 
             ],
         ],
@@ -144,17 +144,17 @@ return [
                 "garage_affiliation_view",
                 "garage_affiliation_delete",
 
-"garage_gallery_create",
-"garage_gallery_view",
-"garage_gallery_delete",
+                "garage_gallery_create",
+                "garage_gallery_view",
+                "garage_gallery_delete",
 
-"shop_gallery_create",
-       "shop_gallery_view",
-       "shop_gallery_delete",
+                "shop_gallery_create",
+                "shop_gallery_view",
+                "shop_gallery_delete",
 
-"fuel_station_gallery_create",
-"fuel_station_gallery_view",
-"fuel_station_gallery_delete",
+                "fuel_station_gallery_create",
+                "fuel_station_gallery_view",
+                "fuel_station_gallery_delete",
 
             ],
         ],
@@ -171,77 +171,166 @@ return [
                 "garage_view",
 
 
-       "garage_times_update",
-       "garage_times_view",
+                "garage_times_update",
+                "garage_times_view",
 
-       "garage_rules_update",
-       "garage_rules_view",
+                "garage_rules_update",
+                "garage_rules_view",
 
-       "garage_gallery_create",
-       "garage_gallery_view",
-       "garage_gallery_delete",
+                "garage_gallery_create",
+                "garage_gallery_view",
+                "garage_gallery_delete",
 
-       "garage_services_create",
-       "garage_services_update",
-       "garage_services_view",
-       "garage_services_delete",
+                "garage_services_create",
+                "garage_services_update",
+                "garage_services_view",
+                "garage_services_delete",
 
-       "garage_automobile_create",
-       "garage_automobile_update",
-       "garage_automobile_view",
-       "garage_automobile_delete",
-
-
-       "booking_create",
-       "booking_update",
-       "booking_view",
-       "booking_delete",
-
-       "job_create",
-       "job_update",
-       "job_view",
-       "job_delete",
+                "garage_automobile_create",
+                "garage_automobile_update",
+                "garage_automobile_view",
+                "garage_automobile_delete",
 
 
-       "coupon_create",
-       "coupon_update",
-       "coupon_view",
-       "coupon_delete",
+                "booking_create",
+                "booking_update",
+                "booking_view",
+                "booking_delete",
+
+                "job_create",
+                "job_update",
+                "job_view",
+                "job_delete",
 
 
-       "affiliation_create",
-       "affiliation_update",
-       "affiliation_view",
-       "affiliation_delete",
+                "coupon_create",
+                "coupon_update",
+                "coupon_view",
+                "coupon_delete",
 
 
-       "garage_affiliation_create",
-       "garage_affiliation_update",
-       "garage_affiliation_view",
-       "garage_affiliation_delete",
+                "affiliation_create",
+                "affiliation_update",
+                "affiliation_view",
+                "affiliation_delete",
+
+
+                "garage_affiliation_create",
+                "garage_affiliation_update",
+                "garage_affiliation_view",
+                "garage_affiliation_delete",
 
 
 
-       "garage_service_price_create",
-       "garage_service_price_update",
-       "garage_service_price_view",
-       "garage_service_price_delete",
+                "garage_service_price_create",
+                "garage_service_price_update",
+                "garage_service_price_view",
+                "garage_service_price_delete",
 
 
-       "garage_package_create",
-       "garage_package_update",
-       "garage_package_view",
-       "garage_package_delete",
+                "garage_package_create",
+                "garage_package_update",
+                "garage_package_view",
+                "garage_package_delete",
 
-       "job_bids_create",
-       "job_bids_update",
-       "job_bids_view",
-       "job_bids_delete",
+                "job_bids_create",
+                "job_bids_update",
+                "job_bids_view",
+                "job_bids_delete",
 
-       "product_category_view",
+                "product_category_view",
 
 
-       "global_garage_background_image_view",
+                "global_garage_background_image_view",
+
+
+
+            ],
+        ],
+        [
+            "role" => "business_experts",
+            "permissions" => [
+
+                "questions_create",
+                "questions_update",
+                "questions_view",
+                "questions_delete",
+
+                "garage_update",
+                "garage_view",
+
+
+                "garage_times_update",
+                "garage_times_view",
+
+                "garage_rules_update",
+                "garage_rules_view",
+
+                "garage_gallery_create",
+                "garage_gallery_view",
+                "garage_gallery_delete",
+
+                "garage_services_create",
+                "garage_services_update",
+                "garage_services_view",
+                "garage_services_delete",
+
+                "garage_automobile_create",
+                "garage_automobile_update",
+                "garage_automobile_view",
+                "garage_automobile_delete",
+
+
+                "booking_create",
+                "booking_update",
+                "booking_view",
+                "booking_delete",
+
+                "job_create",
+                "job_update",
+                "job_view",
+                "job_delete",
+
+
+                "coupon_create",
+                "coupon_update",
+                "coupon_view",
+                "coupon_delete",
+
+
+                "affiliation_create",
+                "affiliation_update",
+                "affiliation_view",
+                "affiliation_delete",
+
+
+                "garage_affiliation_create",
+                "garage_affiliation_update",
+                "garage_affiliation_view",
+                "garage_affiliation_delete",
+
+
+
+                "garage_service_price_create",
+                "garage_service_price_update",
+                "garage_service_price_view",
+                "garage_service_price_delete",
+
+
+                "garage_package_create",
+                "garage_package_update",
+                "garage_package_view",
+                "garage_package_delete",
+
+                "job_bids_create",
+                "job_bids_update",
+                "job_bids_view",
+                "job_bids_delete",
+
+                "product_category_view",
+
+
+
 
 
 
@@ -260,8 +349,8 @@ return [
                 "product_delete",
 
                 "shop_gallery_create",
-       "shop_gallery_view",
-       "shop_gallery_delete",
+                "shop_gallery_view",
+                "shop_gallery_delete",
             ],
         ],
         [
@@ -289,6 +378,7 @@ return [
         "garage_owner",
         "shop_owner",
         "customer",
+        "business_experts"
 
     ],
     "permissions" => [
@@ -296,165 +386,165 @@ return [
         "global_garage_background_image_view",
 
 
-       "user_create",
-       "user_update",
-       "user_view",
-       "user_delete",
+        "user_create",
+        "user_update",
+        "user_view",
+        "user_delete",
 
 
-       "role_create",
-       "role_update",
-       "role_view",
-       "role_delete",
+        "role_create",
+        "role_update",
+        "role_view",
+        "role_delete",
 
-       "garage_create",
-       "garage_update",
-       "garage_view",
-       "garage_delete",
+        "garage_create",
+        "garage_update",
+        "garage_view",
+        "garage_delete",
 
-       "shop_create",
-       "shop_update",
-       "shop_view",
-       "shop_delete",
+        "shop_create",
+        "shop_update",
+        "shop_view",
+        "shop_delete",
 
-       "automobile_create",
-       "automobile_update",
-       "automobile_view",
-       "automobile_delete",
-
-
-       "service_create",
-       "service_update",
-       "service_view",
-       "service_delete",
-
-       "fuel_station_create",
-       "fuel_station_update",
-       "fuel_station_view",
-       "fuel_station_delete",
-
-       "fuel_station_service_create",
-       "fuel_station_service_update",
-       "fuel_station_service_view",
-       "fuel_station_service_delete",
+        "automobile_create",
+        "automobile_update",
+        "automobile_view",
+        "automobile_delete",
 
 
-       "template_create",
-       "template_update",
-       "template_view",
-       "template_delete",
+        "service_create",
+        "service_update",
+        "service_view",
+        "service_delete",
+
+        "fuel_station_create",
+        "fuel_station_update",
+        "fuel_station_view",
+        "fuel_station_delete",
+
+        "fuel_station_service_create",
+        "fuel_station_service_update",
+        "fuel_station_service_view",
+        "fuel_station_service_delete",
 
 
-
-       "garage_times_update",
-       "garage_times_view",
-
-       "garage_rules_update",
-       "garage_rules_view",
-
-
-       "garage_gallery_create",
-       "garage_gallery_view",
-       "garage_gallery_delete",
-
-       "shop_gallery_create",
-       "shop_gallery_view",
-       "shop_gallery_delete",
-
-"fuel_station_gallery_create",
-"fuel_station_gallery_view",
-"fuel_station_gallery_delete",
-
-       "garage_services_create",
-       "garage_services_update",
-       "garage_services_view",
-       "garage_services_delete",
+        "template_create",
+        "template_update",
+        "template_view",
+        "template_delete",
 
 
 
+        "garage_times_update",
+        "garage_times_view",
+
+        "garage_rules_update",
+        "garage_rules_view",
 
 
-       "payment_type_create",
-       "payment_type_update",
-       "payment_type_view",
-       "payment_type_delete",
+        "garage_gallery_create",
+        "garage_gallery_view",
+        "garage_gallery_delete",
+
+        "shop_gallery_create",
+        "shop_gallery_view",
+        "shop_gallery_delete",
+
+        "fuel_station_gallery_create",
+        "fuel_station_gallery_view",
+        "fuel_station_gallery_delete",
+
+        "garage_services_create",
+        "garage_services_update",
+        "garage_services_view",
+        "garage_services_delete",
+
+
+
+
+
+        "payment_type_create",
+        "payment_type_update",
+        "payment_type_view",
+        "payment_type_delete",
 
 
 
         "booking_create",
-       "booking_update",
-       "booking_view",
-       "booking_delete",
+        "booking_update",
+        "booking_view",
+        "booking_delete",
 
 
 
-       "job_create",
-       "job_update",
-       "job_view",
-       "job_delete",
+        "job_create",
+        "job_update",
+        "job_view",
+        "job_delete",
 
 
 
-       "coupon_create",
-       "coupon_update",
-       "coupon_view",
-       "coupon_delete",
+        "coupon_create",
+        "coupon_update",
+        "coupon_view",
+        "coupon_delete",
 
 
-       "affiliation_create",
-       "affiliation_update",
-       "affiliation_view",
-       "affiliation_delete",
+        "affiliation_create",
+        "affiliation_update",
+        "affiliation_view",
+        "affiliation_delete",
 
-       "garage_affiliation_create",
-       "garage_affiliation_update",
-       "garage_affiliation_view",
-       "garage_affiliation_delete",
-
-
-
-       "garage_service_price_create",
-       "garage_service_price_update",
-       "garage_service_price_view",
-       "garage_service_price_delete",
-
-       "garage_package_create",
-       "garage_package_update",
-       "garage_package_view",
-       "garage_package_delete",
-
-
-       "job_bids_create",
-       "job_bids_update",
-       "job_bids_view",
-       "job_bids_delete",
-
-       "questions_create",
-       "questions_update",
-       "questions_view",
-       "questions_delete",
-
-       "review_create",
-       "review_update",
-       "review_view",
-       "review_delete",
-
-       "garage_automobile_create",
-       "garage_automobile_update",
-       "garage_automobile_view",
-       "garage_automobile_delete",
+        "garage_affiliation_create",
+        "garage_affiliation_update",
+        "garage_affiliation_view",
+        "garage_affiliation_delete",
 
 
 
-       "product_category_create",
-       "product_category_update",
-       "product_category_view",
-       "product_category_delete",
+        "garage_service_price_create",
+        "garage_service_price_update",
+        "garage_service_price_view",
+        "garage_service_price_delete",
 
-       "product_create",
-       "product_update",
-       "product_view",
-       "product_delete",
+        "garage_package_create",
+        "garage_package_update",
+        "garage_package_view",
+        "garage_package_delete",
+
+
+        "job_bids_create",
+        "job_bids_update",
+        "job_bids_view",
+        "job_bids_delete",
+
+        "questions_create",
+        "questions_update",
+        "questions_view",
+        "questions_delete",
+
+        "review_create",
+        "review_update",
+        "review_view",
+        "review_delete",
+
+        "garage_automobile_create",
+        "garage_automobile_update",
+        "garage_automobile_view",
+        "garage_automobile_delete",
+
+
+
+        "product_category_create",
+        "product_category_update",
+        "product_category_view",
+        "product_category_delete",
+
+        "product_create",
+        "product_update",
+        "product_view",
+        "product_delete",
 
     ],
     "unchangeable_roles" => [
