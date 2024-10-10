@@ -48,6 +48,8 @@ class CreateUsersTable extends Migration
 
             $table->string("background_image")->nullable();
 
+            
+
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

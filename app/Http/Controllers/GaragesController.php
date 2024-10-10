@@ -660,10 +660,7 @@ if(!$user->hasRole('garage_owner')) {
     $insertableData['user']['long'] = $insertableData['garage']['long'];
 
     $user =  User::create($insertableData['user']);
-    $user->email_verified_at = now();
-    $user->save();
 
-    $user->assignRole('garage_owner');
    // end user info ##############
 
 
@@ -715,6 +712,12 @@ if(!$user->hasRole('garage_owner')) {
         throw new Exception(json_encode($error),422);
 
      }
+
+     $user->email_verified_at = now();
+     $user->business_id = $garage->id;
+     $user->save();
+
+     $user->assignRole('garage_owner');
 
      $this->storeQuestion($garage->id);
 

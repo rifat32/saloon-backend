@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleRequest;
 use App\Http\Requests\RoleUpdateRequest;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
 use Exception;
@@ -12,7 +13,7 @@ use Spatie\Permission\Models\Role;
 
 class RolesController extends Controller
 {
-    use ErrorUtil,UserActivityUtil;
+    use ErrorUtil,UserActivityUtil, BasicUtil;
      /**
         *
      * @OA\Post(
@@ -273,19 +274,46 @@ class RolesController extends Controller
                 ],401);
            }
 
-            $rolesQuery =   Role::with('permissions:name,id');
+           $roles = Role::with('permissions:name,id', "users")
 
-            if(!empty($request->search_key)) {
-                $rolesQuery = $rolesQuery->where(function($query) use ($request){
-                    $term = $request->search_key;
-                    $query->where("name", "like", "%" . $term . "%");
-                });
+           ->where("is_default_for_business",0)
 
-            }
+           ->when((empty(auth()->user()->business_id)), function ($query) use ($request) {
+               return $query->where('business_id', NULL)->where('is_default', 1)
+                   ->when(!($request->user()->hasRole('superadmin')), function ($query) use ($request) {
+                       return $query->where('name', '!=', 'superadmin')
+                           ->where("id", ">", $this->getMainRoleId());
+                   });
+           })
+           ->when(!(empty(auth()->user()->business_id)), function ($query) use ($request) {
+               return $query->where('business_id', auth()->user()->business_id)
+                   ->where("id", ">", $this->getMainRoleId());
+           })
+
+           ->when(!empty($request->search_key), function ($query) use ($request) {
+               $term = $request->search_key;
+               $query->where("name", "like", "%" . $term . "%");
+           })
+           ->when(!empty($request->start_date), function ($query) use ($request) {
+               return $query->where('created_at', ">=", $request->start_date);
+           })
+           ->when(!empty($request->end_date), function ($query) use ($request) {
+               return $query->where('created_at', "<=", ($request->end_date . ' 23:59:59'));
+           })
+           ->when(!empty($request->order_by) && in_array(strtoupper($request->order_by), ['ASC', 'DESC']), function ($query) use ($request) {
+               return $query->orderBy("id", $request->order_by);
+           }, function ($query) {
+               return $query->orderBy("id", "DESC");
+           })
+           ->when(!empty($request->per_page), function ($query) use ($request) {
+               return $query->paginate($request->per_page);
+           }, function ($query) {
+               return $query->get();
+           });
+       return response()->json($roles, 200);
 
 
 
-            $roles = $rolesQuery->orderByDesc("id")->paginate($perPage);
             return response()->json($roles, 200);
         } catch(Exception $e){
 

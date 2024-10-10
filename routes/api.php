@@ -38,6 +38,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ServicePriceController;
 use App\Http\Controllers\ShopGalleryController;
 use App\Http\Controllers\ShopsController;
 use App\Http\Controllers\UserManagementController;
@@ -128,6 +129,39 @@ Route::post('/v1.0/shop-image-multiple', [ShopsController::class, "createShopIma
 // Protected Routes
 // !!!!!!!@@@@@@@@@@@@$$$$$$$$$$$$%%%%%%%%%%%%%%%%^^^^^^^^^^
 Route::middleware(['auth:api'])->group(function () {
+
+
+
+
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// service prices management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/service-prices', [ServicePriceController::class, "createServicePrice"]);
+Route::put('/v1.0/service-prices', [ServicePriceController::class, "updateServicePrice"]);
+
+
+
+Route::put('/v1.0/service-prices/toggle-active', [ServicePriceController::class, "toggleActiveServicePrice"]);
+
+Route::get('/v1.0/service-prices', [ServicePriceController::class, "getServicePrices"]);
+Route::delete('/v1.0/service-prices/{ids}', [ServicePriceController::class, "deleteServicePricesByIds"]);
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end service prices management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
     Route::get('/v1.0/user', [AuthController::class, "getUser"]);
     Route::patch('/auth/changepassword', [AuthController::class, "changePassword"]);
 

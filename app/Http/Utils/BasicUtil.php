@@ -10,6 +10,27 @@ use Illuminate\Support\Facades\Http;
 
 trait BasicUtil
 {
+
+    public function getMainRoleId($user = NULL)
+    {
+        // Retrieve the authenticated user
+        if (empty($user)) {
+            $user = auth()->user();
+        }
+
+
+        // Get all roles of the authenticated user
+        $roles = $user->roles;
+
+        // Extract the role IDs
+        $roleIds = $roles->pluck('id');
+
+        // Find the minimum role ID
+        $minRoleId = $roleIds->min();
+
+        return $minRoleId;
+    }
+
     public function getCountryAndCity($latitude, $longitude)
     {
         if(empty($latitude) && empty($longitude)){

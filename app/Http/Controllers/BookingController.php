@@ -212,7 +212,7 @@ class BookingController extends Controller
                     $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $insertableData["automobile_make_id"]);
 
 
-                    // $total_price += $price;
+                     $total_price += $price;
 
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
@@ -510,7 +510,7 @@ class BookingController extends Controller
                     $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
-                    // $total_price += $price;
+                     $total_price += $price;
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "price" => $price

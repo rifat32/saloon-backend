@@ -165,7 +165,9 @@ class GarageServicePriceController extends Controller
 GarageSubServicePrice::create([
     "garage_sub_service_id" => $garage_sub_service->id,
     "automobile_make_id" => (!empty($garage_make)?$garage_make->automobile_make_id:NULL),
-    "price" => $price_details["price"]
+    "price" => $price_details["price"],
+    "business_id" => $insertableData["garage_id"],
+    "expert_id" => $insertableData["expert_id"]
 ]);
 
 
@@ -254,6 +256,7 @@ GarageSubServicePrice::create([
 
     public function updateGarageSubServicePrice(GarageSubServicePriceUpdateRequest $request)
     {
+
         try {
             $this->storeActivity($request,"");
             return  DB::transaction(function () use ($request) {
@@ -322,29 +325,20 @@ GarageSubServicePrice::create([
                                     }
                                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
         $updatableCustomisedData = [
             "garage_sub_service_id" => $garage_sub_service->id,
             "automobile_make_id" => (!empty($garage_make)?$garage_make->automobile_make_id:NULL),
-            "price" => $price_details["price"]
+            "price" => $price_details["price"],
+            "business_id" => $updatableData["garage_id"],
+            "expert_id" => $updatableData["expert_id"]
         ];
         if(!empty($price_details["id"])){
             $garage_sub_service_price  =  tap(GarageSubServicePrice::where(["id" => $price_details["id"]]))->update(
                 collect($updatableCustomisedData)->only([
                 "garage_sub_service_id",
                 "automobile_make_id",
-                "price"
+                "price",
+                "expert_id"
                 ])->toArray()
             )
                 // ->with("somthing")
@@ -362,9 +356,7 @@ GarageSubServicePrice::create([
                 }
         }
         else {
-
             $garage_sub_service_price  =  GarageSubServicePrice::create($updatableCustomisedData);
-
         }
 
 

@@ -251,6 +251,8 @@ class UserManagementController extends Controller
 
             $insertableData['password'] = Hash::make($request['password']);
             $insertableData['is_active'] = true;
+            $insertableData['business_id'] = auth()->user()->business_id;
+
             $insertableData['remember_token'] = Str::random(10);
             $user =  User::create($insertableData);
 
@@ -676,7 +678,11 @@ class UserManagementController extends Controller
                 ],401);
            }
 
-           $userQuery = User::where([
+           $userQuery = User::
+           when(!empty(auth()->user()->business_id), function($query) {
+            $query->where("business_id", auth()->user()->business_id);
+            })
+           ->where([
             "id" => $request["id"]
        ]);
 
@@ -804,7 +810,10 @@ class UserManagementController extends Controller
             }
             $updatableData = $request->validated();
 
-            $userQuery  = User::where(["id" => $updatableData["id"]]);
+            $userQuery  = User::where(["id" => $updatableData["id"]])
+            ->when(!empty(auth()->user()->business_id), function($query) {
+                $query->where("business_id", auth()->user()->business_id);
+                });
             if(!auth()->user()->hasRole('superadmin')) {
                 $userQuery = $userQuery->where(function ($query) {
                     $query->where('created_by', auth()->user()->id);
@@ -1050,7 +1059,11 @@ class UserManagementController extends Controller
                 ],401);
            }
 
-            $usersQuery = User::with("roles");
+            $usersQuery = User::with("roles")
+            ->when(!empty(auth()->user()->business_id), function($query) {
+            $query->where("business_id", auth()->user()->business_id);
+            });
+
             // ->whereHas('roles', function ($query) {
             //     // return $query->where('name','!=', 'customer');
             // });
@@ -1151,6 +1164,9 @@ class UserManagementController extends Controller
            }
 
             $user = User::with("roles")
+            ->when(!empty(auth()->user()->business_id), function($query) {
+                $query->where("business_id", auth()->user()->business_id);
+                })
             ->where([
                 "id" => $id
             ])
@@ -1239,7 +1255,12 @@ class UserManagementController extends Controller
            }
            $user = User::where([
             "id" => $id
-       ])->when(!$request->user()->hasRole('superadmin'), function ($query) use ($request) {
+       ])
+        ->when(!empty(auth()->user()->business_id), function($query) {
+            $query->where("business_id", auth()->user()->business_id);
+            })
+
+       ->when(!$request->user()->hasRole('superadmin'), function ($query) use ($request) {
         $query->where('created_by', $request->user()->id);
     })
     ->first();

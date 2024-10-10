@@ -830,6 +830,7 @@ $datediff = $now - $user_created_date;
     $insertableData['user']['lat'] = $insertableData['garage']['lat'];
     $insertableData['user']['long'] = $insertableData['garage']['long'];
 
+
                 $user =  User::create($insertableData['user']);
                 $user->assignRole('garage_owner');
                 // end user info ##############
@@ -885,6 +886,9 @@ $datediff = $now - $user_created_date;
 
                // verify email starts
                $email_token = Str::random(30);
+
+               $user->business_id = $garage->id;
+
                $user->email_verify_token = $email_token;
                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
                $user->save();

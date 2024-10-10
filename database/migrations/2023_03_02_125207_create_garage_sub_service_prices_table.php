@@ -15,6 +15,7 @@ class CreateGarageSubServicePricesTable extends Migration
     {
         Schema::create('garage_sub_service_prices', function (Blueprint $table) {
             $table->id();
+
             $table->unsignedBigInteger("garage_sub_service_id");
             $table->foreign('garage_sub_service_id')->references('id')->on('garage_sub_services')->onDelete('cascade');
 

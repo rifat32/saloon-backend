@@ -31,6 +31,12 @@ class GarageSubServicePriceUpdateRequest extends FormRequest
             "garage_sub_service_prices.*.id" => "nullable|numeric",
             "garage_sub_service_prices.*.automobile_make_id" => "nullable|numeric",
             "garage_sub_service_prices.*.price" => "required|numeric",
+            'expert_id' => [
+                'required',
+                'numeric',
+                         'exists:users,id'
+
+            ],
 
              ];
     }

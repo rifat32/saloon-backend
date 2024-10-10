@@ -139,6 +139,8 @@ return [
                 "affiliation_delete",
 
 
+
+
                 "garage_affiliation_create",
                 "garage_affiliation_update",
                 "garage_affiliation_view",
@@ -155,6 +157,10 @@ return [
                 "fuel_station_gallery_create",
                 "fuel_station_gallery_view",
                 "fuel_station_gallery_delete",
+
+
+
+
 
             ],
         ],
@@ -251,6 +257,14 @@ return [
             "role" => "business_experts",
             "permissions" => [
 
+
+                "service_price_create",
+                "service_price_update",
+                "service_price_activate",
+
+                "service_price_view",
+                "service_price_delete",
+
                 "questions_create",
                 "questions_update",
                 "questions_view",
@@ -330,7 +344,11 @@ return [
                 "product_category_view",
 
 
-
+                "service_price_create",
+                "service_price_update",
+                "service_price_activate",
+                "service_price_view",
+                "service_price_delete",
 
 
 
