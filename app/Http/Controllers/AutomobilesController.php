@@ -44,7 +44,7 @@ class AutomobilesController extends Controller
      *         @OA\JsonContent(
      *            required={"name"},
      *             @OA\Property(property="name", type="string", format="string",example="car"),
-     *
+     **             @OA\Property(property="logo", type="string", format="string",example="logo"),
      *         ),
      *      ),
      *      @OA\Response(
@@ -123,6 +123,7 @@ class AutomobilesController extends Controller
      *            required={"id","name"},
      *             @OA\Property(property="id", type="number", format="number",example="1"),
      *             @OA\Property(property="name", type="string", format="string",example="car"),
+     *             @OA\Property(property="logo", type="string", format="string",example="logo")
      *
      *         ),
      *      ),
@@ -176,6 +177,7 @@ class AutomobilesController extends Controller
 
                 $automobile  =  tap(AutomobileCategory::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
                     'name',
+                    'logo'
                 ])->toArray()
                 )
                     // ->with("somthing")

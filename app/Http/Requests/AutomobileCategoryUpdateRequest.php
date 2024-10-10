@@ -25,7 +25,8 @@ class AutomobileCategoryUpdateRequest extends FormRequest
     {
         return [
             "id" => "required|numeric",
-            "name" => "required|string"
+            "name" => "required|string",
+            "logo" => "nullable|string",
         ];
     }
 }

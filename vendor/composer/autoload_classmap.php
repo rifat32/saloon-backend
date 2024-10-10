@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\CheckAndMigrate' => $baseDir . '/app/Console/Commands/CheckAndMigrate.php',
     'App\\Console\\Commands\\DeleteFilesScheduler' => $baseDir . '/app/Console/Commands/DeleteFilesScheduler.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
