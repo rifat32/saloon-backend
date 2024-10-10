@@ -41,6 +41,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ServicePriceController;
 use App\Http\Controllers\ShopGalleryController;
 use App\Http\Controllers\ShopsController;
+use App\Http\Controllers\StripeSettingController;
 use App\Http\Controllers\UserManagementController;
 use App\Models\GaragePackage;
 use App\Models\JobBid;
@@ -197,6 +198,20 @@ Route::delete('/v1.0/service-prices/{ids}', [ServicePriceController::class, "del
 
 
 Route::post('/v1.0/users', [UserManagementController::class, "createUser"]);
+
+
+  // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // system  management section
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    Route::put('/v1.0/stripe-settings', [StripeSettingController::class, "updateStripeSetting"]);
+    Route::get('/v1.0/stripe-settings', [StripeSettingController::class, "getStripeSetting"]);
+
+
+
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // end system management section
+    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 

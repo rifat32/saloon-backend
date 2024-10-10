@@ -249,6 +249,9 @@ return [
 
                 "global_garage_background_image_view",
 
+                "stripe_setting_update",
+                "system_setting_view",
+
 
 
             ],
@@ -400,6 +403,11 @@ return [
 
     ],
     "permissions" => [
+
+        "stripe_setting_update",
+        "system_setting_view",
+
+
         "global_garage_background_image_create",
         "global_garage_background_image_view",
 
