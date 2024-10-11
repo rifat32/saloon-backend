@@ -6,6 +6,7 @@ use App\Http\Requests\BookingToJobRequest;
 use App\Http\Requests\JobPaymentCreateRequest;
 use App\Http\Requests\JobStatusChangeRequest;
 use App\Http\Requests\JobUpdateRequest;
+use App\Http\Utils\BasicUtil;
 use App\Http\Utils\DiscountUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\GarageUtil;
@@ -32,7 +33,7 @@ use Illuminate\Support\Facades\Mail;
 
 class JobController extends Controller
 {
-    use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil;
+    use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil, BasicUtil;
 
     /**
      *
@@ -1334,15 +1335,13 @@ public function getJobPayments($garage_id,Request $request)
                 }
                 $total_payable = $job->price;
 
-                if (!empty($job->discount_type) && !empty($job->discount_amount)) {
-                    $discount_type = $job->discount_type;
-                    $discount_amount = $job->discount_amount;
-                    if ($discount_type = "fixed") {
-                        $total_payable -= $discount_amount;
-                    } else if ($discount_type = "percentage") {
-                        $total_payable -= (($total_payable / 100) * $discount_amount);
-                    }
-                }
+
+                $total_payable -= $this->canculate_discounted_price($job->price,$job->discount_type,$job->discount_amount);
+                $total_payable -= $this->canculate_discounted_price($job->price,$job->coupon_discount_type,$job->coupon_discount_amount);
+
+
+
+
 
                 $payments = collect($updatableData["payments"]);
 

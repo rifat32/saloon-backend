@@ -9,6 +9,7 @@ class JobPayment extends Model
 {
     use HasFactory;
     protected $fillable = [
+        "booking_id",
         "job_id",
         "payment_type_id",
         "amount",

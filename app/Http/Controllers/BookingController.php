@@ -29,15 +29,135 @@ use App\Models\JobBid;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
+use App\Models\StripeSetting;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
+use Stripe\WebhookEndpoint;
 
 class BookingController extends Controller
 {
     use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil, BasicUtil;
+
+
+
+
+    public function redirectUserToStripe(Request $request)
+    {
+        $id = $request->id;
+        $trimmed_id =   base64_decode($id);
+
+        // Check if the string is at least 20 characters long to ensure it has enough characters to remove
+        if (empty($trimmed_id)) {
+            // Remove the first ten characters and the last ten characters
+            throw new Exception("invalid id");
+        }
+
+        $booking = Booking::findOrFail($trimmed_id);
+
+
+        $stripeSetting = StripeSetting::where([
+                "business_id" => $booking->garage_id
+            ])
+            ->first();
+
+        if (!$stripeSetting) {
+            return response()->json([
+                "message" => "Stripe is not enabled"
+            ], 403);
+        }
+
+        Stripe::setApiKey($stripeSetting->STRIPE_SECRET);
+        Stripe::setClientId($stripeSetting->STRIPE_KEY);
+
+        // Retrieve all webhook endpoints from Stripe
+        $webhookEndpoints = WebhookEndpoint::all();
+
+        // Check if a webhook endpoint with the desired URL already exists
+        $existingEndpoint = collect($webhookEndpoints->data)->first(function ($endpoint) {
+            return $endpoint->url === route('stripe.webhook'); // Replace with your actual endpoint URL
+        });
+        if (!$existingEndpoint) {
+            // Create the webhook endpoint
+            $webhookEndpoint = WebhookEndpoint::create([
+                'url' => route('stripe.webhook'),
+                'enabled_events' => ['checkout.session.completed'], // Specify the events you want to listen to
+            ]);
+        }
+
+        $user = User::where([
+            "id" => $booking->customer_id
+        ])->first();
+
+        if (empty($user->stripe_id)) {
+            $stripe_customer = \Stripe\Customer::create([
+                'email' => $user->email,
+            ]);
+
+            $user->stripe_id = $stripe_customer->id;
+            $user->save();
+        }
+
+        $discount = $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+        $coupon_discount = $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+
+        $session_data = [
+            'payment_method_types' => ['card'],
+            'metadata' => [
+                'our_url' => route('stripe.webhook'),
+                "booking_id" => $booking->id
+
+            ],
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => 'GBP',
+                        'product_data' => [
+                            'name' => 'Your Service set up amount',
+                        ],
+                        'unit_amount' => $booking->price * 100, // Amount in cents
+                    ],
+                    'quantity' => 1,
+                ]
+            ],
+
+            'customer' => $user->stripe_id  ?? null,
+
+            'mode' => 'subscription',
+            'success_url' => env("FRONT_END_URL") . "/verify/business",
+            'cancel_url' => env("FRONT_END_URL") . "/verify/business",
+        ];
+
+
+
+
+
+        // Add discount line item only if discount amount is greater than 0 and not null
+        if (!empty($discount) || !empty($coupon_discount)) {
+
+            $coupon = \Stripe\Coupon::create([
+                'amount_off' => ($discount + $coupon_discount) * 100, // Amount in cents
+                'currency' => 'GBP', // The currency
+                'duration' => 'once', // Can be once, forever, or repeating
+                'name' => "Discount", // Coupon name
+            ]);
+
+            $session_data["discounts"] =  [ // Add the discount information here
+                [
+                    'coupon' => $coupon, // Use coupon ID if created
+                ],
+            ];
+        }
+
+        $session = Session::create($session_data);
+
+        return redirect()->to($session->url);
+    }
 
     /**
      *
@@ -150,7 +270,7 @@ class BookingController extends Controller
                 $date = Carbon::createFromFormat('Y-m-d', $insertableData["job_start_date"]);
                 $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
 
-                 $this->validateGarageTimes($insertableData["garage_id"], $dayOfWeek, $insertableData["job_start_time"]);
+                $this->validateGarageTimes($insertableData["garage_id"], $dayOfWeek, $insertableData["job_start_time"]);
 
 
 
@@ -212,7 +332,7 @@ class BookingController extends Controller
                     $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $insertableData["automobile_make_id"]);
 
 
-                     $total_price += $price;
+                    $total_price += $price;
 
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
@@ -280,6 +400,11 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
                 }
+
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+                $booking->save();
+
 
                 $notification_template = NotificationTemplate::where([
                     "type" => "booking_created_by_garage_owner"
@@ -432,21 +557,21 @@ class BookingController extends Controller
                 }
 
 
-                    $booking->update(collect($updatableData)->only([
-                        "automobile_make_id",
-                        "automobile_model_id",
-                        "car_registration_no",
-                        "car_registration_year",
-                        "status",
-                        "job_start_date",
-                        "job_start_time",
-                        "job_end_time",
-                        "fuel",
-                        "transmission",
+                $booking->update(collect($updatableData)->only([
+                    "automobile_make_id",
+                    "automobile_model_id",
+                    "car_registration_no",
+                    "car_registration_year",
+                    "status",
+                    "job_start_date",
+                    "job_start_time",
+                    "job_end_time",
+                    "fuel",
+                    "transmission",
 
-                        "discount_type",
-                        "discount_amount",
-                    ])->toArray());
+                    "discount_type",
+                    "discount_amount",
+                ])->toArray());
 
 
 
@@ -510,7 +635,7 @@ class BookingController extends Controller
                     $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
-                     $total_price += $price;
+                    $total_price += $price;
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "price" => $price
@@ -546,15 +671,7 @@ class BookingController extends Controller
 
 
 
-                $discount_amount = 0;
-                if (!empty($booking->discount_type) && !empty($booking->discount_amount)) {
-                    $discount_amount += $this->calculateDiscountPriceAmount($total_price, $booking->discount_amount, $booking->discount_type);
-                }
-                if (!empty($booking->coupon_discount_type) && !empty($booking->coupon_discount_amount)) {
-                    $discount_amount += $this->calculateDiscountPriceAmount($total_price, $booking->coupon_discount_amount, $booking->coupon_discount_type);
-                }
 
-                $booking->final_price = $booking->price - $discount_amount;
 
 
                 // if(!empty($updatableData["coupon_code"])){
@@ -575,7 +692,8 @@ class BookingController extends Controller
 
 
 
-
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
                 $booking->save();
 
                 $notification_template = NotificationTemplate::where([
@@ -699,29 +817,28 @@ class BookingController extends Controller
                     $booking->update(collect($updatableData)->only(["status"])->toArray());
                 }
 
-                    // if ($booking->status != "confirmed") {
-                    //     return response()->json([
-                    //         "message" => "you can only accecpt or reject only a confirmed booking"
-                    //     ], 409);
-                    // }
+                // if ($booking->status != "confirmed") {
+                //     return response()->json([
+                //         "message" => "you can only accecpt or reject only a confirmed booking"
+                //     ], 409);
+                // }
 
 
-                if($booking->status == "rejected_by_garage_owner") {
-                    if($booking->pre_booking_id) {
+                if ($booking->status == "rejected_by_garage_owner") {
+                    if ($booking->pre_booking_id) {
                         $prebooking  =  PreBooking::where([
                             "id" => $booking->pre_booking_id
                         ])
-                        ->first();
+                            ->first();
                         JobBid::where([
                             "id" => $prebooking->selected_bid_id
                         ])
-                        ->update([
-                            "status" => "canceled_after_booking"
-                        ]);
+                            ->update([
+                                "status" => "canceled_after_booking"
+                            ]);
                         $prebooking->status = "pending";
                         $prebooking->selected_bid_id = NULL;
                         $prebooking->save();
-
                     }
                     $notification_template = NotificationTemplate::where([
                         "type" => "booking_rejected_by_garage_owner"
@@ -736,8 +853,7 @@ class BookingController extends Controller
                         "notification_template_id" => $notification_template->id,
                         "status" => "unread",
                     ]);
-
-                }else {
+                } else {
                     $notification_template = NotificationTemplate::where([
                         "type" => "booking_status_changed_by_garage_owner"
                     ])
@@ -868,21 +984,21 @@ class BookingController extends Controller
                         "message" => "booking not found"
                     ], 404);
                 }
-                if ( $booking->status === "converted_to_job") {
+                if ($booking->status === "converted_to_job") {
                     // Return an error response indicating that the status cannot be updated
                     return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
                 }
 
 
-                    $booking->update(collect($updatableData)->only([
-                        "job_start_date",
-                        "job_start_time",
-                        "job_end_time",
-                        "status",
-                        "price",
-                        "discount_type",
-                        "discount_amount",
-                    ])->toArray());
+                $booking->update(collect($updatableData)->only([
+                    "job_start_date",
+                    "job_start_time",
+                    "job_end_time",
+                    "status",
+                    "price",
+                    "discount_type",
+                    "discount_amount",
+                ])->toArray());
 
 
 
@@ -925,7 +1041,7 @@ class BookingController extends Controller
 
 
 
-                 if ($booking->created_from == "garage_owner_side") {
+                if ($booking->created_from == "garage_owner_side") {
 
                     $job = Job::create([
                         "booking_id" => $booking->id,
@@ -961,33 +1077,33 @@ class BookingController extends Controller
 
                     ]);
 
-                //     $total_price = 0;
+                    //     $total_price = 0;
 
-                //     foreach (BookingSubService::where([
-                //             "booking_id" => $booking->id
-                //         ])->get()
-                //         as
-                //         $booking_sub_service) {
-                //         $job->job_sub_services()->create([
-                //             "sub_service_id" => $booking_sub_service->sub_service_id,
-                //             "price" => $booking_sub_service->price
-                //         ]);
-                //         $total_price += $booking_sub_service->price;
+                    //     foreach (BookingSubService::where([
+                    //             "booking_id" => $booking->id
+                    //         ])->get()
+                    //         as
+                    //         $booking_sub_service) {
+                    //         $job->job_sub_services()->create([
+                    //             "sub_service_id" => $booking_sub_service->sub_service_id,
+                    //             "price" => $booking_sub_service->price
+                    //         ]);
+                    //         $total_price += $booking_sub_service->price;
 
-                //     }
+                    //     }
 
-                //     foreach (BookingPackage::where([
-                //         "booking_id" => $booking->id
-                //     ])->get()
-                //     as
-                //     $booking_package) {
-                //     $job->job_packages()->create([
-                //         "garage_package_id" => $booking_package->garage_package_id,
-                //         "price" => $booking_package->price
-                //     ]);
-                //     $total_price += $booking_package->price;
+                    //     foreach (BookingPackage::where([
+                    //         "booking_id" => $booking->id
+                    //     ])->get()
+                    //     as
+                    //     $booking_package) {
+                    //     $job->job_packages()->create([
+                    //         "garage_package_id" => $booking_package->garage_package_id,
+                    //         "price" => $booking_package->price
+                    //     ]);
+                    //     $total_price += $booking_package->price;
 
-                // }
+                    // }
 
 
 
@@ -1121,8 +1237,7 @@ class BookingController extends Controller
                 ->where([
                     "garage_id" => $garage_id
                 ])
-                ->whereNotIn("bookings.status", ["converted_to_job"]);
-                ;
+                ->whereNotIn("bookings.status", ["converted_to_job"]);;
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
@@ -1343,21 +1458,20 @@ class BookingController extends Controller
 
 
 
-            if($booking->pre_booking_id) {
+            if ($booking->pre_booking_id) {
                 $prebooking  =  PreBooking::where([
                     "id" => $booking->pre_booking_id
                 ])
-                ->first();
+                    ->first();
                 JobBid::where([
                     "id" => $prebooking->selected_bid_id
                 ])
-                ->update([
-                    "status" => "canceled_after_booking"
-                ]);
+                    ->update([
+                        "status" => "canceled_after_booking"
+                    ]);
                 $prebooking->status = "pending";
                 $prebooking->selected_bid_id = NULL;
                 $prebooking->save();
-
             }
 
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\client\ClientJobController;
 use App\Http\Controllers\client\ClientPreBookingController;
 use App\Http\Controllers\client\ClientReviewController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\CustomWebhookController;
 use App\Http\Controllers\DashboardManagementController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
@@ -1192,7 +1193,7 @@ Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::cla
 //  client pre booking management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+Route::post('webhooks/stripe', [CustomWebhookController::class, "handleStripeWebhook"])->name("stripe.webhook");
 
 
 

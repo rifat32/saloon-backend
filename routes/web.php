@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SetUpController;
 use App\Http\Controllers\SwaggerLoginController;
 use App\Models\EmailTemplate;
@@ -25,6 +26,10 @@ Route::get('/error-log', [SetUpController::class, "getErrorLogs"])->name("error-
 Route::get('/activity-log', [SetUpController::class, "getActivityLogs"])->name("activity-log");
 Route::get('/setup', [SetUpController::class, "setUp"])->name("setup");
 Route::get('/migrate', [SetUpController::class, "migrate"]);
+
+
+
+Route::get("/bookings/redirect-to-stripe",[BookingController::class,"redirectUserToStripe"]);
 
 
 
