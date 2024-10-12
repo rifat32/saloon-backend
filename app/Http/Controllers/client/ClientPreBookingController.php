@@ -591,7 +591,6 @@ $insertableData["file_links"] = json_encode($insertableData["file_links"]) ;
 
                 $pre_booking  =  tap(PreBooking::where(["id" => $updatableData["id"]]))->update(
                     collect($updatableData)->only([
-
                         "automobile_make_id",
                         "automobile_model_id",
                         "car_registration_no",
@@ -1058,18 +1057,10 @@ $job_bid->save();
                         "pre_booking_id" => $pre_booking->id,
                         "garage_id" => $job_bid->garage_id,
                         "customer_id" => $pre_booking->customer_id,
-                        "automobile_make_id" => $pre_booking->automobile_make_id,
-                        "automobile_model_id" => $pre_booking->automobile_model_id,
-                        "car_registration_no" => $pre_booking->car_registration_no,
-                        "car_registration_year" => $pre_booking->car_registration_year,
+
                         "additional_information" => $pre_booking->additional_information,
                         "job_start_date" => $job_bid->job_start_date,
-                        "job_start_time" => $job_bid->job_start_time,
-                        "job_end_time" => $job_bid->job_end_time,
-                        // "job_end_time" => $pre_booking->job_end_time,
 
-                        "fuel" => $pre_booking->fuel,
-                        "transmission" => $pre_booking->transmission,
                         // "coupon_discount_type" => $pre_booking->coupon_discount_type,
                         // "coupon_discount_amount" => $pre_booking->coupon_discount_amount,
 

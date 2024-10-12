@@ -23,10 +23,10 @@ class CreateGaragesTable extends Migration
             $table->text("additional_information")->nullable();
             $table->string("address_line_1")->nullable();
             $table->string("address_line_2")->nullable();
-            $table->string("lat");
-            $table->string("long");
-            $table->string("country");
-            $table->string("city");
+            $table->string("lat")->nullable();
+            $table->string("long")->nullable();
+            $table->string("country")->nullable();
+            $table->string("city")->nullable();
             $table->string("postcode")->nullable();
             $table->string("currency")->nullable();
 

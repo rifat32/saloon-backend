@@ -273,15 +273,7 @@ class BookingController extends Controller
 
 
 
-                $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
 
-                if ($slotValidation['status'] === 'error') {
-                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
-                    return response()->json([
-                        'message' => 'Some slots are already booked.',
-                        'overlapping_slots' => $slotValidation['overlapping_slots']
-                    ], 422);
-                }
 
 
 
@@ -289,17 +281,15 @@ class BookingController extends Controller
 
 
                 $total_price = 0;
-
+                $total_time = 0;
                 foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
                     $sub_service =  SubService::where([
                         "business_id" => auth()->user()->business_id,
                         "id" => $sub_service_id
                         ])
-
                         ->first();
 
                     if (!$sub_service) {
-
                         $error =  [
                             "message" => "The given data was invalid.",
                             "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
@@ -309,6 +299,8 @@ class BookingController extends Controller
 
                     $price = $this->getPrice($sub_service_id, $insertableData["expert_id"]);
 
+                    $total_time += $sub_service->service_time_in_minute;
+
 
                     $total_price += $price;
 
@@ -317,6 +309,14 @@ class BookingController extends Controller
                         "price" => $price
                     ]);
                 }
+
+                $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json($slotValidation, 422);
+                }
+
 
                 foreach ($insertableData["booking_garage_package_ids"] as $index => $garage_package_id) {
                     $garage_package =  GaragePackage::where([
@@ -378,7 +378,7 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
                 }
-
+                $booking->final_price = $booking->price;
                 $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
                 $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
                 $booking->save();
@@ -526,6 +526,7 @@ class BookingController extends Controller
                     "id" => $updatableData["id"],
                     "garage_id" =>  $updatableData["garage_id"]
                 ])->first();
+
                 if (!$booking) {
                     return response()->json([
                         "message" => "booking not found"
@@ -533,15 +534,7 @@ class BookingController extends Controller
                 }
 
 
-                $slotValidation =  $this->validateBookingSlots($request["id"],$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
 
-                if ($slotValidation['status'] === 'error') {
-                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
-                    return response()->json([
-                        'message' => 'Some slots are already booked.',
-                        'overlapping_slots' => $slotValidation['overlapping_slots']
-                    ], 422);
-                }
 
 
                 if ($booking->status === "converted_to_job") {
@@ -551,17 +544,8 @@ class BookingController extends Controller
 
 
                 $booking->update(collect($updatableData)->only([
-                    "automobile_make_id",
-                    "automobile_model_id",
-                    "car_registration_no",
-                    "car_registration_year",
                     "status",
                     "job_start_date",
-                    "job_start_time",
-                    "job_end_time",
-                    "fuel",
-                    "transmission",
-
                     "discount_type",
                     "discount_amount",
                     "expert_id",
@@ -571,30 +555,6 @@ class BookingController extends Controller
 
 
 
-                $garage_make = GarageAutomobileMake::where([
-                    "automobile_make_id" => $updatableData["automobile_make_id"],
-                    "garage_id" => $updatableData["garage_id"]
-                ])
-                    ->first();
-                if (!$garage_make) {
-                    $error =  [
-                        "message" => "The given data was invalid.",
-                        "errors" => ["automobile_make_id" => ["This garage does not support this make"]]
-                    ];
-                    throw new Exception(json_encode($error), 422);
-                }
-                $garage_model = GarageAutomobileModel::where([
-                    "automobile_model_id" => $updatableData["automobile_model_id"],
-                    "garage_automobile_make_id" => $garage_make->id
-                ])
-                    ->first();
-                if (!$garage_model) {
-                    $error =  [
-                        "message" => "The given data was invalid.",
-                        "errors" => ["automobile_model_id" => ["This garage does not support this model"]]
-                    ];
-                    throw new Exception(json_encode($error), 422);
-                }
 
 
 
@@ -606,20 +566,15 @@ class BookingController extends Controller
                 ])->delete();
 
                 $total_price = 0;
-                foreach ($updatableData["booking_sub_service_ids"] as $index => $sub_service_id) {
-                    $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-                        ->where([
-                            "garage_services.garage_id" => $booking->garage_id,
-                            "garage_sub_services.sub_service_id" => $sub_service_id
+                $total_time = 0;
+                foreach ($request["booking_sub_service_ids"] as $index => $sub_service_id) {
+                    $sub_service =  SubService::where([
+                        "business_id" => auth()->user()->business_id,
+                        "id" => $sub_service_id
                         ])
-                        ->select(
-                            "garage_sub_services.id",
-                            "garage_sub_services.sub_service_id",
-                            "garage_sub_services.garage_service_id"
-                        )
                         ->first();
 
-                    if (!$garage_sub_service) {
+                    if (!$sub_service) {
                         $error =  [
                             "message" => "The given data was invalid.",
                             "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
@@ -627,15 +582,26 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $updatableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id, $request["expert_id"]);
+
+                    $total_time += $sub_service->service_time_in_minute;
 
 
                     $total_price += $price;
+
                     $booking->booking_sub_services()->create([
-                        "sub_service_id" => $garage_sub_service->sub_service_id,
+                        "sub_service_id" => $sub_service->id,
                         "price" => $price
                     ]);
                 }
+
+                $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json($slotValidation, 422);
+                }
+
                 foreach ($updatableData["booking_garage_package_ids"] as $index => $garage_package_id) {
                     $garage_package =  GaragePackage::where([
                         "garage_id" => $booking->garage_id,
@@ -686,7 +652,7 @@ class BookingController extends Controller
                 // }
 
 
-
+                $booking->final_price = $booking->price;
                 $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
                 $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
                 $booking->save();
@@ -1042,19 +1008,9 @@ class BookingController extends Controller
                         "booking_id" => $booking->id,
                         "garage_id" => $booking->garage_id,
                         "customer_id" => $booking->customer_id,
-                        "automobile_make_id" => $booking->automobile_make_id,
-                        "automobile_model_id" => $booking->automobile_model_id,
-                        "car_registration_no" => $booking->car_registration_no,
-                        "car_registration_year" => $booking->car_registration_year,
+
                         "additional_information" => $booking->additional_information,
                         "job_start_date" => $booking->job_start_date,
-
-                        "job_start_time" => $booking->job_start_time,
-                        "job_end_time" => $booking->job_end_time,
-
-                        "fuel" => $booking->fuel,
-                        "transmission" => $booking->transmission,
-
 
 
                         "coupon_discount_type" => $booking->coupon_discount_type,
@@ -1223,8 +1179,6 @@ class BookingController extends Controller
             $bookingQuery = Booking::with(
                 "booking_sub_services.sub_service",
                 "booking_packages.garage_package",
-                "automobile_make",
-                "automobile_model",
                 "customer",
                 "garage",
 
@@ -1334,8 +1288,6 @@ class BookingController extends Controller
 
             $booking = Booking::with(
                 "booking_sub_services.sub_service",
-                "automobile_make",
-                "automobile_model",
                 "customer"
             )
                 ->where([

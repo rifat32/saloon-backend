@@ -50,10 +50,6 @@ class BookingUpdateRequest extends FormRequest
 
             // "customer_id",
             "garage_id" => "required|numeric",
-            "automobile_make_id" => "required|numeric",
-            "automobile_model_id" =>"required|numeric",
-            "car_registration_no" => "required|string",
-            "car_registration_year" => "nullable|date",
 
             // "coupon_code" => "nullable|string",
             "discount_type" => "nullable|string|in:fixed,percentage",
@@ -64,14 +60,6 @@ class BookingUpdateRequest extends FormRequest
 
             "status"=>"required|string|in:pending,confirmed,rejected_by_garage_owner",
             "job_start_date" => "required_if:status,confirmed|date",
-            "job_start_time" => ['required_if:status,confirmed','date_format:H:i', new TimeValidation
-        ],
-            "job_end_time" => ['required_if:status,confirmed','date_format:H:i', new TimeValidation
-        ],
-
-
-        "fuel" => "nullable|string",
-        "transmission" => "nullable|string",
 
         'booking_sub_service_ids' => 'nullable|array',
         'booking_sub_service_ids.*' => 'nullable|numeric',

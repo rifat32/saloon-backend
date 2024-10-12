@@ -34,7 +34,6 @@ class Booking extends Model
 
 
 
-
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
@@ -42,12 +41,6 @@ class Booking extends Model
         return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
 
-    public function automobile_make(){
-        return $this->belongsTo(AutomobileMake::class,'automobile_make_id', 'id')->withTrashed();
-    }
-    public function automobile_model(){
-        return $this->belongsTo(AutomobileModel::class,'automobile_model_id', 'id')->withTrashed();
-    }
 
     public function booking_sub_services(){
         return $this->hasMany(BookingSubService::class,'booking_id', 'id');

@@ -52,7 +52,7 @@ trait BasicUtil
         return $timeFormat;
     }
 
-    public function validateBookingSlots($id,$slots, $date, $expert_id)
+    public function validateBookingSlots($id,$slots, $date, $expert_id,$total_time)
     {
         // Get all bookings for the provided date except the rejected ones
         $bookings = Booking::
@@ -85,6 +85,8 @@ trait BasicUtil
     if (!empty($expertRota) && !empty($expertRota->busy_slots)) {
         $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
     }
+    // Find overlapping slots between the input slots and the combined allBusySlots
+    $overlappingSlots = array_intersect($slots, $allBusySlots);
 
         // If there are overlaps, return them or throw an error
         if (!empty($overlappingSlots)) {
@@ -94,6 +96,16 @@ trait BasicUtil
                 'overlapping_slots' => $overlappingSlots
             ];
         }
+
+        $slot_numbers = ceil($total_time / 15);
+        if(count($slots) != $slot_numbers) {
+            return [
+                'status' => 'error',
+                'message' => ("You need exactly " .$slot_numbers. "slots."),
+            ];
+        }
+
+
 
         // If no overlaps, return success
         return [

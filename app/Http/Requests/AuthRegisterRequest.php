@@ -31,13 +31,13 @@ class AuthRegisterRequest extends FormRequest
             'password' => 'required|confirmed|string|min:6',
             'phone' => 'required|string|unique:users,phone',
             'image' => 'nullable|string',
-            'address_line_1' => 'required|string',
+            'address_line_1' => 'nullable|string',
             'address_line_2' => 'nullable|string',
-            'country' => 'required|string',
-            'city' => 'required|string',
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
             'postcode' => 'nullable|string',
-            'lat' => 'required|string',
-            'long' => 'required|string',
+            'lat' => 'nullable|string',
+            'long' => 'nullable|string',
         ];
     }
 }

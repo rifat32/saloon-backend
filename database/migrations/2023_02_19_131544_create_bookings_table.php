@@ -16,6 +16,13 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
 
+                // Add the expert_id foreign key referencing users table
+                   $table->unsignedBigInteger('expert_id');
+                   $table->foreign('expert_id')->references('id')->on('users')->onDelete('cascade');
+
+                   // Add the booked_slots JSON column
+                   $table->json('booked_slots');
+
             $table->unsignedBigInteger("pre_booking_id")->nullable();
             $table->foreign('pre_booking_id')->references('id')->on('pre_bookings')->onDelete('restrict');
 
@@ -24,20 +31,6 @@ class CreateBookingsTable extends Migration
             $table->foreign('garage_id')->references('id')->on('garages')->onDelete('cascade');
             $table->unsignedBigInteger("customer_id");
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
-
-
-
-
-
-            $table->unsignedBigInteger("automobile_make_id");
-            $table->foreign('automobile_make_id')->references('id')->on('automobile_makes')->onDelete('restrict');
-            $table->unsignedBigInteger("automobile_model_id");
-            $table->foreign('automobile_model_id')->references('id')->on('automobile_models')->onDelete('restrict');
-
-
-
-            $table->string("car_registration_no");
-            $table->date("car_registration_year")->nullable();
 
             $table->string("additional_information")->nullable();
 
@@ -55,15 +48,7 @@ class CreateBookingsTable extends Migration
             $table->string("coupon_code")->nullable();
 
 
-            $table->string("fuel")->nullable();
-            $table->string("transmission")->nullable();
-
             $table->date("job_start_date")->nullable();
-
-            // $table->date("job_end_date")->nullable();
-
-            $table->time("job_start_time")->nullable();
-            $table->time("job_end_time")->nullable();
 
             $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
 

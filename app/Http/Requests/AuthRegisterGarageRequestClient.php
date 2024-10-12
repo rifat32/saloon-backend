@@ -53,23 +53,16 @@ class AuthRegisterGarageRequestClient extends FormRequest
             // 'garage.email' => 'required|string|email|indisposable|max:255|unique:garages,email',
             'garage.email' => 'nullable|string|email|max:255|unique:garages,email',
             'garage.additional_information' => 'nullable|string',
-
-            'garage.lat' => 'required|string',
-            'garage.long' => 'required|string',
-            'garage.country' => 'required|string',
-            'garage.city' => 'required|string',
-
-            'garage.currency' => 'required|string',
-
-            'garage.postcode' => 'required|string',
-            'garage.address_line_1' => 'required|string',
+            'garage.lat' => 'nullable|string',
+            'garage.long' => 'nullable|string',
+            'garage.country' => 'nullable|string',
+            'garage.city' => 'nullable|string',
+            'garage.currency' => 'nullable|string',
+            'garage.postcode' => 'nullable|string',
+            'garage.address_line_1' => 'nullable|string',
             'garage.address_line_2' => 'nullable|string',
-
-
             'garage.logo' => 'nullable|string',
-
             'garage.image' => 'nullable|string',
-
             'garage.images' => 'nullable|array',
             'garage.images.*' => 'nullable|string',
 

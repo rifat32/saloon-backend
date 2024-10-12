@@ -28,14 +28,10 @@ class JobUpdateRequest extends FormRequest
             "id" => "required|numeric",
             // "customer_id",
             "garage_id" => "required|numeric",
-            "automobile_make_id" => "required|numeric",
-            "automobile_model_id" =>"required|numeric",
-            "car_registration_no" => "required|string",
-            "car_registration_year" => "nullable|date",
+
             "additional_information" => "nullable|string",
 
-            "job_start_time" => "required|date",
-            "job_end_time" => "required|date",
+
 
             'job_sub_service_ids' => 'nullable|array',
             'job_sub_service_ids.*' => 'nullable|numeric',
@@ -48,17 +44,12 @@ class JobUpdateRequest extends FormRequest
 
              "discount_type" => "nullable|string|in:fixed,percentage",
              "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
-             "price" => "required|numeric",
+            
 
              "job_start_date" => "required|date",
-             "job_start_time" => ['required','date_format:H:i', new TimeValidation
-         ],
-             "job_end_time" => ['required','date_format:H:i', new TimeValidation
-         ],
+
          "status" => "required|string|in:pending,active,completed,cancelled",
 
-         "fuel" => "nullable|string",
-         "transmission" => "nullable|string",
 
         ];
     }

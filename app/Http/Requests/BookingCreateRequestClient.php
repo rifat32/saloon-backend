@@ -42,16 +42,12 @@ class BookingCreateRequestClient extends FormRequest
 
 
             "garage_id" => "required|numeric",
-            // "customer_id",
-            "automobile_make_id" => "required|numeric",
-            "automobile_model_id" =>"required|numeric",
-            "car_registration_no" => "required|string",
-            "car_registration_year" => "nullable|date",
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date_format:Y-m-d",
             "job_start_time" => ['nullable','date_format:H:i', new TimeValidation
         ],
+
             // "job_end_date" => "required|date",
             "coupon_code" => "nullable|string",
 
@@ -61,8 +57,7 @@ class BookingCreateRequestClient extends FormRequest
     'booking_garage_package_ids' => 'nullable|array',
     'booking_garage_package_ids.*' => 'nullable|numeric',
 
-    "fuel" => "nullable|string",
-    "transmission" => "nullable|string",
+  
 
         ];
     }

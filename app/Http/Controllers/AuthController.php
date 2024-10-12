@@ -823,12 +823,12 @@ $datediff = $now - $user_created_date;
                 $insertableData['user']['remember_token'] = Str::random(10);
                 $insertableData['user']['is_active'] = true;
                 $insertableData['user']['address_line_1'] = $insertableData['garage']['address_line_1'];
-    $insertableData['user']['address_line_2'] = $insertableData['garage']['address_line_2'];
-    $insertableData['user']['country'] = $insertableData['garage']['country'];
-    $insertableData['user']['city'] = $insertableData['garage']['city'];
-    $insertableData['user']['postcode'] = $insertableData['garage']['postcode'];
-    $insertableData['user']['lat'] = $insertableData['garage']['lat'];
-    $insertableData['user']['long'] = $insertableData['garage']['long'];
+                $insertableData['user']['address_line_2'] = $insertableData['garage']['address_line_2'];
+                $insertableData['user']['country'] = $insertableData['garage']['country'];
+                $insertableData['user']['city'] = $insertableData['garage']['city'];
+                $insertableData['user']['postcode'] = $insertableData['garage']['postcode'];
+                $insertableData['user']['lat'] = $insertableData['garage']['lat'];
+                $insertableData['user']['long'] = $insertableData['garage']['long'];
 
 
                 $user =  User::create($insertableData['user']);

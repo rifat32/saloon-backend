@@ -43,26 +43,15 @@ class BookingUpdateRequestClient extends FormRequest
 ],
 
 
-
             "garage_id" => "required|numeric",
-            // "customer_id",
-            "automobile_make_id" => "required|numeric",
-            "automobile_model_id" =>"required|numeric",
-            "car_registration_no" => "required|string",
-            "car_registration_year" => "nullable|date",
              "additional_information" => "nullable|string",
             // "status",
             "coupon_code" => "nullable|string",
-
             'booking_sub_service_ids' => 'nullable|array',
             'booking_sub_service_ids.*' => 'nullable|numeric',
-
             'booking_garage_package_ids' => 'nullable|array',
             'booking_garage_package_ids.*' => 'nullable|numeric',
 
-
-            "fuel" => "nullable|string",
-            "transmission" => "nullable|string",
         ];
     }
 }

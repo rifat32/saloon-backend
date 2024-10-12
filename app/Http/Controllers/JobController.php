@@ -149,39 +149,20 @@ class JobController extends Controller
 
 
 
-
                 $job = Job::create([
                     "booking_id" => $booking->id,
                     "garage_id" => $booking->garage_id,
                     "customer_id" => $booking->customer_id,
-                    "automobile_make_id" => $booking->automobile_make_id,
-                    "automobile_model_id" => $booking->automobile_model_id,
-                    "car_registration_no" => $booking->car_registration_no,
-                    "car_registration_year" => $booking->car_registration_year,
+
                     "additional_information" => $booking->additional_information,
-
-
 
                     // "discount_type"=> $booking->discount_type,
                     // "discount_amount"=> $booking->discount_amount,
 
-
-
                     // "coupon_discount_type" => ($coupon_discount?$coupon_discount["discount_type"]:0),
                     // "coupon_discount_amount" => ($coupon_discount?$coupon_discount["discount_amount"]:0),
 
-
-
-
-
-
-
-                    "job_start_date" => $updatableData["job_start_date"],
-                    "job_start_time" => $updatableData["job_start_time"],
-                    "job_end_time" => $updatableData["job_end_time"],
-
-                    "fuel" => $updatableData['fuel'],
-                    "transmission" => $updatableData['transmission'],
+                    "job_start_date" => $booking->job_start_date,
 
                     "discount_type" => $updatableData["discount_type"],
                     "discount_amount" => $updatableData["discount_amount"],
@@ -189,7 +170,8 @@ class JobController extends Controller
                     "coupon_code" => $booking->coupon_code,
                     "coupon_discount_type" => $booking->coupon_discount_type,
                     "coupon_discount_amount" => $booking->coupon_discount_amount,
-                    "price" => ($updatableData["price"] ? $updatableData["price"] : $booking->price),
+                    "price" => ($booking->price),
+                    "final_price" => $booking->final_price,
                     "status" => $updatableData["status"],
                     "payment_status" => "due",
                 ]);
@@ -441,27 +423,11 @@ class JobController extends Controller
                     "garage_id" =>  $updatableData["garage_id"]
                 ]))->update(
                     collect($updatableData)->only([
-                        "automobile_make_id",
-                        "automobile_model_id",
-
-
-
-                        // "coupon_discount_type",
-                        // "coupon_discount_amount",
-
                         "coupon_code",
-
-                        "car_registration_no",
-                        "car_registration_year",
                         "status",
                         "job_start_date",
-                        "job_start_time",
-                        "job_end_time",
                         "discount_type",
                         "discount_amount",
-                        "price",
-                        "fuel",
-                        "transmission",
                     ])->toArray()
                 )
                     // ->with("somthing")
@@ -862,8 +828,6 @@ class JobController extends Controller
                 "customer",
                 "job_sub_services.sub_service",
                 "job_packages.garage_package",
-                "automobile_make",
-                "automobile_model",
                 "job_payments"
             )
                 ->where([
@@ -977,8 +941,6 @@ class JobController extends Controller
                 "customer",
                 "job_sub_services.sub_service",
                 "job_packages.garage_package",
-                "automobile_make",
-                "automobile_model",
                 "job_payments"
             )
                 ->where([

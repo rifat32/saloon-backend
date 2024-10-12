@@ -22,6 +22,8 @@ class CreateServicesTable extends Migration
             $table->unsignedBigInteger("automobile_category_id");
             $table->foreign('automobile_category_id')->references('id')->on('automobile_categories')->onDelete('cascade');
             $table->boolean("is_active")->default(1);
+            $table->unsignedBigInteger('business_id')->nullable(); // Add nullable business_id column
+            $table->foreign('business_id')->references('id')->on('garages')->onDelete('cascade'); // Foreign key for business_id
 
             $table->softDeletes();
             $table->timestamps();

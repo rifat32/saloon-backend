@@ -97,8 +97,6 @@ class ClientJobController extends Controller
                 "customer",
                 "job_sub_services.sub_service",
                 "job_packages.garage_package",
-                "automobile_make",
-                "automobile_model",
                 "job_payments"
                 )
             ->where([
@@ -213,8 +211,6 @@ class ClientJobController extends Controller
                 "customer",
                 "job_sub_services.sub_service",
                 "job_packages.garage_package",
-                "automobile_make",
-                "automobile_model",
                 "job_payments"
             )
             ->where([

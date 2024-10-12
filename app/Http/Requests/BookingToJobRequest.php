@@ -32,15 +32,10 @@ class BookingToJobRequest extends FormRequest
 
             "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
 
-            "price" => "nullable|numeric",
+
 
             "coupon_code" => "nullable|string",
 
-            "job_start_date" => "required|date",
-            "job_start_time" => ['required','date_format:H:i', new TimeValidation
-        ],
-            "job_end_time" => ['required','date_format:H:i', new TimeValidation
-        ],
         "status" => "required|string|in:pending,active",
         "fuel" => "nullable|string",
         "transmission" => "nullable|string",

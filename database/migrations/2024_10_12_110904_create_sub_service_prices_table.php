@@ -35,7 +35,7 @@ class CreateSubServicePricesTable extends Migration
             $table->string('description')->nullable();
 
             $table->foreignId('business_id')
-            ->constrained('businesses')
+            ->constrained('garages')
             ->onDelete('cascade');
 
             $table->unsignedBigInteger("created_by");
