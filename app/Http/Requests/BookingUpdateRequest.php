@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\TimeValidation;
+use App\Rules\ValidateExpert;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingUpdateRequest extends FormRequest
@@ -25,7 +26,28 @@ class BookingUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+
             "id" => "required|numeric",
+
+
+              'expert_id' => [
+                'required',
+                'numeric',
+                 new ValidateExpert(NULL)
+            ],
+
+   'booked_slots' => [
+    'required',
+    'array',
+],
+'booked_slots.*' => [
+    'required',
+    'date_format:g:i A',
+],
+
+
+
+
             // "customer_id",
             "garage_id" => "required|numeric",
             "automobile_make_id" => "required|numeric",

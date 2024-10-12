@@ -247,14 +247,17 @@ class BookingController extends Controller
     public function createBooking(BookingCreateRequest $request)
     {
         try {
+            DB::beginTransaction();
             $this->storeActivity($request, "");
-            return DB::transaction(function () use ($request) {
+
                 if (!$request->user()->hasPermissionTo('booking_create')) {
                     return response()->json([
                         "message" => "You can not perform this action"
                     ], 401);
                 }
+
                 $insertableData = $request->validated();
+
                 if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
                     return response()->json([
                         "message" => "you are not the owner of the garage or the requested garage does not exist."
@@ -298,6 +301,17 @@ class BookingController extends Controller
                         "errors" => ["automobile_model_id" => ["This garage does not support this model"]]
                     ];
                     throw new Exception(json_encode($error), 422);
+                }
+
+
+                $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json([
+                        'message' => 'Some slots are already booked.',
+                        'overlapping_slots' => $slotValidation['overlapping_slots']
+                    ], 422);
                 }
 
 
@@ -430,9 +444,11 @@ class BookingController extends Controller
                 //     ));
                 // }
 
+                DB::commit();
                 return response($booking, 201);
-            });
+
         } catch (Exception $e) {
+            DB::rollBack();
 
 
             return $this->sendError($e, 500, $request);
@@ -551,6 +567,19 @@ class BookingController extends Controller
                         "message" => "booking not found"
                     ], 404);
                 }
+
+
+                $slotValidation =  $this->validateBookingSlots($request["id"],$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json([
+                        'message' => 'Some slots are already booked.',
+                        'overlapping_slots' => $slotValidation['overlapping_slots']
+                    ], 422);
+                }
+
+
                 if ($booking->status === "converted_to_job") {
                     // Return an error response indicating that the status cannot be updated
                     return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
@@ -571,6 +600,8 @@ class BookingController extends Controller
 
                     "discount_type",
                     "discount_amount",
+                    "expert_id",
+                    "booked_slots",
                 ])->toArray());
 
 

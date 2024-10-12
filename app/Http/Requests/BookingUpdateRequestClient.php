@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidateExpert;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingUpdateRequestClient extends FormRequest
@@ -25,6 +26,24 @@ class BookingUpdateRequestClient extends FormRequest
     {
         return [
             "id" => "required|numeric",
+
+            'expert_id' => [
+                'required',
+                'numeric',
+                 new ValidateExpert(NULL)
+            ],
+
+   'booked_slots' => [
+    'required',
+    'array',
+],
+'booked_slots.*' => [
+    'required',
+    'date_format:g:i A',
+],
+
+
+
             "garage_id" => "required|numeric",
             // "customer_id",
             "automobile_make_id" => "required|numeric",

@@ -42,7 +42,7 @@ class ExpertRotaController extends Controller
 *         required=true,
 *         @OA\JsonContent(
 * @OA\Property(property="expert_id", type="string", format="string", example="expert_id"),
-* @OA\Property(property="data", type="string", format="string", example="data"),
+* @OA\Property(property="date", type="string", format="string", example="date"),
 * @OA\Property(property="busy_slots", type="string", format="string", example="busy_slots"),
 *
 *
@@ -145,7 +145,7 @@ return $this->sendError($e, 500, $request);
 *         @OA\JsonContent(
 *      @OA\Property(property="id", type="number", format="number", example="1"),
 * @OA\Property(property="expert_id", type="string", format="string", example="expert_id"),
-* @OA\Property(property="data", type="string", format="string", example="data"),
+* @OA\Property(property="date", type="string", format="string", example="date"),
 * @OA\Property(property="busy_slots", type="string", format="string", example="busy_slots"),
 *
 *         ),
@@ -209,7 +209,7 @@ if ($expert_rota) {
 $expert_rota->fill(collect($request_data)->only([
 
 "expert_id",
-"data",
+"date",
 "busy_slots",
 // "is_default",
 // "is_active",
@@ -342,16 +342,16 @@ return $this->sendError($e, 500, $request);
 
 
 *         @OA\Parameter(
-*         name="start_data",
+*         name="start_date",
 *         in="query",
-*         description="start_data",
+*         description="start_date",
 *         required=true,
 *  example="6"
 *      ),
 *         @OA\Parameter(
-*         name="end_data",
+*         name="end_date",
 *         in="query",
-*         description="end_data",
+*         description="end_date",
 *         required=true,
 *  example="6"
 *      ),
@@ -475,11 +475,11 @@ where('expert_rotas.business_id', auth()->user()->business_id)
 
 
 
-->when(!empty($request->start_data), function ($query) use ($request) {
-return $query->where('expert_rotas.data', ">=", $request->start_data);
+->when(!empty($request->start_date), function ($query) use ($request) {
+return $query->where('expert_rotas.date', ">=", $request->start_date);
 })
-->when(!empty($request->end_data), function ($query) use ($request) {
-return $query->where('expert_rotas.data', "<=", ($request->end_data . ' 23:59:59'));
+->when(!empty($request->end_date), function ($query) use ($request) {
+return $query->where('expert_rotas.date', "<=", ($request->end_date . ' 23:59:59'));
 })
 
 

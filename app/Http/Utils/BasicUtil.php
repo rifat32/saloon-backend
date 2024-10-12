@@ -2,7 +2,9 @@
 
 namespace App\Http\Utils;
 
+use App\Models\Booking;
 use App\Models\Coupon;
+use App\Models\ExpertRota;
 use App\Models\GarageTime;
 use Carbon\Carbon;
 use Exception;
@@ -10,6 +12,97 @@ use Illuminate\Support\Facades\Http;
 
 trait BasicUtil
 {
+
+    public function convertToHoursOnly(array $times)
+    {
+        $hoursOnly = [];
+
+        foreach ($times as $time) {
+            // Convert the time string to a Carbon instance
+            $carbonTime = Carbon::createFromFormat('g:i A', $time);
+
+            // Extract hours and minutes
+            $hours = $carbonTime->hour;
+            $minutes = $carbonTime->minute;
+
+            // Convert the time to hours in decimal (e.g., 9:30 AM becomes 9.5)
+            $hoursOnly[] = $hours + ($minutes / 60);
+        }
+
+        return $hoursOnly;
+    }
+
+    // Method to convert decimal hours back to "g:i A" format
+    public function convertToTimeFormat(array $decimalHours)
+    {
+        $timeFormat = [];
+
+        foreach ($decimalHours as $decimalHour) {
+            // Separate hours and minutes
+            $hours = floor($decimalHour);  // Get the integer part (hours)
+            $minutes = ($decimalHour - $hours) * 60;  // Get the decimal part and convert to minutes
+
+            // Create a Carbon instance for the current time (no date)
+            $carbonTime = Carbon::createFromTime($hours, $minutes);
+
+            // Format the time as 'g:i A'
+            $timeFormat[] = $carbonTime->format('g:i A');
+        }
+
+        return $timeFormat;
+    }
+
+    public function validateBookingSlots($id,$slots, $date, $expert_id)
+    {
+        // Get all bookings for the provided date except the rejected ones
+        $bookings = Booking::
+        when(!empty($id), function($query) use($id){
+             $query->whereNotIn("id",[$id]);
+        })
+        ->whereDate("job_start_date", $date)
+            ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+            ->where([
+                "expert_id" => $expert_id
+            ])
+            ->get();
+
+
+
+        // Get all the booked slots as a flat array
+        $allBusySlots = $bookings->pluck('booking_slots')->flatten()->toArray();
+
+        $expertRota = ExpertRota::where([
+            "expert_id" =>  $expert_id
+        ])
+        ->whereDate("date",$date)
+        ->first();
+        if(!empty($expertRota)) {
+          $expertRota->busy_slots;
+        }
+
+
+    // If expertRota exists, merge its busy_slots with the booked slots
+    if (!empty($expertRota) && !empty($expertRota->busy_slots)) {
+        $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
+    }
+
+        // If there are overlaps, return them or throw an error
+        if (!empty($overlappingSlots)) {
+            return [
+                'status' => 'error',
+                'message' => 'Some slots are already booked.',
+                'overlapping_slots' => $overlappingSlots
+            ];
+        }
+
+        // If no overlaps, return success
+        return [
+            'status' => 'success',
+            'message' => 'All slots are available.'
+        ];
+    }
+
+
 
     public function canculate_discounted_price($total_price,$discount_type,$discount_amount){
 

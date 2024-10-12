@@ -11,6 +11,11 @@ class Booking extends Model
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
+
+        "expert_id",
+        "booked_slots",
+
+
         "pre_booking_id",
         "garage_id",
         "booking_id",
@@ -21,12 +26,9 @@ class Booking extends Model
         "car_registration_year",
         "additional_information",
         "status",
-
         "coupon_code",
-
         "fuel",
         "transmission",
-
         "job_start_date",
         "job_start_time",
         "job_end_time",
@@ -63,6 +65,7 @@ class Booking extends Model
     public function booking_packages(){
         return $this->hasMany(BookingPackage::class,'booking_id', 'id');
     }
+
 
 
 

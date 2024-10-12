@@ -120,6 +120,7 @@ class ClientBookingController extends Controller
                 $insertableData["created_by"] = $request->user()->id;
                 $insertableData["created_from"] = "customer_side";
 
+
                 $garage = Garage::where([
                     "id" => $insertableData["garage_id"]
                 ])
@@ -143,6 +144,15 @@ class ClientBookingController extends Controller
 
 
 
+   $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json([
+                        'message' => 'Some slots are already booked.',
+                        'overlapping_slots' => $slotValidation['overlapping_slots']
+                    ], 422);
+                }
 
 
 
@@ -191,10 +201,10 @@ class ClientBookingController extends Controller
 
                 $total_price = 0;
 
-                foreach ($insertableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
+                foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
-                            "garage_services.garage_id" => $garage->id,
+                            "garage_services.garage_id" => $insertableData["garage_id"],
                             "garage_sub_services.sub_service_id" => $sub_service_id
                         ])
                         ->select(
@@ -208,15 +218,15 @@ class ClientBookingController extends Controller
 
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => [("booking_sub_service_ids[" . $index . "]")=>["invalid service"]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $insertableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $insertableData["automobile_make_id"]);
 
 
-                    // $total_price += $price;
+                    $total_price += $price;
 
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
@@ -224,16 +234,11 @@ class ClientBookingController extends Controller
                     ]);
                 }
 
-
-
-
-
-
-                foreach ($insertableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
+                foreach ($insertableData["booking_garage_package_ids"] as $index => $garage_package_id) {
                     $garage_package =  GaragePackage::where([
-                            "garage_id" => $garage->id,
-                            "id" => $garage_package_id
-                        ])
+                        "garage_id" => $insertableData["garage_id"],
+                        "id" => $garage_package_id
+                    ])
 
                         ->first();
 
@@ -241,9 +246,9 @@ class ClientBookingController extends Controller
 
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => [("booking_garage_package_ids[" . $index . "]")=>["invalid package"]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
 
 
@@ -253,8 +258,6 @@ class ClientBookingController extends Controller
                         "garage_package_id" => $garage_package->id,
                         "price" => $garage_package->price
                     ]);
-
-
                 }
 
 
@@ -286,12 +289,17 @@ class ClientBookingController extends Controller
                     } else {
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => ["coupon_code"=>[$coupon_discount["message"]]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => ["coupon_code" => [$coupon_discount["message"]]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
-
                 }
+
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+                $booking->save();
+
+
 
                 $notification_template = NotificationTemplate::where([
                     "type" => "booking_created_by_client"
@@ -672,6 +680,15 @@ class ClientBookingController extends Controller
                     throw new Exception(json_encode($error),422);
                 }
 
+                $slotValidation =  $this->validateBookingSlots($request["id"],$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
+
+                if ($slotValidation['status'] === 'error') {
+                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                    return response()->json([
+                        'message' => 'Some slots are already booked.',
+                        'overlapping_slots' => $slotValidation['overlapping_slots']
+                    ], 422);
+                }
 
 
 
@@ -688,6 +705,9 @@ class ClientBookingController extends Controller
                         "coupon_code",
                         "fuel",
                         "transmission",
+                        "expert_id",
+                        "booked_slots",
+
                     ])->toArray()
                 )
                     // ->with("somthing")
@@ -703,10 +723,10 @@ class ClientBookingController extends Controller
                 ])->delete();
 
                 $total_price = 0;
-                foreach ($updatableData["booking_sub_service_ids"] as $index=>$sub_service_id) {
+                foreach ($updatableData["booking_sub_service_ids"] as $index => $sub_service_id) {
                     $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
                         ->where([
-                            "garage_services.garage_id" => $garage->id,
+                            "garage_services.garage_id" => $booking->garage_id,
                             "garage_sub_services.sub_service_id" => $sub_service_id
                         ])
                         ->select(
@@ -717,40 +737,36 @@ class ClientBookingController extends Controller
                         ->first();
 
                     if (!$garage_sub_service) {
-
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => [("booking_sub_service_ids[".$index."]")=>["invalid service"]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
-                    $price = $this->getPrice($sub_service_id,$garage_sub_service->id, $updatableData["automobile_make_id"]);
+
+                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $updatableData["automobile_make_id"]);
 
 
-                    // $total_price += $price;
-
-
+                    $total_price += $price;
                     $booking->booking_sub_services()->create([
                         "sub_service_id" => $garage_sub_service->sub_service_id,
                         "price" => $price
                     ]);
                 }
-
-                foreach ($updatableData["booking_garage_package_ids"] as $index=>$garage_package_id) {
+                foreach ($updatableData["booking_garage_package_ids"] as $index => $garage_package_id) {
                     $garage_package =  GaragePackage::where([
-                            "garage_id" => $garage->id,
-                             "id" => $garage_package_id
-                        ])
+                        "garage_id" => $booking->garage_id,
+                        "id" => $garage_package_id
+                    ])
 
                         ->first();
 
                     if (!$garage_package) {
-
                         $error =  [
                             "message" => "The given data was invalid.",
-                            "errors" => [("booking_garage_package_ids[".$index."]")=>["invalid package"]]
-                     ];
-                        throw new Exception(json_encode($error),422);
+                            "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
+                        ];
+                        throw new Exception(json_encode($error), 422);
                     }
 
 
@@ -760,53 +776,39 @@ class ClientBookingController extends Controller
                         "garage_package_id" => $garage_package->id,
                         "price" => $garage_package->price
                     ]);
-
-
                 }
 
-
-
+                // $booking->price = (!empty($updatableData["price"]?$updatableData["price"]:$total_price));
                 $booking->price = $total_price;
+
+
+
+
+
+
+                // if(!empty($updatableData["coupon_code"])){
+                //     $coupon_discount = $this->getCouponDiscount(
+                //         $updatableData["garage_id"],
+                //         $updatableData["coupon_code"],
+                //         $booking->price
+                //     );
+
+                //     if($coupon_discount) {
+
+                //         $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                //         $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+
+
+                //     }
+                // }
+
+
+
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
                 $booking->save();
-                if (!empty($insertableData["coupon_code"])) {
-                    $coupon_discount = $this->getCouponDiscount(
-                        $insertableData["garage_id"],
-                        $insertableData["coupon_code"],
-                        $total_price
-                    );
 
-                    if ($coupon_discount) {
 
-                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
-                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-                        $booking->coupon_code = $insertableData["coupon_code"];
-                        $booking->save();
-
-//                     $coupon =  Coupon::where([
-//                           "code" =>   $booking->coupon_code,
-//                           "garage_id" => $booking->garage_id
-//                         ])
-//                         ->first();
-
-//                         $coupon->customer_redemptions += 1;
-
-// $coupon->save();
-Coupon::where([
-    "code" => $booking->coupon_code,
-    "garage_id" => $booking->garage_id
-])->update([
-    "customer_redemptions" => DB::raw("customer_redemptions + 1")
-]);
-
-                    }
-                    else {
-                        $error =  [
-                            "message" => "The given data was invalid.",
-                            "errors" => ["coupon_code"=>[$coupon_discount["message"]]]
-                     ];
-                        throw new Exception(json_encode($error),422);
-                    }
-                }
                 $notification_template = NotificationTemplate::where([
                     "type" => "booking_updated_by_client"
                 ])

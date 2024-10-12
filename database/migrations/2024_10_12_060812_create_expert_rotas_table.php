@@ -20,7 +20,7 @@ class CreateExpertRotasTable extends Migration
             $table->foreignId('expert_id')
             ->constrained('users')
             ->onDelete('cascade');
-            $table->date('data');
+            $table->date('date');
             $table->json('busy_slots');
             $table->boolean('is_active')->default(false);
             $table->foreignId('business_id')

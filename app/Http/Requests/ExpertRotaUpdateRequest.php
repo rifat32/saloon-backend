@@ -63,7 +63,7 @@ $rules = [
     new ValidateExpert(NULL)
 ],
 
-    'data' => [
+    'date' => [
     'required',
     'date',
 ],

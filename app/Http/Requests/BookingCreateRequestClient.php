@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\TimeValidation;
+use App\Rules\ValidateExpert;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookingCreateRequestClient extends FormRequest
@@ -25,6 +26,21 @@ class BookingCreateRequestClient extends FormRequest
     public function rules()
     {
         return [
+            'expert_id' => [
+                'required',
+                'numeric',
+                 new ValidateExpert(NULL)
+            ],
+   'booked_slots' => [
+    'required',
+    'array',
+],
+'booked_slots.*' => [
+    'required',
+    'date_format:g:i A',
+],
+
+
             "garage_id" => "required|numeric",
             // "customer_id",
             "automobile_make_id" => "required|numeric",

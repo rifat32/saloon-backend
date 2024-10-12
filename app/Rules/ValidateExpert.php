@@ -29,7 +29,7 @@ class ValidateExpert implements Rule
     {
         $expert = User::where([
             "id" =>$value,
-            "business_id"=>auth()->user()->business_id
+            // "business_id"=>auth()->user()->business_id
             ])
             ->first();
             if(empty($expert)) {
