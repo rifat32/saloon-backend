@@ -63,7 +63,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::get('/v1.0/expert-users', [UserManagementController::class, "getExpertUsers"]);
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
 Route::post('/v1.0/token-regenerate', [AuthController::class, "regenerateToken"]);
@@ -144,11 +144,7 @@ Route::middleware(['auth:api'])->group(function () {
 
 Route::post('/v1.0/expert-rotas', [ExpertRotaController::class, "createExpertRota"]);
 Route::put('/v1.0/expert-rotas', [ExpertRotaController::class, "updateExpertRota"]);
-
-
-
 Route::put('/v1.0/expert-rotas/toggle-active', [ExpertRotaController::class, "toggleActiveExpertRota"]);
-
 Route::get('/v1.0/expert-rotas', [ExpertRotaController::class, "getExpertRotas"]);
 Route::delete('/v1.0/expert-rotas/{ids}', [ExpertRotaController::class, "deleteExpertRotasByIds"]);
 
@@ -722,7 +718,6 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/bookings', [BookingController::class, "createBooking"]);
-
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
 Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);
@@ -1096,6 +1091,7 @@ Route::get('/v1.0/garage-packages/get/all/{garage_id}', [GaragePackageController
 Route::get('/v1.0/client/garage-packages/single/{garage_id}/{id}', [GaragePackageController::class, "getGaragePackageByIdClient"]);
 
 
+Route::get('/v1.0/client/expert-rotas', [ExpertRotaController::class, "getExpertRotasClient"]);
 Route::get('/v1.0/client/garage-services/get/all/{garage_id}', [GarageServiceController::class, "getGarageServicesAll"]);
 
 
@@ -1183,6 +1179,8 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Route::get('/v1.0/client/blocked-slots/{expert_id}', [ClientBookingController::class, "getBlockedSlotsClient"]);
+
 Route::post('/v1.0/client/bookings', [ClientBookingController::class, "createBookingClient"]);
 Route::put('/v1.0/client/bookings', [ClientBookingController::class, "updateBookingClient"]);
 Route::patch('/v1.0/client/bookings/change-status', [ClientBookingController::class, "changeBookingStatusClient"]);

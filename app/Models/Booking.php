@@ -40,6 +40,11 @@ class Booking extends Model
     public function garage(){
         return $this->belongsTo(Garage::class,'garage_id', 'id')->withTrashed();
     }
+
+    public function expert(){
+        return $this->belongsTo(User::class,'expert_id', 'id')->withTrashed();
+    }
+
     public function customer(){
         return $this->belongsTo(User::class,'customer_id', 'id')->withTrashed();
     }
@@ -49,6 +54,9 @@ class Booking extends Model
         return $this->hasMany(BookingSubService::class,'booking_id', 'id');
     }
 
+    public function sub_services(){
+        return $this->belongsToMany(SubService::class, "booking_sub_services",'booking_id', 'sub_service_id');
+    }
 
     public function booking_packages(){
         return $this->hasMany(BookingPackage::class,'booking_id', 'id');

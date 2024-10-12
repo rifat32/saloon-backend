@@ -905,15 +905,20 @@ $service_description_translation = $service_description_query['responseData']['t
             })
 
             ->orderBy("name",'asc')
-            ->select(
-                "id",
-                "name",
-            )->get();
+             ->get();
 
             // GETTING SUB SERVICES
             $sub_services =  SubService::
-            with('translation')->
-            whereIn("service_id",$services->pluck("id"))
+            with([
+                'translation',
+                "price" => function($query) {
+                  $query->when(request()->filled("expert_id"), function($query) {
+                       $query->where("expert_id",request()->input("expert_id"));
+                  });
+                }
+
+                ])
+            ->whereIn("service_id",$services->pluck("id"))
             ->when(request()->filled("business_id"), function($query) {
                 $query->where("business_id",request()->input("business_id"));
             })
@@ -927,32 +932,6 @@ $service_description_translation = $service_description_query['responseData']['t
                 "name",
             )->get();
 
-            // GETTING AUTOMOBILE MAKES
-            $automobile_make =  AutomobileMake::
-            when(request()->filled("automobile_category_id"), function($query) {
-                $query->where("automobile_category_id",request()->input("automobile_category_id"));
-
-            },
-            function($query) {
-                $query->where("automobile_category_id",1);
-
-            })
-            ->orderBy("name",'asc')
-            ->get();
-
-            // GETTING AUTOMOBILE MODELS
-            $automobile_model =  AutomobileModel::
-            whereIn("automobile_make_id",$automobile_make->pluck("id"))
-            ->orderBy("name",'asc')
-            ->select(
-                "id",
-                "name",
-                "automobile_make_id"
-            )->get();
-
-            // GETTING FUEL STATION SERVICES
-            $fuel_station_services =  FuelStationService::orderBy("name",'asc')
-            ->get();
 
             // GETTING ROLES
             $roles = Role::with('permissions:name,id')->select("name", "id")->get();
@@ -966,9 +945,6 @@ $service_description_translation = $service_description_query['responseData']['t
                 "sub_services" => $sub_services,
 
                 "automobile_categories" => $automobile_categories,
-                "automobile_make" => $automobile_make,
-                "automobile_model" => $automobile_model,
-                "fuel_station_services" => $fuel_station_services,
                 "roles" => $roles,
                 "payment_types" => $payment_types,
             ];

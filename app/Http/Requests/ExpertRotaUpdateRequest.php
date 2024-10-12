@@ -69,11 +69,10 @@ $rules = [
 ],
 
 'busy_slots' => [
-    'required',
+    'present',
     'array',
 ],
 'busy_slots.*' => [
-    'required',
     'date_format:g:i A',
 ],
 

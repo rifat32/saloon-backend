@@ -28,6 +28,9 @@ class SubService extends Model
         return $this->hasMany(SubServiceTranslation::class,'sub_service_id', 'id');
     }
 
+    public function price(){
+        return $this->hasMany(SubServicePrice::class,'sub_service_id', 'id');
+    }
 
     public function garage_automobile_sub_services () {
         return $this->hasMany(GarageSubService::class,"sub_service_id","id");
