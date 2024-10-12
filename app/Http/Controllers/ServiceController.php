@@ -102,25 +102,27 @@ class ServiceController extends Controller
 
             $service =  Service::create($insertableData);
 
-            $service_name_query = Http::post('https://libretranslate.com/translate', [
-                'q' => $service->name,
-                'source' => 'auto',
-                'target' => 'ar',
-                'format' => 'text',
-                'alternatives' => 3,
-                'api_key' => ''
-            ]);
-            $service_description_query = Http::post('https://libretranslate.com/translate', [
-                'q' => $service->description,
-                'source' => 'auto',
-                'target' => 'ar',
-                'format' => 'text',
-                'alternatives' => 3,
-                'api_key' => ''
-            ]);
+         // Translate the service name using MyMemory
+$service_name_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $service->name,
+    'langpair' => 'en|ar'  // Specify the source language as 'en' (English) and target as 'ar' (Arabic)
+]);
 
-            $service_name_translation = $service_name_query['translatedText'];
-            $service_description_translation = $service_description_query['translatedText'];
+// Translate the service description using MyMemory
+$service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $service->description,
+    'langpair' => 'en|ar'
+]);
+
+// Check for translation errors or unexpected responses
+if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+}
+
+// Extract the translated text from the response
+$service_name_translation = $service_name_query['responseData']['translatedText'];
+$service_description_translation = $service_description_query['responseData']['translatedText'];
+
 
 
             ServiceTranslation::create([
@@ -230,27 +232,26 @@ class ServiceController extends Controller
                         "service_id" => $service->id
                     ])
                     ->delete();
+// Translate the service name using MyMemory
+$service_name_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $service->name,
+    'langpair' => 'en|ar'  // Specify the source language as 'en' (English) and target as 'ar' (Arabic)
+]);
 
-                    $service_name_query = Http::post('https://libretranslate.com/translate', [
-                        'q' => $service->name,
-                        'source' => 'auto',
-                        'target' => 'ar',
-                        'format' => 'text',
-                        'alternatives' => 3,
-                        'api_key' => ''
-                    ]);
-                    $service_description_query = Http::post('https://libretranslate.com/translate', [
-                        'q' => $service->description,
-                        'source' => 'auto',
-                        'target' => 'ar',
-                        'format' => 'text',
-                        'alternatives' => 3,
-                        'api_key' => ''
-                    ]);
+// Translate the service description using MyMemory
+$service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $service->description,
+    'langpair' => 'en|ar'
+]);
 
-                    $service_name_translation = $service_name_query['translatedText'];
-                    $service_description_translation = $service_description_query['translatedText'];
+// Check for translation errors or unexpected responses
+if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+}
 
+// Extract the translated text from the response
+$service_name_translation = $service_name_query['responseData']['translatedText'];
+$service_description_translation = $service_description_query['responseData']['translatedText'];
 
                     ServiceTranslation::create([
                         "service_id" => $service->id,
@@ -1141,25 +1142,23 @@ class ServiceController extends Controller
             $sub_service =  SubService::create($insertableData);
 
 
-            $service_name_query = Http::post('https://libretranslate.com/translate', [
+            $service_name_query = Http::get('https://api.mymemory.translated.net/get', [
                 'q' => $sub_service->name,
-                'source' => 'auto',
-                'target' => 'ar',
-                'format' => 'text',
-                'alternatives' => 3,
-                'api_key' => ''
-            ]);
-            $service_description_query = Http::post('https://libretranslate.com/translate', [
-                'q' => $sub_service->description,
-                'source' => 'auto',
-                'target' => 'ar',
-                'format' => 'text',
-                'alternatives' => 3,
-                'api_key' => ''
+                'langpair' => 'en|ar'  // Set the correct source and target language
             ]);
 
-            $service_name_translation = $service_name_query['translatedText'];
-            $service_description_translation = $service_description_query['translatedText'];
+            $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $sub_service->description,
+                'langpair' => 'en|ar'
+            ]);
+
+            // Check for translation errors or unexpected responses
+if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+}
+
+            $service_name_translation = $service_name_query['responseData']['translatedText'];
+            $service_description_translation = $service_description_query['responseData']['translatedText'];
 
 
             SubServiceTranslation::create([
@@ -1277,25 +1276,23 @@ class ServiceController extends Controller
                     ])
                     ->delete();
 
-                    $service_name_query = Http::post('https://libretranslate.com/translate', [
+                    $service_name_query = Http::get('https://api.mymemory.translated.net/get', [
                         'q' => $sub_service->name,
-                        'source' => 'auto',
-                        'target' => 'ar',
-                        'format' => 'text',
-                        'alternatives' => 3,
-                        'api_key' => ''
-                    ]);
-                    $service_description_query = Http::post('https://libretranslate.com/translate', [
-                        'q' => $sub_service->description,
-                        'source' => 'auto',
-                        'target' => 'ar',
-                        'format' => 'text',
-                        'alternatives' => 3,
-                        'api_key' => ''
+                        'langpair' => 'en|ar'  // Set the correct source and target language
                     ]);
 
-                    $service_name_translation = $service_name_query['translatedText'];
-                    $service_description_translation = $service_description_query['translatedText'];
+                    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+                        'q' => $sub_service->description,
+                        'langpair' => 'en|ar'
+                    ]);
+
+                    // Check for translation errors or unexpected responses
+if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+}
+
+                    $service_name_translation = $service_name_query['responseData']['translatedText'];
+                    $service_description_translation = $service_description_query['responseData']['translatedText'];
 
 
                     SubServiceTranslation::create([
