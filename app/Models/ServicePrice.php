@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class ServicePrice extends Model
 {
     use HasFactory, DefaultQueryScopesTrait;
+
     protected $fillable = [
                     'service_id',
                     'price',

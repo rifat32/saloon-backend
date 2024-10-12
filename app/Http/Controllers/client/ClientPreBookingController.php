@@ -417,9 +417,7 @@ $insertableData["file_links"] = json_encode($insertableData["file_links"]) ;
                 foreach ($insertableData["pre_booking_sub_service_ids"] as $index=>$sub_service_id) {
                     $sub_service =  SubService::where([
                             "id" => $sub_service_id,
-
                         ])
-
                         ->first();
 
                     if (!$sub_service) {

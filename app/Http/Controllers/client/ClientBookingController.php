@@ -144,7 +144,7 @@ class ClientBookingController extends Controller
                 $total_time = 0;
                 foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
                     $sub_service =  SubService::where([
-                        "business_id" => auth()->user()->business_id,
+                        "business_id" => $booking->garage_id,
                         "id" => $sub_service_id
                         ])
                         ->first();
@@ -834,8 +834,7 @@ class ClientBookingController extends Controller
                 )
                 ->where([
                     "customer_id" => $request->user()->id
-                ])
-                ->whereNotIn("status", ["converted_to_job"]);
+                ]);
 
                 // Apply the existing status filter if provided in the request
                 if (!empty($request->status)) {

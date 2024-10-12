@@ -1449,7 +1449,7 @@ class ClientBasicController extends Controller
                 ->first();
 
 
-            $sub_services = SubService::whereHas("service.garageService.garage", function ($query) use ($id) {
+            $sub_services = SubService::with("translation")->whereHas("service.garageService.garage", function ($query) use ($id) {
                 $query->where([
                     "garages.id" => $id
                 ]);
@@ -1930,7 +1930,9 @@ class ClientBasicController extends Controller
         try {
             $this->storeActivity($request, "");
             $user = $request->user();
-            $data = SubService::select(
+            $data = SubService::
+            with("translation")->
+            select(
                 "sub_services.*",
                 DB::raw('(SELECT COUNT(job_sub_services.sub_service_id)
             FROM

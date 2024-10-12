@@ -31,6 +31,9 @@ class Booking extends Model
         "created_from"
 
     ];
+    protected $casts = [
+        'booked_slots' => 'array',
+      ];
 
 
 

@@ -241,6 +241,7 @@ class UserManagementController extends Controller
 
         try{
             $this->storeActivity($request,"");
+
             if(!$request->user()->hasPermissionTo('user_create')){
                  return response()->json([
                     "message" => "You can not perform this action"

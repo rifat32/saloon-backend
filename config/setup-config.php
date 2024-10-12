@@ -169,6 +169,11 @@ return [
             "permissions" => [
 
 
+                "user_create",
+                "user_update",
+                "user_view",
+                "user_delete",
+
                 "sub_service_price_create",
                 "sub_service_price_update",
                 "sub_service_price_view",

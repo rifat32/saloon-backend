@@ -189,12 +189,7 @@ class BookingController extends Controller
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
      *
      *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
-     *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
-
-     *
-     *
-
-
+     *         @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
      *  * *    @OA\Property(property="booking_sub_service_ids", type="string", format="array",example={1,2,3,4}),
      *  *  * *    @OA\Property(property="booking_garage_package_ids", type="string", format="array",example={1,2,3,4}),
      * *  *
@@ -1169,11 +1164,7 @@ class BookingController extends Controller
                     "message" => "You can not perform this action"
                 ], 401);
             }
-            if (!$this->garageOwnerCheck($garage_id)) {
-                return response()->json([
-                    "message" => "you are not the owner of the garage or the requested garage does not exist."
-                ], 401);
-            }
+
 
 
             $bookingQuery = Booking::with(
@@ -1183,10 +1174,21 @@ class BookingController extends Controller
                 "garage",
 
             )
+            ->when(!auth()->user()->hasRole("garage_owner"), function($query) {
+                 $query->where([
+                    "expert_id" => auth()->user()->id
+                 ]);
+            })
                 ->where([
-                    "garage_id" => $garage_id
-                ])
-                ->whereNotIn("bookings.status", ["converted_to_job"]);;
+                    "garage_id" => auth()->user()->business_id
+                ]);
+
+                   // Apply the existing status filter if provided in the request
+                   if (!empty($request->status)) {
+                    // If status is provided, include the condition in the query
+                    $bookingQuery->where("status", $request->status);
+                }
+
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {

@@ -16,8 +16,11 @@ use App\Models\FuelStationService;
 use App\Models\Service;
 use App\Models\SubService;
 use App\Models\PaymentType;
+use App\Models\ServiceTranslation;
+use App\Models\SubServiceTranslation;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Spatie\Permission\Models\Role;
 
 
@@ -98,6 +101,34 @@ class ServiceController extends Controller
             $insertableData["business_id"] = auth()->user()->business_id;
 
             $service =  Service::create($insertableData);
+
+            $service_name_query = Http::post('https://libretranslate.com/translate', [
+                'q' => $service->name,
+                'source' => 'auto',
+                'target' => 'ar',
+                'format' => 'text',
+                'alternatives' => 3,
+                'api_key' => ''
+            ]);
+            $service_description_query = Http::post('https://libretranslate.com/translate', [
+                'q' => $service->description,
+                'source' => 'auto',
+                'target' => 'ar',
+                'format' => 'text',
+                'alternatives' => 3,
+                'api_key' => ''
+            ]);
+
+            $service_name_translation = $service_name_query['translatedText'];
+            $service_description_translation = $service_description_query['translatedText'];
+
+
+            ServiceTranslation::create([
+                "service_id" => $service->id,
+                "language" => "ar",
+                "name_translation" => $service_name_translation,
+                "description_translation" => $service_description_translation
+            ]);
 
 
             return response($service, 201);
@@ -194,6 +225,39 @@ class ServiceController extends Controller
                             "message" => "no  service found"
                         ],404);
                     }
+
+                    ServiceTranslation::where([
+                        "service_id" => $service->id
+                    ])
+                    ->delete();
+
+                    $service_name_query = Http::post('https://libretranslate.com/translate', [
+                        'q' => $service->name,
+                        'source' => 'auto',
+                        'target' => 'ar',
+                        'format' => 'text',
+                        'alternatives' => 3,
+                        'api_key' => ''
+                    ]);
+                    $service_description_query = Http::post('https://libretranslate.com/translate', [
+                        'q' => $service->description,
+                        'source' => 'auto',
+                        'target' => 'ar',
+                        'format' => 'text',
+                        'alternatives' => 3,
+                        'api_key' => ''
+                    ]);
+
+                    $service_name_translation = $service_name_query['translatedText'];
+                    $service_description_translation = $service_description_query['translatedText'];
+
+
+                    ServiceTranslation::create([
+                        "service_id" => $service->id,
+                        "language" => "ar",
+                        "name_translation" => $service_name_translation,
+                        "description_translation" => $service_description_translation
+                    ]);
             return response($service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
@@ -291,7 +355,7 @@ class ServiceController extends Controller
 
             $servicesQuery = Service::
             where("business_id",auth()->user()->business_id)
-            ->with("category");
+            ->with("category", "translation");
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -387,7 +451,7 @@ class ServiceController extends Controller
                 ],401);
            }
 
-            $service = Service::with("subServices","category")
+            $service = Service::with("subServices","category",'translation')
             ->where("business_id",auth()->user()->business_id)
             ->where([
                 "id" => $id
@@ -494,11 +558,12 @@ class ServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = Service::with("category","subServices")->where([
+            $servicesQuery = Service::with("category","subServices",'translation')->where([
                 "automobile_category_id" => $categoryId
             ])
-            ->where("business_id",auth()->user()->business_id)
-            ;
+            ->when(request()->filled("business_id"), function($query) {
+                $query->where("business_id",request()->input("business_id"));
+            });
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -606,10 +671,12 @@ class ServiceController extends Controller
         try{
 
             $this->storeActivity($request,"");
-            $servicesQuery = Service::where([
+            $servicesQuery = Service::with('translation')->where([
                 "automobile_category_id" => $categoryId
             ])
-            ->where("business_id",auth()->user()->business_id)
+            ->when(request()->filled("business_id"), function($query) {
+                $query->where("business_id",request()->input("business_id"));
+            })
 
             ;
 
@@ -822,7 +889,7 @@ class ServiceController extends Controller
 
             // CHECK IF REQUEST HAVE AUTOMOBILE CATEGORY ID
             $services =  Service::
-
+            with('translation')->
             when(request()->filled("automobile_category_id"), function($query) {
                 $query->where("automobile_category_id",request()->input("automobile_category_id"));
             },
@@ -832,7 +899,10 @@ class ServiceController extends Controller
                 $query->where("automobile_category_id",1);
 
             })
-            ->where("business_id",auth()->user()->business_id)
+            ->when(request()->filled("business_id"), function($query) {
+                $query->where("business_id",request()->input("business_id"));
+            })
+
             ->orderBy("name",'asc')
             ->select(
                 "id",
@@ -841,8 +911,11 @@ class ServiceController extends Controller
 
             // GETTING SUB SERVICES
             $sub_services =  SubService::
+            with('translation')->
             whereIn("service_id",$services->pluck("id"))
-            ->where("business_id",auth()->user()->business_id)
+            ->when(request()->filled("business_id"), function($query) {
+                $query->where("business_id",request()->input("business_id"));
+            })
             ->orderBy("name",'asc')
             ->get();
 
@@ -1065,10 +1138,39 @@ class ServiceController extends Controller
             $insertableData = $request->validated();
             $insertableData["is_fixed_price"] = 1;
             $insertableData["business_id"] = auth()->user()->business_id;
-            $service =  SubService::create($insertableData);
+            $sub_service =  SubService::create($insertableData);
 
 
-            return response($service, 201);
+            $service_name_query = Http::post('https://libretranslate.com/translate', [
+                'q' => $sub_service->name,
+                'source' => 'auto',
+                'target' => 'ar',
+                'format' => 'text',
+                'alternatives' => 3,
+                'api_key' => ''
+            ]);
+            $service_description_query = Http::post('https://libretranslate.com/translate', [
+                'q' => $sub_service->description,
+                'source' => 'auto',
+                'target' => 'ar',
+                'format' => 'text',
+                'alternatives' => 3,
+                'api_key' => ''
+            ]);
+
+            $service_name_translation = $service_name_query['translatedText'];
+            $service_description_translation = $service_description_query['translatedText'];
+
+
+            SubServiceTranslation::create([
+                "sub_service_id" => $sub_service->id,
+                "language" => "ar",
+                "name_translation" => $service_name_translation,
+                "description_translation" => $service_description_translation
+            ]);
+
+
+            return response($sub_service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
         return $this->sendError($e,500,$request);
@@ -1147,7 +1249,7 @@ class ServiceController extends Controller
 
 
 
-                $service  =  tap(SubService::where([
+                $sub_service  =  tap(SubService::where([
                     "id" => $updatableData["id"]
                 ])
                 ->where("business_id",auth()->user()->business_id)
@@ -1164,12 +1266,45 @@ class ServiceController extends Controller
                     // ->with("somthing")
 
                     ->first();
-                    if(!$service) {
+                    if(!$sub_service) {
                         return response()->json([
                             "message" => "no sub service found"
                         ],404);
                     }
-            return response($service, 201);
+
+                    SubServiceTranslation::where([
+                        "sub_service_id" => $sub_service->id
+                    ])
+                    ->delete();
+
+                    $service_name_query = Http::post('https://libretranslate.com/translate', [
+                        'q' => $sub_service->name,
+                        'source' => 'auto',
+                        'target' => 'ar',
+                        'format' => 'text',
+                        'alternatives' => 3,
+                        'api_key' => ''
+                    ]);
+                    $service_description_query = Http::post('https://libretranslate.com/translate', [
+                        'q' => $sub_service->description,
+                        'source' => 'auto',
+                        'target' => 'ar',
+                        'format' => 'text',
+                        'alternatives' => 3,
+                        'api_key' => ''
+                    ]);
+
+                    $service_name_translation = $service_name_query['translatedText'];
+                    $service_description_translation = $service_description_query['translatedText'];
+
+
+                    SubServiceTranslation::create([
+                        "sub_service_id" => $sub_service->id,
+                        "language" => "ar",
+                        "name_translation" => $service_name_translation,
+                        "description_translation" => $service_description_translation
+                    ]);
+            return response($sub_service, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
         return $this->sendError($e,500,$request);
@@ -1276,7 +1411,7 @@ class ServiceController extends Controller
                 ],401);
            }
             // $automobilesQuery = AutomobileMake::with("makes");
-            $servicesQuery = SubService::with("service.category")
+            $servicesQuery = SubService::with("service.category", 'translation')
             ->where("business_id",auth()->user()->business_id)
             ->where("service_id" , $serviceId);
             if(!empty($request->search_key)) {
@@ -1398,7 +1533,7 @@ class ServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = SubService::with("service")->where([
+            $servicesQuery = SubService::with("service", 'translation')->where([
                 "service_id" => $serviceId
             ])
             ->where("business_id",auth()->user()->business_id)
