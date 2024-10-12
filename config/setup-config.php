@@ -168,6 +168,13 @@ return [
             "role" => "garage_owner",
             "permissions" => [
 
+                "expert_rota_create",
+                "expert_rota_update",
+                "expert_rota_activate",
+                "expert_rota_view",
+                "expert_rota_delete",
+
+
                 "questions_create",
                 "questions_update",
                 "questions_view",
@@ -261,7 +268,11 @@ return [
             "permissions" => [
 
 
-
+                "expert_rota_create",
+                "expert_rota_update",
+                "expert_rota_activate",
+                "expert_rota_view",
+                "expert_rota_delete",
 
                 "questions_create",
                 "questions_update",
@@ -342,7 +353,7 @@ return [
                 "product_category_view",
 
 
-               
+
 
 
 
@@ -352,6 +363,9 @@ return [
         [
             "role" => "shop_owner",
             "permissions" => [
+
+
+
 
                 "product_category_view",
 
@@ -394,6 +408,16 @@ return [
 
     ],
     "permissions" => [
+
+
+
+        "expert_rota_create",
+        "expert_rota_update",
+        "expert_rota_activate",
+        "expert_rota_view",
+        "expert_rota_delete",
+
+
 
         "stripe_setting_update",
         "system_setting_view",

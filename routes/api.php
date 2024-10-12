@@ -15,6 +15,7 @@ use App\Http\Controllers\CustomWebhookController;
 use App\Http\Controllers\DashboardManagementController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\EmailTemplateWrapperController;
+use App\Http\Controllers\ExpertRotaController;
 use App\Http\Controllers\FuelStationController;
 use App\Http\Controllers\FuelStationGalleryController;
 use App\Http\Controllers\FuelStationServiceController;
@@ -134,6 +135,27 @@ Route::middleware(['auth:api'])->group(function () {
 
 
 
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// expert rotas management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/expert-rotas', [ExpertRotaController::class, "createExpertRota"]);
+Route::put('/v1.0/expert-rotas', [ExpertRotaController::class, "updateExpertRota"]);
+
+
+
+Route::put('/v1.0/expert-rotas/toggle-active', [ExpertRotaController::class, "toggleActiveExpertRota"]);
+
+Route::get('/v1.0/expert-rotas', [ExpertRotaController::class, "getExpertRotas"]);
+Route::delete('/v1.0/expert-rotas/{ids}', [ExpertRotaController::class, "deleteExpertRotasByIds"]);
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end expert rotas management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 
 
