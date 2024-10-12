@@ -42,15 +42,9 @@ class BookingCreateRequest extends FormRequest
 ],
 
 
-
-
             "customer_id" => "required|numeric|exists:users,id",
             "garage_id" => "required|numeric|exists:garages,id",
-            // "customer_id",
-            "automobile_make_id" => "required|numeric",
-            "automobile_model_id" =>"required|numeric",
-            "car_registration_no" => "required|string",
-            "car_registration_year" => "nullable|date",
+
             "additional_information" => "nullable|string",
             // "status",
             "job_start_date" => "required|date_format:Y-m-d",
@@ -65,17 +59,7 @@ class BookingCreateRequest extends FormRequest
     'booking_garage_package_ids' => 'nullable|array',
     'booking_garage_package_ids.*' => 'nullable|numeric',
 
-    "fuel" => "nullable|string",
-    "transmission" => "nullable|string",
 
-
-    "job_start_date" => "required|date",
-    "job_start_time" => ['required','date_format:H:i', new TimeValidation
-],
-    "job_end_time" => ['required','date_format:H:i', new TimeValidation
-],
-
-"price" => "required|numeric",
 "discount_type" => "nullable|string|in:fixed,percentage",
 "discount_amount" => "required_if:discount_type,!=,null|numeric|min:0",
 

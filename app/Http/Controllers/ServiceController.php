@@ -95,6 +95,8 @@ class ServiceController extends Controller
 
             $insertableData = $request->validated();
 
+            $insertableData["business_id"] = auth()->user()->business_id;
+
             $service =  Service::create($insertableData);
 
 
@@ -176,7 +178,7 @@ class ServiceController extends Controller
 
 
 
-                $service  =  tap(Service::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
+                $service  =  tap(Service::where(["id" => $updatableData["id"]])->where("business_id",auth()->user()->business_id))->update(collect($updatableData)->only([
                     'name',
                     'image',
                     'icon',
@@ -287,7 +289,9 @@ class ServiceController extends Controller
 
             // $automobilesQuery = AutomobileMake::with("makes");
 
-            $servicesQuery = Service::with("category");
+            $servicesQuery = Service::
+            where("business_id",auth()->user()->business_id)
+            ->with("category");
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -384,6 +388,7 @@ class ServiceController extends Controller
            }
 
             $service = Service::with("subServices","category")
+            ->where("business_id",auth()->user()->business_id)
             ->where([
                 "id" => $id
             ])
@@ -491,7 +496,9 @@ class ServiceController extends Controller
 
             $servicesQuery = Service::with("category","subServices")->where([
                 "automobile_category_id" => $categoryId
-            ]);
+            ])
+            ->where("business_id",auth()->user()->business_id)
+            ;
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -601,7 +608,10 @@ class ServiceController extends Controller
             $this->storeActivity($request,"");
             $servicesQuery = Service::where([
                 "automobile_category_id" => $categoryId
-            ]);
+            ])
+            ->where("business_id",auth()->user()->business_id)
+
+            ;
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -812,6 +822,7 @@ class ServiceController extends Controller
 
             // CHECK IF REQUEST HAVE AUTOMOBILE CATEGORY ID
             $services =  Service::
+
             when(request()->filled("automobile_category_id"), function($query) {
                 $query->where("automobile_category_id",request()->input("automobile_category_id"));
             },
@@ -821,6 +832,7 @@ class ServiceController extends Controller
                 $query->where("automobile_category_id",1);
 
             })
+            ->where("business_id",auth()->user()->business_id)
             ->orderBy("name",'asc')
             ->select(
                 "id",
@@ -830,12 +842,9 @@ class ServiceController extends Controller
             // GETTING SUB SERVICES
             $sub_services =  SubService::
             whereIn("service_id",$services->pluck("id"))
+            ->where("business_id",auth()->user()->business_id)
             ->orderBy("name",'asc')
-            ->select(
-                "id",
-                "name",
-                "service_id"
-            )->get();
+            ->get();
 
             // GETTING AUTOMOBILE CATEGORIES
             $automobile_categories =  AutomobileCategory::orderBy("name",'asc')
@@ -969,6 +978,7 @@ class ServiceController extends Controller
            Service::where([
             "id" => $id
            ])
+           ->where("business_id",auth()->user()->business_id)
            ->delete();
 
             return response()->json(["ok" => true], 200);
@@ -1002,7 +1012,9 @@ class ServiceController extends Controller
      *    @OA\Property(property="name", type="string", format="string",example="car"),
      *    @OA\Property(property="description", type="string", format="string",example="car"),
      *    @OA\Property(property="service_id", type="string", format="number",example="1"),
-     *      *    *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *    @OA\Property(property="service_time_in_minute", type="number", format="number",example="1")
+     *
      *
      *         ),
      *      ),
@@ -1052,6 +1064,7 @@ class ServiceController extends Controller
 
             $insertableData = $request->validated();
             $insertableData["is_fixed_price"] = 1;
+            $insertableData["business_id"] = auth()->user()->business_id;
             $service =  SubService::create($insertableData);
 
 
@@ -1082,7 +1095,8 @@ class ServiceController extends Controller
      *             @OA\Property(property="id", type="number", format="number",example="1"),
      *             @OA\Property(property="name", type="string", format="string",example="car"),
      *             @OA\Property(property="description", type="string", format="string",example="description"),
-     *     *    *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *             @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *            @OA\Property(property="service_time_in_minute", type="number", format="number",example="1")
      *         ),
      *      ),
      *      @OA\Response(
@@ -1133,11 +1147,17 @@ class ServiceController extends Controller
 
 
 
-                $service  =  tap(SubService::where(["id" => $updatableData["id"]]))->update(collect($updatableData)->only([
+                $service  =  tap(SubService::where([
+                    "id" => $updatableData["id"]
+                ])
+                ->where("business_id",auth()->user()->business_id)
+
+                )->update(collect($updatableData)->only([
                     'name',
                     "description",
                     "service_id",
-                    "is_fixed_price"
+                    "is_fixed_price",
+                    "service_time_in_minute"
                     // "automobile_category_id"
                 ])->toArray()
                 )
@@ -1257,6 +1277,7 @@ class ServiceController extends Controller
            }
             // $automobilesQuery = AutomobileMake::with("makes");
             $servicesQuery = SubService::with("service.category")
+            ->where("business_id",auth()->user()->business_id)
             ->where("service_id" , $serviceId);
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -1379,7 +1400,10 @@ class ServiceController extends Controller
 
             $servicesQuery = SubService::with("service")->where([
                 "service_id" => $serviceId
-            ]);
+            ])
+            ->where("business_id",auth()->user()->business_id)
+
+            ;
 
             if(!empty($request->search_key)) {
                 $servicesQuery = $servicesQuery->where(function($query) use ($request){
@@ -1480,6 +1504,7 @@ class ServiceController extends Controller
            SubService::where([
             "id" => $id
            ])
+           ->where("business_id",auth()->user()->business_id)
            ->delete();
 
             return response()->json(["ok" => true], 200);

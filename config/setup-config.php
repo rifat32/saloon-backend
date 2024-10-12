@@ -168,6 +168,19 @@ return [
             "role" => "garage_owner",
             "permissions" => [
 
+
+                "sub_service_price_create",
+                "sub_service_price_update",
+                "sub_service_price_view",
+                "sub_service_price_delete",
+
+
+
+                "service_create",
+                "service_update",
+                "service_view",
+                "service_delete",
+
                 "expert_rota_create",
                 "expert_rota_update",
                 "expert_rota_activate",
@@ -266,6 +279,14 @@ return [
         [
             "role" => "business_experts",
             "permissions" => [
+
+
+                "sub_service_price_create",
+                "sub_service_price_update",
+                "sub_service_price_view",
+                "sub_service_price_delete",
+
+
 
 
                 "expert_rota_create",
@@ -408,6 +429,12 @@ return [
 
     ],
     "permissions" => [
+
+
+        "sub_service_price_create",
+        "sub_service_price_update",
+        "sub_service_price_view",
+        "sub_service_price_delete",
 
 
 

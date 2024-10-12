@@ -44,6 +44,7 @@ use App\Http\Controllers\ServicePriceController;
 use App\Http\Controllers\ShopGalleryController;
 use App\Http\Controllers\ShopsController;
 use App\Http\Controllers\StripeSettingController;
+use App\Http\Controllers\SubServicePriceController;
 use App\Http\Controllers\UserManagementController;
 use App\Models\GaragePackage;
 use App\Models\JobBid;
@@ -166,19 +167,39 @@ Route::delete('/v1.0/expert-rotas/{ids}', [ExpertRotaController::class, "deleteE
 
 Route::post('/v1.0/service-prices', [ServicePriceController::class, "createServicePrice"]);
 Route::put('/v1.0/service-prices', [ServicePriceController::class, "updateServicePrice"]);
-
-
-
 Route::put('/v1.0/service-prices/toggle-active', [ServicePriceController::class, "toggleActiveServicePrice"]);
-
 Route::get('/v1.0/service-prices', [ServicePriceController::class, "getServicePrices"]);
 Route::delete('/v1.0/service-prices/{ids}', [ServicePriceController::class, "deleteServicePricesByIds"]);
-
-
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 // end service prices management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// sub service prices management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+Route::post('/v1.0/sub-service-prices', [SubServicePriceController::class, "createSubServicePrice"]);
+Route::put('/v1.0/sub-service-prices', [SubServicePriceController::class, "updateSubServicePrice"]);
+Route::get('/v1.0/sub-service-prices', [SubServicePriceController::class, "getSubServicePrices"]);
+Route::delete('/v1.0/sub-service-prices/{ids}', [SubServicePriceController::class, "deleteSubServicePricesByIds"]);
+
+
+
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// end sub service prices management section
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
+
+
+
+
+
 
 
 

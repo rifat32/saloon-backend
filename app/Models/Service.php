@@ -14,7 +14,8 @@ class Service extends Model
         "icon",
         "description",
         "image",
-        "automobile_category_id"
+        "automobile_category_id",
+        "business_id"
         // "is_active",
 
     ];

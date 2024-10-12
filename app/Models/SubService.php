@@ -12,9 +12,11 @@ class SubService extends Model
     protected $fillable = [
         "name",
         "description",
+        "business_id",
 
         "service_id",
-        "is_fixed_price"
+        "is_fixed_price",
+        "service_time_in_minute"
         // "is_active",
 
     ];

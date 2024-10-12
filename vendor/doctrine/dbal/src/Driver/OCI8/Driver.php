@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Doctrine\DBAL\Driver\OCI8;
 
 use Doctrine\DBAL\Driver\AbstractOracleDriver;
@@ -22,11 +20,13 @@ final class Driver extends AbstractOracleDriver
 {
     /**
      * {@inheritDoc}
+     *
+     * @return Connection
      */
     public function connect(
         #[SensitiveParameter]
-        array $params,
-    ): Connection {
+        array $params
+    ) {
         $username    = $params['user'] ?? '';
         $password    = $params['password'] ?? '';
         $charset     = $params['charset'] ?? '';
@@ -34,10 +34,8 @@ final class Driver extends AbstractOracleDriver
 
         $connectionString = $this->getEasyConnectString($params);
 
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
         $persistent = ! empty($params['persistent']);
-        /** @psalm-suppress RiskyTruthyFalsyComparison */
-        $exclusive = ! empty($params['driverOptions']['exclusive']);
+        $exclusive  = ! empty($params['driverOptions']['exclusive']);
 
         if ($persistent && $exclusive) {
             throw InvalidConfiguration::forPersistentAndExclusive();

@@ -30,6 +30,7 @@ use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
 use App\Models\StripeSetting;
+use App\Models\SubService;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -270,38 +271,6 @@ class BookingController extends Controller
                 $insertableData["created_by"] = $request->user()->id;
                 $insertableData["created_from"] = "garage_owner_side";
 
-                $date = Carbon::createFromFormat('Y-m-d', $insertableData["job_start_date"]);
-                $dayOfWeek = $date->dayOfWeek; // 6 (0 for Sunday, 1 for Monday, 2 for Tuesday, etc.)
-
-                $this->validateGarageTimes($insertableData["garage_id"], $dayOfWeek, $insertableData["job_start_time"]);
-
-
-
-                $garage_make = GarageAutomobileMake::where([
-                    "automobile_make_id" => $insertableData["automobile_make_id"],
-                    "garage_id" => $insertableData["garage_id"]
-                ])
-                    ->first();
-                if (!$garage_make) {
-                    $error =  [
-                        "message" => "The given data was invalid.",
-                        "errors" => ["automobile_make_id" => ["This garage does not support this make"]]
-                    ];
-                    throw new Exception(json_encode($error), 422);
-                }
-                $garage_model = GarageAutomobileModel::where([
-                    "automobile_model_id" => $insertableData["automobile_model_id"],
-                    "garage_automobile_make_id" => $garage_make->id
-                ])
-                    ->first();
-                if (!$garage_model) {
-
-                    $error =  [
-                        "message" => "The given data was invalid.",
-                        "errors" => ["automobile_model_id" => ["This garage does not support this model"]]
-                    ];
-                    throw new Exception(json_encode($error), 422);
-                }
 
 
                 $slotValidation =  $this->validateBookingSlots(NULL,$request["booked_slots"],$request["job_start_date"],$request["expert_id"]);
@@ -322,19 +291,14 @@ class BookingController extends Controller
                 $total_price = 0;
 
                 foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
-                    $garage_sub_service =  GarageSubService::leftJoin('garage_services', 'garage_sub_services.garage_service_id', '=', 'garage_services.id')
-                        ->where([
-                            "garage_services.garage_id" => $insertableData["garage_id"],
-                            "garage_sub_services.sub_service_id" => $sub_service_id
+                    $sub_service =  SubService::where([
+                        "business_id" => auth()->user()->business_id,
+                        "id" => $sub_service_id
                         ])
-                        ->select(
-                            "garage_sub_services.id",
-                            "garage_sub_services.sub_service_id",
-                            "garage_sub_services.garage_service_id"
-                        )
+
                         ->first();
 
-                    if (!$garage_sub_service) {
+                    if (!$sub_service) {
 
                         $error =  [
                             "message" => "The given data was invalid.",
@@ -343,13 +307,13 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id, $garage_sub_service->id, $insertableData["automobile_make_id"]);
+                    $price = $this->getPrice($sub_service_id, $insertableData["expert_id"]);
 
 
                     $total_price += $price;
 
                     $booking->booking_sub_services()->create([
-                        "sub_service_id" => $garage_sub_service->sub_service_id,
+                        "sub_service_id" => $sub_service->id,
                         "price" => $price
                     ]);
                 }
