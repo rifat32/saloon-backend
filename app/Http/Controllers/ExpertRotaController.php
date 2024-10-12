@@ -113,7 +113,17 @@ class ExpertRotaController extends Controller
                     }
                 }
 
+              $rota_exists =  ExpertRota::where([
+                    "expert_id" => $request_data["expert_id"],
+                ])
+                ->whereDate("date",$request_data["date"])
+                ->exists();
 
+                if(!empty($rota_exists)) {
+                     return response()->json([
+                        "message"=>"Rota already exists on this date"
+                     ],409);
+                }
 
 
                 $expert_rota =  ExpertRota::create($request_data);
