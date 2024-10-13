@@ -108,20 +108,29 @@ $service_name_query = Http::get('https://api.mymemory.translated.net/get', [
     'langpair' => 'en|ar'  // Specify the source language as 'en' (English) and target as 'ar' (Arabic)
 ]);
 
-// Translate the service description using MyMemory
-$service_description_query = Http::get('https://api.mymemory.translated.net/get', [
-    'q' => $service->description,
-    'langpair' => 'en|ar'
-]);
 
 // Check for translation errors or unexpected responses
-if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+if ( $service_name_query['responseStatus'] !== 200) {
     throw new Exception('Translation failed');
 }
-
 // Extract the translated text from the response
 $service_name_translation = $service_name_query['responseData']['translatedText'];
-$service_description_translation = $service_description_query['responseData']['translatedText'];
+
+
+$service_description_translation = "";
+if(!empty($service->description)) {
+    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $service->description,
+        'langpair' => 'en|ar'
+    ]);
+
+    // Check for translation errors or unexpected responses
+    if ($service_description_query['responseStatus'] !== 200) {
+        throw new Exception('Translation failed');
+    }
+    $service_description_translation = $service_description_query['responseData']['translatedText'];
+}
+
 
 
 
@@ -238,20 +247,29 @@ $service_name_query = Http::get('https://api.mymemory.translated.net/get', [
     'langpair' => 'en|ar'  // Specify the source language as 'en' (English) and target as 'ar' (Arabic)
 ]);
 
-// Translate the service description using MyMemory
-$service_description_query = Http::get('https://api.mymemory.translated.net/get', [
-    'q' => $service->description,
-    'langpair' => 'en|ar'
-]);
+
 
 // Check for translation errors or unexpected responses
-if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+if ( $service_name_query['responseStatus'] !== 200) {
     throw new Exception('Translation failed');
 }
 
 // Extract the translated text from the response
 $service_name_translation = $service_name_query['responseData']['translatedText'];
-$service_description_translation = $service_description_query['responseData']['translatedText'];
+
+$service_description_translation = "";
+if(!empty($service->description)) {
+    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $service->description,
+        'langpair' => 'en|ar'
+    ]);
+
+    // Check for translation errors or unexpected responses
+    if ($service_description_query['responseStatus'] !== 200) {
+        throw new Exception('Translation failed');
+    }
+    $service_description_translation = $service_description_query['responseData']['translatedText'];
+}
 
                     ServiceTranslation::create([
                         "service_id" => $service->id,
@@ -1029,7 +1047,7 @@ $service_description_translation = $service_description_query['responseData']['t
             "id" => $id
            ])
            ->where("business_id",auth()->user()->business_id)
-           ->delete();
+           ->forceDelete();
 
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
@@ -1123,18 +1141,29 @@ $service_description_translation = $service_description_query['responseData']['t
                 'langpair' => 'en|ar'  // Set the correct source and target language
             ]);
 
-            $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
-                'q' => $sub_service->description,
-                'langpair' => 'en|ar'
-            ]);
-
-            // Check for translation errors or unexpected responses
-if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
+                        // Check for translation errors or unexpected responses
+if ( $service_name_query['responseStatus'] !== 200) {
     throw new Exception('Translation failed');
 }
+$service_name_translation = $service_name_query['responseData']['translatedText'];
 
-            $service_name_translation = $service_name_query['responseData']['translatedText'];
-            $service_description_translation = $service_description_query['responseData']['translatedText'];
+$service_description_translation = "";
+if(!empty($sub_service->description)) {
+    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $sub_service->description,
+        'langpair' => 'en|ar'
+    ]);
+
+    // Check for translation errors or unexpected responses
+    if ($service_description_query['responseStatus'] !== 200) {
+        throw new Exception('Translation failed');
+    }
+    $service_description_translation = $service_description_query['responseData']['translatedText'];
+}
+
+
+
+
 
 
             SubServiceTranslation::create([
@@ -1257,18 +1286,26 @@ if ($service_description_query['responseStatus'] !== 200 || $service_name_query[
                         'langpair' => 'en|ar'  // Set the correct source and target language
                     ]);
 
-                    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
-                        'q' => $sub_service->description,
-                        'langpair' => 'en|ar'
-                    ]);
-
-                    // Check for translation errors or unexpected responses
-if ($service_description_query['responseStatus'] !== 200 || $service_name_query['responseStatus'] !== 200) {
-    throw new Exception('Translation failed');
-}
+                                 // Check for translation errors or unexpected responses
+    if ($service_name_query['responseStatus'] !== 200) {
+        throw new Exception('Translation failed');
+    }
 
                     $service_name_translation = $service_name_query['responseData']['translatedText'];
-                    $service_description_translation = $service_description_query['responseData']['translatedText'];
+
+$service_description_translation = "";
+if(!empty($sub_service->description)) {
+    $service_description_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $sub_service->description,
+        'langpair' => 'en|ar'
+    ]);
+
+    // Check for translation errors or unexpected responses
+    if ($service_description_query['responseStatus'] !== 200) {
+        throw new Exception('Translation failed');
+    }
+    $service_description_translation = $service_description_query['responseData']['translatedText'];
+}
 
 
                     SubServiceTranslation::create([
@@ -1613,7 +1650,7 @@ if ($service_description_query['responseStatus'] !== 200 || $service_name_query[
             "id" => $id
            ])
            ->where("business_id",auth()->user()->business_id)
-           ->delete();
+           ->forceDelete();
 
             return response()->json(["ok" => true], 200);
         } catch(Exception $e){
