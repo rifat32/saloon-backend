@@ -1168,10 +1168,11 @@ class BookingController extends Controller
 
 
             $bookingQuery = Booking::with(
-                "booking_sub_services.sub_service",
-                "booking_packages.garage_package",
-                "customer",
-                "garage",
+                "sub_services.service",
+                 "booking_packages.garage_package",
+                 "customer",
+                 "garage",
+                 "expert"
 
             )
             ->when(!auth()->user()->hasRole("garage_owner"), function($query) {
@@ -1289,8 +1290,11 @@ class BookingController extends Controller
 
 
             $booking = Booking::with(
-                "booking_sub_services.sub_service",
-                "customer"
+                "sub_services.service",
+                 "booking_packages.garage_package",
+                 "customer",
+                 "garage",
+                 "expert"
             )
                 ->where([
                     "garage_id" => $garage_id,

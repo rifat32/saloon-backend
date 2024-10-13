@@ -14,7 +14,7 @@ class CreateStripeSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('system_settings', function (Blueprint $table) {
+        Schema::create('stripe_settings', function (Blueprint $table) {
             $table->id();
             $table->text('STRIPE_KEY')->nullable();
             $table->text('STRIPE_SECRET')->nullable();

@@ -69,7 +69,9 @@ trait BasicUtil
 
 
         // Get all the booked slots as a flat array
-        $allBusySlots = $bookings->pluck('booking_slots')->flatten()->toArray();
+        $allBusySlots = $bookings->pluck('booked_slots')->flatten()->toArray();
+
+
 
         $expertRota = ExpertRota::where([
             "expert_id" =>  $expert_id
