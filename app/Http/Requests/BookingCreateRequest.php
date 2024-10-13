@@ -40,7 +40,7 @@ class BookingCreateRequest extends FormRequest
     'required',
     'date_format:g:i A',
 ],
-
+"reason" => "nullable|string",
 
             "customer_id" => "required|numeric|exists:users,id",
             "garage_id" => "required|numeric|exists:garages,id",

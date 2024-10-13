@@ -44,7 +44,7 @@ class BookingUpdateRequest extends FormRequest
     'required',
     'date_format:g:i A',
 ],
-
+"reason" => "nullable|string",
 
 
 

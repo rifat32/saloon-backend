@@ -63,9 +63,11 @@ class ClientBookingController extends Controller
      *     * * *    @OA\Property(property="car_registration_year", type="string", format="string",example="2019-06-29"),
      *
      *   * *    @OA\Property(property="additional_information", type="string", format="string",example="r-00011111"),
+     *      *       @OA\Property(property="reason", type="string", format="string",example="pending"),
      *
      *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
      *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
+     *
 
      *
      *
@@ -296,6 +298,7 @@ class ClientBookingController extends Controller
      *            required={"id","status"},
      * *    @OA\Property(property="id", type="number", format="number",example="1"),
      * @OA\Property(property="status", type="string", format="string",example="pending"),
+     *      *       @OA\Property(property="reason", type="string", format="string",example="pending"),
 
      *         ),
      *      ),
@@ -363,6 +366,8 @@ class ClientBookingController extends Controller
 
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
+                    $booking->status = $updatableData["reason"];
+
                     $booking->save();
                     if($booking->pre_booking_id) {
                         $prebooking  =  PreBooking::where([
@@ -525,6 +530,7 @@ class ClientBookingController extends Controller
      *
      *    *  *   * *    @OA\Property(property="transmission", type="string", format="string",example="transmission"),
      *    *  *   * *    @OA\Property(property="fuel", type="string", format="string",example="Fuel"),
+     *      *       @OA\Property(property="reason", type="string", format="string",example="pending"),
      *
      *
      *
@@ -602,6 +608,7 @@ class ClientBookingController extends Controller
                         "coupon_code",
                         "expert_id",
                         "booked_slots",
+                        "reason",
 
                     ])->toArray()
                 )
@@ -839,9 +846,10 @@ class ClientBookingController extends Controller
 
                  // Apply the existing status filter if provided in the request
                  if (!empty($request->status)) {
-                     // If status is provided, include the condition in the query
-                     $bookingQuery->where("status", $request->status);
-                 }
+                    $statusArray = explode(',', request()->status);
+                    // If status is provided, include the condition in the query
+                    $bookingQuery->whereIn("status", $statusArray);
+                }
 
              if (!empty($request->search_key)) {
                  $bookingQuery = $bookingQuery->where(function ($query) use ($request) {

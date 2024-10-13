@@ -14,8 +14,7 @@ class Booking extends Model
 
         "expert_id",
         "booked_slots",
-
-
+        "reason",
         "pre_booking_id",
         "garage_id",
         "booking_id",

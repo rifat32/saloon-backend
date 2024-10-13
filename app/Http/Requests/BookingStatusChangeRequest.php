@@ -26,7 +26,8 @@ class BookingStatusChangeRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "garage_id" => "required|numeric",
-            "status" => "required|string|in:pending,rejected_by_garage_owner,check_in,check_out"
+            "status" => "required|string|in:pending,rejected_by_garage_owner,check_in,check_out",
+            "reason" => "nullable|string",
         ];
     }
 

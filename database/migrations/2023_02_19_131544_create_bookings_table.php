@@ -32,7 +32,8 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger("customer_id");
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade');
 
-            $table->string("additional_information")->nullable();
+            $table->text("additional_information")->nullable();
+            $table->text("reason")->nullable();
 
             $table->enum("coupon_discount_type",['fixed', 'percentage'])->default("fixed")->nullable();
             $table->double("coupon_discount_amount")->nullable()->default(0);
