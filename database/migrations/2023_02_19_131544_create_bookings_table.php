@@ -50,7 +50,7 @@ class CreateBookingsTable extends Migration
 
             $table->date("job_start_date")->nullable();
 
-            $table->enum("status",["pending","confirmed","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
+            $table->enum("status",["pending","confirmed","check_in","check_out","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
 
 
             $table->unsignedBigInteger("created_by");

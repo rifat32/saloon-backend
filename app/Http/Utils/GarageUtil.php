@@ -163,7 +163,8 @@ trait GarageUtil
     public function garageOwnerCheck($garage_id) {
 
 
-        $garageQuery  = Garage::where(["id" => $garage_id]);
+        $garageQuery  = Garage::where(["id" => $garage_id])
+        ->orWhere("id",auth()->user()->business_id);
         if(!auth()->user()->hasRole('superadmin')) {
             $garageQuery = $garageQuery->where(function ($query) {
                 $query->where('created_by', auth()->user()->id)

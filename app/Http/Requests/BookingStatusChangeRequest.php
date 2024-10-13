@@ -26,7 +26,7 @@ class BookingStatusChangeRequest extends FormRequest
         return [
             "id" => "required|numeric",
             "garage_id" => "required|numeric",
-            "status" => "required|string|in:pending,rejected_by_garage_owner"
+            "status" => "required|string|in:pending,rejected_by_garage_owner,check_in,check_out"
         ];
     }
 
@@ -34,7 +34,8 @@ class BookingStatusChangeRequest extends FormRequest
     {
 
         return [
-       "status.in" => 'The :attribute field must be one of pending,rejected_by_garage_owner',
+
+       "status.in" => 'The :attribute field must be one of pending,rejected_by_garage_owner,check_in,check_out',
 
         ];
     }
