@@ -17,7 +17,5 @@ class UserTranslation extends Model
 
     ];
 
-    public function translation(){
-        return $this->hasMany(UserTranslation::class,'user_id', 'id');
-    }
+
 }

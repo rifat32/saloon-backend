@@ -37,7 +37,9 @@ class User extends Authenticatable
         "created_by",
         'is_active'
     ];
-
+    public function translation(){
+        return $this->hasMany(UserTranslation::class,'user_id', 'id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
