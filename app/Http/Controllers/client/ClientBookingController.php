@@ -985,7 +985,11 @@ class ClientBookingController extends Controller
      ->get();
 
         // Get all the booked slots as a flat array
-        $allBusySlots = $bookings->pluck('booked_slots')->flatten()->toArray();
+
+
+
+
+        $data["booked_slots"] = $bookings->pluck('booked_slots')->flatten()->toArray();
 
         $expertRota = ExpertRota::where([
             "expert_id" =>  $expert_id
@@ -996,17 +1000,16 @@ class ClientBookingController extends Controller
           $expertRota->busy_slots;
         }
 
-
     // If expertRota exists, merge its busy_slots with the booked slots
     if (!empty($expertRota)) {
-        $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
+        $data["busy_slots"] = $expertRota->busy_slots;
     } else {
         return response()->json([
                 "message" => "No slots are available"
         ], 400);
     }
 
-            return response()->json($allBusySlots, 200);
+            return response()->json($data, 200);
         } catch (Exception $e) {
 
             return $this->sendError($e,500,$request);

@@ -61,6 +61,12 @@ class BookingController extends Controller
 
         $booking = Booking::findOrFail($trimmed_id);
 
+        if(empty($booking->price)) {
+            return response()->json([
+                "message" => "You booking price is zero. it's a software error."
+            ],409);
+        }
+
 
         $stripeSetting = StripeSetting::where([
                 "business_id" => $booking->garage_id
@@ -83,6 +89,7 @@ class BookingController extends Controller
         $existingEndpoint = collect($webhookEndpoints->data)->first(function ($endpoint) {
             return $endpoint->url === route('stripe.webhook'); // Replace with your actual endpoint URL
         });
+
         if (!$existingEndpoint) {
             // Create the webhook endpoint
             $webhookEndpoint = WebhookEndpoint::create([
@@ -98,14 +105,18 @@ class BookingController extends Controller
         if (empty($user->stripe_id)) {
             $stripe_customer = \Stripe\Customer::create([
                 'email' => $user->email,
+                'name' => $user->first_Name . " " . $user->last_Name,
             ]);
-
             $user->stripe_id = $stripe_customer->id;
             $user->save();
         }
 
         $discount = $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
         $coupon_discount = $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+
+        $total_discount = $discount + $coupon_discount;
+
+
 
         $session_data = [
             'payment_method_types' => ['card'],
@@ -129,7 +140,7 @@ class BookingController extends Controller
 
             'customer' => $user->stripe_id  ?? null,
 
-            'mode' => 'subscription',
+           'mode' => 'payment',
             'success_url' => env("FRONT_END_URL") . "/verify/business",
             'cancel_url' => env("FRONT_END_URL") . "/verify/business",
         ];
@@ -139,10 +150,10 @@ class BookingController extends Controller
 
 
         // Add discount line item only if discount amount is greater than 0 and not null
-        if (!empty($discount) || !empty($coupon_discount)) {
+        if (!empty($total_discount)) {
 
             $coupon = \Stripe\Coupon::create([
-                'amount_off' => ($discount + $coupon_discount) * 100, // Amount in cents
+                'amount_off' => $total_discount * 100, // Amount in cents
                 'currency' => 'GBP', // The currency
                 'duration' => 'once', // Can be once, forever, or repeating
                 'name' => "Discount", // Coupon name
@@ -150,7 +161,7 @@ class BookingController extends Controller
 
             $session_data["discounts"] =  [ // Add the discount information here
                 [
-                    'coupon' => $coupon, // Use coupon ID if created
+                    'coupon' => $coupon->id, // Use coupon ID if created
                 ],
             ];
         }

@@ -37,7 +37,9 @@ class CustomWebhookController extends WebhookController
 
         // Handle the event based on its type
         if ($eventType === 'checkout.session.completed') {
+            // return response()->json($payload['data']['object'],409);
             $this->handleChargeSucceeded($payload['data']['object']);
+
         }
 
         // Return a response to Stripe to acknowledge receipt of the webhook
@@ -56,7 +58,7 @@ class CustomWebhookController extends WebhookController
 
 
         // Extract required data from payment charge
-        $amount = $data['amount'] ?? null;
+        $amount = $data['amount_total'] ? ($data['amount_total'] / 100) :  0;
         $customerID = $data['customer'] ?? null;
         $metadata = $data["metadata"] ?? [];
         // Add more fields as needed
@@ -64,6 +66,7 @@ class CustomWebhookController extends WebhookController
         if(!empty($metadata["our_url"]) && $metadata["our_url"] != route('stripe.webhook')){
                return;
         }
+
 
 
 

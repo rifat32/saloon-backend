@@ -937,6 +937,11 @@ if(!empty($service->description)) {
                 }
 
                 ])
+                ->when(request()->filled("expert_id"), function($query) {
+                    $query->whereHas("price",function($query) {
+                        $query->where("sub_service_prices.expert_id",request()->input("expert_id"));
+                    });
+               })
             ->whereIn("service_id",$services->pluck("id"))
             ->when(request()->filled("business_id"), function($query) {
                 $query->where("business_id",request()->input("business_id"));

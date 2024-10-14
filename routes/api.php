@@ -1237,25 +1237,12 @@ Route::delete('/v1.0/client/pre-bookings/{id}', [ClientPreBookingController::cla
 //  client pre booking management section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Route::post('webhooks/stripe', [CustomWebhookController::class, "handleStripeWebhook"])->name("stripe.webhook");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 
 });
+
+
+Route::post('webhooks/stripe', [CustomWebhookController::class, "handleStripeWebhook"])->name("stripe.webhook");
