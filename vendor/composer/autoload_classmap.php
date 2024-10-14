@@ -240,6 +240,7 @@ return array(
     'App\\Models\\SubServiceTranslation' => $baseDir . '/app/Models/SubServiceTranslation.php',
     'App\\Models\\Tag' => $baseDir . '/app/Models/Tag.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
+    'App\\Models\\UserTranslation' => $baseDir . '/app/Models/UserTranslation.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',
     'App\\Providers\\BroadcastServiceProvider' => $baseDir . '/app/Providers/BroadcastServiceProvider.php',

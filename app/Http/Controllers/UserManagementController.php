@@ -14,11 +14,13 @@ use App\Http\Utils\UserActivityUtil;
 use App\Mail\VerifyMail;
 use App\Models\Booking;
 use App\Models\User;
+use App\Models\UserTranslation;
 use Carbon\Carbon;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -270,6 +272,45 @@ class UserManagementController extends Controller
             // $data["permissions"]  = $user->getAllPermissions()->pluck('name');
             // $data["roles"] = $user->roles->pluck('name');
             // $data["token"] = $token;
+
+            UserTranslation::where([
+                "user_id" => $user->id
+            ])
+            ->delete();
+
+            $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->first_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($first_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+
+            $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+            $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->last_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($last_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+            $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+            UserTranslation::create([
+                "user_id" => $user->id,
+                "language" => "ar",
+                "first_Name" => $first_name_translation,
+                "last_Name" => $last_name_translation
+            ]);
+
+
+
             return response($user, 201);
         } catch(Exception $e){
             error_log($e->getMessage());
@@ -454,6 +495,43 @@ class UserManagementController extends Controller
             }
 
 
+            UserTranslation::where([
+                "user_id" => $user->id
+            ])
+            ->delete();
+
+            $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->first_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($first_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+
+            $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+            $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->last_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($last_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+            $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+            UserTranslation::create([
+                "user_id" => $user->id,
+                "language" => "ar",
+                "first_Name" => $first_name_translation,
+                "last_Name" => $last_name_translation
+            ]);
+
+
 
 
 // verify email ends
@@ -523,7 +601,7 @@ class UserManagementController extends Controller
         try{
             $this->storeActivity($request,"");
 
-            $user = User::where([
+            $user = User::with("translation")->where([
                 "phone" => $phone
             ])
             ->whereHas('roles', function ($query) {
@@ -558,7 +636,7 @@ class UserManagementController extends Controller
         try{
             $this->storeActivity($request,"");
 
-            $user = User::where([
+            $user = User::with("translation")->where([
                 "phone" => $request->phone
             ])
             ->whereHas('roles', function ($query) {
@@ -724,6 +802,43 @@ class UserManagementController extends Controller
 
 
             $user->roles = $user->roles->pluck('name');
+
+
+            UserTranslation::where([
+                "user_id" => $user->id
+            ])
+            ->delete();
+
+            $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->first_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($first_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+
+            $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+            $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->last_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($last_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+            $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+            UserTranslation::create([
+                "user_id" => $user->id,
+                "language" => "ar",
+                "first_Name" => $first_name_translation,
+                "last_Name" => $last_name_translation
+            ]);
 
 
             return response($user, 201);
@@ -954,6 +1069,43 @@ class UserManagementController extends Controller
              $user->roles = $user->roles->pluck('name');
 
 
+             UserTranslation::where([
+                "user_id" => $user->id
+            ])
+            ->delete();
+
+            $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->first_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($first_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+
+            $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+            $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+                'q' => $user->last_Name,
+                'langpair' => 'en|ar'  // Set the correct source and target language
+            ]);
+
+                         // Check for translation errors or unexpected responses
+            if ($last_name_query['responseStatus'] !== 200) {
+            throw new Exception('Translation failed');
+            }
+            $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+            UserTranslation::create([
+                "user_id" => $user->id,
+                "language" => "ar",
+                "first_Name" => $first_name_translation,
+                "last_Name" => $last_name_translation
+            ]);
+
+
              return response($user, 201);
          } catch(Exception $e){
              error_log($e->getMessage());
@@ -1045,7 +1197,7 @@ class UserManagementController extends Controller
                 ],401);
            }
 
-            $usersQuery = User::with("roles")
+            $usersQuery = User::with("roles","translation")
             ->when(!empty(auth()->user()->business_id), function($query) {
             $query->where("business_id", auth()->user()->business_id);
             },
@@ -1164,7 +1316,8 @@ class UserManagementController extends Controller
         try{
             $this->storeActivity($request,"");
 
-            $usersQuery = User::
+            $usersQuery = User::with("translation")
+            ->
             whereHas('roles', function($query) {
                 $query->where('roles.name', 'business_experts');
             })
@@ -1269,7 +1422,7 @@ class UserManagementController extends Controller
                 ],401);
            }
 
-            $user = User::with("roles")
+            $user = User::with("roles","translation")
             ->when(!empty(auth()->user()->business_id), function($query) {
                 $query->where("business_id", auth()->user()->business_id);
                 })

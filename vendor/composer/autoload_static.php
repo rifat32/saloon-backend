@@ -926,6 +926,7 @@ class ComposerStaticInit21d3eeeef4e11a73df45b8701b58e483
         'App\\Models\\SubServiceTranslation' => __DIR__ . '/../..' . '/app/Models/SubServiceTranslation.php',
         'App\\Models\\Tag' => __DIR__ . '/../..' . '/app/Models/Tag.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
+        'App\\Models\\UserTranslation' => __DIR__ . '/../..' . '/app/Models/UserTranslation.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
         'App\\Providers\\BroadcastServiceProvider' => __DIR__ . '/../..' . '/app/Providers/BroadcastServiceProvider.php',

@@ -23,10 +23,12 @@ use App\Models\GarageService;
 use App\Models\GarageSubService;
 use App\Models\GarageTime;
 use App\Models\User;
+use App\Models\UserTranslation;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -489,6 +491,46 @@ if(!$user->hasRole('garage_owner')) {
      $this->storeQuestion($garage->id);
 
 
+     UserTranslation::where([
+        "user_id" => $user->id
+    ])
+    ->delete();
+
+    $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $user->first_Name,
+        'langpair' => 'en|ar'  // Set the correct source and target language
+    ]);
+
+                 // Check for translation errors or unexpected responses
+    if ($first_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+    }
+
+    $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+    $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $user->last_Name,
+        'langpair' => 'en|ar'  // Set the correct source and target language
+    ]);
+
+                 // Check for translation errors or unexpected responses
+    if ($last_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+    }
+    $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+    UserTranslation::create([
+        "user_id" => $user->id,
+        "language" => "ar",
+        "first_Name" => $first_name_translation,
+        "last_Name" => $last_name_translation
+    ]);
+
+
+
+
+
         return response([
 
             "garage" => $garage
@@ -726,6 +768,46 @@ if(!$user->hasRole('garage_owner')) {
             Mail::to($insertableData['user']['email'])->send(new SendPassword($user,$password));
         }
     }
+
+
+    UserTranslation::where([
+        "user_id" => $user->id
+    ])
+    ->delete();
+
+    $first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $user->first_Name,
+        'langpair' => 'en|ar'  // Set the correct source and target language
+    ]);
+
+                 // Check for translation errors or unexpected responses
+    if ($first_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+    }
+
+    $first_name_translation = $first_name_query['responseData']['translatedText'];
+
+    $last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+        'q' => $user->last_Name,
+        'langpair' => 'en|ar'  // Set the correct source and target language
+    ]);
+
+                 // Check for translation errors or unexpected responses
+    if ($last_name_query['responseStatus'] !== 200) {
+    throw new Exception('Translation failed');
+    }
+    $last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+    UserTranslation::create([
+        "user_id" => $user->id,
+        "language" => "ar",
+        "first_Name" => $first_name_translation,
+        "last_Name" => $last_name_translation
+    ]);
+
+
+
 
         return response([
             "user" => $user,
@@ -1018,6 +1100,44 @@ if(!$user->hasRole('garage_owner')) {
 
   // create services
   $this->createGarageServices($updatableData['service'],$garage->id);
+
+  UserTranslation::where([
+    "user_id" => $user->id
+])
+->delete();
+
+$first_name_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $user->first_Name,
+    'langpair' => 'en|ar'  // Set the correct source and target language
+]);
+
+             // Check for translation errors or unexpected responses
+if ($first_name_query['responseStatus'] !== 200) {
+throw new Exception('Translation failed');
+}
+
+$first_name_translation = $first_name_query['responseData']['translatedText'];
+
+$last_name_query = Http::get('https://api.mymemory.translated.net/get', [
+    'q' => $user->last_Name,
+    'langpair' => 'en|ar'  // Set the correct source and target language
+]);
+
+             // Check for translation errors or unexpected responses
+if ($last_name_query['responseStatus'] !== 200) {
+throw new Exception('Translation failed');
+}
+$last_name_translation = $last_name_query['responseData']['translatedText'];
+
+
+UserTranslation::create([
+    "user_id" => $user->id,
+    "language" => "ar",
+    "first_Name" => $first_name_translation,
+    "last_Name" => $last_name_translation
+]);
+
+
 
 
         return response([
