@@ -749,6 +749,7 @@ class ComposerStaticInit21d3eeeef4e11a73df45b8701b58e483
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\PreventRequestsDuringMaintenance' => __DIR__ . '/../..' . '/app/Http/Middleware/PreventRequestsDuringMaintenance.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
+        'App\\Http\\Middleware\\ResponseMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/ResponseMiddleware.php',
         'App\\Http\\Middleware\\SwaggerMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/SwaggerMiddleware.php',
         'App\\Http\\Middleware\\TrimStrings' => __DIR__ . '/../..' . '/app/Http/Middleware/TrimStrings.php',
         'App\\Http\\Middleware\\TrustHosts' => __DIR__ . '/../..' . '/app/Http/Middleware/TrustHosts.php',

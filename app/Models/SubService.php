@@ -15,11 +15,29 @@ class SubService extends Model
         "business_id",
 
         "service_id",
+        "default_price",
         "is_fixed_price",
         "service_time_in_minute"
         // "is_active",
 
     ];
+
+     // Accessor for default_price
+     public function getPriceAttribute($value)
+     {
+        $price = $this->default_price;
+        if(!empty(request()->input("expert_id"))) {
+             $subServicePrice = SubServicePrice::where([
+               "sub_service_id" => $this->id,
+               "expert_id" => request()->input("expert_id")
+             ])->first();
+             if(!empty($subServicePrice)) {
+                $price = $subServicePrice->price;
+             }
+        }
+         return number_format($price, 2); // Format as currency
+     }
+
     public function service(){
         return $this->belongsTo(Service::class,'service_id', 'id');
     }
@@ -28,7 +46,7 @@ class SubService extends Model
         return $this->hasMany(SubServiceTranslation::class,'sub_service_id', 'id');
     }
 
-    public function price(){
+    public function expert_price(){
         return $this->hasMany(SubServicePrice::class,'sub_service_id', 'id');
     }
 

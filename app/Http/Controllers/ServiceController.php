@@ -929,19 +929,8 @@ if(!empty($service->description)) {
             // GETTING SUB SERVICES
             $sub_services =  SubService::
             with([
-                'translation',
-                "price" => function($query) {
-                  $query->when(request()->filled("expert_id"), function($query) {
-                       $query->where("expert_id",request()->input("expert_id"));
-                  });
-                }
-
+                'translation'
                 ])
-                ->when(request()->filled("expert_id"), function($query) {
-                    $query->whereHas("price",function($query) {
-                        $query->where("sub_service_prices.expert_id",request()->input("expert_id"));
-                    });
-               })
             ->whereIn("service_id",$services->pluck("id"))
             ->when(request()->filled("business_id"), function($query) {
                 $query->where("business_id",request()->input("business_id"));
@@ -1111,6 +1100,7 @@ if(!empty($service->description)) {
      *    @OA\Property(property="description", type="string", format="string",example="car"),
      *    @OA\Property(property="service_id", type="string", format="number",example="1"),
      *    @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *    *    @OA\Property(property="default_price", type="number", format="number",example="1"),
      *    @OA\Property(property="service_time_in_minute", type="number", format="number",example="1")
      *
      *
@@ -1232,6 +1222,8 @@ if(!empty($sub_service->description)) {
      *             @OA\Property(property="name", type="string", format="string",example="car"),
      *             @OA\Property(property="description", type="string", format="string",example="description"),
      *             @OA\Property(property="is_fixed_price", type="number", format="number",example="1"),
+     *              @OA\Property(property="default_price", type="number", format="number",example="1"),
+     *
      *            @OA\Property(property="service_time_in_minute", type="number", format="number",example="1")
      *         ),
      *      ),
@@ -1293,6 +1285,7 @@ if(!empty($sub_service->description)) {
                     "description",
                     "service_id",
                     "is_fixed_price",
+                    "default_price",
                     "service_time_in_minute"
                     // "automobile_category_id"
                 ])->toArray()

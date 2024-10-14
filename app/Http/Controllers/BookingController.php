@@ -303,7 +303,7 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id, $insertableData["expert_id"]);
+                    $price = $this->getPrice($sub_service, $insertableData["expert_id"]);
 
                     $total_time += $sub_service->service_time_in_minute;
 
@@ -592,7 +592,7 @@ class BookingController extends Controller
                         throw new Exception(json_encode($error), 422);
                     }
 
-                    $price = $this->getPrice($sub_service_id, $request["expert_id"]);
+                    $price = $this->getPrice($sub_service, $request["expert_id"]);
 
                     $total_time += $sub_service->service_time_in_minute;
 
