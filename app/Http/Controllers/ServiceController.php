@@ -12,6 +12,7 @@ use App\Http\Utils\UserActivityUtil;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\BookingSubService;
 use App\Models\FuelStationService;
 use App\Models\Service;
 use App\Models\SubService;
@@ -1043,6 +1044,30 @@ if(!empty($service->description)) {
                    "message" => "You can not perform this action"
                 ],401);
            }
+
+           $sub_service_ids = SubService::where([
+              "service_id" => $id
+           ])
+           ->pluck("id");
+
+           $conflicts = [];
+           $conflictingBookingExists = BookingSubService::whereIn("sub_service_id", $sub_service_ids)->exists();
+           if ($conflictingBookingExists) {
+               $conflicts[] = "Booking";
+           }
+
+           // Return combined error message if conflicts exist
+           if (!empty($conflicts)) {
+               $conflictList = implode(', ', $conflicts);
+               return response()->json([
+                   "message" => "There are bookings associated with this service, preventing deletion.",
+               ], 409);
+           }
+
+
+
+
+
            Service::where([
             "id" => $id
            ])
@@ -1646,6 +1671,23 @@ if(!empty($sub_service->description)) {
                    "message" => "You can not perform this action"
                 ],401);
            }
+
+           $conflicts = [];
+           $conflictingBookingExists = BookingSubService::whereIn("sub_service_id", [$id])->exists();
+           if ($conflictingBookingExists) {
+               $conflicts[] = "Booking";
+           }
+
+           // Return combined error message if conflicts exist
+           if (!empty($conflicts)) {
+               $conflictList = implode(', ', $conflicts);
+               return response()->json([
+                   "message" => "There are bookings associated with this service, preventing deletion.",
+               ], 409);
+           }
+
+
+
            SubService::where([
             "id" => $id
            ])
