@@ -1517,11 +1517,13 @@ class UserManagementController extends Controller
        ])
         ->when(!empty(auth()->user()->business_id), function($query) {
             $query->where("business_id", auth()->user()->business_id);
-            })
+            },
+            function($query) {
+                $query->where('created_by', auth()->user()->id);
+                },
+            )
 
-       ->when(!$request->user()->hasRole('superadmin'), function ($query) use ($request) {
-        $query->where('created_by', $request->user()->id);
-    })
+
     ->first();
     if(!$user) {
         return response()->json([
