@@ -859,11 +859,31 @@ class ClientBookingController extends Controller
              }
 
              if (!empty($request->start_date)) {
-                 $bookingQuery = $bookingQuery->where('created_at', ">=", $request->start_date);
-             }
-             if (!empty($request->end_date)) {
-                 $bookingQuery = $bookingQuery->where('created_at', "<=", $request->end_date);
-             }
+                $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $bookingQuery = $bookingQuery->where('job_start_date', '<=', $request->end_date);
+            }
+
+            // Additional date filters using date_filter
+            if ($request->date_filter === 'today') {
+                $bookingQuery = $bookingQuery->whereDate('job_start_date', Carbon::today());
+            } elseif ($request->date_filter === 'this_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } elseif ($request->date_filter === 'previous_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+            } elseif ($request->date_filter === 'next_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
+            } elseif ($request->date_filter === 'this_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
+                                             ->whereYear('job_start_date', Carbon::now()->year);
+            } elseif ($request->date_filter === 'previous_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
+                                             ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
+            } elseif ($request->date_filter === 'next_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
+                                             ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
+            }
 
 
 
