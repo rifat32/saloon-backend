@@ -30,8 +30,8 @@ class CreateErrorLogsTable extends Migration
             $table->string("line")->nullable();
             $table->string("file")->nullable();
             $table->string("ip_address")->nullable();
-            $table->string("request_method")->nullable();
-            $table->string("device")->nullable();
+
+
             $table->timestamps();
         });
     }

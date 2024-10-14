@@ -9,41 +9,44 @@ use Illuminate\Http\Request;
 trait ErrorUtil
 {
     // this function do all the task and returns transaction id or -1
-    public function sendError(Exception $e,$statusCode,Request $request)
+    public function sendError(Exception $e, $statusCode, Request $request)
     {
+        $errorData = [
+            "message" => $e->getMessage(),
+            "line" => $e->getLine(),
+            "file" => $e->getFile(),
+        ];
 
-        // first return 422 custom error
+        return response()->json($errorData, $this->getHttpStatusCode($e->getCode()));
 
-        if($e->getCode() == 422) {
-            return response()->json(json_decode($e->getMessage()),422);
+
+
+
+        $user = auth()->user();
+        $authorizationHeader = request()->header('Authorization');
+        $token = str_replace('Bearer ', '', $authorizationHeader);
+
+        $errorLog = [
+            "api_url" => $request->fullUrl(),
+            "fields" => json_encode(request()->all()),
+            "token" => $token,
+
+            "user" => !empty($user) ? (json_encode($user)) : "",
+            "user_id" => !empty($user) ? $user->id : "",
+            "message" => $e->getMessage(),
+            "status_code" => $e->getCode(),
+            "line" => $e->getLine(),
+            "file" => $e->getFile(),
+            "ip_address" =>  $request->header('X-Forwarded-For'),
+            "request_method" => $request->method()
+        ];
+        ErrorLog::create($errorLog);
+
+
+        if ($e->getCode() == 422) {
+            $statusCode = 422;
+            return response()->json(json_decode($e->getMessage()), 422);
         }
-
-
-        if (env("APP_DEBUG") === false) {
-            $data["message"] = "something went wrong";
-        } else {
-            $data["message"] = $e->getMessage();
-        }
-
-
-
-$user = auth()->user();
-$errorLog = [
-    "api_url" => $request->fullUrl(),
-    "user"=> !empty($user)?(json_encode($user)):"",
-    "user_id"=> !empty($user)?$user->id:"",
-    "message"=> $data["message"],
-    "status_code"=> $statusCode,
-    "line"=> $e->getLine(),
-    "file"=> $e->getFile(),
-    "ip_address" =>  $request->header('X-Forwarded-For'),
-
-    "request_method"=>$request->method()
-
-];
-
-         ErrorLog::create($errorLog);
-return response()->json($data,$statusCode);
 
     }
 }
