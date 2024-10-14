@@ -141,8 +141,8 @@ class BookingController extends Controller
             'customer' => $user->stripe_id  ?? null,
 
            'mode' => 'payment',
-            'success_url' => env("FRONT_END_URL") . "/verify/business",
-            'cancel_url' => env("FRONT_END_URL") . "/verify/business",
+            'success_url' => env("FRONT_END_URL") . "/bookings",
+            'cancel_url' => env("FRONT_END_URL") . "/bookings",
         ];
 
 
