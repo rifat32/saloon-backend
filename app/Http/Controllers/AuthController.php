@@ -19,6 +19,8 @@ use App\Mail\VerifyMail;
 use App\Models\AutomobileCategory;
 use App\Models\AutomobileMake;
 use App\Models\AutomobileModel;
+use App\Models\EmailTemplate;
+use App\Models\EmailTemplateWrapper;
 use App\Models\Garage;
 use App\Models\GarageAutomobileMake;
 use App\Models\GarageAutomobileModel;
@@ -42,6 +44,120 @@ use Spatie\Permission\Models\Role;
 class AuthController extends Controller
 {
     use ErrorUtil, GarageUtil, UserActivityUtil;
+
+        /**
+     *
+     * @OA\Post(
+     *      path="/activate-user",
+     *      operationId="activateUser",
+     *      tags={"auth"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *      summary="This method is to store user",
+     *      description="This method is to store user",
+     *
+     *  @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *            required={"first_Name"},
+     *             @OA\Property(property="token", type="string", format="string",example="token")
+     *         ),
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function activateUser(Request $request)
+     {
+         // Validate the request
+         $request->validate([
+             'token' => 'required',
+         ]);
+
+         $token = $request->input('token');
+
+         // Find the user with the provided token and check if the token is still valid
+         $user = User::where('email_verify_token', $token)
+                     ->where('email_verify_token_expires', '>', now())
+                     ->first();
+
+         if (!$user) {
+             return response()->json([
+                 'message' => 'Invalid Token or Token Expired',
+             ], 400);
+         }
+
+         // Mark the email as verified
+         $user->email_verified_at = now();
+         $user->save();
+
+         // Retrieve the welcome email template
+         $email_content = EmailTemplate::where([
+             'type' => 'welcome_message',
+             'is_active' => 1
+         ])->first();
+
+         if (!$email_content) {
+             return response()->json([
+                 'message' => 'Email template not found',
+             ], 404);
+         }
+
+         // Replace placeholders with actual user data
+         $html_content = json_decode($email_content->template);
+         $html_content = str_replace('[FirstName]', $user->first_name, $html_content);
+         $html_content = str_replace('[LastName]', $user->last_name, $html_content);
+         $html_content = str_replace('[FullName]', $user->first_name . ' ' . $user->last_name, $html_content);
+         $html_content = str_replace('[AccountVerificationLink]', env('APP_URL').'/activate/'.$user->email_verify_token, $html_content);
+         $html_content = str_replace('[ForgotPasswordLink]', env('FRONT_END_URL').'/forget-password/'.$user->resetPasswordToken, $html_content);
+
+         // Get the email wrapper and wrap the content
+         $email_template_wrapper = EmailTemplateWrapper::where('id', $email_content->wrapper_id)->first();
+
+         if ($email_template_wrapper) {
+             $html_final = json_decode($email_template_wrapper->template);
+             $html_final = str_replace('[content]', $html_content, $html_final);
+         } else {
+             $html_final = $html_content;
+         }
+
+         // Return the final dynamic message as a view or response
+         return view('dynamic-welcome-message', ['html_content' => $html_final]);
+     }
+
+
+
     /**
      *
      * @OA\Post(
@@ -122,7 +238,8 @@ class AuthController extends Controller
 
               // verify email starts
               $email_token = Str::random(30);
-              $user->email_verify_token = $email_token;
+              $otp = random_int(100000, 999999);
+              $user->email_verify_token = $otp;
               $user->email_verify_token_expires = Carbon::now()->subDays(-1);
               $user->save();
 
@@ -543,8 +660,6 @@ $datediff = $now - $user_created_date;
                 $insertableData = $request->validated();
 
             $user = User::
-
-
             where(["email" => $insertableData["email"]])->first();
             if (!$user) {
                 return response()->json(["message" => "no user found"], 404);
@@ -552,8 +667,8 @@ $datediff = $now - $user_created_date;
 
 
 
-            $email_token = Str::random(30);
-            $user->email_verify_token = $email_token;
+            $otp = random_int(100000, 999999);
+            $user->email_verify_token = $otp;
             $user->email_verify_token_expires = Carbon::now()->subDays(-1);
             if(env("SEND_EMAIL") == true) {
                 Mail::to($user->email)->send(new VerifyMail($user));
@@ -884,12 +999,12 @@ $datediff = $now - $user_created_date;
                      }
 
 
-               // verify email starts
-               $email_token = Str::random(30);
+
 
                $user->business_id = $garage->id;
 
-               $user->email_verify_token = $email_token;
+               $otp = random_int(100000, 999999);
+               $user->email_verify_token = $otp;
                $user->email_verify_token_expires = Carbon::now()->subDays(-1);
                $user->save();
 

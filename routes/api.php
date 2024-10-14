@@ -64,6 +64,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/v1.0/expert-users', [UserManagementController::class, "getExpertUsers"]);
+
+Route::post("/activate-user", [AuthController::class, 'activateUser']);
+
 Route::post('/v1.0/register', [AuthController::class, "register"]);
 Route::post('/v1.0/login', [AuthController::class, "login"]);
 Route::post('/v1.0/token-regenerate', [AuthController::class, "regenerateToken"]);

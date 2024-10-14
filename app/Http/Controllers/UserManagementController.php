@@ -437,8 +437,8 @@ class UserManagementController extends Controller
                 $user =  User::create($insertableData);
 
                 // verify email starts
-                $email_token = Str::random(30);
-                $user->email_verify_token = $email_token;
+                $otp = random_int(100000, 999999);
+                $user->email_verify_token = $otp;
                 $user->email_verify_token_expires = Carbon::now()->subDays(-1);
                 $user->save();
 
