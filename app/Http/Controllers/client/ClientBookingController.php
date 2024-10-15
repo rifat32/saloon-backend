@@ -358,39 +358,30 @@ class ClientBookingController extends Controller
                         "message" => "booking not found"
                     ], 404);
                 }
-                if ($booking->status != "confirmed") {
-                    return response()->json([
-                        "message" => "you can only accecpt or reject only a confirmed booking"
-                    ], 409);
+                if ($booking->status === "converted_to_job") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "Status cannot be updated because it is completed"], 422);
+                }
+
+                if ( $booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
+                    // Return an error response indicating that the status cannot be updated
+                    return response()->json(["message" => "Status cannot be updated because it is in cancelled status"], 422);
                 }
 
 
 
 
 
-                if ($updatableData["status"] == "rejected_by_client") {
+
+
                     $booking->status = $updatableData["status"];
                     $booking->status = $updatableData["reason"] ?? NULL;
 
                     $booking->save();
-                    if ($booking->pre_booking_id) {
-                        $prebooking  =  PreBooking::where([
-                            "id" => $booking->pre_booking_id
-                        ])
-                            ->first();
-                        JobBid::where([
-                            "id" => $prebooking->selected_bid_id
-                        ])
-                            ->update([
-                                "status" => "canceled_after_booking"
-                            ]);
-                        $prebooking->status = "pending";
-                        $prebooking->selected_bid_id = NULL;
-                        $prebooking->save();
-                    }
+
 
                     $notification_template = NotificationTemplate::where([
-                        "type" => "booking_rejected_by_client"
+                        "type" => "booking_status_changed_by_garage_owner"
                     ])
                         ->first();
                     Notification::create([
@@ -408,92 +399,6 @@ class ClientBookingController extends Controller
                     //     "booking_rejected_by_client"
                     // ));
                     // }
-
-                } else if ($updatableData["status"] == "accepted") {
-
-                    $job = Job::create([
-                        "booking_id" => $booking->id,
-                        "garage_id" => $booking->garage_id,
-                        "customer_id" => $booking->customer_id,
-
-                        "additional_information" => $booking->additional_information,
-                        "job_start_date" => $booking->job_start_date,
-
-
-                        "coupon_discount_type" => $booking->coupon_discount_type,
-                        "coupon_discount_amount" => $booking->coupon_discount_amount,
-
-
-                        "discount_type" => $booking->discount_type,
-                        "discount_amount" => $booking->discount_amount,
-                        "price" => $booking->price,
-                        "final_price" => $booking->final_price,
-                        "status" => "pending",
-                        "payment_status" => "due",
-
-
-
-                    ]);
-
-                    $total_price = 0;
-
-                    foreach (
-                        BookingSubService::where([
-                            "booking_id" => $booking->id
-                        ])->get()
-                        as
-                        $booking_sub_service
-                    ) {
-                        $job->job_sub_services()->create([
-                            "sub_service_id" => $booking_sub_service->sub_service_id,
-                            "price" => $booking_sub_service->price
-                        ]);
-                        $total_price += $booking_sub_service->price;
-                    }
-
-                    foreach (
-                        BookingPackage::where([
-                            "booking_id" => $booking->id
-                        ])->get()
-                        as
-                        $booking_package
-                    ) {
-                        $job->job_packages()->create([
-                            "garage_package_id" => $booking_package->garage_package_id,
-                            "price" => $booking_package->price
-                        ]);
-                        $total_price += $booking_package->price;
-                    }
-
-
-
-
-                    // $job->price = $total_price;
-                    // $job->save();
-                    $booking->status = "converted_to_job";
-                    $booking->save();
-                    // $booking->delete();
-
-                    $notification_template = NotificationTemplate::where([
-                        "type" => "booking_accepted_by_client"
-                    ])
-                        ->first();
-                    Notification::create([
-                        "sender_id" => $request->user()->id,
-                        "receiver_id" => $booking->garage->owner_id,
-                        "customer_id" => $booking->customer_id,
-                        "garage_id" => $booking->garage_id,
-                        "booking_id" => $booking->id,
-                        "job_id" => $job->id,
-                        "notification_template_id" => $notification_template->id,
-                        "status" => "unread",
-                    ]);
-                    // if(env("SEND_EMAIL") == true) {
-                    //     Mail::to($booking->customer->email)->send(new DynamicMail(
-                    //     $booking,
-                    //     "booking_accepted_by_client"
-                    // ));}
-                }
 
 
 

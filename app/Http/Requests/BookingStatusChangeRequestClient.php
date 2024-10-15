@@ -26,7 +26,7 @@ class BookingStatusChangeRequestClient extends FormRequest
         return [
             "id" => "required|numeric",
             "reason" => "nullable|string",
-            "status" => "required|string|in:accepted,rejected_by_client", [
+            "status" => "required|string|in:pending,rejected_by_client", [
                 'status.in' => 'The :attribute field must be either "accepted" or "rejected by client".'
             ]
         ];
@@ -35,7 +35,7 @@ class BookingStatusChangeRequestClient extends FormRequest
     {
 
         return [
-       "status.in" => 'The :attribute field must be either accepted or rejected_by_client.',
+       "status.in" => 'The :attribute field must be either pending or rejected_by_client.',
 
         ];
     }

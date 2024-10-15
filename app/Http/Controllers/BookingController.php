@@ -789,7 +789,7 @@ class BookingController extends Controller
                     return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
                 }
 
-                if ( $updatableData["status"] == "rejected_by_garage_owner" ) {
+                if ( $booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
                     // Return an error response indicating that the status cannot be updated
                     return response()->json(["message" => "Status cannot be updated because it is in cancelled status"], 422);
                 }
