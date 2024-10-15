@@ -12,6 +12,7 @@ use App\Http\Requests\GetIdRequest;
 use App\Http\Utils\BusinessUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
+use App\Models\Booking;
 use App\Models\ExpertRota;
 use App\Models\DisabledExpertRota;
 use App\Models\User;
@@ -100,9 +101,6 @@ class ExpertRotaController extends Controller
                 $request_data["is_active"] = 1;
 
 
-
-
-
                 $request_data["created_by"] = auth()->user()->id;
                 $request_data["business_id"] = auth()->user()->business_id;
 
@@ -113,20 +111,59 @@ class ExpertRotaController extends Controller
                     }
                 }
 
+                $bookings = Booking::whereDate("job_start_date", $request_data["date"])
+                    ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+                    ->where([
+                        "expert_id" => $request_data["expert_id"]
+                    ])
+                    ->get();
+
+
+
+                // Get all the booked slots as a flat array
+                $allBusySlots = $bookings->pluck('booked_slots')->flatten()->toArray();
+
+ // Find overlapping slots between the input slots and the combined allBusySlots
+ $overlappingSlots = array_intersect($request_data["busy_slots"], $allBusySlots);
+
+   // If there are overlaps, return them or throw an error
+   if (!empty($overlappingSlots)) {
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Some slots are already booked.',
+        'overlapping_slots' => $overlappingSlots
+    ],409);
+}
+
+
               $rota_exists =  ExpertRota::where([
                     "expert_id" => $request_data["expert_id"],
                 ])
                 ->whereDate("date",$request_data["date"])
-                ->exists();
+                ->first();
+
+
+
+
+
 
                 if(!empty($rota_exists)) {
-                     return response()->json([
-                        "message"=>"Rota already exists on this date"
-                     ],409);
+                    $rota_exists->fill(collect($request_data)->only([
+                        "expert_id",
+                        "date",
+                        "busy_slots",
+                        // "is_default",
+                        // "is_active",
+                        // "business_id",
+                        // "created_by"
+                    ])->toArray());
+                    $rota_exists->save();
+                } else {
+                    $expert_rota =  ExpertRota::create($request_data);
                 }
 
 
-                $expert_rota =  ExpertRota::create($request_data);
+
 
 
 

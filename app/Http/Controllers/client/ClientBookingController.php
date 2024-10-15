@@ -752,7 +752,12 @@ class ClientBookingController extends Controller
             )
                 ->where([
                     "customer_id" => $request->user()->id
-                ]);
+                ])
+                ->when(request()->input("expert_id"), function($query) {
+                    $query ->where([
+                       "expert_id" => request()->input("expert_id")
+                    ]);
+               });
 
             // Apply the existing status filter if provided in the request
             if (!empty($request->status)) {
@@ -798,11 +803,7 @@ class ClientBookingController extends Controller
 
 
 
-
-
-
-
-            $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
+            $bookings = $bookingQuery->orderByDesc("job_start_date")->paginate($perPage);
 
 
             return response()->json($bookings, 200);

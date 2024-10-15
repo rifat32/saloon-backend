@@ -1099,8 +1099,6 @@ class BookingController extends Controller
     }
 
 
-
-
     /**
      *
      * @OA\Get(
@@ -1183,7 +1181,174 @@ class BookingController extends Controller
      *     )
      */
 
-    public function getBookings($garage_id, $perPage, Request $request)
+     public function getBookings($garage_id, $perPage, Request $request)
+     {
+         try {
+             $this->storeActivity($request, "");
+             if (!$request->user()->hasPermissionTo('booking_view')) {
+                 return response()->json([
+                     "message" => "You can not perform this action"
+                 ], 401);
+             }
+
+
+             $bookingQuery = Booking::with(
+                 "sub_services.service",
+                  "booking_packages.garage_package",
+                  "customer",
+                  "garage",
+                  "expert"
+
+             )
+             ->when(!auth()->user()->hasRole("garage_owner") && !auth()->user()->hasRole("business_receptionist") , function($query) {
+                  $query->where([
+                     "expert_id" => auth()->user()->id
+                  ]);
+             })
+                 ->where([
+                     "garage_id" => auth()->user()->business_id
+                 ])
+                 ->when(request()->input("expert_id"), function($query) {
+                      $query ->where([
+                         "expert_id" => request()->input("expert_id")
+                      ]);
+                 })
+
+                 ;
+
+                    // Apply the existing status filter if provided in the request
+                    if (!empty($request->status)) {
+                     $statusArray = explode(',', request()->status);
+                     // If status is provided, include the condition in the query
+                     $bookingQuery->whereIn("status", $statusArray);
+                 }
+
+
+             if (!empty($request->search_key)) {
+                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
+                     $term = $request->search_key;
+                     $query->where("car_registration_no", "like", "%" . $term . "%");
+                 });
+             }
+
+             if (!empty($request->start_date)) {
+                 $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
+             }
+             if (!empty($request->end_date)) {
+                 $bookingQuery = $bookingQuery->where('job_start_date', '<=', $request->end_date);
+             }
+
+             // Additional date filters using date_filter
+             if ($request->date_filter === 'today') {
+                 $bookingQuery = $bookingQuery->whereDate('job_start_date', Carbon::today());
+             } elseif ($request->date_filter === 'this_week') {
+                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+             } elseif ($request->date_filter === 'previous_week') {
+                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+             } elseif ($request->date_filter === 'next_week') {
+                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
+             } elseif ($request->date_filter === 'this_month') {
+                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
+                                              ->whereYear('job_start_date', Carbon::now()->year);
+             } elseif ($request->date_filter === 'previous_month') {
+                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
+                                              ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
+             } elseif ($request->date_filter === 'next_month') {
+                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
+                                              ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
+             }
+             $bookings = $bookingQuery->orderByDesc("job_start_date")->paginate($perPage);
+
+             return response()->json($bookings, 200);
+         } catch (Exception $e) {
+
+             return $this->sendError($e, 500, $request);
+         }
+     }
+
+    /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/upcoming-bookings",
+     *      operationId="getUpcomingBookings",
+     *      tags={"booking_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *              @OA\Parameter(
+     *         name="garage_id",
+     *         in="path",
+     *         description="garage_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      * *  @OA\Parameter(
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
+     *      summary="This method is to get  bookings ",
+     *      description="This method is to get bookings",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+    public function getUpcomingBookings(Request $request)
     {
         try {
             $this->storeActivity($request, "");
@@ -1193,68 +1358,66 @@ class BookingController extends Controller
                 ], 401);
             }
 
-
-
-            $bookingQuery = Booking::with(
-                "sub_services.service",
-                 "booking_packages.garage_package",
-                 "customer",
-                 "garage",
-                 "expert"
-
-            )
-            ->when(!auth()->user()->hasRole("garage_owner") && !auth()->user()->hasRole("business_receptionist") , function($query) {
-                 $query->where([
-                    "expert_id" => auth()->user()->id
-                 ]);
-            })
-                ->where([
-                    "garage_id" => auth()->user()->business_id
-                ]);
-
-                   // Apply the existing status filter if provided in the request
-                   if (!empty($request->status)) {
-                    $statusArray = explode(',', request()->status);
-                    // If status is provided, include the condition in the query
-                    $bookingQuery->whereIn("status", $statusArray);
-                }
-
-
-            if (!empty($request->search_key)) {
-                $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
-                    $term = $request->search_key;
-                    $query->where("car_registration_no", "like", "%" . $term . "%");
-                });
+            if (!request()->filled("current_slot")) {
+                return response()->json([
+                    "message" => "current slot field is required"
+                ], 401);
             }
 
-            if (!empty($request->start_date)) {
-                $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
-            }
-            if (!empty($request->end_date)) {
-                $bookingQuery = $bookingQuery->where('job_start_date', '<=', $request->end_date);
+            $experts = User::with("translation")
+            ->
+            whereHas('roles', function($query) {
+                $query->where('roles.name', 'business_experts');
+            })->where("business_id", auth()->user()->business_id);
+
+
+            foreach($experts as $expert) {
+
+        $upcoming_bookings = collect();
+
+         // Get all bookings for the provided date except the rejected ones
+         $expert_bookings = Booking::whereDate("job_start_date", today())
+         ->whereIn("status", ["pending"])
+         ->where([
+             "expert_id" => $expert->id
+         ])
+         ->get();
+
+         foreach($expert_bookings as $expert_booking){
+            $booked_slots = $expert_booking->booked_slots;
+
+            // Convert time strings into Carbon objects
+            $booked_times = array_map(function ($time) {
+                return Carbon::parse($time);
+            }, $booked_slots);
+
+            // Get the smallest time
+            $smallest_time = min($booked_times);
+
+            // Get the current time or the input "current_slot"
+            $current_time = request()->input("current_slot")
+                ? Carbon::parse(request()->input("current_slot"))
+                : Carbon::now(); // Use the current time if no input is provided
+
+            // Compare the smallest booked time with the current time
+            if ($smallest_time->greaterThan($current_time)) {
+          $upcoming_bookings->push($upcoming_bookings);
             }
 
-            // Additional date filters using date_filter
-            if ($request->date_filter === 'today') {
-                $bookingQuery = $bookingQuery->whereDate('job_start_date', Carbon::today());
-            } elseif ($request->date_filter === 'this_week') {
-                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-            } elseif ($request->date_filter === 'previous_week') {
-                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
-            } elseif ($request->date_filter === 'next_week') {
-                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
-            } elseif ($request->date_filter === 'this_month') {
-                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->year);
-            } elseif ($request->date_filter === 'previous_month') {
-                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
-            } elseif ($request->date_filter === 'next_month') {
-                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
+         }
+
+
+         $expert->upcoming_booking = $upcoming_bookings->toArray();
+
+
+
+
             }
-            $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
-            return response()->json($bookings, 200);
+
+
+
+
+            return response()->json($experts, 200);
         } catch (Exception $e) {
 
             return $this->sendError($e, 500, $request);
