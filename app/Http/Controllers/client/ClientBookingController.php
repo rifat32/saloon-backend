@@ -1007,7 +1007,7 @@ class ClientBookingController extends Controller
      ->where([
          "expert_id" => $expert_id
      ])
-     ->select("id","booked_slots")
+     ->select("id","booked_slots","customer_id")
 
      ->get();
 
@@ -1026,15 +1026,16 @@ class ClientBookingController extends Controller
         if(!empty($expertRota)) {
           $expertRota->busy_slots;
         }
-
+        $data["busy_slots"] = [];
     // If expertRota exists, merge its busy_slots with the booked slots
     if (!empty($expertRota)) {
         $data["busy_slots"] = $expertRota->busy_slots;
-    } else {
-        return response()->json([
-                "message" => "No slots are available"
-        ], 400);
     }
+    // else {
+    //     return response()->json([
+    //             "message" => "No slots are available"
+    //     ], 400);
+    // }
 
             return response()->json($data, 200);
         } catch (Exception $e) {
