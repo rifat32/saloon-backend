@@ -32,15 +32,15 @@ class UserUpdateRequest extends FormRequest
             'email' => 'required|string|unique:users,email,' . $this->id . ',id',
 
             'password' => 'nullable|confirmed|string|min:6',
-            'phone' => 'required|string',
+            'phone' => 'nullable|string',
             'image' => 'nullable',
-            'address_line_1' => 'required|string',
+            'address_line_1' => 'nullable|string',
             'address_line_2' => 'nullable',
-            'country' => 'required|string',
-            'city' => 'required|string',
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
             'postcode' => 'nullable|string',
-            'lat' => 'required|string',
-            'long' => 'required|string',
+            'lat' => 'nullable|string',
+            'long' => 'nullable|string',
             'role' => 'required|string'
         ];
     }

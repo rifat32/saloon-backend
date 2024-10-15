@@ -35,11 +35,11 @@ class UserUpdateProfileRequest extends FormRequest
             'image' => 'nullable',
             'address_line_1' => 'nullable',
             'address_line_2' => 'nullable',
-            'country' => 'required|string',
-            'city' => 'required|string',
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
             'postcode' => 'nullable|string',
-            'lat' => 'required|string',
-            'long' => 'required|string',
+            'lat' => 'nullable|string',
+            'long' => 'nullable|string',
 
         ];
     }

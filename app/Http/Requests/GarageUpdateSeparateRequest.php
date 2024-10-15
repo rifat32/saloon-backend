@@ -36,12 +36,12 @@ class GarageUpdateSeparateRequest extends FormRequest
             'garage.additional_information' => 'nullable|string',
 
 
-            'garage.lat' => 'required|string',
-            'garage.long' => 'required|string',
-            'garage.country' => 'required|string',
-            'garage.city' => 'required|string',
+            'garage.lat' => 'nullable|string',
+            'garage.long' => 'nullable|string',
+            'garage.country' => 'nullable|string',
+            'garage.city' => 'nullable|string',
             'garage.postcode' => 'nullable|string',
-            'garage.address_line_1' => 'required|string',
+            'garage.address_line_1' => 'nullable|string',
             'garage.address_line_2' => 'nullable|string',
 
 
