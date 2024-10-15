@@ -789,7 +789,7 @@ class BookingController extends Controller
 
 
 
-                $booking->reason = $updatableData["reason"];
+                $booking->reason = $updatableData["reason"]??NULL;
                     $booking->status = $updatableData["status"];
                     $booking->update(collect($updatableData)->only(["status","reason"])->toArray());
 
@@ -1196,7 +1196,7 @@ class BookingController extends Controller
                  "expert"
 
             )
-            ->when(!auth()->user()->hasRole("garage_owner"), function($query) {
+            ->when(!auth()->user()->hasRole("garage_owner") || !auth()->user()->hasRole("business_receptionist") , function($query) {
                  $query->where([
                     "expert_id" => auth()->user()->id
                  ]);

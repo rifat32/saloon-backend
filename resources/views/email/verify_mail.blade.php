@@ -41,7 +41,7 @@
         <p class="otp">{{ $user->email_verify_token }}</p>
         <p>Enter this OTP in the verification form to activate your account. The OTP is valid for a limited time.</p>
         <p>If you did not sign up for our service, please ignore this email. Your email address will not be used for any other purpose.</p>
-        <p>If you have any questions or concerns, please contact us at {{ $contactEmail }}. We're here to help!</p>
+        {{-- <p>If you have any questions or concerns, please contact us at {{ $contactEmail }}. We're here to help!</p> --}}
         <p>Best regards,</p>
         <p>{{ env('APP_NAME') }}</p>
     </body>

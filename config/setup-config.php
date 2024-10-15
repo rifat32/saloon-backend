@@ -281,6 +281,129 @@ return [
 
             ],
         ],
+
+        [
+            "role" => "business_receptionist",
+            "permissions" => [
+
+
+                "user_create",
+                "user_update",
+                "user_view",
+                "user_delete",
+
+                "sub_service_price_create",
+                "sub_service_price_update",
+                "sub_service_price_view",
+                "sub_service_price_delete",
+
+
+
+                "service_create",
+                "service_update",
+                "service_view",
+                "service_delete",
+
+                "expert_rota_create",
+                "expert_rota_update",
+                "expert_rota_activate",
+                "expert_rota_view",
+                "expert_rota_delete",
+
+
+                "questions_create",
+                "questions_update",
+                "questions_view",
+                "questions_delete",
+
+                "garage_update",
+                "garage_view",
+
+
+                "garage_times_update",
+                "garage_times_view",
+
+                "garage_rules_update",
+                "garage_rules_view",
+
+                "garage_gallery_create",
+                "garage_gallery_view",
+                "garage_gallery_delete",
+
+                "garage_services_create",
+                "garage_services_update",
+                "garage_services_view",
+                "garage_services_delete",
+
+                "garage_automobile_create",
+                "garage_automobile_update",
+                "garage_automobile_view",
+                "garage_automobile_delete",
+
+
+                "booking_create",
+                "booking_update",
+                "booking_view",
+                "booking_delete",
+
+                "job_create",
+                "job_update",
+                "job_view",
+                "job_delete",
+
+
+                "coupon_create",
+                "coupon_update",
+                "coupon_view",
+                "coupon_delete",
+
+
+                "affiliation_create",
+                "affiliation_update",
+                "affiliation_view",
+                "affiliation_delete",
+
+
+                "garage_affiliation_create",
+                "garage_affiliation_update",
+                "garage_affiliation_view",
+                "garage_affiliation_delete",
+
+
+
+                "garage_service_price_create",
+                "garage_service_price_update",
+                "garage_service_price_view",
+                "garage_service_price_delete",
+
+
+                "garage_package_create",
+                "garage_package_update",
+                "garage_package_view",
+                "garage_package_delete",
+
+                "job_bids_create",
+                "job_bids_update",
+                "job_bids_view",
+                "job_bids_delete",
+
+                "product_category_view",
+
+
+                "global_garage_background_image_view",
+
+                "stripe_setting_update",
+                "system_setting_view",
+
+
+
+            ],
+        ],
+
+
+
+
+
         [
             "role" => "business_experts",
             "permissions" => [
@@ -430,7 +553,8 @@ return [
         "garage_owner",
         "shop_owner",
         "customer",
-        "business_experts"
+        "business_experts",
+        "business_receptionist"
 
     ],
     "permissions" => [

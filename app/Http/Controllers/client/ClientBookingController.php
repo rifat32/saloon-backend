@@ -366,7 +366,7 @@ class ClientBookingController extends Controller
 
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
-                    $booking->status = $updatableData["reason"];
+                    $booking->status = $updatableData["reason"]??NULL;
 
                     $booking->save();
                     if($booking->pre_booking_id) {
@@ -997,11 +997,18 @@ class ClientBookingController extends Controller
 
  // Get all bookings for the provided date except the rejected ones
  $bookings = Booking::
-     whereDate("job_start_date", request()->input("date"))
+ with([
+    "customer" => function($query) {
+         $query->select("users.id","users.first_Name","users.last_Name");
+    }
+ ])
+     ->whereDate("job_start_date", request()->input("date"))
      ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
      ->where([
          "expert_id" => $expert_id
      ])
+     ->select("id","booked_slots")
+
      ->get();
 
         // Get all the booked slots as a flat array
@@ -1009,7 +1016,7 @@ class ClientBookingController extends Controller
 
 
 
-        $data["booked_slots"] = $bookings->pluck('booked_slots')->flatten()->toArray();
+        $data["bookings"] = $bookings;
 
         $expertRota = ExpertRota::where([
             "expert_id" =>  $expert_id
