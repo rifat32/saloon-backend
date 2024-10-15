@@ -1184,6 +1184,8 @@ Route::middleware(['auth:api'])->group(function () {
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::get('/v1.0/client/blocked-slots/{expert_id}', [ClientBookingController::class, "getBlockedSlotsClient"]);
 
+Route::get('/v1.0/client/available-experts', [ClientBookingController::class, "getAvailableExpertsClient"]);
+
 
 Route::post('/v1.0/client/bookings', [ClientBookingController::class, "createBookingClient"]);
 Route::put('/v1.0/client/bookings', [ClientBookingController::class, "updateBookingClient"]);

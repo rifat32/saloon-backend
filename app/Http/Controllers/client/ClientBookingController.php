@@ -29,6 +29,7 @@ use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\PreBooking;
 use App\Models\SubService;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ClientBookingController extends Controller
 {
-    use ErrorUtil, DiscountUtil, PriceUtil,UserActivityUtil, BasicUtil;
+    use ErrorUtil, DiscountUtil, PriceUtil, UserActivityUtil, BasicUtil;
     /**
      *
      * @OA\Post(
@@ -115,7 +116,7 @@ class ClientBookingController extends Controller
     public function createBookingClient(BookingCreateRequestClient $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
             return DB::transaction(function () use ($request) {
                 $insertableData = $request->validated();
 
@@ -149,7 +150,7 @@ class ClientBookingController extends Controller
                     $sub_service =  SubService::where([
                         "business_id" => $booking->garage_id,
                         "id" => $sub_service_id
-                        ])
+                    ])
                         ->first();
 
                     if (!$sub_service) {
@@ -172,7 +173,7 @@ class ClientBookingController extends Controller
                     ]);
                 }
 
-                $slotValidation =  $this->validateBookingSlots($booking->id,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
+                $slotValidation =  $this->validateBookingSlots($booking->id, $request["booked_slots"], $request["job_start_date"], $request["expert_id"], $total_time);
 
                 if ($slotValidation['status'] === 'error') {
                     // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
@@ -242,9 +243,12 @@ class ClientBookingController extends Controller
                 }
                 $booking->final_price = $booking->price;
                 $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
-                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type,
+                $booking->final_price -= $this->canculate_discounted_price(
+                    $booking->price,
+                    $booking->coupon_discount_type,
 
-                $booking->coupon_discount_amount);
+                    $booking->coupon_discount_amount
+                );
                 $booking->save();
 
 
@@ -275,7 +279,7 @@ class ClientBookingController extends Controller
         } catch (Exception $e) {
 
 
-             return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -339,7 +343,7 @@ class ClientBookingController extends Controller
     public function changeBookingStatusClient(BookingStatusChangeRequestClient $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
             return  DB::transaction(function () use ($request) {
 
                 $updatableData = $request->validated();
@@ -366,24 +370,23 @@ class ClientBookingController extends Controller
 
                 if ($updatableData["status"] == "rejected_by_client") {
                     $booking->status = $updatableData["status"];
-                    $booking->status = $updatableData["reason"]??NULL;
+                    $booking->status = $updatableData["reason"] ?? NULL;
 
                     $booking->save();
-                    if($booking->pre_booking_id) {
+                    if ($booking->pre_booking_id) {
                         $prebooking  =  PreBooking::where([
                             "id" => $booking->pre_booking_id
                         ])
-                        ->first();
+                            ->first();
                         JobBid::where([
                             "id" => $prebooking->selected_bid_id
                         ])
-                        ->update([
-                            "status" => "canceled_after_booking"
-                        ]);
+                            ->update([
+                                "status" => "canceled_after_booking"
+                            ]);
                         $prebooking->status = "pending";
                         $prebooking->selected_bid_id = NULL;
                         $prebooking->save();
-
                     }
 
                     $notification_template = NotificationTemplate::where([
@@ -434,31 +437,33 @@ class ClientBookingController extends Controller
 
                     $total_price = 0;
 
-                    foreach (BookingSubService::where([
+                    foreach (
+                        BookingSubService::where([
                             "booking_id" => $booking->id
                         ])->get()
                         as
-                        $booking_sub_service) {
+                        $booking_sub_service
+                    ) {
                         $job->job_sub_services()->create([
                             "sub_service_id" => $booking_sub_service->sub_service_id,
                             "price" => $booking_sub_service->price
                         ]);
                         $total_price += $booking_sub_service->price;
-
                     }
 
-                    foreach (BookingPackage::where([
-                        "booking_id" => $booking->id
-                    ])->get()
-                    as
-                    $booking_package) {
-                    $job->job_packages()->create([
-                        "garage_package_id" => $booking_package->garage_package_id,
-                        "price" => $booking_package->price
-                    ]);
-                    $total_price += $booking_package->price;
-
-                }
+                    foreach (
+                        BookingPackage::where([
+                            "booking_id" => $booking->id
+                        ])->get()
+                        as
+                        $booking_package
+                    ) {
+                        $job->job_packages()->create([
+                            "garage_package_id" => $booking_package->garage_package_id,
+                            "price" => $booking_package->price
+                        ]);
+                        $total_price += $booking_package->price;
+                    }
 
 
 
@@ -499,7 +504,7 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -576,7 +581,7 @@ class ClientBookingController extends Controller
     public function updateBookingClient(BookingUpdateRequestClient $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
             return  DB::transaction(function () use ($request) {
 
                 $updatableData = $request->validated();
@@ -630,7 +635,7 @@ class ClientBookingController extends Controller
                     $sub_service =  SubService::where([
                         "business_id" => auth()->user()->business_id,
                         "id" => $sub_service_id
-                        ])
+                    ])
                         ->first();
 
                     if (!$sub_service) {
@@ -654,7 +659,7 @@ class ClientBookingController extends Controller
                     ]);
                 }
 
-                $slotValidation =  $this->validateBookingSlots($booking->id,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
+                $slotValidation =  $this->validateBookingSlots($booking->id, $request["booked_slots"], $request["job_start_date"], $request["expert_id"], $total_time);
 
                 if ($slotValidation['status'] === 'error') {
                     // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
@@ -741,12 +746,12 @@ class ClientBookingController extends Controller
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
 
-   /**
+    /**
      *
      * @OA\Get(
      *      path="/v1.0/client/bookings/{perPage}",
@@ -764,33 +769,33 @@ class ClientBookingController extends Controller
      *  example="6"
      *      ),
      *      *      * *  @OA\Parameter(
-* name="status",
-* in="query",
-* description="status",
-* required=true,
-* example="pending"
-* ),
+     * name="status",
+     * in="query",
+     * description="status",
+     * required=true,
+     * example="pending"
+     * ),
      *      * *  @OA\Parameter(
-* name="start_date",
-* in="query",
-* description="start_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="end_date",
-* in="query",
-* description="end_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      *      summary="This method is to get  bookings ",
      *      description="This method is to get bookings",
      *
@@ -829,36 +834,36 @@ class ClientBookingController extends Controller
      *     )
      */
 
-     public function getBookingsClient($perPage, Request $request)
-     {
-         try {
-             $this->storeActivity($request,"");
-             $bookingQuery = Booking::with(
-                 "sub_services.service",
-                 "booking_packages.garage_package",
-                 "customer",
-                 "garage",
-                 "expert"
-                 )
-                 ->where([
-                     "customer_id" => $request->user()->id
-                 ]);
+    public function getBookingsClient($perPage, Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            $bookingQuery = Booking::with(
+                "sub_services.service",
+                "booking_packages.garage_package",
+                "customer",
+                "garage",
+                "expert"
+            )
+                ->where([
+                    "customer_id" => $request->user()->id
+                ]);
 
-                 // Apply the existing status filter if provided in the request
-                 if (!empty($request->status)) {
-                    $statusArray = explode(',', request()->status);
-                    // If status is provided, include the condition in the query
-                    $bookingQuery->whereIn("status", $statusArray);
-                }
+            // Apply the existing status filter if provided in the request
+            if (!empty($request->status)) {
+                $statusArray = explode(',', request()->status);
+                // If status is provided, include the condition in the query
+                $bookingQuery->whereIn("status", $statusArray);
+            }
 
-             if (!empty($request->search_key)) {
-                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
-                     $term = $request->search_key;
-                     $query->where("car_registration_no", "like", "%" . $term . "%");
-                 });
-             }
+            if (!empty($request->search_key)) {
+                $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("car_registration_no", "like", "%" . $term . "%");
+                });
+            }
 
-             if (!empty($request->start_date)) {
+            if (!empty($request->start_date)) {
                 $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
             }
             if (!empty($request->end_date)) {
@@ -876,13 +881,13 @@ class ClientBookingController extends Controller
                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
             } elseif ($request->date_filter === 'this_month') {
                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->year);
+                    ->whereYear('job_start_date', Carbon::now()->year);
             } elseif ($request->date_filter === 'previous_month') {
                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
+                    ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
             } elseif ($request->date_filter === 'next_month') {
                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
-                                             ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
+                    ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
             }
 
 
@@ -892,15 +897,167 @@ class ClientBookingController extends Controller
 
 
 
-             $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
+            $bookings = $bookingQuery->orderByDesc("id")->paginate($perPage);
 
 
-             return response()->json($bookings, 200);
+            return response()->json($bookings, 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500, $request);
+        }
+    }
+
+
+     /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/available-experts",
+     *      operationId="getAvailableExpertsClient",
+     *      tags={"client.booking"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+     *
+     *      * *  @OA\Parameter(
+     * name="business_id",
+     * in="query",
+     * description="business_id",
+     * required=true,
+     * example=""
+     * ),
+     *      * *  @OA\Parameter(
+     * name="date",
+     * in="query",
+     * description="date",
+     * required=true,
+     * example=""
+     * ),
+
+     *      summary="This method is to get  bookings ",
+     *      description="This method is to get bookings",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getAvailableExpertsClient( Request $request)
+     {
+         try {
+             $this->storeActivity($request, "");
+
+             if (!request()->filled("date")) {
+                 return response()->json([
+                     "message" => "Date field is required"
+                 ], 401);
+             }
+             if (!request()->filled("business_id")) {
+                return response()->json([
+                    "message" => "business_id field is required"
+                ], 401);
+            }
+
+            if (!request()->filled("slots")) {
+                return response()->json([
+                    "message" => "slots field is required"
+                ], 401);
+            }
+
+
+             $experts = User::with("translation")
+             ->whereHas('roles', function($query) {
+                 $query->where('roles.name', 'business_experts');
+             })
+             ->when(request()->filled("business_id"), function($query){
+                 $query->where("business_id", request()->input("business_id"));
+             })
+             ->get();
+
+             $availableExperts = collect();
+
+             foreach($experts as $expert) {
+                 // Get all bookings for the provided date except the rejected ones
+        $expert_bookings = Booking::whereDate("job_start_date", request()->input("date"))
+            ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+            ->where([
+                "business_id" => request()->input("business_id")
+            ])
+            ->get();
+
+
+        // Get all the booked slots as a flat array
+        $allBusySlots = $expert_bookings->pluck('booked_slots')->flatten()->toArray();
+
+
+        $expertRota = ExpertRota::where([
+            "expert_id" =>  $expert->id
+        ])
+        ->whereDate("date",request()->input("date"))
+        ->first();
+
+        if(!empty($expertRota)) {
+          $expertRota->busy_slots;
+        }
+
+    // If expertRota exists, merge its busy_slots with the booked slots
+    if (!empty($expertRota) && !empty($expertRota->busy_slots)) {
+        $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
+    }
+
+    $slots = explode(',', request()->input("slots"));
+    // Find overlapping slots between the input slots and the combined allBusySlots
+    $overlappingSlots = array_intersect($slots, $allBusySlots);
+
+        // If there are overlaps, return them or throw an error
+        if (!empty($overlappingSlots)) {
+            return [
+                'status' => 'error',
+                'message' => 'Some slots are already booked.',
+                'overlapping_slots' => $overlappingSlots
+            ];
+        } else {
+           $availableExperts->push($expert);
+        }
+
+             }
+
+             return response()->json($availableExperts->toArray(), 200);
          } catch (Exception $e) {
 
-             return $this->sendError($e,500,$request);
+             return $this->sendError($e, 500, $request);
          }
      }
+
     /**
      *
      * @OA\Get(
@@ -919,33 +1076,33 @@ class ClientBookingController extends Controller
      *  example="6"
      *      ),
      *      *      * *  @OA\Parameter(
-* name="status",
-* in="query",
-* description="status",
-* required=true,
-* example="pending"
-* ),
+     * name="status",
+     * in="query",
+     * description="status",
+     * required=true,
+     * example="pending"
+     * ),
      *      * *  @OA\Parameter(
-* name="start_date",
-* in="query",
-* description="start_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="end_date",
-* in="query",
-* description="end_date",
-* required=true,
-* example="2019-06-29"
-* ),
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
      * *  @OA\Parameter(
-* name="search_key",
-* in="query",
-* description="search_key",
-* required=true,
-* example="search_key"
-* ),
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
      *      summary="This method is to get  bookings ",
      *      description="This method is to get bookings",
      *
@@ -987,65 +1144,62 @@ class ClientBookingController extends Controller
     public function getBlockedSlotsClient($expert_id, Request $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
 
-            if(!request()->filled("date")) {
-                  return response()->json([
-                   "message" => "Date field is required"
-                  ],401);
+            if (!request()->filled("date")) {
+                return response()->json([
+                    "message" => "Date field is required"
+                ], 401);
             }
 
 
-        
+            // Get all bookings for the provided date except the rejected ones
+            $bookings = Booking::with([
+                    "customer" => function ($query) {
+                        $query->select("users.id", "users.first_Name", "users.last_Name");
+                    }
+                ])
+                ->whereDate("job_start_date", request()->input("date"))
+                ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+                ->where([
+                    "expert_id" => $expert_id
+                ])
+                ->select("id", "booked_slots", "customer_id")
 
- // Get all bookings for the provided date except the rejected ones
- $bookings = Booking::
- with([
-    "customer" => function($query) {
-         $query->select("users.id","users.first_Name","users.last_Name");
-    }
- ])
-     ->whereDate("job_start_date", request()->input("date"))
-     ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
-     ->where([
-         "expert_id" => $expert_id
-     ])
-     ->select("id","booked_slots","customer_id")
+                ->get();
 
-     ->get();
+            // Get all the booked slots as a flat array
 
-        // Get all the booked slots as a flat array
-
-        $data["bookings"] = $bookings;
+            $data["bookings"] = $bookings;
 
 
 
 
 
 
-        $expertRota = ExpertRota::where([
-            "expert_id" =>  $expert_id
-        ])
-        ->whereDate("date",request()->input("date"))
-        ->first();
-        if(!empty($expertRota)) {
-          $expertRota->busy_slots;
-        }
-        $data["busy_slots"] = [];
-    // If expertRota exists, merge its busy_slots with the booked slots
-    if (!empty($expertRota)) {
-        $data["busy_slots"] = $expertRota->busy_slots;
-    }
-    // else {
-    //     return response()->json([
-    //             "message" => "No slots are available"
-    //     ], 400);
-    // }
+            $expertRota = ExpertRota::where([
+                "expert_id" =>  $expert_id
+            ])
+                ->whereDate("date", request()->input("date"))
+                ->first();
+            if (!empty($expertRota)) {
+                $expertRota->busy_slots;
+            }
+            $data["busy_slots"] = [];
+            // If expertRota exists, merge its busy_slots with the booked slots
+            if (!empty($expertRota)) {
+                $data["busy_slots"] = $expertRota->busy_slots;
+            }
+            // else {
+            //     return response()->json([
+            //             "message" => "No slots are available"
+            //     ], 400);
+            // }
 
             return response()->json($data, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -1111,7 +1265,7 @@ class ClientBookingController extends Controller
     public function getBookingByIdClient($id, Request $request)
     {
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
             $booking = Booking::with("booking_sub_services.sub_service")
                 ->where([
                     "id" => $id,
@@ -1129,7 +1283,7 @@ class ClientBookingController extends Controller
             return response()->json($booking, 200);
         } catch (Exception $e) {
 
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
 
@@ -1196,16 +1350,18 @@ class ClientBookingController extends Controller
     {
 
         try {
-            $this->storeActivity($request,"");
+            $this->storeActivity($request, "");
             $booking =  Booking::where([
                 "id" => $id,
                 "customer_id" => $request->user()->id
             ])->first();
-            if(!$booking){
-                return response()->json([
-                    "message" => "no booking found"
-                ],
-            404);
+            if (!$booking) {
+                return response()->json(
+                    [
+                        "message" => "no booking found"
+                    ],
+                    404
+                );
             }
 
 
@@ -1217,21 +1373,20 @@ class ClientBookingController extends Controller
             }
 
 
-            if($booking->pre_booking_id) {
+            if ($booking->pre_booking_id) {
                 $prebooking  =  PreBooking::where([
                     "id" => $booking->pre_booking_id
                 ])
-                ->first();
+                    ->first();
                 JobBid::where([
                     "id" => $prebooking->selected_bid_id
                 ])
-                ->update([
-                    "status" => "canceled_after_booking"
-                ]);
+                    ->update([
+                        "status" => "canceled_after_booking"
+                    ]);
                 $prebooking->status = "pending";
                 $prebooking->selected_bid_id = NULL;
                 $prebooking->save();
-
             }
 
             $booking->delete();
@@ -1258,18 +1413,7 @@ class ClientBookingController extends Controller
 
             return response()->json(["ok" => true], 200);
         } catch (Exception $e) {
-            return $this->sendError($e,500,$request);
+            return $this->sendError($e, 500, $request);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 }
