@@ -59,6 +59,7 @@ class SetUpController extends Controller
                     "is_default" => 1,
                     "is_default_for_business" => (in_array($role, [
                         "business_experts",
+                        "business_receptionist",
                     ]) ? 1 : 0)
 
 
@@ -280,6 +281,7 @@ return "swagger generated ...............";
                     "is_default" => 1,
                     "is_default_for_business" => (in_array($role, [
                         "business_experts",
+                        "business_receptionist"
                     ]) ? 1 : 0)
 
                 ]);
