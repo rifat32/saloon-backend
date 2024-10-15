@@ -24,7 +24,7 @@ class JobPaymentCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            "job_id" => "required|numeric",
+            "booking_id" => "required|numeric",
             "garage_id" => "required|numeric",
             "payments" => "required|array",
             "payments.*.payment_type_id" => "required|numeric",

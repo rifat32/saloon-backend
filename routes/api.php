@@ -784,7 +784,7 @@ Route::delete('/v1.0/jobs/{garage_id}/{id}', [JobController::class, "deleteJobBy
 Route::patch('/v1.0/jobs/payment', [JobController::class, "addPayment"]);
 Route::delete('/v1.0/jobs/payment/{garage_id}/{id}', [JobController::class, "deletePaymentById"]);
 Route::get('/v1.0/jobs/payments/{garage_id}', [JobController::class, "getJobPayments"]);
-
+Route::get('/v1.0/jobs/payments/sum/{garage_id}', [JobController::class, "getJobPaymentsSum"]);
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // job management section

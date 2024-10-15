@@ -67,6 +67,13 @@ class BookingController extends Controller
             ],409);
         }
 
+        if($booking->payment_status == "completed") {
+            return response()->json([
+                "message" => "Already paid"
+            ], 409);
+        }
+
+
 
         $stripeSetting = StripeSetting::where([
                 "business_id" => $booking->garage_id
@@ -548,7 +555,7 @@ class BookingController extends Controller
 
                 if ($booking->status === "converted_to_job") {
                     // Return an error response indicating that the status cannot be updated
-                    return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
+                    return response()->json(["message" => "Status cannot be updated because it is converted_to_job"], 422);
                 }
 
 

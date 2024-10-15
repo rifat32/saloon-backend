@@ -1097,7 +1097,102 @@ class JobController extends Controller
         }
     }
 
+/**
+ * @OA\Get(
+ *      path="/v1.0/jobs/payments/sum/{garage_id}",
+ *      operationId="getJobPaymentsSum",
+ *      tags={"job_management.payment"},
+ *      security={
+ *           {"bearerAuth": {}}
+ *      },
+ *      summary="This method is to get all job payments or payments for a specific job",
+ *      description="This method is to get all job payments or payments for a specific job",
+ *
+ *      @OA\Parameter(
+ *          name="job_id",
+ *          in="query",
+ *          description="Optional Job ID to filter payments",
+ *          required=false,
+ *          example="1"
+ *      ),
+ *      @OA\Parameter(
+ *          name="garage_id",
+ *          in="path",
+ *          description="Garage ID",
+ *          required=true,
+ *          example="1"
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=422,
+ *          description="Unprocessable Content",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Bad Request",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="Not Found",
+ *          @OA\JsonContent(),
+ *      )
+ * )
+ */
+public function getJobPaymentsSum($garage_id,Request $request)
+{
+    try {
+        $this->storeActivity($request, "Fetching job payments");
 
+        if (!$request->user()->hasPermissionTo('job_view')) {
+            return response()->json([
+                "message" => "You cannot perform this action"
+            ], 401);
+        }
+
+        // Validate ownership of the garage
+        if (!$this->garageOwnerCheck($garage_id)) {
+            return response()->json([
+                "message" => "You are not the owner of the garage or the requested garage does not exist."
+            ], 401);
+        }
+
+        // Check if job_id is provided
+        $query = JobPayment::
+        whereHas("job", function($query) use($garage_id) {
+               $query->where("jobs.garage_id",$garage_id);
+        })
+        ->when($request->has('job_id'), function($query) {
+            $query->where('job_id', request()->input("job_id"));
+        });
+
+
+
+        // Fetch payments
+        $job_payments = $query->get()->sum("amount");
+
+
+
+        return response()->json($job_payments, 200);
+    } catch (Exception $e) {
+        return $this->sendError($e, 500, $request);
+    }
+}
 
 /**
  * @OA\Get(
@@ -1218,8 +1313,8 @@ public function getJobPayments($garage_id,Request $request)
      *  @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     * *   required={"job_id","garage_id","payments"},
-     * *    @OA\Property(property="job_id", type="number", format="number",example="1"),
+     * *   required={"booking_id","garage_id","payments"},
+     * *    @OA\Property(property="booking_id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="garage_id", type="number", format="number",example="1"),
      *  * *    @OA\Property(property="payments", type="string", format="array",example={
      * {"payment_type_id":1,"amount":50},
@@ -1285,24 +1380,25 @@ public function getJobPayments($garage_id,Request $request)
                 }
 
 
-                $job  = Job::where([
-                    "id" => $updatableData["job_id"],
+                $booking  = Booking::where([
+                    "id" => $updatableData["booking_id"],
                     "garage_id" =>  $updatableData["garage_id"]
                 ])->first();
 
-                if (!$job) {
+                if (!$booking) {
                     return response()->json([
-                        "message" => "job not found"
+                        "message" => "booking not found"
                     ], 404);
                 }
-                $total_payable = $job->price;
+
+                if($booking->payment_status == "completed") {
+                    return response()->json([
+                        "message" => "Already paid"
+                    ], 409);
+                }
 
 
-                $total_payable -= $this->canculate_discounted_price($job->price,$job->discount_type,$job->discount_amount);
-                $total_payable -= $this->canculate_discounted_price($job->price,$job->coupon_discount_type,$job->coupon_discount_amount);
-
-
-
+                $total_payable = $booking->final_price;
 
 
                 $payments = collect($updatableData["payments"]);
@@ -1310,7 +1406,7 @@ public function getJobPayments($garage_id,Request $request)
                 $payment_amount =  $payments->sum("amount");
 
                 $job_payment_amount =  JobPayment::where([
-                    "job_id" => $job->id
+                    "booking_id" => $booking->id
                 ])->sum("amount");
 
                 $total_payment = $job_payment_amount + $payment_amount;
@@ -1324,22 +1420,24 @@ public function getJobPayments($garage_id,Request $request)
                 foreach ($payments->all() as $payment) {
 
                     JobPayment::create([
-                        "job_id" => $job->id,
+                        "booking_id" => $booking->id,
                         "payment_type_id" => $payment["payment_type_id"],
                         "amount" => $payment["amount"],
                     ]);
                 }
 
+
                 if ($total_payable == $total_payment) {
-                    Job::where([
-                        "id" => $updatableData["job_id"]
+                    Booking::where([
+                        "id" => $updatableData["booking_id"]
                     ])
                         ->update([
-                            "payment_status" => "complete"
+                            "payment_status" => "complete",
+                            "payment_method" => "cash"
                         ]);
                 }
 
-                return response($job, 201);
+                return response($booking, 201);
             });
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -1427,8 +1525,6 @@ public function getJobPayments($garage_id,Request $request)
                     ], 401);
                 }
 
-
-
                 $payment = JobPayment::leftJoin('jobs', 'job_payments.job_id', '=', 'jobs.id')
                     ->where([
                         "jobs.garage_id" => $garage_id,
@@ -1440,6 +1536,7 @@ public function getJobPayments($garage_id,Request $request)
                         "message" => "payment not found"
                     ], 404);
                 }
+
                 Job::where([
                     "id" => $payment->job_id
                 ])
@@ -1447,8 +1544,6 @@ public function getJobPayments($garage_id,Request $request)
                         "payment_status" => "due"
                     ]);
                 $payment->delete();
-
-
 
 
                 return response()->json(["ok" => true], 200);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\ServicePlan;
 use App\Models\BusinessSubscription;
 use App\Models\JobPayment;
@@ -75,6 +76,14 @@ class CustomWebhookController extends WebhookController
             "amount" => $amount,
         ]);
 
+
+            Booking::where([
+                "id" => $metadata["booking_id"]
+            ])
+                ->update([
+                    "payment_status" => "complete",
+                    "payment_method" => "stripe"
+                ]);
 
 
     //     $subscription = BusinessBusinessBusinessSubscription::where('business_id', $user->business->id)
