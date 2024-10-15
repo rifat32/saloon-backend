@@ -1171,7 +1171,18 @@ class ClientBookingController extends Controller
             // Get all the booked slots as a flat array
 
             $data["bookings"] = $bookings;
+            $data["booking_slots"] = $bookings->pluck('booked_slots')->flatten()->toArray();
 
+  // Get all bookings for the provided date except the rejected ones
+  $check_in_bookings = Booking::
+whereDate("job_start_date", request()->input("date"))
+->whereIn("status", ["check_in"])
+->where([
+    "expert_id" => $expert_id
+])
+->get();
+
+$data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()->toArray();
 
 
 
