@@ -1196,7 +1196,7 @@ class BookingController extends Controller
                  "expert"
 
             )
-            ->when(!auth()->user()->hasRole("garage_owner") || !auth()->user()->hasRole("business_receptionist") , function($query) {
+            ->when(!auth()->user()->hasRole("garage_owner") && !auth()->user()->hasRole("business_receptionist") , function($query) {
                  $query->where([
                     "expert_id" => auth()->user()->id
                  ]);

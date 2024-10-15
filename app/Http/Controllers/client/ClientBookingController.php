@@ -995,6 +995,9 @@ class ClientBookingController extends Controller
                   ],401);
             }
 
+
+        
+
  // Get all bookings for the provided date except the rejected ones
  $bookings = Booking::
  with([
@@ -1013,10 +1016,12 @@ class ClientBookingController extends Controller
 
         // Get all the booked slots as a flat array
 
-
-
-
         $data["bookings"] = $bookings;
+
+
+
+
+
 
         $expertRota = ExpertRota::where([
             "expert_id" =>  $expert_id
