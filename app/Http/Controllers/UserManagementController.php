@@ -381,7 +381,16 @@ class UserManagementController extends Controller
      ]);
 
      try {
+        $this->storeActivity($request,"");
+
+        if(!$request->user()->hasPermissionTo('user_create')){
+             return response()->json([
+                "message" => "You can not perform this action"
+             ],401);
+        }
          $walkInCustomer = new User(); // Assuming you are using the User model for walk-in customers
+         $walkInCustomer->business_id = auth()->user()->business_id;
+
          $walkInCustomer->first_Name = $validatedData['first_Name'];
          $walkInCustomer->last_Name = $validatedData['last_Name'];
          $walkInCustomer->phone = $validatedData['phone'];
@@ -401,7 +410,8 @@ class UserManagementController extends Controller
 
          return response()->json($walkInCustomer, 201);
      } catch (Exception $e) {
-         return response()->json(['error' => 'Registration failed'], 500);
+        error_log($e->getMessage());
+        return $this->sendError($e,500,$request);
      }
  }
 
