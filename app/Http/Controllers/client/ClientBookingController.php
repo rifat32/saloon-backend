@@ -363,7 +363,7 @@ class ClientBookingController extends Controller
                     return response()->json(["message" => "Status cannot be updated because it is completed"], 422);
                 }
 
-                if ( $booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
+                if ($booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
                     // Return an error response indicating that the status cannot be updated
                     return response()->json(["message" => "Status cannot be updated because it is in cancelled status"], 422);
                 }
@@ -378,31 +378,31 @@ class ClientBookingController extends Controller
 
 
 
-                    $booking->status = $updatableData["status"];
-                    $booking->status = $updatableData["reason"] ?? NULL;
+                $booking->status = $updatableData["status"];
+                $booking->status = $updatableData["reason"] ?? NULL;
 
-                    $booking->save();
+                $booking->save();
 
 
-                    $notification_template = NotificationTemplate::where([
-                        "type" => "booking_status_changed_by_garage_owner"
-                    ])
-                        ->first();
-                    Notification::create([
-                        "sender_id" => $request->user()->id,
-                        "receiver_id" => $booking->garage->owner_id,
-                        "customer_id" => $booking->customer_id,
-                        "garage_id" => $booking->garage_id,
-                        "booking_id" => $booking->id,
-                        "notification_template_id" => $notification_template->id,
-                        "status" => "unread",
-                    ]);
-                    // if(env("SEND_EMAIL") == true) {
-                    //     Mail::to($booking->customer->email)->send(new DynamicMail(
-                    //     $booking,
-                    //     "booking_rejected_by_client"
-                    // ));
-                    // }
+                $notification_template = NotificationTemplate::where([
+                    "type" => "booking_status_changed_by_garage_owner"
+                ])
+                    ->first();
+                Notification::create([
+                    "sender_id" => $request->user()->id,
+                    "receiver_id" => $booking->garage->owner_id,
+                    "customer_id" => $booking->customer_id,
+                    "garage_id" => $booking->garage_id,
+                    "booking_id" => $booking->id,
+                    "notification_template_id" => $notification_template->id,
+                    "status" => "unread",
+                ]);
+                // if(env("SEND_EMAIL") == true) {
+                //     Mail::to($booking->customer->email)->send(new DynamicMail(
+                //     $booking,
+                //     "booking_rejected_by_client"
+                // ));
+                // }
 
 
 
@@ -757,11 +757,11 @@ class ClientBookingController extends Controller
                 ->where([
                     "customer_id" => $request->user()->id
                 ])
-                ->when(request()->input("expert_id"), function($query) {
-                    $query ->where([
-                       "expert_id" => request()->input("expert_id")
+                ->when(request()->input("expert_id"), function ($query) {
+                    $query->where([
+                        "expert_id" => request()->input("expert_id")
                     ]);
-               });
+                });
 
             // Apply the existing status filter if provided in the request
             if (!empty($request->status)) {
@@ -818,7 +818,7 @@ class ClientBookingController extends Controller
     }
 
 
-     /**
+    /**
      *
      * @OA\Get(
      *      path="/v1.0/client/available-experts",
@@ -881,17 +881,17 @@ class ClientBookingController extends Controller
      *     )
      */
 
-     public function getAvailableExpertsClient( Request $request)
-     {
-         try {
-             $this->storeActivity($request, "");
+    public function getAvailableExpertsClient(Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
 
-             if (!request()->filled("date")) {
-                 return response()->json([
-                     "message" => "Date field is required"
-                 ], 401);
-             }
-             if (!request()->filled("business_id")) {
+            if (!request()->filled("date")) {
+                return response()->json([
+                    "message" => "Date field is required"
+                ], 401);
+            }
+            if (!request()->filled("business_id")) {
                 return response()->json([
                     "message" => "business_id field is required"
                 ], 401);
@@ -904,64 +904,236 @@ class ClientBookingController extends Controller
             }
 
 
-             $experts = User::with("translation")
-             ->whereHas('roles', function($query) {
-                 $query->where('roles.name', 'business_experts');
-             })
-             ->when(request()->filled("business_id"), function($query){
-                 $query->where("business_id", request()->input("business_id"));
-             })
-             ->get();
+            $experts = User::with("translation")
+                ->whereHas('roles', function ($query) {
+                    $query->where('roles.name', 'business_experts');
+                })
+                ->when(request()->filled("business_id"), function ($query) {
+                    $query->where("business_id", request()->input("business_id"));
+                })
+                ->get();
 
-             $availableExperts = collect();
+            $availableExperts = collect();
 
-             foreach($experts as $expert) {
-                 // Get all bookings for the provided date except the rejected ones
-        $expert_bookings = Booking::whereDate("job_start_date", request()->input("date"))
-            ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
-            ->where([
-                "business_id" => request()->input("business_id")
-            ])
-            ->get();
-
-
-        // Get all the booked slots as a flat array
-        $allBusySlots = $expert_bookings->pluck('booked_slots')->flatten()->toArray();
+            foreach ($experts as $expert) {
+                // Get all bookings for the provided date except the rejected ones
+                $expert_bookings = Booking::whereDate("job_start_date", request()->input("date"))
+                    ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+                    ->where([
+                        "business_id" => request()->input("business_id")
+                    ])
+                    ->get();
 
 
-        $expertRota = ExpertRota::where([
-            "expert_id" =>  $expert->id
-        ])
-        ->whereDate("date",request()->input("date"))
-        ->first();
+                // Get all the booked slots as a flat array
+                $allBusySlots = $expert_bookings->pluck('booked_slots')->flatten()->toArray();
 
-        if(!empty($expertRota)) {
-          $expertRota->busy_slots;
+
+                $expertRota = ExpertRota::where([
+                    "expert_id" =>  $expert->id
+                ])
+                    ->whereDate("date", request()->input("date"))
+                    ->first();
+
+                if (!empty($expertRota)) {
+                    $expertRota->busy_slots;
+                }
+
+                // If expertRota exists, merge its busy_slots with the booked slots
+                if (!empty($expertRota) && !empty($expertRota->busy_slots)) {
+                    $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
+                }
+
+                $slots = explode(',', request()->input("slots"));
+                // Find overlapping slots between the input slots and the combined allBusySlots
+                $overlappingSlots = array_intersect($slots, $allBusySlots);
+
+                // If there are overlaps, return them or throw an error
+                if (!empty($overlappingSlots)) {
+                    return [
+                        'status' => 'error',
+                        'message' => 'Some slots are already booked.',
+                        'overlapping_slots' => $overlappingSlots
+                    ];
+                } else {
+                    $availableExperts->push($expert);
+                }
+            }
+
+            return response()->json($availableExperts->toArray(), 200);
+        } catch (Exception $e) {
+
+            return $this->sendError($e, 500, $request);
         }
-
-    // If expertRota exists, merge its busy_slots with the booked slots
-    if (!empty($expertRota) && !empty($expertRota->busy_slots)) {
-        $allBusySlots = array_merge($allBusySlots, $expertRota->busy_slots);
     }
 
-    $slots = explode(',', request()->input("slots"));
-    // Find overlapping slots between the input slots and the combined allBusySlots
-    $overlappingSlots = array_intersect($slots, $allBusySlots);
 
-        // If there are overlaps, return them or throw an error
-        if (!empty($overlappingSlots)) {
-            return [
-                'status' => 'error',
-                'message' => 'Some slots are already booked.',
-                'overlapping_slots' => $overlappingSlots
-            ];
-        } else {
-           $availableExperts->push($expert);
-        }
+        /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/client/blocked-dates",
+     *      operationId="getBlockedDatesClient",
+     *      tags={"client.booking"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
 
+     *              @OA\Parameter(
+     *         name="perPage",
+     *         in="path",
+     *         description="perPage",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *      *      * *  @OA\Parameter(
+     * name="status",
+     * in="query",
+     * description="status",
+     * required=true,
+     * example="pending"
+     * ),
+     *      * *  @OA\Parameter(
+     * name="start_date",
+     * in="query",
+     * description="start_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="end_date",
+     * in="query",
+     * description="end_date",
+     * required=true,
+     * example="2019-06-29"
+     * ),
+     * *  @OA\Parameter(
+     * name="search_key",
+     * in="query",
+     * description="search_key",
+     * required=true,
+     * example="search_key"
+     * ),
+     *      summary="This method is to get  bookings ",
+     *      description="This method is to get bookings",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getBlockedDatesClient(Request $request)
+     {
+         try {
+             $this->storeActivity($request, "");
+
+             if (!request()->filled("date")) {
+                 return response()->json([
+                     "message" => "Date field is required"
+                 ], 401);
              }
 
-             return response()->json($availableExperts->toArray(), 200);
+
+$dates = [];
+$available_dates = collect();
+
+for ($i = 0; $i <= 30; $i++) {
+    $dates[] = Carbon::today()->addDays($i)->toDateString();
+}
+$experts = User::with("translation")
+->whereHas('roles', function ($query) {
+    $query->where('roles.name', 'business_experts');
+})
+->when(request()->filled("business_id"), function ($query) {
+    $query->where("business_id", request()->input("business_id"));
+})
+->get();
+
+$total_experts = $experts->count();
+
+$total_slots_in_one_day = $total_experts * 53;
+
+
+foreach($dates as $date) {
+
+    // $totalBookedSlots = Booking::
+    // where([
+    //     "garage_id" => auth()->user()->business_id
+    // ])
+    // ->whereDate("job_start_date", $date)
+    // ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+    // ->selectRaw('SUM(json_length(booked_slots)) as total_slots')
+    // ->value('total_slots');
+
+
+    // $totalBusySlots = ExpertRota::
+    // where([
+    //     'expert_rotas.business_id' => auth()->user()->business_id,
+    //     "expert_rotas.is_active" => 1
+    //     ])
+    // ->whereDate("date", $date)
+    // ->selectRaw('SUM(json_length(busy_slots)) as total_slots')
+    // ->value('total_slots');
+
+    // $total_busy_slots = $totalBookedSlots + $totalBusySlots;
+
+
+$total_busy_slots = Booking::selectRaw('SUM(json_length(booked_slots)) as total_booked_slots')
+->where('garage_id', auth()->user()->business_id)
+->whereDate('job_start_date', $date)
+->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
+->selectSub(
+    ExpertRota::selectRaw('SUM(json_length(busy_slots))')
+        ->where('business_id', auth()->user()->business_id)
+        ->where('is_active', 1)
+        ->whereDate('date', $date),
+    'total_busy_slots'
+)
+->value(DB::raw('IFNULL(total_booked_slots, 0) + IFNULL(total_busy_slots, 0) as total_busy_slots'));
+
+if($total_busy_slots < $total_slots_in_one_day) {
+$available_dates->push($date);
+}
+
+
+
+}
+
+             // Get all bookings for the provided date except the rejected ones
+
+
+
+
+             return response()->json($available_dates->toArray(), 200);
          } catch (Exception $e) {
 
              return $this->sendError($e, 500, $request);
@@ -1065,16 +1237,16 @@ class ClientBookingController extends Controller
 
             // Get all bookings for the provided date except the rejected ones
             $bookings = Booking::with([
-                    "customer" => function ($query) {
-                        $query->select("users.id", "users.first_Name", "users.last_Name");
-                    }
-                ])
+                "customer" => function ($query) {
+                    $query->select("users.id", "users.first_Name", "users.last_Name");
+                }
+            ])
                 ->whereDate("job_start_date", request()->input("date"))
                 ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
                 ->where([
                     "expert_id" => $expert_id
                 ])
-                ->select("id", "booked_slots", "customer_id","status")
+                ->select("id", "booked_slots", "customer_id", "status")
                 ->get();
 
             // Get all the booked slots as a flat array
@@ -1082,16 +1254,15 @@ class ClientBookingController extends Controller
             $data["bookings"] = $bookings;
             $data["booking_slots"] = $bookings->pluck('booked_slots')->flatten()->toArray();
 
-  // Get all bookings for the provided date except the rejected ones
-  $check_in_bookings = Booking::
-whereDate("job_start_date", request()->input("date"))
-->whereIn("status", ["check_in"])
-->where([
-    "expert_id" => $expert_id
-])
-->get();
+            // Get all bookings for the provided date except the rejected ones
+            $check_in_bookings = Booking::whereDate("job_start_date", request()->input("date"))
+                ->whereIn("status", ["check_in"])
+                ->where([
+                    "expert_id" => $expert_id
+                ])
+                ->get();
 
-$data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()->toArray();
+            $data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()->toArray();
 
 
 

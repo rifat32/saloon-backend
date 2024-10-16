@@ -868,6 +868,113 @@ class BookingController extends Controller
     }
 
 
+    /**
+ * @OA\Put(
+ *      path="/v1.0/bookings/change-statuses",
+ *      operationId="changeMultipleBookingStatuses",
+ *      tags={"booking_management"},
+ *      security={{"bearerAuth": {}}},
+ *      summary="This method is to change multiple booking statuses",
+ *      description="This method is to change multiple booking statuses",
+ *
+ *      @OA\RequestBody(
+ *          required=true,
+ *          @OA\JsonContent(
+ *              required={"ids", "garage_id", "status"},
+ *              @OA\Property(
+ *                  property="ids",
+ *                  type="array",
+ *                  @OA\Items(type="number", example="1")
+ *              ),
+ *              @OA\Property(property="garage_id", type="number", example="1"),
+ *              @OA\Property(property="status", type="string", example="pending"),
+ *              @OA\Property(property="reason", type="string", nullable=true, example="some reason")
+ *          )
+ *      ),
+ *
+ *      @OA\Response(response=200, description="Successful operation", @OA\JsonContent()),
+ *      @OA\Response(response=401, description="Unauthenticated", @OA\JsonContent()),
+ *      @OA\Response(response=422, description="Unprocessable Content", @OA\JsonContent()),
+ *      @OA\Response(response=403, description="Forbidden", @OA\JsonContent()),
+ *      @OA\Response(response=400, description="Bad Request", @OA\JsonContent()),
+ *      @OA\Response(response=404, description="Not Found", @OA\JsonContent())
+ * )
+ */
+public function changeMultipleBookingStatuses(Request $request)
+{
+    $this->validate($request, [
+        'ids' => 'required|array',
+        'ids.*' => 'required|numeric',
+        'garage_id' => 'required|numeric',
+        'status' => 'required|string|in:pending,rejected_by_garage_owner,check_in,arrived,converted_to_job',
+        'reason' => 'nullable|string',
+    ]);
+
+    try {
+        $this->storeActivity($request, "");
+
+        return DB::transaction(function () use ($request) {
+            $ids = $request->input('ids');
+            $garage_id = $request->input('garage_id');
+            $status = $request->input('status');
+            $reason = $request->input('reason');
+
+            $updatedBookings = [];
+
+            if (!$request->user()->hasPermissionTo('booking_update')) {
+                return response()->json(["message" => "You cannot perform this action"], 401);
+            }
+
+            if (!$this->garageOwnerCheck($garage_id)) {
+                return response()->json(["message" => "You are not the owner of the garage or the garage does not exist"], 401);
+            }
+
+
+            foreach ($ids as $id) {
+
+                $booking = Booking::where(['id' => $id, 'garage_id' => $garage_id])->first();
+
+                if (!$booking) {
+                    return response()->json(["message" => "Booking with ID {$id} not found"], 404);
+                }
+
+                if (in_array($booking->status, ["converted_to_job", "rejected_by_garage_owner", "rejected_by_client"])) {
+                    return response()->json(["message" => "Status cannot be updated for booking ID: {$id}"], 422);
+                }
+
+                $booking->update([
+                    'status' => $status,
+                    'reason' => $reason,
+                ]);
+
+                $updatedBookings[] = $booking;
+
+                // Handle notifications
+                $notificationTemplateType = $status == "rejected_by_garage_owner"
+                    ? "booking_rejected_by_garage_owner"
+                    : "booking_status_changed_by_garage_owner";
+
+                $notificationTemplate = NotificationTemplate::where('type', $notificationTemplateType)->first();
+
+                Notification::create([
+                    'sender_id' => $booking->garage->owner_id,
+                    'receiver_id' => $booking->customer_id,
+                    'customer_id' => $booking->customer_id,
+                    'garage_id' => $booking->garage_id,
+                    'booking_id' => $booking->id,
+                    'notification_template_id' => $notificationTemplate->id,
+                    'status' => 'unread',
+                ]);
+            }
+
+            return response()->json($updatedBookings, 200);
+        });
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        return $this->sendError($e, 500, $request);
+    }
+}
+
 
 
 
@@ -1406,12 +1513,11 @@ class BookingController extends Controller
 
                 $expert["upcoming_bookings_today"] = $upcoming_bookings->toArray();
 
-    // Get all upcoming bookings for future dates except the rejected ones
-    $expert["upcoming_bookings"] = Booking::whereDate("job_start_date", '>', today())
-    ->whereIn("status", ["pending"])
-    ->where("expert_id", $expert->id)
-    ->get();
-
+                // Get all upcoming bookings for future dates except the rejected ones
+                $expert["upcoming_bookings"] = Booking::whereDate("job_start_date", '>', today())
+                    ->whereIn("status", ["pending"])
+                    ->where("expert_id", $expert->id)
+                    ->get();
             }
 
 

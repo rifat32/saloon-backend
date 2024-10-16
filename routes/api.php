@@ -723,7 +723,10 @@ Route::delete('/v1.0/payment-types/{id}', [PaymentTypeController::class, "delete
 Route::post('/v1.0/bookings', [BookingController::class, "createBooking"]);
 Route::put('/v1.0/bookings', [BookingController::class, "updateBooking"]);
 Route::put('/v1.0/bookings/confirm', [BookingController::class, "confirmBooking"]);
+
 Route::put('/v1.0/bookings/change-status', [BookingController::class, "changeBookingStatus"]);
+Route::put('/v1.0/bookings/change-statuses', [BookingController::class, "changeMultipleBookingStatuses"]);
+
 
 Route::get('/v1.0/bookings/{garage_id}/{perPage}', [BookingController::class, "getBookings"]);
 
@@ -1192,6 +1195,10 @@ Route::middleware(['auth:api'])->group(function () {
 // booking management section
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 Route::get('/v1.0/client/blocked-slots/{expert_id}', [ClientBookingController::class, "getBlockedSlotsClient"]);
+
+Route::get('/v1.0/client/blocked-dates', [ClientBookingController::class, "getBlockedDatesClient"]);
+
+
 
 Route::get('/v1.0/client/available-experts', [ClientBookingController::class, "getAvailableExpertsClient"]);
 

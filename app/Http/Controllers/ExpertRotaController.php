@@ -110,30 +110,47 @@ class ExpertRotaController extends Controller
                         $request_data["is_default"] = 1;
                     }
                 }
-
                 $bookings = Booking::whereDate("job_start_date", $request_data["date"])
-                    ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
-                    ->where([
-                        "expert_id" => $request_data["expert_id"]
-                    ])
-                    ->get();
+                ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+                ->where([
+                    "expert_id" => $request_data["expert_id"]
+                ])
+                ->get();
 
+            // Initialize an array to store overlapping bookings with individual overlapping slots
+            $overlappingBookings = [];
 
+            // Initialize an array to store all overlapping slots at once
+            $allOverlappingSlots = [];
 
-                // Get all the booked slots as a flat array
-                $allBusySlots = $bookings->pluck('booked_slots')->flatten()->toArray();
+            foreach ($bookings as $booking) {
+                // Find overlapping slots between the booking and the requested busy slots
+                $overlappingSlots = array_intersect($request_data["busy_slots"], $booking->booked_slots);
 
- // Find overlapping slots between the input slots and the combined allBusySlots
- $overlappingSlots = array_intersect($request_data["busy_slots"], $allBusySlots);
+                // If there's an overlap, add the booking info and overlapping slots
+                if (!empty($overlappingSlots)) {
+                    $overlappingBookings[] = [
+                        'booking' => $booking, // Full booking information
+                        'overlapping_slots' => $overlappingSlots // Specific overlapping times
+                    ];
 
-   // If there are overlaps, return them or throw an error
-   if (!empty($overlappingSlots)) {
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Some slots are already booked.',
-        'overlapping_slots' => $overlappingSlots
-    ],409);
-}
+                    // Merge the overlapping slots into the allOverlappingSlots array
+                    $allOverlappingSlots = array_merge($allOverlappingSlots, $overlappingSlots);
+                }
+            }
+
+            // Remove duplicate slots from allOverlappingSlots if needed
+            $allOverlappingSlots = array_unique($allOverlappingSlots);
+
+            // If there are overlapping bookings, return the booking info and their overlapping slots
+            if (!empty($overlappingBookings)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Some slots are already booked.',
+                    'overlapping_bookings' => $overlappingBookings, // Contains booking info and individual overlapping slots
+                    'all_overlapping_slots' => $allOverlappingSlots // All overlapping slots combined
+                ], 409);
+            }
 
 
               $expert_rota =  ExpertRota::where([
@@ -522,11 +539,6 @@ class ExpertRotaController extends Controller
 
              $expert_rotas = ExpertRota::where('expert_rotas.business_id', auth()->user()->business_id)
 
-
-
-
-
-
                  ->when(!empty($request->start_date), function ($query) use ($request) {
                      return $query->where('expert_rotas.date', ">=", $request->start_date);
                  })
@@ -536,9 +548,6 @@ class ExpertRotaController extends Controller
                  ->when(!empty($request->expert_id), function ($query) use ($request) {
                      return $query->where('expert_rotas.expert_id', $request->expert_id);
                  })
-
-
-
 
                  ->when(!empty($request->search_key), function ($query) use ($request) {
                      return $query->where(function ($query) use ($request) {
