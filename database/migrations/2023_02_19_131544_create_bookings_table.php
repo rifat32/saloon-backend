@@ -43,15 +43,15 @@ class CreateBookingsTable extends Migration
             $table->double("discount_amount")->nullable()->default(0);
 
             $table->double("price")->default(0);
+
             $table->double("final_price")->default(0);
 
 
             $table->string("coupon_code")->nullable();
 
-
             $table->date("job_start_date")->nullable();
 
-            $table->enum("status",["pending","confirmed","check_in","rejected_by_client","rejected_by_garage_owner","converted_to_job"]);
+            $table->enum("status",["pending", "confirmed", "check_in", "rejected_by_client", "rejected_by_garage_owner", "arrived", "converted_to_job"]);
 
 
             $table->unsignedBigInteger("created_by");
@@ -62,6 +62,7 @@ class CreateBookingsTable extends Migration
             $table->softDeletes();
         });
     }
+   
 
     /**
      * Reverse the migrations.

@@ -909,7 +909,7 @@ if(!empty($service->description)) {
 
             // CHECK IF REQUEST HAVE AUTOMOBILE CATEGORY ID
             $services =  Service::
-            with('translation')->
+            with('translation','subServices.translation')->
             when(request()->filled("automobile_category_id"), function($query) {
                 $query->where("automobile_category_id",request()->input("automobile_category_id"));
             },

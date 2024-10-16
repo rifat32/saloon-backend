@@ -61,13 +61,13 @@ class BookingController extends Controller
 
         $booking = Booking::findOrFail($trimmed_id);
 
-        if(empty($booking->price)) {
+        if (empty($booking->price)) {
             return response()->json([
                 "message" => "You booking price is zero. it's a software error."
-            ],409);
+            ], 409);
         }
 
-        if($booking->payment_status == "completed") {
+        if ($booking->payment_status == "completed") {
             return response()->json([
                 "message" => "Already paid"
             ], 409);
@@ -76,8 +76,8 @@ class BookingController extends Controller
 
 
         $stripeSetting = StripeSetting::where([
-                "business_id" => $booking->garage_id
-            ])
+            "business_id" => $booking->garage_id
+        ])
             ->first();
 
         if (!$stripeSetting) {
@@ -147,7 +147,7 @@ class BookingController extends Controller
 
             'customer' => $user->stripe_id  ?? null,
 
-           'mode' => 'payment',
+            'mode' => 'payment',
             'success_url' => env("FRONT_END_URL") . "/bookings",
             'cancel_url' => env("FRONT_END_URL") . "/bookings",
         ];
@@ -264,166 +264,165 @@ class BookingController extends Controller
             DB::beginTransaction();
             $this->storeActivity($request, "");
 
-                if (!$request->user()->hasPermissionTo('booking_create')) {
-                    return response()->json([
-                        "message" => "You can not perform this action"
-                    ], 401);
-                }
+            if (!$request->user()->hasPermissionTo('booking_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
-                $insertableData = $request->validated();
+            $insertableData = $request->validated();
 
-                if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
-                    return response()->json([
-                        "message" => "you are not the owner of the garage or the requested garage does not exist."
-                    ], 401);
-                }
-
-
-
-                $insertableData["status"] = "pending";
-                $insertableData["created_by"] = $request->user()->id;
-                $insertableData["created_from"] = "garage_owner_side";
+            if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
+                return response()->json([
+                    "message" => "you are not the owner of the garage or the requested garage does not exist."
+                ], 401);
+            }
 
 
+
+            $insertableData["status"] = "pending";
+            $insertableData["created_by"] = $request->user()->id;
+            $insertableData["created_from"] = "garage_owner_side";
 
 
 
 
 
-                $booking =  Booking::create($insertableData);
 
 
-                $total_price = 0;
-                $total_time = 0;
-                foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
-                    $sub_service =  SubService::where([
-                        "business_id" => auth()->user()->business_id,
-                        "id" => $sub_service_id
-                        ])
-                        ->first();
-
-                    if (!$sub_service) {
-                        $error =  [
-                            "message" => "The given data was invalid.",
-                            "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
-                        ];
-                        throw new Exception(json_encode($error), 422);
-                    }
-
-                    $price = $this->getPrice($sub_service, $insertableData["expert_id"]);
-
-                    $total_time += $sub_service->service_time_in_minute;
+            $booking =  Booking::create($insertableData);
 
 
-                    $total_price += $price;
-
-                    $booking->booking_sub_services()->create([
-                        "sub_service_id" => $sub_service->id,
-                        "price" => $price
-                    ]);
-                }
-
-                $slotValidation =  $this->validateBookingSlots($booking->id,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
-
-                if ($slotValidation['status'] === 'error') {
-                    // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
-                    return response()->json($slotValidation, 422);
-                }
-
-
-                foreach ($insertableData["booking_garage_package_ids"] as $index => $garage_package_id) {
-                    $garage_package =  GaragePackage::where([
-                        "garage_id" => $insertableData["garage_id"],
-                        "id" => $garage_package_id
-                    ])
-
-                        ->first();
-
-                    if (!$garage_package) {
-
-                        $error =  [
-                            "message" => "The given data was invalid.",
-                            "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
-                        ];
-                        throw new Exception(json_encode($error), 422);
-                    }
-
-
-                    $total_price += $garage_package->price;
-
-                    $booking->booking_packages()->create([
-                        "garage_package_id" => $garage_package->id,
-                        "price" => $garage_package->price
-                    ]);
-                }
-
-
-
-                $booking->price = $total_price;
-                $booking->save();
-
-                if (!empty($insertableData["coupon_code"])) {
-                    $coupon_discount = $this->getCouponDiscount(
-                        $insertableData["garage_id"],
-                        $insertableData["coupon_code"],
-                        $total_price
-                    );
-
-                    if ($coupon_discount["success"]) {
-
-                        $booking->coupon_discount_type = $coupon_discount["discount_type"];
-                        $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-                        $booking->coupon_code = $insertableData["coupon_code"];
-
-                        $booking->save();
-
-                        Coupon::where([
-                            "code" => $booking->coupon_code,
-                            "garage_id" => $booking->garage_id
-                        ])->update([
-                            "customer_redemptions" => DB::raw("customer_redemptions + 1")
-                        ]);
-                    } else {
-                        $error =  [
-                            "message" => "The given data was invalid.",
-                            "errors" => ["coupon_code" => [$coupon_discount["message"]]]
-                        ];
-                        throw new Exception(json_encode($error), 422);
-                    }
-                }
-                $booking->final_price = $booking->price;
-                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
-                $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
-                $booking->save();
-
-
-                $notification_template = NotificationTemplate::where([
-                    "type" => "booking_created_by_garage_owner"
+            $total_price = 0;
+            $total_time = 0;
+            foreach ($insertableData["booking_sub_service_ids"] as $index => $sub_service_id) {
+                $sub_service =  SubService::where([
+                    "business_id" => auth()->user()->business_id,
+                    "id" => $sub_service_id
                 ])
                     ->first();
-                if (!$notification_template) {
-                    throw new Exception("notification template error");
+
+                if (!$sub_service) {
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => [("booking_sub_service_ids[" . $index . "]") => ["invalid service"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
                 }
 
-                Notification::create([
-                    "sender_id" =>  $booking->garage->owner_id,
-                    "receiver_id" => $booking->customer_id,
-                    "customer_id" => $booking->customer_id,
-                    "garage_id" => $booking->garage_id,
-                    "booking_id" => $booking->id,
-                    "notification_template_id" => $notification_template->id,
-                    "status" => "unread",
+                $price = $this->getPrice($sub_service, $insertableData["expert_id"]);
+
+                $total_time += $sub_service->service_time_in_minute;
+
+
+                $total_price += $price;
+
+                $booking->booking_sub_services()->create([
+                    "sub_service_id" => $sub_service->id,
+                    "price" => $price
                 ]);
-                // if (env("SEND_EMAIL") == true) {
-                //     Mail::to($booking->customer->email)->send(new DynamicMail(
-                //         $booking,
-                //         "booking_created_by_garage_owner"
-                //     ));
-                // }
+            }
 
-                DB::commit();
-                return response($booking, 201);
+            $slotValidation =  $this->validateBookingSlots($booking->id, $request["booked_slots"], $request["job_start_date"], $request["expert_id"], $total_time);
 
+            if ($slotValidation['status'] === 'error') {
+                // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
+                return response()->json($slotValidation, 422);
+            }
+
+
+            foreach ($insertableData["booking_garage_package_ids"] as $index => $garage_package_id) {
+                $garage_package =  GaragePackage::where([
+                    "garage_id" => $insertableData["garage_id"],
+                    "id" => $garage_package_id
+                ])
+
+                    ->first();
+
+                if (!$garage_package) {
+
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => [("booking_garage_package_ids[" . $index . "]") => ["invalid package"]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
+
+
+                $total_price += $garage_package->price;
+
+                $booking->booking_packages()->create([
+                    "garage_package_id" => $garage_package->id,
+                    "price" => $garage_package->price
+                ]);
+            }
+
+
+
+            $booking->price = $total_price;
+            $booking->save();
+
+            if (!empty($insertableData["coupon_code"])) {
+                $coupon_discount = $this->getCouponDiscount(
+                    $insertableData["garage_id"],
+                    $insertableData["coupon_code"],
+                    $total_price
+                );
+
+                if ($coupon_discount["success"]) {
+
+                    $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                    $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+                    $booking->coupon_code = $insertableData["coupon_code"];
+
+                    $booking->save();
+
+                    Coupon::where([
+                        "code" => $booking->coupon_code,
+                        "garage_id" => $booking->garage_id
+                    ])->update([
+                        "customer_redemptions" => DB::raw("customer_redemptions + 1")
+                    ]);
+                } else {
+                    $error =  [
+                        "message" => "The given data was invalid.",
+                        "errors" => ["coupon_code" => [$coupon_discount["message"]]]
+                    ];
+                    throw new Exception(json_encode($error), 422);
+                }
+            }
+            $booking->final_price = $booking->price;
+            $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
+            $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+            $booking->save();
+
+
+            $notification_template = NotificationTemplate::where([
+                "type" => "booking_created_by_garage_owner"
+            ])
+                ->first();
+            if (!$notification_template) {
+                throw new Exception("notification template error");
+            }
+
+            Notification::create([
+                "sender_id" =>  $booking->garage->owner_id,
+                "receiver_id" => $booking->customer_id,
+                "customer_id" => $booking->customer_id,
+                "garage_id" => $booking->garage_id,
+                "booking_id" => $booking->id,
+                "notification_template_id" => $notification_template->id,
+                "status" => "unread",
+            ]);
+            // if (env("SEND_EMAIL") == true) {
+            //     Mail::to($booking->customer->email)->send(new DynamicMail(
+            //         $booking,
+            //         "booking_created_by_garage_owner"
+            //     ));
+            // }
+
+            DB::commit();
+            return response($booking, 201);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -588,7 +587,7 @@ class BookingController extends Controller
                     $sub_service =  SubService::where([
                         "business_id" => auth()->user()->business_id,
                         "id" => $sub_service_id
-                        ])
+                    ])
                         ->first();
 
                     if (!$sub_service) {
@@ -612,7 +611,7 @@ class BookingController extends Controller
                     ]);
                 }
 
-                $slotValidation =  $this->validateBookingSlots($booking->id,$request["booked_slots"],$request["job_start_date"],$request["expert_id"],$total_time);
+                $slotValidation =  $this->validateBookingSlots($booking->id, $request["booked_slots"], $request["job_start_date"], $request["expert_id"], $total_time);
 
                 if ($slotValidation['status'] === 'error') {
                     // Return a JSON response with the overlapping slots and a 422 Unprocessable Entity status code
@@ -789,16 +788,16 @@ class BookingController extends Controller
                     return response()->json(["message" => "Status cannot be updated because it is 'converted_to_job'"], 422);
                 }
 
-                if ( $booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
+                if ($booking->status == "rejected_by_garage_owner" ||  $booking->status == "rejected_by_client") {
                     // Return an error response indicating that the status cannot be updated
                     return response()->json(["message" => "Status cannot be updated because it is in cancelled status"], 422);
                 }
 
 
 
-                $booking->reason = $updatableData["reason"]??NULL;
-                    $booking->status = $updatableData["status"];
-                    $booking->update(collect($updatableData)->only(["status","reason"])->toArray());
+                $booking->reason = $updatableData["reason"] ?? NULL;
+                $booking->status = $updatableData["status"];
+                $booking->update(collect($updatableData)->only(["status", "reason"])->toArray());
 
 
                 // if ($booking->status != "confirmed") {
@@ -1181,90 +1180,88 @@ class BookingController extends Controller
      *     )
      */
 
-     public function getBookings($garage_id, $perPage, Request $request)
-     {
-         try {
-             $this->storeActivity($request, "");
-             if (!$request->user()->hasPermissionTo('booking_view')) {
-                 return response()->json([
-                     "message" => "You can not perform this action"
-                 ], 401);
-             }
+    public function getBookings($garage_id, $perPage, Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
+            if (!$request->user()->hasPermissionTo('booking_view')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
 
 
-             $bookingQuery = Booking::with(
-                 "sub_services.service",
-                  "booking_packages.garage_package",
-                  "customer",
-                  "garage",
-                  "expert"
+            $bookingQuery = Booking::with(
+                "sub_services.service",
+                "booking_packages.garage_package",
+                "customer",
+                "garage",
+                "expert"
 
-             )
-             ->when(!auth()->user()->hasRole("garage_owner") && !auth()->user()->hasRole("business_receptionist") , function($query) {
-                  $query->where([
-                     "expert_id" => auth()->user()->id
-                  ]);
-             })
-                 ->where([
-                     "garage_id" => auth()->user()->business_id
-                 ])
-                 ->when(request()->input("expert_id"), function($query) {
-                      $query ->where([
-                         "expert_id" => request()->input("expert_id")
-                      ]);
-                 })
+            )
+                ->when(!auth()->user()->hasRole("garage_owner") && !auth()->user()->hasRole("business_receptionist"), function ($query) {
+                    $query->where([
+                        "expert_id" => auth()->user()->id
+                    ]);
+                })
+                ->where([
+                    "garage_id" => auth()->user()->business_id
+                ])
+                ->when(request()->input("expert_id"), function ($query) {
+                    $query->where([
+                        "expert_id" => request()->input("expert_id")
+                    ]);
+                });
 
-                 ;
-
-                    // Apply the existing status filter if provided in the request
-                    if (!empty($request->status)) {
-                     $statusArray = explode(',', request()->status);
-                     // If status is provided, include the condition in the query
-                     $bookingQuery->whereIn("status", $statusArray);
-                 }
+            // Apply the existing status filter if provided in the request
+            if (!empty($request->status)) {
+                $statusArray = explode(',', request()->status);
+                // If status is provided, include the condition in the query
+                $bookingQuery->whereIn("status", $statusArray);
+            }
 
 
-             if (!empty($request->search_key)) {
-                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
-                     $term = $request->search_key;
-                     $query->where("car_registration_no", "like", "%" . $term . "%");
-                 });
-             }
+            if (!empty($request->search_key)) {
+                $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
+                    $term = $request->search_key;
+                    $query->where("car_registration_no", "like", "%" . $term . "%");
+                });
+            }
 
-             if (!empty($request->start_date)) {
-                 $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
-             }
-             if (!empty($request->end_date)) {
-                 $bookingQuery = $bookingQuery->where('job_start_date', '<=', $request->end_date);
-             }
+            if (!empty($request->start_date)) {
+                $bookingQuery = $bookingQuery->where('job_start_date', '>=', $request->start_date);
+            }
+            if (!empty($request->end_date)) {
+                $bookingQuery = $bookingQuery->where('job_start_date', '<=', $request->end_date);
+            }
 
-             // Additional date filters using date_filter
-             if ($request->date_filter === 'today') {
-                 $bookingQuery = $bookingQuery->whereDate('job_start_date', Carbon::today());
-             } elseif ($request->date_filter === 'this_week') {
-                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
-             } elseif ($request->date_filter === 'previous_week') {
-                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
-             } elseif ($request->date_filter === 'next_week') {
-                 $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
-             } elseif ($request->date_filter === 'this_month') {
-                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
-                                              ->whereYear('job_start_date', Carbon::now()->year);
-             } elseif ($request->date_filter === 'previous_month') {
-                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
-                                              ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
-             } elseif ($request->date_filter === 'next_month') {
-                 $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
-                                              ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
-             }
-             $bookings = $bookingQuery->orderByDesc("job_start_date")->paginate($perPage);
+            // Additional date filters using date_filter
+            if ($request->date_filter === 'today') {
+                $bookingQuery = $bookingQuery->whereDate('job_start_date', Carbon::today());
+            } elseif ($request->date_filter === 'this_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            } elseif ($request->date_filter === 'previous_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+            } elseif ($request->date_filter === 'next_week') {
+                $bookingQuery = $bookingQuery->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
+            } elseif ($request->date_filter === 'this_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->month)
+                    ->whereYear('job_start_date', Carbon::now()->year);
+            } elseif ($request->date_filter === 'previous_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->subMonth()->month)
+                    ->whereYear('job_start_date', Carbon::now()->subMonth()->year);
+            } elseif ($request->date_filter === 'next_month') {
+                $bookingQuery = $bookingQuery->whereMonth('job_start_date', Carbon::now()->addMonth()->month)
+                    ->whereYear('job_start_date', Carbon::now()->addMonth()->year);
+            }
+            $bookings = $bookingQuery->orderByDesc("job_start_date")->paginate($perPage);
 
-             return response()->json($bookings, 200);
-         } catch (Exception $e) {
+            return response()->json($bookings, 200);
+        } catch (Exception $e) {
 
-             return $this->sendError($e, 500, $request);
-         }
-     }
+            return $this->sendError($e, 500, $request);
+        }
+    }
 
     /**
      *
@@ -1365,52 +1362,55 @@ class BookingController extends Controller
             }
 
             $experts = User::with("translation")
-            ->
-            whereHas('roles', function($query) {
-                $query->where('roles.name', 'business_experts');
-            })->where("business_id", auth()->user()->business_id);
+                ->whereHas('roles', function ($query) {
+                    $query->where('roles.name', 'business_experts');
+                })
+                ->where("business_id", auth()->user()->business_id)
+                ->get();
 
 
-            foreach($experts as $expert) {
+            foreach ($experts as $expert) {
 
-        $upcoming_bookings = collect();
+                $upcoming_bookings = collect();
 
-         // Get all bookings for the provided date except the rejected ones
-         $expert_bookings = Booking::whereDate("job_start_date", today())
-         ->whereIn("status", ["pending"])
-         ->where([
-             "expert_id" => $expert->id
-         ])
-         ->get();
+                // Get all bookings for the provided date except the rejected ones
+                $expert_bookings = Booking::whereDate("job_start_date", today())
+                    ->whereIn("status", ["pending"])
+                    ->where([
+                        "expert_id" => $expert->id
+                    ])
+                    ->get();
 
-         foreach($expert_bookings as $expert_booking){
-            $booked_slots = $expert_booking->booked_slots;
+                foreach ($expert_bookings as $expert_booking) {
 
-            // Convert time strings into Carbon objects
-            $booked_times = array_map(function ($time) {
-                return Carbon::parse($time);
-            }, $booked_slots);
+                    $booked_slots = $expert_booking->booked_slots;
 
-            // Get the smallest time
-            $smallest_time = min($booked_times);
+                    // Convert time strings into Carbon objects
+                    $booked_times = array_map(function ($time) {
+                        return Carbon::parse($time);
+                    }, $booked_slots);
 
-            // Get the current time or the input "current_slot"
-            $current_time = request()->input("current_slot")
-                ? Carbon::parse(request()->input("current_slot"))
-                : Carbon::now(); // Use the current time if no input is provided
+                    // Get the smallest time
+                    $smallest_time = min($booked_times);
 
-            // Compare the smallest booked time with the current time
-            if ($smallest_time->greaterThan($current_time)) {
-          $upcoming_bookings->push($upcoming_bookings);
-            }
+                    // Get the current time or the input "current_slot"
+                    $current_time = request()->input("current_slot")
+                        ? Carbon::parse(request()->input("current_slot"))
+                        : Carbon::now(); // Use the current time if no input is provided
 
-         }
+                    // Compare the smallest booked time with the current time
+                    if ($smallest_time->greaterThan($current_time)) {
+                        $upcoming_bookings->push($upcoming_bookings);
+                    }
+                }
 
+                $expert["upcoming_bookings_today"] = $upcoming_bookings->toArray();
 
-         $expert->upcoming_booking = $upcoming_bookings->toArray();
-
-
-
+    // Get all upcoming bookings for future dates except the rejected ones
+    $expert["upcoming_bookings"] = Booking::whereDate("job_start_date", '>', today())
+    ->whereIn("status", ["pending"])
+    ->where("expert_id", $expert->id)
+    ->get();
 
             }
 
@@ -1503,10 +1503,10 @@ class BookingController extends Controller
 
             $booking = Booking::with(
                 "sub_services.service",
-                 "booking_packages.garage_package",
-                 "customer",
-                 "garage",
-                 "expert"
+                "booking_packages.garage_package",
+                "customer",
+                "garage",
+                "expert"
             )
                 ->where([
                     "garage_id" => $garage_id,

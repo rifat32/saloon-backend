@@ -11,6 +11,7 @@ use App\Models\FuelStation;
 use App\Models\Garage;
 use App\Models\GarageAffiliation;
 use App\Models\Job;
+use App\Models\JobPayment;
 use App\Models\PreBooking;
 use App\Models\Service;
 use App\Models\User;
@@ -1691,6 +1692,263 @@ class DashboardManagementController extends Controller
             $data["previous_month_data_count"] = $data["previous_month_data"]->count();
         return $data;
     }
+
+
+
+
+
+
+    public function bookings($range = 'today') {
+        return Booking::where("garage_id", auth()->user()->business_id)
+            ->when($range === 'today', function ($query) {
+                $query->whereDate('job_start_date', Carbon::today());
+            })
+            ->when($range === 'this_week', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+            })
+            ->when($range === 'this_month', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
+            })
+            ->when($range === 'next_week', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
+            })
+            ->when($range === 'next_month', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->addMonth()->startOfMonth(), Carbon::now()->addMonth()->endOfMonth()]);
+            })
+            ->when($range === 'previous_week', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+            })
+            ->when($range === 'previous_month', function ($query) {
+                $query->whereBetween('job_start_date', [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()]);
+            });
+    }
+
+    // Method to get counts for each status
+    public function bookingsByStatus($range = 'today',$expert_id=NULL) {
+        $statuses = [
+            "all",
+            "pending",
+            "confirmed",
+            "check_in",
+            "rejected_by_client",
+            "rejected_by_garage_owner",
+            "arrived",
+            "converted_to_job"
+        ];
+
+        $counts = [];
+
+        foreach ($statuses as $status) {
+            $counts[$status] = $this->bookings($range)
+            ->when($status != "all", function($query) use($status) {
+                 $query->where('status', $status);
+            })
+            ->when(!empty($expert_id), function($query) use($expert_id) {
+                $query->where('expert_id', $expert_id);
+           })
+
+            ->count();
+        }
+
+        return $counts;
+    }
+
+
+    public function revenue($range = 'today') {
+        $garage_id = auth()->user()->business_id; // Get the garage ID
+
+        $query = JobPayment::whereHas('bookings', function($query) use($garage_id, $range) {
+                $query->where('bookings.garage_id', $garage_id)
+                      ->when($range === 'today', function ($query) {
+                          $query->whereDate('job_start_date', Carbon::today());
+                      })
+                      ->when($range === 'this_week', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                      })
+                      ->when($range === 'this_month', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()]);
+                      })
+                      ->when($range === 'next_week', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->addWeek()->startOfWeek(), Carbon::now()->addWeek()->endOfWeek()]);
+                      })
+                      ->when($range === 'next_month', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->addMonth()->startOfMonth(), Carbon::now()->addMonth()->endOfMonth()]);
+                      })
+                      ->when($range === 'previous_week', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->subWeek()->startOfWeek(), Carbon::now()->subWeek()->endOfWeek()]);
+                      })
+                      ->when($range === 'previous_month', function ($query) {
+                          $query->whereBetween('job_start_date', [Carbon::now()->subMonth()->startOfMonth(), Carbon::now()->subMonth()->endOfMonth()]);
+                      });
+            });
+
+        // Fetch payments and sum the amount
+        return $query->sum('amount');
+    }
+
+
+         /**
+     *
+     * @OA\Get(
+     *      path="/v1.0/business-owner-dashboard",
+     *      operationId="getBusinessOwnerDashboardData",
+     *      tags={"dashboard_management"},
+     *       security={
+     *           {"bearerAuth": {}}
+     *       },
+
+     *      summary="get all dashboard data combined",
+     *      description="get all dashboard data combined",
+     *
+
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *       @OA\JsonContent(),
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     * @OA\JsonContent(),
+     *      ),
+     *        @OA\Response(
+     *          response=422,
+     *          description="Unprocesseble Content",
+     *    @OA\JsonContent(),
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden",
+     *   @OA\JsonContent()
+     * ),
+     *  * @OA\Response(
+     *      response=400,
+     *      description="Bad Request",
+     *   *@OA\JsonContent()
+     *   ),
+     * @OA\Response(
+     *      response=404,
+     *      description="not found",
+     *   *@OA\JsonContent()
+     *   )
+     *      )
+     *     )
+     */
+
+     public function getBusinessOwnerDashboardData( Request $request)
+     {
+         try{
+             $this->storeActivity($request,"");
+
+             if (!$request->user()->hasRole('superadmin')) {
+                 return response()->json([
+                     "message" => "You are not a superadmin"
+                 ], 401);
+             }
+
+             $data["today_bookings"] = $this->bookingsByStatus('today');
+             $data["this_week_bookings"] = $this->bookingsByStatus('this_week');
+             $data["this_month_bookings"] = $this->bookingsByStatus('this_month');
+             $data["next_week_bookings"] = $this->bookingsByStatus('next_week');
+             $data["next_month_bookings"] = $this->bookingsByStatus('next_month');
+             $data["previous_week_bookings"] = $this->bookingsByStatus('previous_week');
+             $data["previous_month_bookings"] = $this->bookingsByStatus('previous_month');
+
+
+             $experts = User::with("translation")
+             ->leftJoin('bookings', 'users.id', '=', 'bookings.expert_id')
+             ->select('users.*', DB::raw('count(bookings.id) as total_bookings'))
+             ->whereHas('roles', function ($query) {
+                 $query->where('roles.name', 'business_experts');
+             })
+             ->where("business_id", auth()->user()->business_id)
+             ->groupBy('experts.id') // Group by expert ID
+             ->orderBy('total_bookings', 'desc')
+             ->get();
+
+
+         foreach ($experts as $expert) {
+
+             $upcoming_bookings = collect();
+
+             // Get all bookings for the provided date except the rejected ones
+             $expert_bookings = Booking::whereDate("job_start_date", today())
+                 ->whereIn("status", ["pending"])
+                 ->where([
+                     "expert_id" => $expert->id
+                 ])
+                 ->get();
+
+             foreach ($expert_bookings as $expert_booking) {
+
+                 $booked_slots = $expert_booking->booked_slots;
+
+                 // Convert time strings into Carbon objects
+                 $booked_times = array_map(function ($time) {
+                     return Carbon::parse($time);
+                 }, $booked_slots);
+
+                 // Get the smallest time
+                 $smallest_time = min($booked_times);
+
+                 // Get the current time or the input "current_slot"
+                 $current_time = request()->input("current_slot")
+                     ? Carbon::parse(request()->input("current_slot"))
+                     : Carbon::now(); // Use the current time if no input is provided
+
+                 // Compare the smallest booked time with the current time
+                 if ($smallest_time->greaterThan($current_time)) {
+                     $upcoming_bookings->push($upcoming_bookings);
+                 }
+             }
+
+             $expert["upcoming_bookings_today"] = $upcoming_bookings->toArray();
+
+    // Get all upcoming bookings for future dates except the rejected ones
+$expert["upcoming_bookings"] = Booking::whereDate("job_start_date", '>', today())
+->whereIn("status", ["pending"])
+->where("expert_id", $expert->id)
+->get();
+
+
+$data["today_bookings"] = $this->bookingsByStatus('today',$expert->id);
+$data["this_week_bookings"] = $this->bookingsByStatus('this_week',$expert->id);
+$data["this_month_bookings"] = $this->bookingsByStatus('this_month',$expert->id);
+$data["next_week_bookings"] = $this->bookingsByStatus('next_week',$expert->id);
+$data["next_month_bookings"] = $this->bookingsByStatus('next_month',$expert->id);
+$data["previous_week_bookings"] = $this->bookingsByStatus('previous_week',$expert->id);
+$data["previous_month_bookings"] = $this->bookingsByStatus('previous_month',$expert->id);
+
+
+         }
+
+
+
+
+         $data["today_revenue"] = $this->revenue('today');
+         $data["this_week_revenue"] = $this->revenue('this_week');
+         $data["this_month_revenue"] = $this->revenue('this_month');
+         $data["next_week_revenue"] = $this->revenue('next_week');
+         $data["next_month_revenue"] = $this->revenue('next_month');
+         $data["previous_week_revenue"] = $this->revenue('previous_week');
+         $data["previous_month_revenue"] = $this->revenue('previous_month');
+
+
+
+
+
+
+             return response()->json($data, 200);
+         }catch(Exception $e) {
+       return $this->sendError($e, 500,$request);
+         }
+
+     }
+
+
+
+
+
       /**
      *
      * @OA\Get(

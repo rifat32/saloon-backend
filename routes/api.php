@@ -938,6 +938,11 @@ Route::get('/v1.0/superadmin-dashboard', [DashboardManagementController::class, 
 Route::get('/v1.0/data-collector-dashboard', [DashboardManagementController::class, "getDataCollectorDashboardData"]);
 
 
+
+Route::get('/v1.0/business-owner-dashboard', [DashboardManagementController::class, "getSuperAdminDashboardData"]);
+
+
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 // end dashboard section
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

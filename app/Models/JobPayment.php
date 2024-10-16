@@ -19,6 +19,9 @@ class JobPayment extends Model
     public function job(){
         return $this->belongsTo(Job::class,'job_id', 'id');
     }
+    public function bookings(){
+        return $this->belongsTo(Booking::class,'booking_id', 'id');
+    }
 
 
 

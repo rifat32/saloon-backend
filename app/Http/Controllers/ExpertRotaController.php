@@ -136,7 +136,7 @@ class ExpertRotaController extends Controller
 }
 
 
-              $rota_exists =  ExpertRota::where([
+              $expert_rota =  ExpertRota::where([
                     "expert_id" => $request_data["expert_id"],
                 ])
                 ->whereDate("date",$request_data["date"])
@@ -147,8 +147,9 @@ class ExpertRotaController extends Controller
 
 
 
-                if(!empty($rota_exists)) {
-                    $rota_exists->fill(collect($request_data)->only([
+                if(!empty($expert_rota)) {
+
+                    $expert_rota->fill(collect($request_data)->only([
                         "expert_id",
                         "date",
                         "busy_slots",
@@ -157,7 +158,9 @@ class ExpertRotaController extends Controller
                         // "business_id",
                         // "created_by"
                     ])->toArray());
-                    $rota_exists->save();
+                    $expert_rota->save();
+
+
                 } else {
                     $expert_rota =  ExpertRota::create($request_data);
                 }

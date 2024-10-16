@@ -1109,7 +1109,7 @@ class JobController extends Controller
  *      description="This method is to get all job payments or payments for a specific job",
  *
  *      @OA\Parameter(
- *          name="job_id",
+ *          name="booking_id",
  *          in="query",
  *          description="Optional Job ID to filter payments",
  *          required=false,
@@ -1174,11 +1174,11 @@ public function getJobPaymentsSum($garage_id,Request $request)
 
         // Check if job_id is provided
         $query = JobPayment::
-        whereHas("job", function($query) use($garage_id) {
-               $query->where("jobs.garage_id",$garage_id);
+        whereHas("bookings", function($query) use($garage_id) {
+               $query->where("bookings.garage_id",$garage_id);
         })
-        ->when($request->has('job_id'), function($query) {
-            $query->where('job_id', request()->input("job_id"));
+        ->when($request->has('booking_id'), function($query) {
+            $query->where('booking_id', request()->input("booking_id"));
         });
 
 

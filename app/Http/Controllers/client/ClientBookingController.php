@@ -1074,8 +1074,7 @@ class ClientBookingController extends Controller
                 ->where([
                     "expert_id" => $expert_id
                 ])
-                ->select("id", "booked_slots", "customer_id")
-
+                ->select("id", "booked_slots", "customer_id","status")
                 ->get();
 
             // Get all the booked slots as a flat array
@@ -1096,8 +1095,6 @@ $data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()-
 
 
 
-
-
             $expertRota = ExpertRota::where([
                 "expert_id" =>  $expert_id
             ])
@@ -1111,6 +1108,7 @@ $data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()-
             if (!empty($expertRota)) {
                 $data["busy_slots"] = $expertRota->busy_slots;
             }
+
             // else {
             //     return response()->json([
             //             "message" => "No slots are available"
