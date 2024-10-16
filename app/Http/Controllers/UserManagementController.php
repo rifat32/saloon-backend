@@ -317,6 +317,94 @@ class UserManagementController extends Controller
         return $this->sendError($e,500,$request);
         }
     }
+/**
+ * @OA\Post(
+ *      path="/v1.0/walk-in-customers",
+ *      operationId="registerWalkInCustomer",
+ *      tags={"user_management"},
+ *      security={
+ *           {"bearerAuth": {}}
+ *      },
+ *      summary="Register a walk-in customer",
+ *      description="This method is to register a walk-in customer",
+ *
+ *      @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *            required={"first_Name", "last_Name"},
+ *            @OA\Property(property="first_Name", type="string", example="Rifat"),
+ *            @OA\Property(property="last_Name", type="string", example="Al"),
+ *            @OA\Property(property="phone", type="string", example="01771034383"),
+ *            @OA\Property(property="email", type="string", example="rifatalashwad0@gmail.com"),
+ *            @OA\Property(property="address_line_1", type="string", example="Dhaka"),
+ *            @OA\Property(property="address_line_2", type="string", example="Dinajpur"),
+ *            @OA\Property(property="country", type="string", example="Bangladesh"),
+ *            @OA\Property(property="city", type="string", example="Dhaka"),
+ *            @OA\Property(property="postcode", type="string", example="1207"),
+ *         ),
+ *      ),
+ *      @OA\Response(
+ *          response=201,
+ *          description="Successful registration",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Bad Request",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=422,
+ *          description="Unprocessable Content",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *          @OA\JsonContent(),
+ *      ),
+ * )
+ */
+
+ public function registerWalkInCustomer(Request $request)
+ {
+     $validatedData = $request->validate([
+         'first_Name' => 'required|string|max:255',
+         'last_Name' => 'required|string|max:255',
+         'phone' => 'nullable|string',
+         'email' => 'nullable|string|email|max:255',
+         'address_line_1' => 'nullable|string|max:255',
+         'address_line_2' => 'nullable|string|max:255',
+         'country' => 'nullable|string|max:255',
+         'city' => 'nullable|string|max:255',
+         'postcode' => 'nullable|string|max:20',
+     ]);
+
+     try {
+         $walkInCustomer = new User(); // Assuming you are using the User model for walk-in customers
+         $walkInCustomer->first_Name = $validatedData['first_Name'];
+         $walkInCustomer->last_Name = $validatedData['last_Name'];
+         $walkInCustomer->phone = $validatedData['phone'];
+         $walkInCustomer->email = $validatedData['email'];
+         $walkInCustomer->address_line_1 = $validatedData['address_line_1'];
+         $walkInCustomer->address_line_2 = $validatedData['address_line_2'];
+         $walkInCustomer->country = $validatedData['country'];
+         $walkInCustomer->city = $validatedData['city'];
+         $walkInCustomer->postcode = $validatedData['postcode'];
+         $walkInCustomer->is_active = true; // Assuming walk-in customers are active by default
+
+         // Set a dummy password
+         $dummyPassword = 'dummyPassword'; // You can change this to any default string
+         $walkInCustomer->password = Hash::make($dummyPassword); // Hash the dummy password
+
+         $walkInCustomer->save();
+
+         return response()->json($walkInCustomer, 201);
+     } catch (Exception $e) {
+         return response()->json(['error' => 'Registration failed'], 500);
+     }
+ }
+
 
 
       /**
@@ -403,7 +491,7 @@ class UserManagementController extends Controller
             //     }
             // }
 
-          
+
 
             if (empty($insertableData['email']) && empty($insertableData['id'])) {
                 $maxCounterUser = User::where('email', 'LIKE', 'guest_%')->orderByRaw('SUBSTRING_INDEX(email, "_", -1) + 0 DESC')->first();

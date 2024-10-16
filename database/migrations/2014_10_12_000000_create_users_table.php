@@ -27,8 +27,7 @@ class CreateUsersTable extends Migration
             $table->string("postcode")->nullable();
             $table->string("lat")->nullable();
             $table->string("long")->nullable();
-
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->string('email_verify_token')->nullable();
             $table->string('email_verify_token_expires')->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -40,6 +39,7 @@ class CreateUsersTable extends Migration
 
             $table->string('is_active')->default(false);
             $table->unsignedBigInteger("created_by")->nullable();
+
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
 
             $table->integer('login_attempts')->default(0);
@@ -48,7 +48,7 @@ class CreateUsersTable extends Migration
 
             $table->string("background_image")->nullable();
 
-            
+
 
             $table->softDeletes();
             $table->rememberToken();

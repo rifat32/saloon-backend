@@ -968,7 +968,7 @@ class ClientBookingController extends Controller
     }
 
 
-        /**
+    /**
      *
      * @OA\Get(
      *      path="/v1.0/client/blocked-dates",
@@ -1051,94 +1051,91 @@ class ClientBookingController extends Controller
      *     )
      */
 
-     public function getBlockedDatesClient(Request $request)
-     {
-         try {
-             $this->storeActivity($request, "");
+    public function getBlockedDatesClient(Request $request)
+    {
+        try {
+            $this->storeActivity($request, "");
 
-             if (!request()->filled("date")) {
-                 return response()->json([
-                     "message" => "Date field is required"
-                 ], 401);
-             }
-
-
-$dates = [];
-$available_dates = collect();
-
-for ($i = 0; $i <= 30; $i++) {
-    $dates[] = Carbon::today()->addDays($i)->toDateString();
-}
-$experts = User::with("translation")
-->whereHas('roles', function ($query) {
-    $query->where('roles.name', 'business_experts');
-})
-->when(request()->filled("business_id"), function ($query) {
-    $query->where("business_id", request()->input("business_id"));
-})
-->get();
-
-$total_experts = $experts->count();
-
-$total_slots_in_one_day = $total_experts * 53;
+            if (!request()->filled("date")) {
+                return response()->json([
+                    "message" => "Date field is required"
+                ], 401);
+            }
 
 
-foreach($dates as $date) {
+            $dates = [];
+            $available_dates = collect();
 
-    // $totalBookedSlots = Booking::
-    // where([
-    //     "garage_id" => auth()->user()->business_id
-    // ])
-    // ->whereDate("job_start_date", $date)
-    // ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
-    // ->selectRaw('SUM(json_length(booked_slots)) as total_slots')
-    // ->value('total_slots');
+            for ($i = 0; $i <= 30; $i++) {
+                $dates[] = Carbon::today()->addDays($i)->toDateString();
+            }
+            $experts = User::with("translation")
+                ->whereHas('roles', function ($query) {
+                    $query->where('roles.name', 'business_experts');
+                })
+                ->when(request()->filled("business_id"), function ($query) {
+                    $query->where("business_id", request()->input("business_id"));
+                })
+                ->get();
 
+            $total_experts = $experts->count();
 
-    // $totalBusySlots = ExpertRota::
-    // where([
-    //     'expert_rotas.business_id' => auth()->user()->business_id,
-    //     "expert_rotas.is_active" => 1
-    //     ])
-    // ->whereDate("date", $date)
-    // ->selectRaw('SUM(json_length(busy_slots)) as total_slots')
-    // ->value('total_slots');
-
-    // $total_busy_slots = $totalBookedSlots + $totalBusySlots;
+            $total_slots_in_one_day = $total_experts * 53;
 
 
-$total_busy_slots = Booking::selectRaw('SUM(json_length(booked_slots)) as total_booked_slots')
-->where('garage_id', auth()->user()->business_id)
-->whereDate('job_start_date', $date)
-->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
-->selectSub(
-    ExpertRota::selectRaw('SUM(json_length(busy_slots))')
-        ->where('business_id', auth()->user()->business_id)
-        ->where('is_active', 1)
-        ->whereDate('date', $date),
-    'total_busy_slots'
-)
-->value(DB::raw('IFNULL(total_booked_slots, 0) + IFNULL(total_busy_slots, 0) as total_busy_slots'));
+            foreach ($dates as $date) {
 
-if($total_busy_slots < $total_slots_in_one_day) {
-$available_dates->push($date);
-}
+                // $totalBookedSlots = Booking::
+                // where([
+                //     "garage_id" => auth()->user()->business_id
+                // ])
+                // ->whereDate("job_start_date", $date)
+                // ->whereNotIn("status", ["rejected_by_client", "rejected_by_garage_owner"])
+                // ->selectRaw('SUM(json_length(booked_slots)) as total_slots')
+                // ->value('total_slots');
 
 
+                // $totalBusySlots = ExpertRota::
+                // where([
+                //     'expert_rotas.business_id' => auth()->user()->business_id,
+                //     "expert_rotas.is_active" => 1
+                //     ])
+                // ->whereDate("date", $date)
+                // ->selectRaw('SUM(json_length(busy_slots)) as total_slots')
+                // ->value('total_slots');
 
-}
+                // $total_busy_slots = $totalBookedSlots + $totalBusySlots;
 
-             // Get all bookings for the provided date except the rejected ones
+
+                $total_busy_slots = Booking::selectRaw('SUM(json_length(booked_slots)) as total_booked_slots')
+                    ->where('garage_id', auth()->user()->business_id)
+                    ->whereDate('job_start_date', $date)
+                    ->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
+                    ->selectSub(
+                        ExpertRota::selectRaw('SUM(json_length(busy_slots))')
+                            ->where('business_id', auth()->user()->business_id)
+                            ->where('is_active', 1)
+                            ->whereDate('date', $date),
+                        'total_busy_slots'
+                    )
+                    ->value(DB::raw('IFNULL(total_booked_slots, 0) + IFNULL(total_busy_slots, 0) as total_busy_slots'));
+
+                if ($total_busy_slots < $total_slots_in_one_day) {
+                    $available_dates->push($date);
+                }
+            }
+
+            // Get all bookings for the provided date except the rejected ones
 
 
 
 
-             return response()->json($available_dates->toArray(), 200);
-         } catch (Exception $e) {
+            return response()->json($available_dates->toArray(), 200);
+        } catch (Exception $e) {
 
-             return $this->sendError($e, 500, $request);
-         }
-     }
+            return $this->sendError($e, 500, $request);
+        }
+    }
 
     /**
      *
