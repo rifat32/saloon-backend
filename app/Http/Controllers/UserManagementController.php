@@ -403,28 +403,7 @@ class UserManagementController extends Controller
             //     }
             // }
 
-            $phone_existsQuery =  User::where([
-                "phone" => $insertableData["phone"]
-            ])
-
-            ->whereHas('roles', function ($query) {
-             return $query->where('name','=', 'customer');
-                });
-
-                if(!empty($insertableData["id"])) {
-                    $phone_existsQuery  =     $phone_existsQuery->where('id', '!=', $insertableData["id"]);
-                }
-
-                $phone_exists =   $phone_existsQuery->first();
-
-            if($phone_exists) {
-                    $error =  [
-                  "message" => "The given data was invalid.",
-                  "errors" => ["phone"=>["phone number already taken"]]
-                    ];
-                       throw new Exception(json_encode($error),422);
-
-            }
+          
 
             if (empty($insertableData['email']) && empty($insertableData['id'])) {
                 $maxCounterUser = User::where('email', 'LIKE', 'guest_%')->orderByRaw('SUBSTRING_INDEX(email, "_", -1) + 0 DESC')->first();

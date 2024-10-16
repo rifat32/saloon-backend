@@ -368,7 +368,11 @@ class ClientBookingController extends Controller
                     return response()->json(["message" => "Status cannot be updated because it is in cancelled status"], 422);
                 }
 
+                $jobStartDate = Carbon::parse($booking->job_start_date);
 
+                if (Carbon::now()->gte($jobStartDate) || Carbon::now()->diffInHours($jobStartDate, false) < 24) {
+                    return response()->json(['error' => 'Booking status cannot be changed within 24 hours of the job start time or if the time has already passed'], 409);
+                }
 
 
 
@@ -1289,22 +1293,14 @@ $data["check_in_slots"]  = $check_in_bookings->pluck('booked_slots')->flatten()-
                 return response()->json(["message" => "only pending booking can be deleted"], 422);
             }
 
+            $jobStartDate = Carbon::parse($booking->job_start_date);
 
-            if ($booking->pre_booking_id) {
-                $prebooking  =  PreBooking::where([
-                    "id" => $booking->pre_booking_id
-                ])
-                    ->first();
-                JobBid::where([
-                    "id" => $prebooking->selected_bid_id
-                ])
-                    ->update([
-                        "status" => "canceled_after_booking"
-                    ]);
-                $prebooking->status = "pending";
-                $prebooking->selected_bid_id = NULL;
-                $prebooking->save();
+            if (Carbon::now()->gte($jobStartDate) || Carbon::now()->diffInHours($jobStartDate, false) < 24) {
+                return response()->json(['error' => 'Booking cannot be deleted within 24 hours of the job start time or if the time has already passed'], 409);
             }
+
+
+
 
             $booking->delete();
 
