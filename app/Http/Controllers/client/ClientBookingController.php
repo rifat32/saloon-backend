@@ -980,45 +980,39 @@ class ClientBookingController extends Controller
 
      *              @OA\Parameter(
      *         name="expert_id",
-     *         in="path",
+     *         in="query",
      *         description="expert_id",
      *         required=true,
-     *  example="6"
+     *  example=""
      *      ),
-     *              @OA\Parameter(
-     *         name="perPage",
-     *         in="path",
-     *         description="perPage",
-     *         required=true,
-     *  example="6"
-     *      ),
+
      *      *      * *  @OA\Parameter(
      * name="status",
      * in="query",
      * description="status",
      * required=true,
-     * example="pending"
+     * example=""
      * ),
      *      * *  @OA\Parameter(
      * name="start_date",
      * in="query",
      * description="start_date",
      * required=true,
-     * example="2019-06-29"
+     * example=""
      * ),
      * *  @OA\Parameter(
      * name="end_date",
      * in="query",
      * description="end_date",
      * required=true,
-     * example="2019-06-29"
+     * example=""
      * ),
      * *  @OA\Parameter(
      * name="search_key",
      * in="query",
      * description="search_key",
      * required=true,
-     * example="search_key"
+     * example=""
      * ),
      *      summary="This method is to get  bookings ",
      *      description="This method is to get bookings",
@@ -1086,6 +1080,7 @@ class ClientBookingController extends Controller
 
             $total_slots_in_one_day = $total_experts * 53;
 
+            $total_busy_slots_in_day = collect();
 
             foreach ($dates as $date) {
 
@@ -1110,25 +1105,32 @@ class ClientBookingController extends Controller
 
                 // $total_busy_slots = $totalBookedSlots + $totalBusySlots;
 
-                $total_busy_slots = Booking::selectRaw('SUM(json_length(booked_slots)) as total_booked_slots')
+                $total_expert_busy_slots = ExpertRota::selectRaw('COALESCE(SUM(json_length(busy_slots)), 0) as total_busy_slots')
                 ->when(request()->filled("expert_id"), function($query) {
                     $query->where("expert_id", request()->input("expert_id"));
-            })
-                    ->where('garage_id', auth()->user()->business_id)
-                    ->whereDate('job_start_date', $date)
-                    ->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
-                    ->selectSub(
-                        ExpertRota::selectRaw('SUM(json_length(busy_slots))')
-                        ->when(request()->filled("expert_id"), function($query) {
-                            $query->where("expert_id", request()->input("expert_id"));
-                    })
-                            ->where('business_id', auth()->user()->business_id)
-                            ->where('is_active', 1)
-                            ->whereDate('date', $date),
-                        'total_busy_slots'
-                    )
-                    ->value(DB::raw('IFNULL(total_booked_slots, 0) + IFNULL(total_busy_slots, 0) as total_busy_slots'));
+                })
 
+                ->where('is_active', 1)
+                ->whereDate('date', $date)
+                ->value("total_busy_slots");
+
+              $total_booked_slots =  Booking::selectRaw('COALESCE(SUM(json_length(booked_slots)), 0) as total_booked_slots')
+                ->when(request()->filled("expert_id"), function($query) {
+                    $query->where("expert_id", request()->input("expert_id"));
+                })
+                ->when(request()->filled("business_id"), function ($query) {
+                    $query->where("garage_id", request()->input("business_id"));
+                })
+                ->whereDate('job_start_date', $date)
+                ->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
+                ->value("total_booked_slots");
+
+
+$total_busy_slots = $total_expert_busy_slots + $total_booked_slots;
+                    // $total_busy_slots_in_day->push([
+                    //     "date" => $date,
+                    //     "total_busy_slots" => $total_busy_slots
+                    // ]);
                 if ($total_busy_slots < $total_slots_in_one_day) {
                     $available_dates->push($date);
                 } else {
@@ -1143,7 +1145,10 @@ class ClientBookingController extends Controller
 
             return response()->json([
               "available_dates" => $available_dates->toArray(),
-              "blocked_dates" => $blocked_dates->toArray()
+              "blocked_dates" => $blocked_dates->toArray(),
+            //   "total_experts" => $total_experts,
+            //   "total_slots_in_one_day" => $total_slots_in_one_day,
+            //  "total_busy_slots_in_day" => $total_busy_slots_in_day->toArray()
 
             ], 200);
         } catch (Exception $e) {
@@ -1467,8 +1472,6 @@ class ClientBookingController extends Controller
             }
 
 
-
-
             if ($booking->status != "pending") {
                 // Return an error response indicating that the status cannot be updated
                 return response()->json(["message" => "only pending booking can be deleted"], 422);
@@ -1479,8 +1482,6 @@ class ClientBookingController extends Controller
             if (Carbon::now()->gte($jobStartDate) || Carbon::now()->diffInHours($jobStartDate, false) < 24) {
                 return response()->json(['error' => 'Booking cannot be deleted within 24 hours of the job start time or if the time has already passed'], 409);
             }
-
-
 
 
             $booking->delete();
