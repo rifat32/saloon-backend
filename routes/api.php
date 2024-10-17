@@ -946,7 +946,7 @@ Route::get('/v1.0/data-collector-dashboard', [DashboardManagementController::cla
 
 
 
-Route::get('/v1.0/business-owner-dashboard', [DashboardManagementController::class, "getSuperAdminDashboardData"]);
+Route::get('/v1.0/business-owner-dashboard', [DashboardManagementController::class, "getBusinessOwnerDashboardData"]);
 
 
 

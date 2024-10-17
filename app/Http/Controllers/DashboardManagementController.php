@@ -1855,17 +1855,28 @@ class DashboardManagementController extends Controller
              $data["previous_month_bookings"] = $this->bookingsByStatus('previous_month');
 
 
-             $experts = User::with("translation")
-             ->leftJoin('bookings', 'users.id', '=', 'bookings.expert_id')
-             ->select('users.*', DB::raw('count(bookings.id) as total_bookings'))
-             ->whereHas('roles', function ($query) {
-                 $query->where('roles.name', 'business_experts');
-             })
-             ->where("business_id", auth()->user()->business_id)
-             ->groupBy('experts.id') // Group by expert ID
-             ->orderBy('total_bookings', 'desc')
-             ->get();
-
+            //  $experts = User::with("translation")
+            //  ->leftJoin('bookings', 'users.id', '=', 'bookings.expert_id')
+            //  ->select('users.*', DB::raw('count(bookings.id) as total_bookings'))
+            //  ->whereHas('roles', function ($query) {
+            //      $query->where('roles.name', 'business_experts');
+            //  })
+            //  ->where("business_id", auth()->user()->business_id)
+            //  ->groupBy('experts.id') // Group by expert ID
+            //  ->orderBy('total_bookings', 'desc')
+            //  ->get();
+            
+            $experts = User::with("translation")
+            ->leftJoin('bookings', 'users.id', '=', 'bookings.expert_id')
+            ->leftJoin('job_payments', 'bookings.id', '=', 'job_payments.booking_id') // Join job_payments on booking_id
+            ->select('users.*', DB::raw('SUM(job_payments.amount) as total_revenue')) // Sum the amount field
+            ->whereHas('roles', function ($query) {
+                $query->where('roles.name', 'business_experts');
+            })
+            ->where("business_id", auth()->user()->business_id)
+            ->groupBy('users.id') // Group by user ID (expert)
+            ->orderBy('total_revenue', 'desc') // Order by revenue
+            ->get();
 
          foreach ($experts as $expert) {
 

@@ -1065,7 +1065,7 @@ class ClientBookingController extends Controller
 
             $dates = [];
             $available_dates = collect();
-
+            $blocked_dates = collect();
             for ($i = 0; $i <= 30; $i++) {
                 $dates[] = Carbon::today()->addDays($i)->toDateString();
             }
@@ -1122,6 +1122,8 @@ class ClientBookingController extends Controller
 
                 if ($total_busy_slots < $total_slots_in_one_day) {
                     $available_dates->push($date);
+                } else {
+                    $blocked_dates->push($date);
                 }
             }
 
@@ -1130,7 +1132,11 @@ class ClientBookingController extends Controller
 
 
 
-            return response()->json($available_dates->toArray(), 200);
+            return response()->json([
+              "available_dates" => $available_dates->toArray(),
+              "blocked_dates" => $blocked_dates->toArray()
+
+            ], 200);
         } catch (Exception $e) {
 
             return $this->sendError($e, 500, $request);
