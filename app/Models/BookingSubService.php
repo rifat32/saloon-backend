@@ -18,4 +18,10 @@ class BookingSubService extends Model
         return $this->belongsTo(SubService::class,'sub_service_id', 'id')->withTrashed();
     }
 
+    public function booking(){
+        return $this->belongsTo(Booking::class,'booking_id', 'id')->withTrashed();
+    }
+
+
+
 }

@@ -979,6 +979,13 @@ class ClientBookingController extends Controller
      *       },
 
      *              @OA\Parameter(
+     *         name="expert_id",
+     *         in="path",
+     *         description="expert_id",
+     *         required=true,
+     *  example="6"
+     *      ),
+     *              @OA\Parameter(
      *         name="perPage",
      *         in="path",
      *         description="perPage",
@@ -1056,12 +1063,6 @@ class ClientBookingController extends Controller
         try {
             $this->storeActivity($request, "");
 
-            if (!request()->filled("date")) {
-                return response()->json([
-                    "message" => "Date field is required"
-                ], 401);
-            }
-
 
             $dates = [];
             $available_dates = collect();
@@ -1070,6 +1071,9 @@ class ClientBookingController extends Controller
                 $dates[] = Carbon::today()->addDays($i)->toDateString();
             }
             $experts = User::with("translation")
+            ->when(request()->filled("expert_id"), function($query) {
+                    $query->where("users.id", request()->input("expert_id"));
+            })
                 ->whereHas('roles', function ($query) {
                     $query->where('roles.name', 'business_experts');
                 })
@@ -1106,13 +1110,18 @@ class ClientBookingController extends Controller
 
                 // $total_busy_slots = $totalBookedSlots + $totalBusySlots;
 
-
                 $total_busy_slots = Booking::selectRaw('SUM(json_length(booked_slots)) as total_booked_slots')
+                ->when(request()->filled("expert_id"), function($query) {
+                    $query->where("expert_id", request()->input("expert_id"));
+            })
                     ->where('garage_id', auth()->user()->business_id)
                     ->whereDate('job_start_date', $date)
                     ->whereNotIn('status', ['rejected_by_client', 'rejected_by_garage_owner'])
                     ->selectSub(
                         ExpertRota::selectRaw('SUM(json_length(busy_slots))')
+                        ->when(request()->filled("expert_id"), function($query) {
+                            $query->where("expert_id", request()->input("expert_id"));
+                    })
                             ->where('business_id', auth()->user()->business_id)
                             ->where('is_active', 1)
                             ->whereDate('date', $date),

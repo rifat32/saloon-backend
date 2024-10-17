@@ -14,6 +14,7 @@ use App\Models\Job;
 use App\Models\JobPayment;
 use App\Models\PreBooking;
 use App\Models\Service;
+use App\Models\SubService;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -1865,17 +1866,21 @@ class DashboardManagementController extends Controller
             //  ->groupBy('experts.id') // Group by expert ID
             //  ->orderBy('total_bookings', 'desc')
             //  ->get();
-            
+
             $experts = User::with("translation")
             ->leftJoin('bookings', 'users.id', '=', 'bookings.expert_id')
             ->leftJoin('job_payments', 'bookings.id', '=', 'job_payments.booking_id') // Join job_payments on booking_id
-            ->select('users.*', DB::raw('SUM(job_payments.amount) as total_revenue')) // Sum the amount field
+            ->select(
+                'users.*',
+                DB::raw('SUM(CASE WHEN bookings.job_start_date BETWEEN "' . now()->startOfMonth() . '" AND "' . now()->endOfMonth() . '" THEN job_payments.amount ELSE 0 END) as this_month_revenue'),
+                DB::raw('SUM(CASE WHEN job_payments.job_start_date BETWEEN "' . now()->subMonth()->startOfMonth() . '" AND "' . now()->subMonth()->endOfMonth() . '" THEN job_payments.amount ELSE 0 END) as last_month_revenue')
+            ) // Sum the amount field for both this month and last month
             ->whereHas('roles', function ($query) {
                 $query->where('roles.name', 'business_experts');
             })
             ->where("business_id", auth()->user()->business_id)
             ->groupBy('users.id') // Group by user ID (expert)
-            ->orderBy('total_revenue', 'desc') // Order by revenue
+            ->orderBy('this_month_revenue', 'desc') // Order by this month's revenue
             ->get();
 
          foreach ($experts as $expert) {
@@ -1922,19 +1927,19 @@ $expert["upcoming_bookings"] = Booking::whereDate("job_start_date", '>', today()
 ->get();
 
 
-$data["today_bookings"] = $this->bookingsByStatus('today',$expert->id);
-$data["this_week_bookings"] = $this->bookingsByStatus('this_week',$expert->id);
-$data["this_month_bookings"] = $this->bookingsByStatus('this_month',$expert->id);
-$data["next_week_bookings"] = $this->bookingsByStatus('next_week',$expert->id);
-$data["next_month_bookings"] = $this->bookingsByStatus('next_month',$expert->id);
-$data["previous_week_bookings"] = $this->bookingsByStatus('previous_week',$expert->id);
-$data["previous_month_bookings"] = $this->bookingsByStatus('previous_month',$expert->id);
+$expert["today_bookings"] = $this->bookingsByStatus('today',$expert->id);
+$expert["this_week_bookings"] = $this->bookingsByStatus('this_week',$expert->id);
+$expert["this_month_bookings"] = $this->bookingsByStatus('this_month',$expert->id);
+$expert["next_week_bookings"] = $this->bookingsByStatus('next_week',$expert->id);
+$expert["next_month_bookings"] = $this->bookingsByStatus('next_month',$expert->id);
+$expert["previous_week_bookings"] = $this->bookingsByStatus('previous_week',$expert->id);
+$expert["previous_month_bookings"] = $this->bookingsByStatus('previous_month',$expert->id);
 
 
          }
 
 
-
+         $data["top_experts"] = $experts;
 
          $data["today_revenue"] = $this->revenue('today');
          $data["this_week_revenue"] = $this->revenue('this_week');
@@ -1946,6 +1951,22 @@ $data["previous_month_bookings"] = $this->bookingsByStatus('previous_month',$exp
 
 
 
+         $data["top_services"] = SubService::withCount([
+            'bookingSubServices as this_month_sales' => function ($query) {
+                $query->whereHas('booking', function ($query) {
+                    $query->where('booking.status', 'converted_to_job') // Filter for converted bookings
+                          ->whereBetween('booking.job_start_date', [now()->startOfMonth(), now()->endOfMonth()]); // Sales this month
+                });
+            },
+            'bookingSubServices as last_month_sales' => function ($query) {
+                $query->whereHas('booking', function ($query) {
+                    $query->where('booking.status', 'converted_to_job') // Filter for converted bookings
+                          ->whereBetween('booking.job_start_date', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()]); // Sales last month
+                });
+            }
+        ])
+        ->orderBy('this_month_sales', 'desc') // Sort by this month's sales
+        ->get();
 
 
 
