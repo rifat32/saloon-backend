@@ -121,9 +121,9 @@ trait BasicUtil
     public function canculate_discounted_price($total_price, $discount_type, $discount_amount) {
         if (!empty($discount_type) && !empty($discount_amount)) {
             if ($discount_type == "fixed") {
-                return round($total_price - $discount_amount, 2);
+                return round($discount_amount, 2);
             } else if ($discount_type == "percentage") {
-                return round($total_price - (($total_price / 100) * $discount_amount), 2);
+                return round((($total_price / 100) * $discount_amount), 2);
             } else {
                 return 0;
             }
