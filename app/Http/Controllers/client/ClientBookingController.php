@@ -776,6 +776,11 @@ class ClientBookingController extends Controller
                 // If status is provided, include the condition in the query
                 $bookingQuery->whereIn("status", $statusArray);
             }
+            if (!empty($request->payment_status)) {
+                $statusArray = explode(',', request()->payment_status);
+                // If status is provided, include the condition in the query
+                $bookingQuery->whereIn("payment_status", $statusArray);
+            }
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {
@@ -1380,7 +1385,13 @@ $total_busy_slots = $total_expert_busy_slots + $total_booked_slots;
     {
         try {
             $this->storeActivity($request, "");
-            $booking = Booking::with("booking_sub_services.sub_service")
+            $booking = Booking::with(
+                "sub_services.service",
+                "booking_packages.garage_package",
+                "customer",
+                "garage",
+                "expert"
+                )
                 ->where([
                     "id" => $id,
                     "customer_id" => $request->user()->id

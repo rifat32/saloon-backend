@@ -42,6 +42,7 @@ use Stripe\Stripe;
 use Stripe\WebhookEndpoint;
 use Illuminate\Support\Facades\Hash;
 
+
 class BookingController extends Controller
 {
     use ErrorUtil, GarageUtil, PriceUtil, UserActivityUtil, DiscountUtil, BasicUtil;
@@ -62,7 +63,11 @@ class BookingController extends Controller
 
         $booking = Booking::findOrFail($trimmed_id);
 
-        if (empty($booking->price)) {
+        if (empty($booking->price) || empty($booking->total_price)) {
+            return response()->json([
+                "message" => "You booking price is zero. it's a software error."
+            ], 409);
+        } else if ($booking->price < 0 || $booking->total_price < 0){
             return response()->json([
                 "message" => "You booking price is zero. it's a software error."
             ], 409);
@@ -393,37 +398,39 @@ class BookingController extends Controller
             $booking->save();
 
             if (!empty($insertableData["coupon_code"])) {
+
                 $coupon_discount = $this->getCouponDiscount(
                     $insertableData["garage_id"],
                     $insertableData["coupon_code"],
                     $total_price
                 );
 
-                if ($coupon_discount["success"]) {
-
-                    $booking->coupon_discount_type = $coupon_discount["discount_type"];
-                    $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
-                    $booking->coupon_code = $insertableData["coupon_code"];
-
-                    $booking->save();
-
-                    Coupon::where([
-                        "code" => $booking->coupon_code,
-                        "garage_id" => $booking->garage_id
-                    ])->update([
-                        "customer_redemptions" => DB::raw("customer_redemptions + 1")
-                    ]);
-                } else {
+                if (empty($coupon_discount["success"])) {
                     $error =  [
                         "message" => "The given data was invalid.",
                         "errors" => ["coupon_code" => [$coupon_discount["message"]]]
                     ];
                     throw new Exception(json_encode($error), 422);
+                    // $booking->coupon_discount_type = $coupon_discount["discount_type"];
+                    // $booking->coupon_discount_amount = $coupon_discount["discount_amount"];
+                    // $booking->coupon_code = $insertableData["coupon_code"];
+
+                    // $booking->save();
+
+                    // Coupon::where([
+                    //     "code" => $booking->coupon_code,
+                    //     "garage_id" => $booking->garage_id
+                    // ])->update([
+                    //     "customer_redemptions" => DB::raw("customer_redemptions + 1")
+                    // ]);
                 }
             }
+
             $booking->final_price = $booking->price;
+
             $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->discount_type, $booking->discount_amount);
             $booking->final_price -= $this->canculate_discounted_price($booking->price, $booking->coupon_discount_type, $booking->coupon_discount_amount);
+
             $booking->save();
 
 
@@ -1356,7 +1363,11 @@ public function changeMultipleBookingStatuses(Request $request)
                 // If status is provided, include the condition in the query
                 $bookingQuery->whereIn("status", $statusArray);
             }
-
+            if (!empty($request->payment_status)) {
+                $statusArray = explode(',', request()->payment_status);
+                // If status is provided, include the condition in the query
+                $bookingQuery->whereIn("payment_status", $statusArray);
+            }
 
             if (!empty($request->search_key)) {
                 $bookingQuery = $bookingQuery->where(function ($query) use ($request) {

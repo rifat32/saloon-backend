@@ -1980,7 +1980,7 @@ $data2["total_comment"] = $data2["total_comment"]->get();
 
             // Check if the user is allowed to update
             if ($checkQuestion->is_default == true && !$request->user()->hasRole('superadmin')) {
-                return response()->json(['message' => 'You cannot update the tag. You are not a super admin.'], 403);
+                return response()->json(['message' => 'You can not update the tag. You are not a super admin.'], 403);
             }
 
             // Update the question
