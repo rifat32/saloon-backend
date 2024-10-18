@@ -9,6 +9,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ServicePriceCreateRequest;
 use App\Http\Requests\ServicePriceUpdateRequest;
 use App\Http\Requests\GetIdRequest;
+use App\Http\Requests\ServicePriceBulkUpdateRequest;
+use App\Http\Requests\ServicePriceMultipleCreateRequest;
 use App\Http\Utils\BusinessUtil;
 use App\Http\Utils\ErrorUtil;
 use App\Http\Utils\UserActivityUtil;
@@ -25,6 +27,95 @@ class ServicePriceController extends Controller
 
     use ErrorUtil, UserActivityUtil, BusinessUtil;
 
+/**
+ * @OA\Post(
+ *      path="/v1.0/service-prices/multiple",
+ *      operationId="createMultipleServicePrices",
+ *      tags={"service_prices"},
+ *      security={
+ *           {"bearerAuth": {}}
+ *       },
+ *      summary="This method is to store multiple service prices",
+ *      description="This method is to store multiple service prices",
+ *
+ *  @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *              @OA\Property(
+ *                  property="service_prices",
+ *                  type="array",
+ *                  @OA\Items(
+ *                      @OA\Property(property="service_id", type="string", example="service_id"),
+ *                      @OA\Property(property="price", type="string", example="price"),
+ *                      @OA\Property(property="expert_id", type="string", example="expert_id"),
+ *                      @OA\Property(property="business_id", type="string", example="business_id")
+ *                  )
+ *              )
+ *         ),
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *       @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *       @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=422,
+ *          description="Unprocessable Content",
+ *       @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden",
+ *       @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Bad Request",
+ *       @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="Not found",
+ *       @OA\JsonContent(),
+ *      )
+ * )
+ */
+public function createMultipleServicePrices(ServicePriceMultipleCreateRequest $request)
+{
+    try {
+        $this->storeActivity($request, "DUMMY activity", "DUMMY description");
+
+        return DB::transaction(function () use ($request) {
+            if (!auth()->user()->hasPermissionTo('garage_service_price_create')) {
+                return response()->json([
+                    "message" => "You can not perform this action"
+                ], 401);
+            }
+
+            $servicePrices = [];
+            foreach ($request->validated()['service_prices'] as $servicePriceData) {
+                $servicePriceData["is_active"] = 1;
+                $servicePriceData["created_by"] = auth()->user()->id;
+                $servicePriceData["business_id"] = auth()->user()->business_id ?? null;
+
+                if (empty($servicePriceData["business_id"]) && auth()->user()->hasRole('superadmin')) {
+                    $servicePriceData["is_default"] = 1;
+                }
+
+                $servicePrices[] = ServicePrice::create($servicePriceData);
+            }
+
+            return response()->json($servicePrices, 201);
+        });
+    } catch (Exception $e) {
+        return $this->sendError($e, 500, $request);
+    }
+}
 
     /**
      *
@@ -129,6 +220,8 @@ class ServicePriceController extends Controller
             return $this->sendError($e, 500, $request);
         }
     }
+
+
     /**
      *
      * @OA\Put(
@@ -237,6 +330,109 @@ class ServicePriceController extends Controller
         }
     }
 
+/**
+ * @OA\Put(
+ *      path="/v1.0/service-prices/bulk-update",
+ *      operationId="bulkUpdateServicePrices",
+ *      tags={"service_prices"},
+ *      security={
+ *           {"bearerAuth": {}}
+ *       },
+ *      summary="This method is for bulk updating service prices",
+ *      description="This method allows bulk updating service prices in an array format",
+ *
+ *      @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *              @OA\Property(
+ *                  property="services",
+ *                  type="array",
+ *                  @OA\Items(
+ *                      @OA\Property(property="id", type="number", format="number", example="1"),
+ *                      @OA\Property(property="service_id", type="string", format="string", example="service_id"),
+ *                      @OA\Property(property="price", type="string", format="string", example="price"),
+ *                      @OA\Property(property="expert_id", type="string", format="string", example="expert_id"),
+ *                      @OA\Property(property="business_id", type="string", format="string", example="business_id")
+ *                  )
+ *              )
+ *         ),
+ *      ),
+ *      @OA\Response(
+ *          response=200,
+ *          description="Successful operation",
+ *          @OA\JsonContent(),
+ *       ),
+ *      @OA\Response(
+ *          response=401,
+ *          description="Unauthenticated",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=422,
+ *          description="Unprocessable Content",
+ *          @OA\JsonContent(),
+ *      ),
+ *      @OA\Response(
+ *          response=403,
+ *          description="Forbidden",
+ *          @OA\JsonContent()
+ *      ),
+ *      @OA\Response(
+ *          response=400,
+ *          description="Bad Request",
+ *          @OA\JsonContent()
+ *      ),
+ *      @OA\Response(
+ *          response=404,
+ *          description="Not Found",
+ *          @OA\JsonContent()
+ *      )
+ * )
+ */
+public function bulkUpdateServicePrices(ServicePriceBulkUpdateRequest $request)
+{
+    try {
+        $this->storeActivity($request, "Bulk Update", "Bulk update of service prices");
+
+        return DB::transaction(function () use ($request) {
+            if (!auth()->user()->hasPermissionTo('service_price_update')) {
+                return response()->json([
+                    "message" => "You do not have permission to perform this action"
+                ], 401);
+            }
+
+            $request_data = $request->validated();
+            $updatedRecords = [];
+
+            foreach ($request_data['services'] as $data) {
+                $service_price_query_params = [
+                    "id" => $data['id'],
+                    "business_id" => auth()->user()->business_id
+                ];
+
+                $service_price = ServicePrice::where($service_price_query_params)->first();
+
+                if ($service_price) {
+                    $service_price->update([
+                        "service_id" => $data['service_id'],
+                        "price" => $data['price'],
+                        "expert_id" => $data['expert_id'],
+                        "business_id" => $data['business_id']
+                    ]);
+                    $updatedRecords[] = $service_price;
+                } else {
+                    return response()->json([
+                        "message" => "Service price with ID {$data['id']} not found"
+                    ], 404);
+                }
+            }
+
+            return response()->json($updatedRecords, 200);
+        });
+    } catch (Exception $e) {
+        return $this->sendError($e, 500, $request);
+    }
+}
 
     /**
      *

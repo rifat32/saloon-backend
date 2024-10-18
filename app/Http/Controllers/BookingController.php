@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Mail;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Stripe\WebhookEndpoint;
+use Illuminate\Support\Facades\Hash;
 
 class BookingController extends Controller
 {
@@ -270,7 +271,35 @@ class BookingController extends Controller
                 ], 401);
             }
 
+
+
             $insertableData = $request->validated();
+
+
+            if(empty($insertableData["customer_id"])) {
+                $walkInCustomer = new User(); // Assuming you are using the User model for walk-in customers
+                $walkInCustomer->business_id = auth()->user()->business_id;
+                $walkInCustomer->first_Name = $insertableData['first_Name'];
+                $walkInCustomer->last_Name = $insertableData['last_Name'];
+                $walkInCustomer->phone = $insertableData['phone'];
+                $walkInCustomer->email = $insertableData['email'];
+                $walkInCustomer->address_line_1 = $insertableData['address_line_1'];
+                $walkInCustomer->address_line_2 = $insertableData['address_line_2'];
+                $walkInCustomer->country = $insertableData['country'];
+                $walkInCustomer->city = $insertableData['city'];
+                $walkInCustomer->postcode = $insertableData['postcode'];
+                $walkInCustomer->is_active = true; // Assuming walk-in customers are active by default
+
+                // Set a dummy password
+                $dummyPassword = 'dummyPassword'; // You can change this to any default string
+                $walkInCustomer->password = Hash::make($dummyPassword); // Hash the dummy password
+
+                $walkInCustomer->save();
+
+                $insertableData["customer_id"] = $walkInCustomer->id;
+            }
+
+
 
             if (!$this->garageOwnerCheck($insertableData["garage_id"])) {
                 return response()->json([

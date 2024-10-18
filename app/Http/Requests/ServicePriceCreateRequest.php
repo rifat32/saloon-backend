@@ -60,4 +60,5 @@ class ServicePriceCreateRequest extends FormRequest
 
         return $rules;
     }
+
 }

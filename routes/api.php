@@ -168,7 +168,13 @@ Route::delete('/v1.0/expert-rotas/{ids}', [ExpertRotaController::class, "deleteE
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 Route::post('/v1.0/service-prices', [ServicePriceController::class, "createServicePrice"]);
+Route::post('/v1.0/service-prices/multiple', [ServicePriceController::class, "createMultipleServicePrices"]);
+
 Route::put('/v1.0/service-prices', [ServicePriceController::class, "updateServicePrice"]);
+Route::put('/v1.0/service-prices/bulk-update', [ServicePriceController::class, "bulkUpdateServicePrices"]);
+
+
+
 Route::put('/v1.0/service-prices/toggle-active', [ServicePriceController::class, "toggleActiveServicePrice"]);
 Route::get('/v1.0/service-prices', [ServicePriceController::class, "getServicePrices"]);
 Route::delete('/v1.0/service-prices/{ids}', [ServicePriceController::class, "deleteServicePricesByIds"]);
