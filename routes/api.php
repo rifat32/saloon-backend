@@ -287,6 +287,7 @@ Route::put('/v1.0/users/toggle-active', [UserManagementController::class, "toggl
 
 
 Route::get('/v1.0/users/{perPage}', [UserManagementController::class, "getUsers"]);
+Route::get('/v1.0/users', [UserManagementController::class, "getUsersV2"]);
 
 
 Route::delete('/v1.0/users/{id}', [UserManagementController::class, "deleteUserById"]);

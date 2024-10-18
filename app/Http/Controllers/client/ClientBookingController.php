@@ -125,6 +125,13 @@ class ClientBookingController extends Controller
                 $insertableData["created_by"] = $request->user()->id;
                 $insertableData["created_from"] = "customer_side";
 
+                $insertableData["status"] = "customer_side";
+
+
+                $insertableData["payment_status"] = "pending";
+                $insertableData["payment_method"] = "";
+
+
 
                 $garage = Garage::where([
                     "id" => $insertableData["garage_id"]
